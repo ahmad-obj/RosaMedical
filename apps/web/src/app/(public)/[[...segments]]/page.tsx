@@ -1,4 +1,5 @@
 import { RoutePlaceholder } from "@/components/layout/route-placeholder";
+import { Homepage } from "@/components/sections/homepage";
 
 const routeTitles: Record<string, string> = {
   "": "Homepage",
@@ -16,8 +17,13 @@ const routeTitles: Record<string, string> = {
 
 export default async function Page({ params }: { params: Promise<{ segments?: string[] }> }) {
   const { segments = [] } = await params;
-  const path = `/${segments.join("/")}`;
   const key = segments.join("/");
+
+  if (key === "") {
+    return <Homepage />;
+  }
+
+  const path = `/${segments.join("/")}`;
   const title = routeTitles[key] ?? (segments.at(-1)?.replaceAll("-", " ") || "Homepage");
   return <RoutePlaceholder eyebrow="Public route" title={title} path={path} />;
 }

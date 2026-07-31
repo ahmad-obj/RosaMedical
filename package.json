@@ -15,5 +15,10 @@
     "test:e2e": "pnpm --filter @rosa/web test:e2e",
     "contracts:generate": "pnpm --filter @rosa/contracts generate",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "msw": {
+    "workerDirectory": [
+      "apps/web/public"
+    ]
   }
 }
