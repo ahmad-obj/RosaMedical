@@ -1,15 +1,32 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Category, Product, SiteSetting } from "./types";
 
+// PUBLIC: Only get active categories (deleted_at is null)
 export async function getCategories(): Promise<Category[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("categories")
     .select("*")
+    .is("deleted_at", null)
     .order("sort_order", { ascending: true });
   
   if (error) {
     console.error("Error fetching categories:", error);
+    return [];
+  }
+  return data as Category[];
+}
+
+// ADMIN: Get ALL categories (including trashed)
+export async function getAdminCategories(): Promise<Category[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .order("deleted_at", { ascending: true, nullsFirst: false }); // Active first, then trashed
+  
+  if (error) {
+    console.error("Error fetching admin categories:", error);
     return [];
   }
   return data as Category[];

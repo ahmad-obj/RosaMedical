@@ -34,10 +34,43 @@ export async function updateCategory(id: string, formData: FormData) {
   return { success: true };
 }
 
+// SOFT DELETE: Just set deleted_at to now
 export async function deleteCategory(id: string) {
   await requireAdmin();
   const supabase = await createClient();
-  const { error } = await supabase.from("categories").delete().eq("id", id);
+  const { error } = await supabase
+    .from("categories")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id);
+  
+  if (error) return { error: error.message };
+  revalidatePath("/admin/categories");
+  return { success: true };
+}
+
+// RESTORE: Remove deleted_at timestamp
+export async function restoreCategory(id: string) {
+  await requireAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("categories")
+    .update({ deleted_at: null })
+    .eq("id", id);
+  
+  if (error) return { error: error.message };
+  revalidatePath("/admin/categories");
+  return { success: true };
+}
+
+// PERMANENT DELETE: Actually remove from database
+export async function permanentlyDeleteCategory(id: string) {
+  await requireAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", id);
+  
   if (error) return { error: error.message };
   revalidatePath("/admin/categories");
   return { success: true };

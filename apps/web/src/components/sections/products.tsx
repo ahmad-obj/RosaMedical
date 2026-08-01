@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useCart } from "@/lib/cart/cart-context";
 import type { Category, Product } from "@/lib/supabase/types";
 
 interface ProductsPageProps {
@@ -8,6 +12,15 @@ interface ProductsPageProps {
 }
 
 export function ProductsPage({ categories, products, activeCategory }: ProductsPageProps) {
+  const { cart, addToCart } = useCart();
+  const [recentlyAdded, setRecentlyAdded] = useState<string | null>(null);
+
+  const handleAddToCart = (product: Product) => {
+    addToCart(product);
+    setRecentlyAdded(product.id);
+    setTimeout(() => setRecentlyAdded(null), 1500); // Reset after 1.5s
+  };
+
   return (
     <div className="bg-rosa-dark min-h-screen">
       {/* Hero Section */}
@@ -29,19 +42,12 @@ export function ProductsPage({ categories, products, activeCategory }: ProductsP
       <div className="sticky top-16 z-20 border-y border-rosa-border bg-rosa-dark/90 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex gap-2 overflow-x-auto py-4">
-            <Link
-              href="/products"
-              className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${!activeCategory ? "bg-rosa-accent text-rosa-dark" : "bg-rosa-card text-rosa-cream hover:bg-rosa-border"}`}
-            >
+            <Link href="/products" className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${!activeCategory ? "bg-rosa-accent text-rosa-dark" : "bg-rosa-card text-rosa-cream hover:bg-rosa-border"}`}>
               <span className="lang-en">All Products</span>
               <span className="lang-ar">كل المنتجات</span>
             </Link>
             {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/products?category=${cat.slug}`}
-                className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${activeCategory === cat.slug ? "bg-rosa-accent text-rosa-dark" : "bg-rosa-card text-rosa-cream hover:bg-rosa-border"}`}
-              >
+              <Link key={cat.id} href={`/products?category=${cat.slug}`} className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${activeCategory === cat.slug ? "bg-rosa-accent text-rosa-dark" : "bg-rosa-card text-rosa-cream hover:bg-rosa-border"}`}>
                 <span className="lang-en">{cat.name_en}</span>
                 <span className="lang-ar">{cat.name_ar}</span>
               </Link>
@@ -53,78 +59,71 @@ export function ProductsPage({ categories, products, activeCategory }: ProductsP
       {/* Products Grid */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="mb-8 text-sm text-rosa-muted">
-            {products.length === 0 ? (
-              <><span className="lang-en">No products found</span><span className="lang-ar">لا توجد منتجات</span></>
-            ) : (
-              <>
-                <span className="lang-en">{products.length} product(s)</span>
-                <span className="lang-ar">{products.length} منتج</span>
-              </>
-            )}
-          </p>
-
           {products.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-rosa-border py-20 text-center">
-              <h3 className="text-xl font-medium text-white">
-                <span className="lang-en">No products available in this category yet.</span>
-                <span className="lang-ar">لا توجد منتجات متاحة في هذه الفئة بعد.</span>
-              </h3>
-              <p className="mt-2 text-rosa-muted">
-                <span className="lang-en">Please check back later or contact us directly.</span>
-                <span className="lang-ar">يرجى التحقق مرة أخرى لاحقًا أو اتصل بنا مباشرة.</span>
-              </p>
-              <Link href="/contact" className="mt-6 rounded-full bg-rosa-accent px-6 py-2 text-sm font-medium text-rosa-dark">
-                <span className="lang-en">Contact Us</span>
-                <span className="lang-ar">اتصل بنا</span>
-              </Link>
+              <h3 className="text-xl font-medium text-white">No products available.</h3>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <div key={product.id} className="group flex flex-col overflow-hidden rounded-xl border border-rosa-border bg-rosa-card transition-all hover:-translate-y-1 hover:border-rosa-accent/50 hover:shadow-xl hover:shadow-black/20">
-                  <div className="relative aspect-square w-full overflow-hidden bg-rosa-dark/50">
-                    <div className="flex h-full items-center justify-center text-rosa-muted transition-transform group-hover:scale-105">
-                      <svg className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              {products.map((product) => {
+                const cartItem = cart.find((item) => item.id === product.id);
+                const isAdded = recentlyAdded === product.id;
+                
+                return (
+                  <div key={product.id} className="group flex flex-col overflow-hidden rounded-xl border border-rosa-border bg-rosa-card transition-all hover:-translate-y-1 hover:border-rosa-accent/50 hover:shadow-xl hover:shadow-black/20">
+                    <div className="relative aspect-square w-full overflow-hidden bg-rosa-dark/50">
+                      <div className="flex h-full items-center justify-center text-rosa-muted transition-transform group-hover:scale-105">
+                        <svg className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      </div>
                     </div>
-                    {product.sell_mode === "quote" && (
-                      <span className="absolute top-4 right-4 rounded-full bg-rosa-accent px-3 py-1 text-xs font-bold text-rosa-dark">
-                        <span className="lang-en">Quote</span>
-                        <span className="lang-ar">تسعير</span>
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex flex-1 flex-col p-6">
-                    <p className="text-xs font-medium uppercase tracking-wider text-rosa-accent">{product.item_code}</p>
-                    <h3 className="mt-2 font-heading text-xl font-bold text-white">
-                      <span className="lang-en">{product.name_en}</span>
-                      <span className="lang-ar">{product.name_ar}</span>
-                    </h3>
-                    <p className="mt-3 flex-1 text-sm text-rosa-cream/70 line-clamp-2">
-                      <span className="lang-en">{product.description_en || "High quality surgical instrument engineered for precision and reliability."}</span>
-                      <span className="lang-ar">{product.description_ar || "أداة جراحية عالية الجودة مصممة للدقة والموثوقية."}</span>
-                    </p>
                     
-                    <div className="mt-6 flex items-center justify-between">
-                      <Link 
-                        href={`/contact?product=${product.slug}`} 
-                        className="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-rosa-dark transition-colors hover:bg-rosa-cream"
-                      >
-                        <span className="lang-en">Request Quote</span>
-                        <span className="lang-ar">طلب تسعير</span>
-                      </Link>
-                      {product.stock_status === "in_stock" && (
-                        <span className="flex items-center gap-1.5 text-xs text-green-400">
-                          <span className="h-2 w-2 rounded-full bg-green-400"></span> 
-                          <span className="lang-en">In Stock</span>
-                          <span className="lang-ar">متوفر</span>
-                        </span>
-                      )}
+                    <div className="flex flex-1 flex-col p-6">
+                      <p className="text-xs font-medium uppercase tracking-wider text-rosa-accent">{product.item_code}</p>
+                      <h3 className="mt-2 font-heading text-xl font-bold text-white">
+                        <span className="lang-en">{product.name_en}</span>
+                        <span className="lang-ar">{product.name_ar}</span>
+                      </h3>
+                      
+                      <div className="mt-2 flex items-center gap-2">
+                        {product.price ? (
+                          <span className="text-lg font-bold text-white">${product.price.toFixed(2)}</span>
+                        ) : (
+                          <span className="text-sm text-rosa-muted">Price on request</span>
+                        )}
+                      </div>
+
+                      <p className="mt-3 flex-1 text-sm text-rosa-cream/70 line-clamp-2">
+                        <span className="lang-en">{product.description_en || "High quality surgical instrument."}</span>
+                        <span className="lang-ar">{product.description_ar || "أداة جراحية عالية الجودة."}</span>
+                      </p>
+                      
+                      <div className="mt-6">
+                        <button 
+                          onClick={() => handleAddToCart(product)}
+                          className={`w-full rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
+                            isAdded 
+                              ? "bg-green-500 text-white scale-105" 
+                              : cartItem 
+                                ? "bg-rosa-card border border-rosa-accent text-rosa-accent hover:bg-rosa-dark" 
+                                : "bg-white text-rosa-dark hover:bg-rosa-cream"
+                          }`}
+                        >
+                          {isAdded ? (
+                            <span>✓ Added to Cart!</span>
+                          ) : cartItem ? (
+                            <span>In Cart ({cartItem.quantity}) - Add Another</span>
+                          ) : (
+                            <>
+                              <span className="lang-en">Add to Cart</span>
+                              <span className="lang-ar">أضف للسلة</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

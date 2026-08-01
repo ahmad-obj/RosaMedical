@@ -8,6 +8,7 @@ export interface Category {
   is_active: boolean;
   sort_order: number;
   created_at: string;
+  deleted_at: string | null;
 }
 
 export interface Product {
@@ -66,6 +67,9 @@ export interface QuoteRequest {
   name: string;
   email: string;
   phone: string | null;
-  message: string | null;
+  message: string;
   created_at: string;
+  user_id: string | null;
+  status: string | null;
+  appointment_date: string | null;
 }

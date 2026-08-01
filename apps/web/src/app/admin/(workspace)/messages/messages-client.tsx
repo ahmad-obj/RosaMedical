@@ -1,99 +1,107 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { markMessageRead, deleteContactMessage, deleteQuoteRequest } from "./action";
+import { approveQuote, declineQuote } from "./action";
 import type { ContactMessage, QuoteRequest } from "@/lib/supabase/types";
 
-export function MessagesClient({ contactMessages, quoteRequests }: { contactMessages: ContactMessage[]; quoteRequests: QuoteRequest[] }) {
-  const [tab, setTab] = useState<"contact" | "quotes">("contact");
-  const [error, setError] = useState<string | null>(null);
+interface MessagesClientProps {
+  initialMessages: ContactMessage[];
+  initialQuotes: QuoteRequest[];
+}
+
+export function MessagesClient({ initialMessages, initialQuotes }: MessagesClientProps) {
+  const [activeTab, setActiveTab] = useState<'messages' | 'appointments'>('messages');
   const [isPending, startTransition] = useTransition();
 
-  function handleMarkRead(id: string) {
-    setError(null);
+  const handleApprove = (id: string, formData: FormData) => {
     startTransition(async () => {
-      const result = await markMessageRead(id);
-      if (result?.error) setError(result.error);
+      const result = await approveQuote(id, formData);
+      if (result?.error) alert(result.error);
     });
-  }
+  };
 
-  function handleDeleteMessage(id: string) {
-    if (!confirm("Delete this message?")) return;
-    setError(null);
+  const handleDecline = (id: string) => {
+    if (!window.confirm("Are you sure you want to decline this appointment request?")) return;
     startTransition(async () => {
-      const result = await deleteContactMessage(id);
-      if (result?.error) setError(result.error);
+      const result = await declineQuote(id);
+      if (result?.error) alert(result.error);
     });
-  }
-
-  function handleDeleteQuote(id: string) {
-    if (!confirm("Delete this quote request?")) return;
-    setError(null);
-    startTransition(async () => {
-      const result = await deleteQuoteRequest(id);
-      if (result?.error) setError(result.error);
-    });
-  }
+  };
 
   return (
-    <div>
-      <h2 className="font-heading text-2xl font-bold text-rosa-dark mb-6">Messages</h2>
-
-      {error && (
-        <div className="mb-4 rounded-lg bg-rosa-error/10 border border-rosa-error/20 px-4 py-3 text-sm text-rosa-error">{error}</div>
-      )}
-
-      <div className="flex gap-4 mb-6">
-        <button onClick={() => setTab("contact")} className={"rounded-lg px-4 py-2 text-sm font-medium transition-colors " + (tab === "contact" ? "bg-rosa-accent text-rosa-dark" : "bg-rosa-cream text-rosa-muted hover:text-rosa-dark")}>
-          Contact Messages ({contactMessages.length})
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-white">Messages & Appointments</h1>
+      
+      <div className="flex gap-4 border-b border-rosa-border">
+        <button onClick={() => setActiveTab('messages')} className={`pb-2 text-sm font-medium ${activeTab === 'messages' ? 'border-b-2 border-rosa-accent text-rosa-accent' : 'text-rosa-muted'}`}>
+          Contact Messages ({initialMessages.length})
         </button>
-        <button onClick={() => setTab("quotes")} className={"rounded-lg px-4 py-2 text-sm font-medium transition-colors " + (tab === "quotes" ? "bg-rosa-accent text-rosa-dark" : "bg-rosa-cream text-rosa-muted hover:text-rosa-dark")}>
-          Quote Requests ({quoteRequests.length})
+        <button onClick={() => setActiveTab('appointments')} className={`pb-2 text-sm font-medium ${activeTab === 'appointments' ? 'border-b-2 border-rosa-accent text-rosa-accent' : 'text-rosa-muted'}`}>
+          Appointment Requests ({initialQuotes.length})
         </button>
       </div>
 
-      {tab === "contact" && (
+      {activeTab === 'messages' && (
         <div className="space-y-4">
-          {contactMessages.length === 0 && <p className="text-center text-sm text-rosa-muted py-12">No contact messages yet</p>}
-          {contactMessages.map((msg) => (
-            <div key={msg.id} className={"rounded-lg border bg-rosa-card p-6 " + (msg.read ? "border-rosa-border" : "border-rosa-accent/50")}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-rosa-dark">{msg.name}</h3>
-                    {!msg.read && <span className="rounded-full bg-rosa-accent/10 px-2 py-0.5 text-xs font-medium text-rosa-accent">New</span>}
+          {initialMessages.length === 0 ? (
+            <p className="text-rosa-muted text-center py-8">No messages found.</p>
+          ) : (
+            initialMessages.map((msg) => (
+              <div key={msg.id} className="rounded-lg border border-rosa-border bg-rosa-card p-6">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-bold text-white">{msg.name}</h3>
+                    <p className="text-sm text-rosa-muted">{msg.email} | {msg.phone}</p>
                   </div>
-                  <p className="text-xs text-rosa-muted">{msg.email}{msg.phone ? " \u2022 " + msg.phone : ""}</p>
-                  <p className="mt-2 text-sm text-rosa-dark">{msg.message}</p>
-                  <p className="mt-2 text-xs text-rosa-muted">{new Date(msg.created_at).toLocaleString()}</p>
+                  {!msg.read && <span className="bg-rosa-accent text-rosa-dark text-xs px-2 py-1 rounded-full">New</span>}
                 </div>
-                <div className="flex gap-2">
-                  {!msg.read && <button onClick={() => handleMarkRead(msg.id)} disabled={isPending} className="text-xs text-rosa-accent hover:text-rosa-accent-dark disabled:opacity-50">Mark read</button>}
-                  <button onClick={() => handleDeleteMessage(msg.id)} disabled={isPending} className="text-xs text-rosa-error hover:underline disabled:opacity-50">Delete</button>
-                </div>
+                <p className="text-rosa-cream/80 mt-2 whitespace-pre-wrap">{msg.message}</p>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
 
-      {tab === "quotes" && (
+      {activeTab === 'appointments' && (
         <div className="space-y-4">
-          {quoteRequests.length === 0 && <p className="text-center text-sm text-rosa-muted py-12">No quote requests yet</p>}
-          {quoteRequests.map((req) => (
-            <div key={req.id} className="rounded-lg border border-rosa-border bg-rosa-card p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-rosa-dark">{req.name}</h3>
-                  <p className="text-xs text-rosa-muted">{req.email}{req.phone ? " \u2022 " + req.phone : ""}</p>
-                  <p className="text-xs text-rosa-muted mt-1">Product: {req.product_id}</p>
-                  {req.message && <p className="mt-2 text-sm text-rosa-dark">{req.message}</p>}
-                  <p className="mt-2 text-xs text-rosa-muted">{new Date(req.created_at).toLocaleString()}</p>
+          {initialQuotes.length === 0 ? (
+            <p className="text-rosa-muted text-center py-8">No appointment requests found.</p>
+          ) : (
+            initialQuotes.map((quote) => (
+              <div key={quote.id} className="rounded-lg border border-rosa-border bg-rosa-card p-6">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-bold text-white">{quote.name}</h3>
+                    <p className="text-sm text-rosa-muted">{quote.email} | {quote.phone}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className={`text-xs px-2 py-1 rounded-full uppercase ${quote.status === 'approved' ? 'bg-green-500/20 text-green-400' : quote.status === 'declined' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                      {quote.status || 'pending'}
+                    </span>
+                  </div>
                 </div>
-                <button onClick={() => handleDeleteQuote(req.id)} disabled={isPending} className="text-xs text-rosa-error hover:underline disabled:opacity-50">Delete</button>
+                <p className="text-rosa-cream/80 mt-2 whitespace-pre-wrap">{quote.message}</p>
+                
+                {quote.appointment_date && (
+                  <p className="text-sm text-rosa-accent mt-2">📅 Scheduled for: {new Date(quote.appointment_date).toLocaleDateString()}</p>
+                )}
+
+                {quote.status !== 'approved' && quote.status !== 'declined' && (
+                  <div className="mt-4 pt-4 border-t border-rosa-border flex flex-col sm:flex-row gap-4 items-center">
+                    <form action={(formData) => handleApprove(quote.id, formData)} className="flex items-center gap-2 w-full sm:w-auto">
+                      <input type="date" name="appointment_date" required className="rounded-md border border-rosa-border bg-rosa-dark px-3 py-2 text-white text-sm" />
+                      <button type="submit" disabled={isPending} className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50">
+                        Approve
+                      </button>
+                    </form>
+                    <button onClick={() => handleDecline(quote.id)} disabled={isPending} className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 disabled:opacity-50 sm:ml-auto">
+                      Decline
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
     </div>
