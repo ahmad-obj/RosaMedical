@@ -23,12 +23,14 @@ export interface AdminDashboardModel {
   quickRoutes: readonly { label: string; href: Route<string> }[];
 }
 
+const route = (href: string) => href as Route<string>;
+
 export function getAdminDashboardModel(): AdminDashboardModel {
   return {
     catalogueMetrics: [
-      { key: "families", label: "Product families", value: CATALOGUE_FAMILIES.length, href: "/admin/families" },
-      { key: "products", label: "Registered products", value: CATALOGUE_PRODUCTS.length, href: "/admin/products" },
-      { key: "catalogues", label: "Catalogue documents", value: CATALOGUE_DOCUMENTS.length, href: "/admin/catalogues" }
+      { key: "families", label: "Product families", value: CATALOGUE_FAMILIES.length, href: route("/admin/families") },
+      { key: "products", label: "Registered products", value: CATALOGUE_PRODUCTS.length, href: route("/admin/products") },
+      { key: "catalogues", label: "Catalogue documents", value: CATALOGUE_DOCUMENTS.length, href: route("/admin/catalogues") }
     ],
     operationalMetrics: [
       { key: "inquiries", label: "Quotation inquiries" },
@@ -36,10 +38,10 @@ export function getAdminDashboardModel(): AdminDashboardModel {
     ],
     readinessItems: ADMIN_READINESS_ITEMS,
     quickRoutes: [
-      { label: "Products", href: "/admin/products" },
-      { label: "Inquiries", href: "/admin/inquiries" },
-      { label: "Website Content", href: "/admin/content" },
-      { label: "Publishing Centre", href: "/admin/publishing" }
+      { label: "Products", href: route("/admin/products") },
+      { label: "Inquiries", href: route("/admin/inquiries") },
+      { label: "Website Content", href: route("/admin/content") },
+      { label: "Publishing Centre", href: route("/admin/publishing") }
     ]
   };
 }
