@@ -1,4 +1,3 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { CATALOGUE_FAMILIES, CATALOGUE_PRODUCTS } from "@/features/catalogue-registry";
 import {
@@ -6,6 +5,7 @@ import {
   isAdminManagementRoot,
   resolveAdminManagementRoute
 } from "@/features/admin-management-routing";
+import { renderServerComponent } from "@/test/render-server-component";
 
 describe("F3E-B management routing", () => {
   it("resolves every approved list and detail shape", () => {
@@ -41,9 +41,9 @@ describe("F3E-B management routing", () => {
     expect(isAdminManagementRoot("inquiries")).toBe(false);
   });
 
-  it("renders normal routes without preview-only states", () => {
+  it("renders normal routes without preview-only states", async () => {
     const result = resolveAdminManagementRoute(["products"]);
-    const html = renderToStaticMarkup(<AdminManagementRouteView result={result} />);
+    const html = await renderServerComponent(<AdminManagementRouteView result={result} />);
     expect(html).not.toContain("data-preview-only");
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
   });
