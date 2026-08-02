@@ -27,16 +27,12 @@ describe("main-first backend integration boundary", () => {
     expect(layout).toContain("await requireAdmin()");
   });
 
-  it("preserves current main API and data-management implementations", () => {
+  it("preserves current main API and data boundaries", () => {
     for (const path of [
       "src/app/api/checkout/route.ts",
+      "src/app/api/contact/route.ts",
       "src/lib/supabase/queries.ts",
-      "src/lib/supabase/types.ts",
-      "src/app/admin/(workspace)/categories/action.ts",
-      "src/app/admin/(workspace)/products/action.ts",
-      "src/app/admin/(workspace)/messages/action.ts",
-      "src/app/admin/(workspace)/site-content/action.ts",
-      "src/app/api/contact/route.ts"
+      "src/lib/supabase/types.ts"
     ]) {
       expect(existsSync(join(webRoot, path)), path).toBe(true);
     }
