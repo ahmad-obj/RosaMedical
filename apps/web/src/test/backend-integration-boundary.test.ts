@@ -1,8 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-const webRoot = process.cwd();
+const webRoot = fileURLToPath(new URL("../../", import.meta.url));
 const source = (path: string) => readFileSync(join(webRoot, path), "utf8");
 
 describe("main-first backend integration boundary", () => {
@@ -49,6 +50,6 @@ describe("main-first backend integration boundary", () => {
   it("keeps the transferred frontend verification corrections present", () => {
     expect(existsSync(join(webRoot, "src/styles/f3d-safety.css"))).toBe(true);
     expect(existsSync(join(webRoot, "src/test/design-foundations.static.test.mjs"))).toBe(true);
-    expect(existsSync(join(webRoot, "src/test/f3e-d-policy.static.test.mjs"))).toBe(true);
+    expect(existsSync(join(webRoot, "src/test/f3d-policy.static.test.mjs"))).toBe(true);
   });
 });
