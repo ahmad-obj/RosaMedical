@@ -23,7 +23,7 @@ const VALID_ASSET: CatalogueMediaAsset = {
   background: "transparent",
   processingNotes: "Background removed without changing instrument geometry.",
   orientationNotes: "Working end oriented toward the upper-right.",
-  reuseScope: "Used only for the 9.5 cm and 11.5 cm regular straight configuration.",
+  reuseScope: "Used only for the 10.5 cm regular straight configuration.",
   reviewStatus: "candidate"
 };
 
@@ -133,7 +133,9 @@ describe("Scissors Batch 01 Waves 1 and 2 media", () => {
     expect(wave1).toHaveLength(12);
     expect(straight).toHaveLength(6);
     expect(curved).toHaveLength(6);
-    expect(straight.every((asset) => asset.matchGrade === "strong-match")).toBe(true);
+    expect(
+      straight.every((asset) => asset.matchGrade === "strong-match")
+    ).toBe(true);
     expect(
       curved.every((asset) => asset.matchGrade === "acceptable-similar")
     ).toBe(true);
@@ -147,18 +149,30 @@ describe("Scissors Batch 01 Waves 1 and 2 media", () => {
     ).toBe(true);
   });
 
-  it("records all 12 Mayo and Metzenbaum supplier candidates", () => {
+  it("records all 12 Mayo and Metzenbaum catalogue-derived candidates honestly", () => {
     const wave2 = mediaFor("mayo", "metzenbaum");
+    const straight = wave2.filter((asset) => asset.id.endsWith("-straight"));
+    const curved = wave2.filter((asset) => asset.id.endsWith("-curved"));
+
     expect(wave2).toHaveLength(12);
     expect(wave2.filter((asset) => asset.id.includes("-mayo-"))).toHaveLength(6);
-    expect(wave2.filter((asset) => asset.id.includes("-metzenbaum-"))).toHaveLength(6);
+    expect(
+      wave2.filter((asset) => asset.id.includes("-metzenbaum-"))
+    ).toHaveLength(6);
+    expect(straight).toHaveLength(6);
+    expect(curved).toHaveLength(6);
+    expect(
+      straight.every((asset) => asset.matchGrade === "strong-match")
+    ).toBe(true);
+    expect(
+      curved.every((asset) => asset.matchGrade === "acceptable-similar")
+    ).toBe(true);
     expect(
       wave2.every(
         (asset) =>
-          asset.sourcePageUrl.startsWith("https://www.klsmartin.com/shop/") &&
-          asset.matchGrade === "strong-match" &&
-          asset.rightsMode === "supplier-fallback" &&
-          asset.background === "clean-white" &&
+          asset.sourcePageUrl.includes("scissors-batch-01-sources.md") &&
+          asset.rightsMode === "preferred-safe" &&
+          asset.background === "transparent" &&
           asset.reviewStatus === "candidate"
       )
     ).toBe(true);
