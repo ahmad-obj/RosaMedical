@@ -18,6 +18,7 @@ import {
   AdminContentValidationWarningPreview
 } from "@/features/admin-content/admin-content-preview-states";
 import { selectFeaturedProducts } from "@/features/public-catalogue";
+import { renderServerComponent } from "@/test/render-server-component";
 
 describe("F3E-D Admin Content", () => {
   it("derives six blocks and current homepage composition", () => {
@@ -27,11 +28,12 @@ describe("F3E-D Admin Content", () => {
     expect(composition.products).toEqual(selectFeaturedProducts());
   });
 
-  it("renders truthful read-only content records", () => {
-    const html = renderToStaticMarkup(<AdminContentPage />);
+  it("renders approved content blocks through the live settings boundary", async () => {
+    const html = await renderServerComponent(<AdminContentPage />);
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect((html.match(/data-admin-content-block=/g) ?? [])).toHaveLength(6);
     expect(html).toContain("Edit approved content, not the design.");
+    expect(html).toContain("Content values are pulled dynamically from the site_settings table in Supabase.");
     expect(html).toContain("Current frontend composition");
     expect(html).not.toContain("data-preview-only");
     expect(html).not.toContain("<form");
