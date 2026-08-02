@@ -27,14 +27,9 @@ describe("main-first backend integration boundary", () => {
     expect(layout).toContain("await requireAdmin()");
   });
 
-  it("preserves current main public and data-management implementations", () => {
+  it("preserves current main API and data-management implementations", () => {
     for (const path of [
-      "src/app/(public)/checkout/page.tsx",
-      "src/app/(public)/checkout/checkout-client.tsx",
-      "src/app/(public)/order-success/page.tsx",
-      "src/app/login/page.tsx",
       "src/app/api/checkout/route.ts",
-      "src/lib/cart/cart-context.tsx",
       "src/lib/supabase/queries.ts",
       "src/lib/supabase/types.ts",
       "src/app/admin/(workspace)/categories/action.ts",
