@@ -20,73 +20,8 @@ env:
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'temporary-verification-anon-key' }}
 
 jobs:
-  baseline-main:
-    name: Baseline main core checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout current main baseline
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-
-      - name: Use Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Activate pnpm 11.4.0
-        run: |
-          corepack enable
-          corepack prepare pnpm@11.4.0 --activate
-          node --version
-          pnpm --version
-
-      - name: Install workspace without trusting inherited lockfile
-        run: pnpm install --force --no-frozen-lockfile
-
-      - name: Report inherited lockfile regeneration
-        run: git diff --stat -- pnpm-lock.yaml || true
-
-      - id: drift
-        name: Generate contracts and check drift
-        continue-on-error: true
-        run: |
-          pnpm contracts:generate
-          git diff --exit-code -- packages/contracts/src/generated/schema.ts
-
-      - id: lint
-        name: Lint
-        continue-on-error: true
-        run: pnpm lint
-
-      - id: typecheck
-        name: Strict typecheck
-        continue-on-error: true
-        run: pnpm typecheck
-
-      - id: test
-        name: Unit, contract and static tests
-        continue-on-error: true
-        run: pnpm test
-
-      - id: build
-        name: Production build
-        continue-on-error: true
-        run: pnpm build
-
-      - name: Record baseline outcomes
-        run: |
-          echo "### Baseline main core outcomes" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Contract drift: ${{ steps.drift.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Lint: ${{ steps.lint.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Typecheck: ${{ steps.typecheck.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Tests: ${{ steps.test.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Build: ${{ steps.build.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-
   synchronized-core:
-    name: Synchronized branch core checks
+    name: Synchronized branch frozen core checks
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -108,52 +43,30 @@ jobs:
           node --version
           pnpm --version
 
-      - name: Install workspace without trusting inherited lockfile
-        run: pnpm install --force --no-frozen-lockfile
+      - name: Install exact workspace lockfile
+        run: pnpm install --frozen-lockfile
 
-      - name: Report inherited lockfile regeneration
-        run: git diff --stat -- pnpm-lock.yaml || true
-
-      - id: drift
-        name: Generate contracts and check drift
-        continue-on-error: true
+      - name: Generate contracts and check drift
         run: |
           pnpm contracts:generate
           git diff --exit-code -- packages/contracts/src/generated/schema.ts
 
-      - id: lint
-        name: Lint
-        continue-on-error: true
+      - name: Lint
         run: pnpm lint
 
-      - id: typecheck
-        name: Strict typecheck
-        continue-on-error: true
+      - name: Strict typecheck
         run: pnpm typecheck
 
-      - id: test
-        name: Unit, contract and static tests
-        continue-on-error: true
+      - name: Unit, contract and static tests
         run: pnpm test
 
-      - id: build
-        name: Production build
-        continue-on-error: true
+      - name: Production build
         run: pnpm build
 
-      - name: Record synchronized outcomes
-        run: |
-          echo "### Synchronized branch core outcomes" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Contract drift: ${{ steps.drift.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Lint: ${{ steps.lint.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Typecheck: ${{ steps.typecheck.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Tests: ${{ steps.test.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Build: ${{ steps.build.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-
-  synchronized-browser:
-    name: Synchronized branch browser checks
+  public-browser:
+    name: Synchronized public browser checks
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 25
     needs: synchronized-core
     steps:
       - name: Checkout synchronized branch
@@ -172,27 +85,25 @@ jobs:
           corepack enable
           corepack prepare pnpm@11.4.0 --activate
 
-      - name: Install workspace without trusting inherited lockfile
-        run: pnpm install --force --no-frozen-lockfile
+      - name: Install exact workspace lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Install Chromium
         run: pnpm --filter @rosa/web exec playwright install --with-deps chromium
 
-      - id: browser
-        name: Run complete Playwright matrix
-        continue-on-error: true
-        run: pnpm test:e2e
-
-      - name: Record browser outcome
-        run: |
-          echo "### Synchronized browser outcome" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Playwright: ${{ steps.browser.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Run public desktop, tablet and mobile matrix
+        run: >-
+          pnpm --filter @rosa/web exec playwright test
+          tests/e2e/f3a-public-pages.spec.ts
+          tests/e2e/f3b-catalogue-pages.spec.ts
+          tests/e2e/f3c-procurement-pages.spec.ts
+          tests/e2e/f3d-public-support-pages.spec.ts
 
       - name: Upload Playwright report on failure
-        if: steps.browser.outcome == 'failure'
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: synchronized-playwright-report
+          name: synchronized-public-playwright-report
           path: apps/web/playwright-report
           if-no-files-found: ignore
           retention-days: 3
