@@ -21,8 +21,8 @@ describe("F3E-B product pages", () => {
     const html = await renderServerComponent(<AdminProductsListPage />);
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("Manage the instrument catalogue.");
-    expect(html).toContain("Showing 0 live products from Supabase.");
-    expect(html).toContain("0 live products");
+    expect(html.replaceAll("<!-- -->", "")).toContain("Showing 0 live products from Supabase.");
+    expect(html.replaceAll("<!-- -->", "")).toContain("0 live products");
     expect(html).not.toContain("data-preview-only");
   });
 
