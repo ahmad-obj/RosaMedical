@@ -10,14 +10,14 @@ export function ContactValidationPreview(): ReactElement {
           id="contact-invalid-email"
           label="Email"
           placeholder="Business email"
-          value="name@company"
+          defaultValue="name@company"
           error="Enter a valid email address"
         />
         <ContactFieldPreview
           id="contact-invalid-telephone"
           label="Telephone"
           placeholder="Country code and number"
-          value="Number required"
+          defaultValue="Number required"
           error="Enter a valid telephone number"
         />
       </div>
