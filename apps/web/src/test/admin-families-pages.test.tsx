@@ -10,9 +10,10 @@ import { renderServerComponent } from "@/test/render-server-component";
 describe("F3E-B family pages", () => {
   it("renders the live family collection boundary without fabricated records", async () => {
     const html = await renderServerComponent(<AdminFamiliesPage />);
+    const normalizedHtml = html.replaceAll("<!-- -->", "");
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("Organise the five instrument families.");
-    expect(html).toContain("Showing 0 live families from Supabase.");
+    expect(normalizedHtml).toContain("Showing 0 live families from Supabase.");
     expect(html).not.toContain("data-admin-family-card");
     expect(html).not.toContain("data-preview-only");
   });
