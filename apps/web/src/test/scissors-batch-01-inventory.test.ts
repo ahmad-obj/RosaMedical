@@ -38,12 +38,28 @@ describe("Scissors Batch 01 inventory", () => {
       .filter((item) => item.familyKey === "stevens")
       .flatMap((item) => item.codeOptions.map((option) => option.code));
 
-    expect(irisCodes).toContain("04-0800");
-    expect(irisCodes).toContain("06-0812");
-    expect(irisCodes).not.toContain("04-0901");
-    expect(stevensCodes).toContain("04-0901");
-    expect(stevensCodes).toContain("06-0911");
-    expect(stevensCodes).not.toContain("04-0800");
+    expect(irisCodes).toEqual([
+      "04-0901",
+      "04-0911",
+      "05-0901",
+      "05-0911",
+      "06-0901",
+      "06-0911"
+    ]);
+    expect(stevensCodes).toEqual([
+      "04-0800",
+      "04-0802",
+      "04-0810",
+      "04-0812",
+      "05-0800",
+      "05-0802",
+      "05-0810",
+      "05-0812",
+      "06-0800",
+      "06-0802",
+      "06-0810",
+      "06-0812"
+    ]);
   });
 
   it("keeps IDs, slugs, and media IDs unique", () => {
