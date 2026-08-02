@@ -23,13 +23,16 @@ describe("F3D contact normal state", () => {
     ]);
   });
 
-  it("renders one heading, a disabled form and no fake contact links", () => {
+  it("renders one heading, the connected form and no fake contact links", () => {
     const html = renderToStaticMarkup(<ContactPage />);
 
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("General contact form preview");
-    expect(html).toContain('readOnly=""');
-    expect(html).toContain("disabled");
+    expect(html).toContain('name="email"');
+    expect(html).toContain('name="phone"');
+    expect(html).toContain('name="message"');
+    expect(html).toContain("Send Message");
+    expect(html).not.toContain('readOnly=""');
     expect(html).not.toMatch(/mailto:|tel:|wa\.me|contact@placeholder|\+966 XX/i);
     expect(html).not.toContain("MESSAGE SENT");
     expect(html).toContain('href="/inquiry"');
