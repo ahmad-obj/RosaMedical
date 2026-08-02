@@ -16,12 +16,12 @@ for (const family of families) {
   });
 }
 
-test("product detail exposes catalogue-backed specifications and disabled inquiry action", async ({ page }) => {
+test("product detail exposes catalogue-backed specifications and the main-owned inquiry action", async ({ page }) => {
   const response = await page.goto("/products/knives/scalpel-handle-no-3");
   expect(response?.ok()).toBe(true);
   await expect(page.locator("h1")).toHaveText("Scalpel Handle No. 3");
   await expect(page.locator("table")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Add to inquiry" })).toBeDisabled();
+  await expect(page.getByRole("link", { name: "Add to inquiry" })).toHaveAttribute("href", "/checkout");
   await expect(page.getByRole("link", { name: /catalogue reference/i })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });
