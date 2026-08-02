@@ -22,6 +22,7 @@ export function FamilyProductCard({
         label={product.mediaLabel}
         decorative
         src={product.mediaPath}
+        spriteIndex={product.mediaIndex}
       />
       <div className="family-product-card__body">
         <p className="public-eyebrow">{family.name}</p>
