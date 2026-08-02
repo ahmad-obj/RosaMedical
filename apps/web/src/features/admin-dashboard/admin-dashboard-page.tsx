@@ -5,7 +5,7 @@ import {
   AdminSection
 } from "@/features/admin-primitives";
 import { AdminCatalogueOverview } from "./admin-catalogue-overview";
-import { getAdminDashboardModel } from "./admin-dashboard-model";
+import { getAdminDashboardModel, type AdminOperationalMetric } from "./admin-dashboard-model";
 import { AdminLaunchReadiness } from "./admin-launch-readiness";
 import { AdminOperationalData } from "./admin-operational-data";
 import { AdminWorkspaceStatus } from "./admin-workspace-status";
@@ -18,12 +18,12 @@ export async function AdminDashboardPage() {
     .from("contact_messages")
     .select("*", { count: "exact", head: true })
     .eq("is_spam", false);
-    
+
   const { count: inquiryCount } = await supabase
     .from("quote_requests")
     .select("*", { count: "exact", head: true });
 
-  const operationalMetrics = [
+  const operationalMetrics: readonly AdminOperationalMetric[] = [
     { key: "inquiries", label: "Quotation inquiries", value: inquiryCount || 0 },
     { key: "messages", label: "General messages", value: messageCount || 0 }
   ];
