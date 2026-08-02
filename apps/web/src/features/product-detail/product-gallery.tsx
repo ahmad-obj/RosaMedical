@@ -20,6 +20,7 @@ export function ProductGallery({
               label={`${product.name} preview ${index + 1}`}
               decorative
               aspect="portrait"
+              src={index === 0 ? product.mediaPath : undefined}
             />
           </span>
         ))}
@@ -30,8 +31,11 @@ export function ProductGallery({
           label={product.mediaLabel}
           decorative
           aspect="portrait"
+          src={product.mediaPath}
         />
-        <span className="product-gallery__zoom-note">Zoom preview activates next phase</span>
+        <span className="product-gallery__zoom-note">
+          {product.mediaPath ? "Catalogue image · review branch" : "Zoom preview activates next phase"}
+        </span>
       </div>
     </section>
   );
