@@ -11,6 +11,7 @@ import {
   AdminMediaUploadSelectionPreview,
   getAdminMediaRequirements
 } from "@/features/admin-media";
+import { renderServerComponent } from "@/test/render-server-component";
 
 describe("F3E-B media requirements", () => {
   it("derives thirty transient requirements from current source", () => {
@@ -32,11 +33,12 @@ describe("F3E-B media requirements", () => {
     expect(requirements.some((item) => /ROSA/i.test(item.label))).toBe(false);
   });
 
-  it("renders an honest empty library rather than asset cards", () => {
-    const html = renderToStaticMarkup(<AdminMediaPage />);
-    expect((html.match(/data-admin-media-requirement=/g) ?? [])).toHaveLength(30);
-    expect(html).toContain("No managed media assets are registered.");
+  it("renders live media requirements without fabricated assets", async () => {
+    const html = await renderServerComponent(<AdminMediaPage />);
+    expect(html).toContain("Purpose-led media requirements.");
+    expect(html).toContain("0 live products and 0 live categories in Supabase");
     expect(html).toContain("Protected ROSA identity");
+    expect(html).not.toContain("data-admin-media-requirement");
     expect(html).not.toContain("data-preview-only");
     expect(html).not.toMatch(/\.jpg|\.png|\.svg|\.tif|\bKB\b|\bMB\b|\d+ × \d+/i);
   });
