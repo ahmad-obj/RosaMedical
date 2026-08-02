@@ -3,7 +3,7 @@ import type { CatalogueMediaAsset } from "./types";
 const OPERATING_SOURCE_PAGE =
   "https://www.mpmmedicalsupply.com/products/operating-scissors";
 const OPERATING_LEDGER_PAGE =
-  "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2--operating";
+  "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating";
 
 const DIRECTIONS = ["straight", "curved"] as const;
 const POINT_STYLES = ["sharp-sharp", "sharp-blunt", "blunt-blunt"] as const;
