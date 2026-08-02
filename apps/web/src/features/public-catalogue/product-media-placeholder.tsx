@@ -6,6 +6,7 @@ export interface ProductMediaPlaceholderProps {
   aspect?: "landscape" | "portrait" | "square";
   className?: string;
   src?: string;
+  spriteIndex?: number;
 }
 
 export function ProductMediaPlaceholder({
@@ -13,8 +14,13 @@ export function ProductMediaPlaceholder({
   decorative = false,
   aspect = "landscape",
   className = "",
-  src
+  src,
+  spriteIndex
 }: ProductMediaPlaceholderProps): ReactElement {
+  const hasSprite = Boolean(src) && typeof spriteIndex === "number";
+  const column = hasSprite ? spriteIndex % 3 : 0;
+  const row = hasSprite ? Math.floor(spriteIndex / 3) : 0;
+
   return (
     <div
       className={`product-media-placeholder product-media-placeholder--${aspect} ${src ? "product-media-placeholder--image" : ""} ${className}`.trim()}
@@ -22,7 +28,20 @@ export function ProductMediaPlaceholder({
       role={decorative ? undefined : "img"}
       aria-label={decorative ? undefined : label}
     >
-      {src ? (
+      {hasSprite ? (
+        <span
+          aria-hidden="true"
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            backgroundImage: `url(${src})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "300% 500%",
+            backgroundPosition: `${column * 50}% ${row * 25}%`
+          }}
+        />
+      ) : src ? (
         <img
           src={src}
           alt={decorative ? "" : label}
