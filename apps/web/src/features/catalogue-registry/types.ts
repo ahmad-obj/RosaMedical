@@ -27,6 +27,7 @@ export interface CatalogueProductRecord {
   catalogueReference: CatalogueReference;
   mediaLabel: string;
   mediaPath?: string;
+  mediaIndex?: number;
 }
 
 export type CatalogueRouteResult =
