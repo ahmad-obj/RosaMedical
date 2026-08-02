@@ -1,10 +1,10 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
   AdminGovernanceRouteView,
   isAdminGovernanceRoot,
   resolveAdminGovernanceRoute
 } from "@/features/admin-governance-routing";
+import { renderServerComponent } from "@/test/render-server-component";
 
 describe("F3E-D governance routing", () => {
   it.each([
@@ -29,8 +29,8 @@ describe("F3E-D governance routing", () => {
     expect(resolveAdminGovernanceRoute(segments).kind).toBe("not-found");
   });
 
-  it("renders normal route views without preview-only states", () => {
-    const html = renderToStaticMarkup(
+  it("renders normal route views without preview-only states", async () => {
+    const html = await renderServerComponent(
       <AdminGovernanceRouteView result={{ kind: "content" }} />
     );
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
