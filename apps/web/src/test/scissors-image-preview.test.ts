@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SCISSOR_PRODUCTS } from "@/features/catalogue-registry/products/scissors";
+import { config as middlewareConfig } from "@/middleware";
 
 const expected = [
   ["04-0800", "scissors-iris-regular.svg"],
@@ -27,5 +28,15 @@ describe("Scissors image batch 01", () => {
     expect(SCISSOR_PRODUCTS.map((product) => [product.code, product.mediaPath])).toEqual(
       expected.map(([code, file]) => [code, `${mediaBase}/${file}`])
     );
+  });
+
+  it("preserves the established Mayo product route used by inquiry previews", () => {
+    expect(SCISSOR_PRODUCTS.find((product) => product.code === "04-0401")?.slug).toBe(
+      "mayo-scissors"
+    );
+  });
+
+  it("does not require Supabase middleware for public catalogue routes", () => {
+    expect(middlewareConfig.matcher).toEqual(["/admin/:path*"]);
   });
 });
