@@ -39,6 +39,15 @@ function publicFile(runtimePath: string): string {
   return resolve(process.cwd(), "public", runtimePath.replace(/^\//, ""));
 }
 
+function mediaFor(...familyKeys: readonly string[]): readonly CatalogueMediaAsset[] {
+  const expectedIds = new Set(
+    SCISSORS_BATCH_01_CONFIGURATIONS.filter((item) =>
+      familyKeys.includes(item.familyKey)
+    ).map((item) => item.mediaAssetId)
+  );
+  return SCISSORS_BATCH_01_MEDIA.filter((asset) => expectedIds.has(asset.id));
+}
+
 describe("catalogue media manifest validation", () => {
   it("accepts a complete local media record", () => {
     expect(() =>
@@ -87,13 +96,13 @@ describe("catalogue media manifest validation", () => {
   });
 });
 
-describe("Iris and Stevens Wave 1 media", () => {
-  const expectedIds = SCISSORS_BATCH_01_CONFIGURATIONS.filter(
-    (item) => item.familyKey === "iris" || item.familyKey === "stevens"
+describe("Scissors Batch 01 Waves 1 and 2 media", () => {
+  const expectedIds = SCISSORS_BATCH_01_CONFIGURATIONS.filter((item) =>
+    ["iris", "stevens", "mayo", "metzenbaum"].includes(item.familyKey)
   ).map((item) => item.mediaAssetId);
 
-  it("covers the exact 12 approved configuration IDs", () => {
-    expect(SCISSORS_BATCH_01_MEDIA).toHaveLength(12);
+  it("covers the exact 24 Wave 1 and Wave 2 configuration IDs", () => {
+    expect(SCISSORS_BATCH_01_MEDIA).toHaveLength(24);
     expect(() =>
       assertCatalogueMediaManifest(SCISSORS_BATCH_01_MEDIA, expectedIds)
     ).not.toThrow();
@@ -116,14 +125,12 @@ describe("Iris and Stevens Wave 1 media", () => {
     }
   });
 
-  it("records catalogue montage confidence without claiming exact photos", () => {
-    const straight = SCISSORS_BATCH_01_MEDIA.filter((asset) =>
-      asset.id.endsWith("-straight")
-    );
-    const curved = SCISSORS_BATCH_01_MEDIA.filter((asset) =>
-      asset.id.endsWith("-curved")
-    );
+  it("records Wave 1 catalogue montage confidence without claiming exact photos", () => {
+    const wave1 = mediaFor("iris", "stevens");
+    const straight = wave1.filter((asset) => asset.id.endsWith("-straight"));
+    const curved = wave1.filter((asset) => asset.id.endsWith("-curved"));
 
+    expect(wave1).toHaveLength(12);
     expect(straight).toHaveLength(6);
     expect(curved).toHaveLength(6);
     expect(straight.every((asset) => asset.matchGrade === "strong-match")).toBe(true);
@@ -131,9 +138,27 @@ describe("Iris and Stevens Wave 1 media", () => {
       curved.every((asset) => asset.matchGrade === "acceptable-similar")
     ).toBe(true);
     expect(
-      SCISSORS_BATCH_01_MEDIA.every(
+      wave1.every(
         (asset) =>
           asset.rightsMode === "preferred-safe" &&
+          asset.background === "transparent" &&
+          asset.reviewStatus === "candidate"
+      )
+    ).toBe(true);
+  });
+
+  it("records all 12 Mayo and Metzenbaum supplier candidates", () => {
+    const wave2 = mediaFor("mayo", "metzenbaum");
+    expect(wave2).toHaveLength(12);
+    expect(wave2.filter((asset) => asset.id.includes("-mayo-"))).toHaveLength(6);
+    expect(wave2.filter((asset) => asset.id.includes("-metzenbaum-"))).toHaveLength(6);
+    expect(
+      wave2.every(
+        (asset) =>
+          asset.sourcePageUrl.startsWith("https://www.klsmartin.com/shop/") &&
+          asset.matchGrade === "strong-match" &&
+          asset.rightsMode === "supplier-fallback" &&
+          asset.background === "clean-white" &&
           asset.reviewStatus === "candidate"
       )
     ).toBe(true);
