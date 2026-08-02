@@ -96,13 +96,13 @@ describe("catalogue media manifest validation", () => {
   });
 });
 
-describe("Scissors Batch 01 Waves 1 and 2 media", () => {
-  const expectedIds = SCISSORS_BATCH_01_CONFIGURATIONS.filter((item) =>
-    ["iris", "stevens", "mayo", "metzenbaum"].includes(item.familyKey)
-  ).map((item) => item.mediaAssetId);
+describe("Scissors Batch 01 production media", () => {
+  const expectedIds = SCISSORS_BATCH_01_CONFIGURATIONS.map(
+    (item) => item.mediaAssetId
+  );
 
-  it("covers the exact 24 Wave 1 and Wave 2 configuration IDs", () => {
-    expect(SCISSORS_BATCH_01_MEDIA).toHaveLength(24);
+  it("covers all 42 approved visible configuration IDs", () => {
+    expect(SCISSORS_BATCH_01_MEDIA).toHaveLength(42);
     expect(() =>
       assertCatalogueMediaManifest(SCISSORS_BATCH_01_MEDIA, expectedIds)
     ).not.toThrow();
@@ -171,6 +171,48 @@ describe("Scissors Batch 01 Waves 1 and 2 media", () => {
       wave2.every(
         (asset) =>
           asset.sourcePageUrl.includes("scissors-batch-01-sources.md") &&
+          asset.rightsMode === "preferred-safe" &&
+          asset.background === "transparent" &&
+          asset.reviewStatus === "candidate"
+      )
+    ).toBe(true);
+  });
+
+  it("records six exact-shape Regular Operating supplier candidates", () => {
+    const operating = mediaFor("operating");
+    const regular = operating.filter((asset) =>
+      asset.id.includes("-operating-regular-")
+    );
+
+    expect(operating).toHaveLength(18);
+    expect(regular).toHaveLength(6);
+    expect(
+      regular.every(
+        (asset) =>
+          asset.sourcePageUrl ===
+            "https://www.mpmmedicalsupply.com/products/operating-scissors" &&
+          asset.originalImageUrl?.includes("/cdn/shop/products/operating-scissor-") &&
+          asset.matchGrade === "strong-match" &&
+          asset.rightsMode === "supplier-fallback" &&
+          asset.background === "transparent" &&
+          asset.reviewStatus === "candidate"
+      )
+    ).toBe(true);
+  });
+
+  it("records twelve finish-specific Operating montage candidates without overstating confidence", () => {
+    const operating = mediaFor("operating");
+    const montage = operating.filter(
+      (asset) => !asset.id.includes("-operating-regular-")
+    );
+
+    expect(montage).toHaveLength(12);
+    expect(
+      montage.every(
+        (asset) =>
+          asset.sourcePageUrl.includes("#client-catalogue-page-2-operating") &&
+          asset.originalImageUrl?.includes("/cdn/shop/products/operating-scissor-") &&
+          asset.matchGrade === "acceptable-similar" &&
           asset.rightsMode === "preferred-safe" &&
           asset.background === "transparent" &&
           asset.reviewStatus === "candidate"
