@@ -4,25 +4,25 @@
 
 **Goal:** Produce a repository-wide, code-only evidence audit that classifies every approved Rosa Medical journey, frontend layer, integration gate, product-rule conflict, and runtime-verification limitation, then recommends one exact next implementation batch.
 
-**Architecture:** The audit is documentation-only. It traces approved user journeys across public UI, admin UI, Next.js handlers/actions, Supabase boundaries, OpenAPI contracts, migrations, tests, and deployment configuration, while preserving current application behavior. Findings are recorded in one append-only evidence report and summarized in the root coordination README.
+**Architecture:** The audit is documentation-only. It traces approved user journeys across public UI, admin UI, Next.js handlers/actions, Supabase boundaries, OpenAPI contracts, migrations, tests, and deployment configuration while preserving current application behavior. Findings live in one evidence report and are summarized in the root coordination README.
 
-**Tech Stack:** Git; Node.js 24; pnpm 11.4.0; Next.js App Router; React; strict TypeScript; Supabase client/server boundaries; OpenAPI 3.1; Vitest; React Testing Library; Playwright; Markdown.
+**Tech Stack:** Git; Node.js 24; pnpm 11.4.0; Next.js App Router; React; strict TypeScript; Supabase; OpenAPI 3.1; Vitest; React Testing Library; Playwright; Markdown.
 
 ## Global Constraints
 
-- Begin from the latest `main`; record the exact application commit audited.
-- Treat latest `main` as authoritative for backend implementation, security, Supabase, environment, middleware, API routes, persistence, packages, and deployment mechanics.
-- Treat the owner’s latest explicit decisions and accepted product rules as higher priority than conflicting implementation behavior.
-- Perform a code-only audit: do not request credentials, connect to live Supabase, fabricate an owner session, or claim external services have been verified.
-- Mark runtime-dependent capabilities **implemented, runtime-unverified** unless static evidence supports a weaker classification.
-- Do not change application code, contracts, schemas, migrations, security rules, environment configuration, deployment configuration, or product behavior.
-- Do not delete obsolete or conflicting paths during this plan; identify and sequence them only.
+- Start from the latest `main` and record the exact application commit audited.
+- Latest `main` remains authoritative for backend implementation, security, Supabase, environment, middleware, API routes, persistence, package configuration, and deployment mechanics.
+- The owner’s latest explicit decisions and accepted product rules outrank conflicting implementation behavior.
+- The audit is code-only: no credentials, live Supabase, fabricated owner session, real email, real storage, DNS, or deployment verification.
+- Runtime-dependent capabilities are **implemented, runtime-unverified** unless static evidence supports a weaker status.
+- Do not modify application code, contracts, schemas, migrations, security rules, environment configuration, deployment configuration, or product behavior.
+- Do not delete obsolete or conflicting paths during this audit.
 - Cite exact repository paths and exact tests for every material conclusion.
-- Keep public product inquiries and general contact messages separate in the assessment.
-- Enforce the quotation-led product model: no public prices, payments, checkout, inventory, shipping, discounts, ratings, or orders.
-- Preserve the single protected owner model and Draft → Review → Public Preview → Explicit Publish workflow as governing requirements.
-- Re-check latest `main` before finalizing the report.
-- Avoid unnecessary GitHub Actions runs; use local read-only inspection and existing tests first.
+- Keep public product inquiries and general contact messages separate.
+- Enforce the quotation-led model: no public prices, payments, checkout, inventory, shipping, discounts, ratings, or orders.
+- Preserve one protected owner and Draft → Review → Public Preview → Explicit Publish as governing requirements.
+- Re-fetch and compare latest `main` before finalizing.
+- Avoid unnecessary GitHub Actions runs.
 
 ---
 
@@ -30,11 +30,11 @@
 
 **Create**
 
-- `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md` — complete evidence report, including baseline, architecture, conflicts, journey matrix, F0–F9, G0–G7, test truth table, roadmap, and next batch.
+- `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md` — complete audit report.
 
 **Modify**
 
-- `README.md` — append one dated coordination entry and update the coordination timestamp only after the audit is complete.
+- `README.md` — update the coordination timestamp and append one dated audit entry after findings are final.
 
 **Read without modifying**
 
@@ -55,42 +55,42 @@
 - `apps/web/src/test/**`
 - `apps/web/tests/e2e/**`
 - `services/api/**`
-- Supabase migrations, policies, seeds, and deployment files returned by `git ls-files`
-- Root and web package manifests, Next/OpenNext/Cloudflare configuration, middleware/proxy files, and environment examples
+- all tracked migration, policy, seed, middleware/proxy, environment, Cloudflare, OpenNext, and deployment files discovered during inventory
 
 ---
 
-### Task 1: Freeze the audited baseline and create the isolated audit branch
+### Task 1: Freeze the application baseline and create an isolated audit branch
 
 **Files:**
 - Read: `README.md`
 - Read: `docs/superpowers/specs/2026-08-03-implementation-gap-audit-design.md`
-- Create later: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
+- Read: `docs/superpowers/plans/2026-08-03-implementation-gap-audit.md`
 
 **Interfaces:**
-- Consumes: `origin/main`, approved design commit `1bc29af2f35396ecc552a0994c51cdf057bc3f9c`, this plan commit
-- Produces: immutable `AUDITED_APPLICATION_BASE`, execution branch `audit/implementation-gap-2026-08-03`, clean isolated worktree
+- Consumes: `origin/main`, approved audit specification, this implementation plan
+- Produces: exact audited application SHA, execution branch `audit/implementation-gap-2026-08-03`, isolated worktree
 
-- [ ] **Step 1: Fetch all current refs and verify the checkout is clean**
+- [ ] **Step 1: Fetch current refs and verify a clean checkout**
 
 ```bash
 git fetch origin --prune
 git status --short
 ```
 
-Expected: `git status --short` prints nothing. Stop and preserve uncommitted work if it does not.
+Expected: no output from `git status --short`. Stop and preserve uncommitted work if output exists.
 
-- [ ] **Step 2: Record the latest application baseline**
+- [ ] **Step 2: Record the latest main commit**
 
 ```bash
 AUDITED_APPLICATION_BASE="$(git rev-parse origin/main)"
 printf '%s\n' "$AUDITED_APPLICATION_BASE"
 git show -s --format='%H%n%ci%n%s' "$AUDITED_APPLICATION_BASE"
+printf '%s\n' "$AUDITED_APPLICATION_BASE" > /tmp/rosa-audited-main-sha
 ```
 
-Expected: one exact `main` SHA, commit timestamp, and subject. At plan-writing time the known main checkpoint is `8ad8098e9999fbdd2ee65edeaa8410928922b8e8`, but execution must use the freshly fetched value.
+Expected: one exact SHA, timestamp, and subject. The known main checkpoint while this plan was written was `8ad8098e9999fbdd2ee65edeaa8410928922b8e8`, but execution uses the freshly fetched SHA.
 
-- [ ] **Step 3: Verify the approved specification and plan are based on current main application history**
+- [ ] **Step 3: Ensure the documentation branch includes current main history**
 
 ```bash
 git switch docs/implementation-gap-audit-spec
@@ -98,9 +98,9 @@ git pull --ff-only origin docs/implementation-gap-audit-spec
 git merge-base --is-ancestor "$AUDITED_APPLICATION_BASE" HEAD
 ```
 
-Expected: exit code `0`. If it fails, rebase only the documentation branch onto `origin/main`, resolve documentation conflicts without touching application files, and rerun the command.
+Expected: exit code `0`. If it fails, rebase only the documentation branch onto `origin/main`, resolve documentation conflicts without changing application files, then rerun the command.
 
-- [ ] **Step 4: Create an isolated audit worktree**
+- [ ] **Step 4: Create the execution worktree**
 
 ```bash
 git branch audit/implementation-gap-2026-08-03 HEAD
@@ -110,34 +110,21 @@ git status --short
 git rev-parse HEAD
 ```
 
-Expected: clean status; `HEAD` includes the approved specification and implementation plan while the recorded `AUDITED_APPLICATION_BASE` remains the application baseline.
-
-- [ ] **Step 5: Save the baseline in the shell for later checks**
-
-```bash
-printf '%s\n' "$AUDITED_APPLICATION_BASE" > /tmp/rosa-audited-main-sha
-cat /tmp/rosa-audited-main-sha
-```
-
-Expected: exact SHA from Step 2.
+Expected: clean status and a branch containing the approved specification and plan.
 
 ---
 
-### Task 2: Build the report skeleton and governing-source register
+### Task 2: Build the report skeleton and source register
 
 **Files:**
 - Create: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
-- Read: `README.md`
-- Read: `docs/superpowers/specs/2026-08-03-implementation-gap-audit-design.md`
-- Read: `docs/superpowers/plans/2026-07-31-rosa-medical-master-implementation.md`
-- Read: completion records under `docs/superpowers/completions/`
-- Read: `packages/contracts/openapi/rosa-medical.v1.yaml`
+- Read: governing sources listed in File Structure
 
 **Interfaces:**
-- Consumes: recorded application baseline, source-of-truth hierarchy, locked product decisions, F0–F9 and G0–G7 definitions
-- Produces: report headings, baseline statement, limitation statement, source register, status/severity legend
+- Consumes: audited SHA, source hierarchy, status model, severity model
+- Produces: complete report structure, baseline statement, limitations, source register
 
-- [ ] **Step 1: Read the complete governing sources before inspecting implementation**
+- [ ] **Step 1: Read the complete governing sources**
 
 ```bash
 cat README.md
@@ -149,69 +136,40 @@ cat docs/superpowers/completions/2026-08-02-frontend-backend-selective-integrati
 cat packages/contracts/openapi/rosa-medical.v1.yaml
 ```
 
-Expected: all files resolve. If a named historical record is absent on the latest branch, record that absence in the source register instead of substituting a different document silently.
+Expected: each tracked file resolves. Record any missing historical file as absent; do not silently substitute another source.
 
-- [ ] **Step 2: Generate a read-only repository inventory for audit use**
+- [ ] **Step 2: Generate the tracked-file inventory**
 
 ```bash
 git ls-files > /tmp/rosa-all-files.txt
-grep -E '^(apps/web|packages/contracts|services/api|supabase|migrations|\.github|docs/runbooks|wrangler|open-next|next\.config)' /tmp/rosa-all-files.txt > /tmp/rosa-audit-surface.txt
+grep -E '^(apps/web|packages/contracts|services/api|supabase|migrations|\.github|docs/runbooks|wrangler|open-next|next\.config)' \
+  /tmp/rosa-all-files.txt > /tmp/rosa-audit-surface.txt || true
 wc -l /tmp/rosa-all-files.txt /tmp/rosa-audit-surface.txt
 cat /tmp/rosa-audit-surface.txt
 ```
 
-Expected: a complete tracked-file list and a narrower audit-surface list. These files remain temporary and uncommitted.
+Expected: a full tracked-file list and a narrower audit-surface list.
 
-- [ ] **Step 3: Create the exact report structure**
+- [ ] **Step 3: Create the report with the exact required sections and actual baseline SHA**
 
-Create `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md` with these headings in this order:
-
-```markdown
+```bash
+BASE="$(cat /tmp/rosa-audited-main-sha)"
+mkdir -p docs/superpowers/audits
+cat > docs/superpowers/audits/2026-08-03-implementation-gap-audit.md <<EOF
 # Rosa Medical Implementation-Gap Audit
 
 ## 1. Executive summary
+
 ## 2. Audited baseline and limitations
-## 3. Governing-source register
-## 4. Current architecture map
-## 5. Product-rule conflict register
-## 6. Business-journey evidence matrix
-### 6.1 Public discovery and product browsing
-### 6.2 Product inquiry and quotation request
-### 6.3 General contact submission
-### 6.4 Owner login, session, recovery, and logout
-### 6.5 Product and family management
-### 6.6 Catalogues and media management
-### 6.7 Website content and contact-detail management
-### 6.8 Draft, review, public preview, publish, revisions, and rollback
-### 6.9 Search
-### 6.10 Arabic and RTL readiness
-### 6.11 Accessibility, performance, resilience, and deployment readiness
-## 7. F0–F9 frontend-layer assessment
-## 8. G0–G7 integration-gate assessment
-## 9. Security and authorization observations
-## 10. Contract and data-flow mismatches
-## 11. Test-evidence truth table
-## 12. Obsolete or duplicate paths
-## 13. Prioritized corrective roadmap
-## 14. Recommended next implementation batch
-## 15. Recheck against latest main
-```
 
-Under Section 2, record:
-
-```markdown
-- Audited application baseline: `<AUDITED_APPLICATION_BASE>`
-- Audit execution branch: `audit/implementation-gap-2026-08-03`
+- Audited application baseline: \`$BASE\`
+- Audit execution branch: \`audit/implementation-gap-2026-08-03\`
 - Method: code-only repository audit
 - External runtime verification: not performed
 - Protected owner browser verification: not performed
-```
 
-- [ ] **Step 4: Add the fixed classification legends**
+### Status legend
 
-Under Section 2, include the seven statuses exactly:
-
-```markdown
 1. Verified implemented
 2. Implemented, runtime-unverified
 3. Partially implemented
@@ -219,11 +177,70 @@ Under Section 2, include the seven statuses exactly:
 5. Missing
 6. Product-rule conflict
 7. Obsolete or duplicate path
+
+### Severity legend
+
+- P0 — Product or security blocker
+- P1 — Core business-flow blocker
+- P2 — Major incompleteness
+- P3 — Quality gap
+- P4 — Cleanup
+
+## 3. Governing-source register
+
+## 4. Current architecture map
+
+## 5. Product-rule conflict register
+
+## 6. Business-journey evidence matrix
+
+### 6.1 Public discovery and product browsing
+
+### 6.2 Product inquiry and quotation request
+
+### 6.3 General contact submission
+
+### 6.4 Owner login, session, recovery, and logout
+
+### 6.5 Product and family management
+
+### 6.6 Catalogues and media management
+
+### 6.7 Website content and contact-detail management
+
+### 6.8 Draft, review, public preview, publish, revisions, and rollback
+
+### 6.9 Search
+
+### 6.10 Arabic and RTL readiness
+
+### 6.11 Accessibility, performance, resilience, and deployment readiness
+
+## 7. F0–F9 frontend-layer assessment
+
+## 8. G0–G7 integration-gate assessment
+
+## 9. Security and authorization observations
+
+## 10. Contract and data-flow mismatches
+
+## 11. Test-evidence truth table
+
+## 12. Obsolete or duplicate paths
+
+## 13. Prioritized corrective roadmap
+
+## 14. Recommended next implementation batch
+
+## 15. Recheck against latest main
+
+## 16. Acceptance checklist
+EOF
 ```
 
-Include severities exactly: `P0`, `P1`, `P2`, `P3`, `P4`, using the definitions from the approved specification.
+Expected: the report contains the actual SHA, not a template marker.
 
-- [ ] **Step 5: Verify the report skeleton is complete**
+- [ ] **Step 4: Verify all required headings**
 
 ```bash
 for heading in \
@@ -241,14 +258,15 @@ for heading in \
   'Obsolete or duplicate paths' \
   'Prioritized corrective roadmap' \
   'Recommended next implementation batch' \
-  'Recheck against latest main'; do
+  'Recheck against latest main' \
+  'Acceptance checklist'; do
   grep -F "$heading" docs/superpowers/audits/2026-08-03-implementation-gap-audit.md >/dev/null || exit 1
 done
 ```
 
 Expected: exit code `0`.
 
-- [ ] **Step 6: Commit the audit foundation**
+- [ ] **Step 5: Commit the report foundation**
 
 ```bash
 git add docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
@@ -257,7 +275,7 @@ git commit -m "docs: establish implementation gap audit baseline"
 
 ---
 
-### Task 3: Map architecture, contracts, persistence boundaries, and known product conflicts
+### Task 3: Map architecture, persistence, authorization, and product conflicts
 
 **Files:**
 - Modify: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
@@ -265,13 +283,13 @@ git commit -m "docs: establish implementation gap audit baseline"
 - Read: `apps/web/src/lib/**`
 - Read: `packages/contracts/**`
 - Read: `services/api/**`
-- Read: migration, policy, seed, middleware/proxy, environment, and deployment files from `/tmp/rosa-audit-surface.txt`
+- Read: tracked migration, policy, seed, middleware/proxy, environment, and deployment files
 
 **Interfaces:**
-- Consumes: tracked-file inventory and governing rules
-- Produces: architecture map, contract/persistence boundary map, product-rule conflict register with exact paths and smallest safe correction
+- Consumes: repository inventory, governing rules
+- Produces: architecture map, persistence/auth map, product-rule conflict register
 
-- [ ] **Step 1: Map route, server, Supabase, and contract entry points**
+- [ ] **Step 1: Map route, server, Supabase, and contract paths**
 
 ```bash
 git ls-files apps/web/src/app | sort > /tmp/rosa-app-routes.txt
@@ -284,21 +302,28 @@ cat /tmp/rosa-contract-files.txt
 cat /tmp/rosa-service-files.txt
 ```
 
-Expected: exact tracked paths. Record absences explicitly; do not infer a separate backend service exists merely because the planned directory exists.
+Expected: exact tracked paths. Empty service output is evidence of an absent separate service, not proof of hidden implementation.
 
-- [ ] **Step 2: Locate all persistence and authorization boundaries**
+- [ ] **Step 2: Locate persistence and authorization boundaries**
 
 ```bash
 rg -n --hidden --glob '!node_modules/**' \
-  'createClient\(|supabase\.|auth\.|requireAdmin|middleware|proxy|cookies\(|from\("|from\('\''' \
+  -e 'createClient\(' \
+  -e 'supabase\.' \
+  -e 'auth\.' \
+  -e 'requireAdmin' \
+  -e 'middleware' \
+  -e 'proxy' \
+  -e 'cookies\(' \
+  -e '\.from\(' \
   apps/web packages/contracts services/api . \
   > /tmp/rosa-persistence-auth-hits.txt || true
 cat /tmp/rosa-persistence-auth-hits.txt
 ```
 
-Expected: all current Supabase reads/writes, auth checks, guards, and middleware/proxy entry points.
+Expected: all visible Supabase reads/writes, auth checks, guards, middleware, and proxy/session files.
 
-- [ ] **Step 3: Locate product-model conflict vocabulary**
+- [ ] **Step 3: Locate active product-model conflict vocabulary**
 
 ```bash
 rg -n -i --hidden --glob '!node_modules/**' \
@@ -308,44 +333,42 @@ rg -n -i --hidden --glob '!node_modules/**' \
 cat /tmp/rosa-product-conflict-hits.txt
 ```
 
-Expected: exact hits including the current `/checkout` path and any order/cart terminology. Distinguish historical documentation from active application behavior.
+Expected: exact hits, including current checkout/order/cart terminology where present. Separate historical documentation from active user-facing behavior.
 
-- [ ] **Step 4: Trace each active conflict to user-visible behavior and data flow**
+- [ ] **Step 4: Trace every active conflict**
 
-For every active hit, inspect the complete referenced file and its callers. At minimum inspect the product-detail action and any current checkout handler, including the known boundary around `apps/web/src/app/api/checkout/route.ts` when present.
-
-Record one row per conflict:
+For each active conflict, inspect the whole file and callers. Record one row with:
 
 ```markdown
-| Severity | Accepted rule | Active paths | Current behavior | Useful behavior to preserve | Smallest safe correction | Verification required |
+| Finding ID | Severity | Accepted rule | Active paths | Current behavior | Useful behavior to preserve | Smallest safe correction | Verification required |
 ```
 
-Use `P0` only for direct product/security blockers; do not inflate severity for historical naming alone.
+Assign finding IDs sequentially, beginning with `AUD-P0-01` for the first P0, `AUD-P1-01` for the first P1, and so on.
 
-- [ ] **Step 5: Document the architecture map**
+- [ ] **Step 5: Complete the architecture map**
 
-Section 4 must name:
+Section 4 must name exact paths for:
 
 - public route composition;
 - protected admin composition;
-- server components/actions/route handlers;
+- server components, server actions, and route handlers;
 - browser/server Supabase clients;
-- auth/session refresh and admin guard;
-- contract source and generated types;
-- database/migration boundary actually present;
+- session refresh and admin guard;
+- OpenAPI source and generated types;
+- migrations, policies, and seeds actually present;
 - storage and email boundaries actually present;
-- deployment path actually configured;
-- any planned-but-absent `services/api/**` boundary.
+- Cloudflare/OpenNext/Next deployment path;
+- planned-but-absent boundaries.
 
-Every bullet must cite repository paths. Mark architectural conclusions as inference where the code does not prove runtime behavior.
+Label structural deductions as inference.
 
-- [ ] **Step 6: Verify no application files changed**
+- [ ] **Step 6: Verify documentation-only changes**
 
 ```bash
 git status --short
 ```
 
-Expected: only `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md` is modified.
+Expected: only the audit report is modified.
 
 - [ ] **Step 7: Commit architecture and conflict findings**
 
@@ -360,16 +383,13 @@ git commit -m "docs: map Rosa architecture and product conflicts"
 
 **Files:**
 - Modify: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
-- Read: public routes under `apps/web/src/app/**`
-- Read: public feature code under `apps/web/src/features/**`
-- Read: public handlers/actions under `apps/web/src/app/api/**` and feature folders
-- Read: relevant contract operations and tests
+- Read: public routes, features, components, handlers, contract operations, and tests
 
 **Interfaces:**
-- Consumes: architecture map, contract operations, public route inventory
-- Produces: evidence rows for product browsing, quotation/inquiry, general contact, search, and public content journeys
+- Consumes: public route inventory, architecture map, contract operations
+- Produces: primary status and evidence for discovery, products, quotation/inquiry, contact, search, and public content
 
-- [ ] **Step 1: Build the public journey file set**
+- [ ] **Step 1: Build the public-journey file set**
 
 ```bash
 rg -l -i --hidden --glob '!node_modules/**' \
@@ -381,71 +401,51 @@ cat /tmp/rosa-public-journey-files.txt
 
 Expected: exact public components, handlers, adapters, tests, and contract files.
 
-- [ ] **Step 2: Trace public discovery and product browsing**
+- [ ] **Step 2: Trace homepage → products → family → product detail**
 
-Inspect homepage → products → family → product detail, including:
+Record exact evidence for:
 
-- route entry points and navigation;
-- source of family/product data;
-- published-only filtering or lack thereof;
+- navigation entry points;
+- family/product data source;
+- published-only filtering;
 - catalogue/specification rendering;
-- loading, empty, not-found, and error behavior;
-- responsive action differences;
-- tests that prove only static rendering versus data behavior.
+- loading, empty, not-found, and error states;
+- responsive inquiry action differences;
+- tests proving rendering versus real data behavior.
 
-Record one primary status and exact evidence for Section 6.1.
+Assign one primary status to Section 6.1.
 
-- [ ] **Step 3: Trace product inquiry and quotation request**
+- [ ] **Step 3: Trace the complete quotation journey**
 
-Inspect product action → selection state → form → validation → handler/action → persistence write → success/failure state → owner-visible result.
+Trace product action → selection state → quotation form → validation → handler/action → persistence write → success/failure state → owner-visible record.
 
-Explicitly answer:
+Answer explicitly:
 
-```markdown
-- Is anonymous quotation submission supported or is authentication required?
-- Are submitted product items preserved as immutable snapshots?
-- Is idempotency tied to the actual submitted selection?
-- Is the flow named and presented as inquiry/quotation rather than checkout/order?
-- Can the owner view the submitted record through an admin path?
-```
+- whether anonymous submission is supported;
+- whether product items are preserved as immutable snapshots;
+- whether idempotency represents the submitted selection;
+- whether public terminology is inquiry/quotation rather than checkout/order;
+- whether an admin route can view the stored result.
 
-Any missing link makes the journey partial or conflicted; do not average the pieces into “complete.”
+Assign one primary status to Section 6.2.
 
-- [ ] **Step 4: Trace general contact submission separately**
+- [ ] **Step 4: Trace general contact separately**
 
-Inspect contact form → client validation → `/api/contact` or equivalent → spam handling → persistence → success/failure states → admin message view.
+Trace contact form → validation → handler → spam behavior → persistence → success/failure → admin message view. Assign one primary status to Section 6.3.
 
-Record product inquiry and general contact as separate rows even if they share components or Supabase infrastructure.
+- [ ] **Step 5: Trace search and public content**
 
-- [ ] **Step 5: Trace search and public content routes**
+Inspect search query parsing, data source/indexed fields, no-result/error states, and result links. Inspect Catalogues, About, Procurement Support, Contact, Privacy, and Terms for fixture/live/placeholder status and unsupported claims. Assign one primary status to Section 6.9 and include public-content findings in the journey matrix.
 
-Inspect search input, query parsing, indexed fields/data source, result states, and links. Inspect About, Procurement Support, Contact, Catalogues, Privacy, and Terms for fixture/live/placeholder status and unsupported claims.
-
-- [ ] **Step 6: Add public journey evidence rows**
-
-Use this table shape for each journey:
+- [ ] **Step 6: Use one evidence table shape consistently**
 
 ```markdown
-| Capability | Primary status | Direct code evidence | Contract evidence | Test evidence | Runtime evidence unavailable | Product conflict | Smallest correction | Priority |
+| Capability | Primary status | Direct code evidence | Contract evidence | Test evidence | Runtime proof unavailable | Product conflict | Smallest correction | Priority |
 ```
 
-Do not cite a build or lint pass as proof of persistence, authorization, email, or publishing behavior.
+Do not use build, lint, or typecheck as proof of persistence, authorization, email, storage, or publishing.
 
-- [ ] **Step 7: Verify all public journeys have one primary status**
-
-```bash
-for section in \
-  '6.1 Public discovery and product browsing' \
-  '6.2 Product inquiry and quotation request' \
-  '6.3 General contact submission' \
-  '6.9 Search'; do
-  grep -F "$section" docs/superpowers/audits/2026-08-03-implementation-gap-audit.md >/dev/null || exit 1
-done
-```
-
-Expected: exit code `0`; each section includes `Primary status:` or a table row with a status.
-
-- [ ] **Step 8: Commit public journey findings**
+- [ ] **Step 7: Commit public journey findings**
 
 ```bash
 git add docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
@@ -454,20 +454,17 @@ git commit -m "docs: audit public Rosa business journeys"
 
 ---
 
-### Task 5: Audit owner authentication and all admin management journeys
+### Task 5: Audit owner authentication and admin management journeys
 
 **Files:**
 - Modify: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
-- Read: admin routes under `apps/web/src/app/admin/**`
-- Read: admin features under `apps/web/src/features/**`
-- Read: auth guards, middleware/proxy, server actions, route handlers, and Supabase queries
-- Read: admin tests under `apps/web/src/test/**` and `apps/web/tests/e2e/**`
+- Read: admin routes, admin feature code, guards, actions, handlers, Supabase queries, and tests
 
 **Interfaces:**
-- Consumes: auth/persistence map and admin route inventory
-- Produces: evidence rows for owner auth, product/family CRUD, catalogues/media, inquiries/messages, content/contact details, publishing/revisions/rollback, and security observations
+- Consumes: authorization map, admin route inventory
+- Produces: primary statuses for auth, CRUD, catalogues/media, inquiries/messages, content/contact details, publishing/revisions/rollback, plus security findings
 
-- [ ] **Step 1: Build the admin journey file set**
+- [ ] **Step 1: Build the admin-journey file set**
 
 ```bash
 rg -l -i --hidden --glob '!node_modules/**' \
@@ -479,80 +476,63 @@ cat /tmp/rosa-admin-journey-files.txt
 
 Expected: exact admin surfaces and tests.
 
-- [ ] **Step 2: Trace owner login, session, recovery, logout, and route protection**
+- [ ] **Step 2: Trace login, session, recovery, logout, and owner authorization**
 
-Answer with exact evidence:
+Record exact evidence answering:
 
-```markdown
-- What proves an unauthenticated request is redirected?
-- What proves the authenticated user is the single approved owner rather than any Supabase user?
-- Where are session refresh, expiry, logout, and recovery handled?
-- Which claims are implementation-only because no real owner session is available?
-```
+- what redirects unauthenticated access;
+- whether the guard proves the user is the single owner or merely any Supabase user;
+- where refresh, expiry, logout, and recovery are handled;
+- which claims remain runtime-unverified.
 
-Classify missing owner allowlisting or equivalent authorization as `P0` only if current code permits any authenticated user to reach owner operations.
+Treat any-authenticated-user access to owner operations as P0 only when the code supports that conclusion.
 
-- [ ] **Step 3: Trace products and families management**
+- [ ] **Step 3: Trace product and family management**
 
-Inspect list → create/edit → validation → save → delete/archive → preview → public visibility. Identify exact database fields, EN/AR fields, protected design boundaries, and whether publication state is separate from edit state.
+Trace list → create/edit → validation → save → archive/delete → preview → public visibility. Record EN/AR fields, publication state, and protected design boundaries.
 
-- [ ] **Step 4: Trace catalogues and media management**
+- [ ] **Step 4: Trace catalogues and media**
 
-Inspect upload/select/replace/delete behavior, storage bucket usage, file validation, usage mapping, alt text, PDF safety headers, and frontend result states. Mark storage behavior runtime-unverified.
+Inspect upload/select/replace/delete, storage buckets, file validation, usage mapping, alt text, PDF handling, and result states. Mark external storage behavior runtime-unverified.
 
-- [ ] **Step 5: Trace inquiries and general messages administration**
+- [ ] **Step 5: Trace inquiries and messages administration**
 
-Confirm whether the two record types remain separate, which statuses exist, whether internal notes or appointment behavior are present, and whether any current status model conflicts with accepted requirements.
+Confirm separation of product inquiries and general messages, statuses, internal notes, appointment behavior, and any conflicts with accepted requirements.
 
 - [ ] **Step 6: Trace content, contact details, publishing, revisions, and rollback**
 
-For each workflow, identify:
+For each workflow, locate:
 
-- editable fields;
-- draft storage;
+- controlled editable fields;
+- draft state;
 - review warnings;
-- public preview isolation;
-- explicit publication action;
+- preview isolation;
+- explicit publish action;
 - transaction boundary;
 - revision creation;
-- rollback-as-new-revision behavior;
-- public cache invalidation;
-- failure behavior preserving prior published output.
+- rollback-as-new-revision;
+- public invalidation;
+- failed publish preserving old public state.
 
-Absence of one of these steps prevents G6 from being accepted.
+Missing steps prevent G6 from being accepted.
 
-- [ ] **Step 7: Add security and authorization observations**
+- [ ] **Step 7: Complete security observations**
 
 Section 9 must separately assess:
 
 - authentication versus owner authorization;
 - middleware/proxy coverage;
-- server-side enforcement versus UI hiding;
+- server enforcement versus UI hiding;
 - mutation authorization;
-- CSRF/session-cookie assumptions visible in code;
+- cookie/session and CSRF assumptions visible in code;
 - rate limiting and abuse controls;
 - upload and remote-fetch risk;
 - secret/environment handling;
-- runtime proof explicitly unavailable.
+- unavailable runtime proof.
 
-Do not convert a static concern into a vulnerability claim unless the code path supports that conclusion.
+Do not label a concern a vulnerability unless the code path supports it.
 
-- [ ] **Step 8: Verify all admin journeys have primary statuses**
-
-```bash
-for section in \
-  '6.4 Owner login, session, recovery, and logout' \
-  '6.5 Product and family management' \
-  '6.6 Catalogues and media management' \
-  '6.7 Website content and contact-detail management' \
-  '6.8 Draft, review, public preview, publish, revisions, and rollback'; do
-  grep -F "$section" docs/superpowers/audits/2026-08-03-implementation-gap-audit.md >/dev/null || exit 1
-done
-```
-
-Expected: exit code `0`; each contains one primary status and evidence.
-
-- [ ] **Step 9: Commit admin and security findings**
+- [ ] **Step 8: Commit admin and security findings**
 
 ```bash
 git add docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
@@ -561,42 +541,41 @@ git commit -m "docs: audit Rosa admin and authorization journeys"
 
 ---
 
-### Task 6: Reconcile contracts, data models, migrations, Arabic readiness, and duplicate paths
+### Task 6: Reconcile contracts, schemas, Arabic readiness, and duplicate paths
 
 **Files:**
 - Modify: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
 - Read: `packages/contracts/openapi/rosa-medical.v1.yaml`
-- Read: `packages/contracts/src/generated/schema.ts`
-- Read: `packages/contracts/src/fixtures/**`
-- Read: API clients/adapters/handlers under `apps/web/src/lib/**`, `apps/web/src/app/api/**`, and `services/api/**`
-- Read: migrations, policies, and seeds
+- Read: generated schema, fixtures, active handlers/actions/adapters, migrations, policies, and seeds
 
 **Interfaces:**
 - Consumes: journey findings and shared contract source
-- Produces: contract mismatch register, data-flow mismatch register, Arabic readiness assessment, duplicate/obsolete path register
+- Produces: contract mismatch table, schema/policy assessment, Arabic/RTL assessment, duplicate/obsolete path register
 
-- [ ] **Step 1: Enumerate OpenAPI operations and application handlers**
+- [ ] **Step 1: Enumerate OpenAPI operations and implementation entry points**
 
 ```bash
-rg -n '^\s{2,}(get|post|put|patch|delete):|operationId:' packages/contracts/openapi/rosa-medical.v1.yaml > /tmp/rosa-openapi-ops.txt
-rg -n 'export async function (GET|POST|PUT|PATCH|DELETE)|"use server"|createClient\(' apps/web/src services/api > /tmp/rosa-handler-action-map.txt || true
+rg -n '^\s{2,}(get|post|put|patch|delete):|operationId:' \
+  packages/contracts/openapi/rosa-medical.v1.yaml > /tmp/rosa-openapi-ops.txt
+rg -n 'export async function (GET|POST|PUT|PATCH|DELETE)|"use server"|createClient\(' \
+  apps/web/src services/api > /tmp/rosa-handler-action-map.txt || true
 cat /tmp/rosa-openapi-ops.txt
 cat /tmp/rosa-handler-action-map.txt
 ```
 
-Expected: operation list and implementation entry points.
+Expected: exact contract operations and implementation entry points.
 
-- [ ] **Step 2: Compare contract shapes with active frontend/backend shapes**
+- [ ] **Step 2: Compare contract and active shapes**
 
-For each approved journey, record:
+Use:
 
 ```markdown
 | Operation/capability | OpenAPI source | Generated type use | Active handler/action | Active payload/response | Mismatch | Shared change required |
 ```
 
-A Next.js route or direct Supabase action not represented in OpenAPI must be named explicitly; do not assume direct integration is contract-compliant.
+Name direct Supabase or Next handlers missing from OpenAPI. Do not assume they are contract-compliant.
 
-- [ ] **Step 3: Map migrations, policies, constraints, and seeds**
+- [ ] **Step 3: Map migrations, policies, constraints, storage, and seeds**
 
 ```bash
 rg -n -i --hidden --glob '!node_modules/**' \
@@ -606,33 +585,21 @@ rg -n -i --hidden --glob '!node_modules/**' \
 cat /tmp/rosa-schema-policy-hits.txt
 ```
 
-Expected: exact schema/policy evidence or an explicit absence. Assess whether inquiry snapshots, revisions, publishing states, owner authorization, and EN/AR fields are structurally represented.
+Expected: exact schema/policy evidence or explicit absence. Assess inquiry snapshots, revisions, publishing state, owner authorization, and paired EN/AR fields.
 
 - [ ] **Step 4: Assess Arabic and RTL readiness**
 
-Trace:
+Trace paired EN/AR fields, locale routing, RTL direction handling, Arabic typography, mixed-direction values, admin completeness indicators, and Arabic-specific tests. Assign one primary status to Section 6.10. Paired fields alone do not prove an RTL experience.
 
-- paired English/Arabic fields in contract and persistence types;
-- locale selection/routing;
-- `dir="rtl"` or equivalent layout handling;
-- Arabic typography;
-- mixed-direction product codes, email, telephone, and numbers;
-- admin completeness indicators;
-- Arabic-specific tests and screenshots.
+- [ ] **Step 5: Record duplicate and obsolete paths**
 
-Assign one primary status to Section 6.10 and do not treat paired fields alone as an implemented RTL experience.
-
-- [ ] **Step 5: Identify obsolete and duplicate paths**
-
-Compare fixtures, mocks, direct Supabase calls, API routes, server actions, old static components, and historical route names. Add rows only when two paths serve the same current responsibility or a superseded path can mislead future work.
-
-Use:
+Compare fixtures, mocks, direct Supabase calls, API routes, server actions, old static components, and historical routes. Use:
 
 ```markdown
-| Path(s) | Why duplicate/obsolete | Current consumer | Risk | Keep/adapt/remove recommendation | Dependency |
+| Path or paths | Why duplicate or obsolete | Current consumer | Risk | Keep, adapt, or remove recommendation | Dependency |
 ```
 
-- [ ] **Step 6: Verify contract source remains unchanged**
+- [ ] **Step 6: Verify the contract source and generated schema remain unchanged**
 
 ```bash
 git diff -- packages/contracts/openapi/rosa-medical.v1.yaml packages/contracts/src/generated/schema.ts
@@ -649,18 +616,17 @@ git commit -m "docs: reconcile Rosa contracts data and duplicate paths"
 
 ---
 
-### Task 7: Establish the test truth table and recompute F0–F9 and G0–G7
+### Task 7: Build the test truth table and recompute F0–F9 and G0–G7
 
 **Files:**
 - Modify: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
-- Read: root and package manifests
-- Read: all unit, component, static, contract, integration, browser, accessibility, and build test configuration/files
+- Read: package manifests, test configuration, test files, and prior verification records
 
 **Interfaces:**
-- Consumes: journey conclusions, current test suite, prior verified synchronization run
-- Produces: exact test-evidence truth table, F0–F9 assessment, G0–G7 assessment, code-only verification record
+- Consumes: journey conclusions and test suite
+- Produces: test truth table, F0–F9 matrix, G0–G7 matrix, fresh code-only verification record
 
-- [ ] **Step 1: Inventory test commands and test files**
+- [ ] **Step 1: Inventory commands and tests**
 
 ```bash
 cat package.json
@@ -672,21 +638,21 @@ cat /tmp/rosa-test-files.txt
 
 Expected: exact scripts and test files.
 
-- [ ] **Step 2: Map each test to the claim it directly proves**
+- [ ] **Step 2: Map every material test to its direct claim**
 
-Section 11 must use:
+Use:
 
 ```markdown
-| Test file/command | Directly proves | Does not prove | Current evidence result |
+| Test file or command | Directly proves | Does not prove | Evidence result |
 ```
 
-Examples of prohibited overclaiming:
+Explicitly prevent these overclaims:
 
 - route smoke does not prove persistence;
 - static admin rendering does not prove owner authorization;
 - typecheck does not prove database constraints;
 - public Playwright does not prove protected admin behavior;
-- mocked success does not prove email/storage delivery.
+- mocked success does not prove email or storage delivery.
 
 - [ ] **Step 3: Run the frozen code-only verification gate**
 
@@ -702,56 +668,48 @@ pnpm test
 pnpm build
 ```
 
-Expected:
+Expected: Node major 24, pnpm 11.4.0, frozen install success, no generated drift, and passing lint/typecheck/tests/build. Record the exact error and command when the environment blocks execution; do not replace fresh failure evidence with an old success claim.
 
-- Node major `24`;
-- pnpm `11.4.0`;
-- frozen install succeeds;
-- generated contract output does not drift;
-- lint, typecheck, tests, and build pass.
+- [ ] **Step 4: Run credential-free public browser evidence only when supported**
 
-If the environment cannot satisfy Node/pnpm/network requirements, record the exact command and error. Do not replace fresh failure evidence with the historical successful run.
+Use the repository’s existing public Playwright command and configuration. Record project names, pass/fail/skip counts, and whether the data source is fixture, mock, or live. Do not bypass protected admin authentication.
 
-- [ ] **Step 4: Run only credential-free public browser evidence when supported**
+- [ ] **Step 5: Assess F0–F9**
 
-Use the repository’s existing public Playwright command/config. Do not run or bypass protected admin authentication. Record exact projects, pass/fail/skip counts, and whether responses are fixture/mock/live.
-
-Expected: either fresh credential-free evidence or an exact environment blocker. Protected admin browser behavior remains runtime-unverified.
-
-- [ ] **Step 5: Assess F0–F9 individually**
-
-For each layer record:
+Use:
 
 ```markdown
 | Layer | Intended result | Evidence | Primary assessment | Blocking gaps |
 ```
 
-Use only these assessments: `Verified implemented`, `Implemented, runtime-unverified`, `Partially implemented`, `Static or placeholder only`, `Missing`, `Product-rule conflict`, `Obsolete or duplicate path`.
+Every layer from F0 through F9 receives exactly one primary assessment from the seven-status model.
 
-- [ ] **Step 6: Assess G0–G7 individually**
+- [ ] **Step 6: Assess G0–G7**
 
-For each gate record:
+Use:
 
 ```markdown
-| Gate | Frontend evidence | Backend evidence | Contract/test evidence | Code-only conclusion | Runtime proof still required |
+| Gate | Frontend evidence | Backend evidence | Contract or test evidence | Code-only conclusion | Runtime proof still required |
 ```
 
-No gate requiring live Supabase/auth/storage/email/deployment may be marked fully accepted during this audit.
+No gate requiring live Supabase, auth, storage, email, or deployment is fully accepted.
 
 - [ ] **Step 7: Verify matrix completeness**
 
 ```bash
 for layer in F0 F1 F2 F3 F4 F5 F6 F7 F8 F9; do
-  grep -E "\|[[:space:]]*$layer([[:space:]]|—|-)" docs/superpowers/audits/2026-08-03-implementation-gap-audit.md >/dev/null || exit 1
+  grep -E "\|[[:space:]]*$layer([[:space:]]|—|-)" \
+    docs/superpowers/audits/2026-08-03-implementation-gap-audit.md >/dev/null || exit 1
 done
 for gate in G0 G1 G2 G3 G4 G5 G6 G7; do
-  grep -E "\|[[:space:]]*$gate([[:space:]]|—|-)" docs/superpowers/audits/2026-08-03-implementation-gap-audit.md >/dev/null || exit 1
+  grep -E "\|[[:space:]]*$gate([[:space:]]|—|-)" \
+    docs/superpowers/audits/2026-08-03-implementation-gap-audit.md >/dev/null || exit 1
 done
 ```
 
 Expected: exit code `0`.
 
-- [ ] **Step 8: Commit verification and gate conclusions**
+- [ ] **Step 8: Commit test and gate conclusions**
 
 ```bash
 git add docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
@@ -760,28 +718,28 @@ git commit -m "docs: establish Rosa test truth and gate status"
 
 ---
 
-### Task 8: Rank corrective work and select the next implementation batch
+### Task 8: Rank findings and select one next implementation batch
 
 **Files:**
 - Modify: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
 
 **Interfaces:**
-- Consumes: all findings, severities, dependencies, product conflicts, gate conclusions
-- Produces: ordered P0–P4 roadmap and one exact next implementation batch with scope, dependencies, exclusions, and verification
+- Consumes: all findings, severities, dependencies, product conflicts, and gate conclusions
+- Produces: ordered roadmap, exact next batch, final executive summary
 
-- [ ] **Step 1: Normalize every material finding**
+- [ ] **Step 1: Normalize all material findings**
 
-Use one row per finding:
+Use:
 
 ```markdown
-| ID | Severity | Journey/gate | Finding | Exact paths | Smallest safe correction | Dependencies | Verification |
+| Finding ID | Severity | Journey or gate | Finding | Exact paths | Smallest safe correction | Dependencies | Verification |
 ```
 
-IDs must be stable and sequential: `AUD-P0-01`, `AUD-P1-01`, `AUD-P2-01`, and so on.
+Finding IDs remain stable and sequential by severity.
 
-- [ ] **Step 2: Order findings by dependency, not file location**
+- [ ] **Step 2: Order findings by dependency**
 
-Apply this order:
+Use this order:
 
 1. product/security blockers;
 2. shared contract/data blockers;
@@ -791,49 +749,45 @@ Apply this order:
 6. Arabic/RTL;
 7. hardening and cleanup.
 
-Do not bundle unrelated refactors into a corrective batch.
+Do not group unrelated refactors into one batch.
 
-- [ ] **Step 3: Select one next implementation batch**
+- [ ] **Step 3: Select exactly one next batch**
 
-Section 14 must state exactly one recommendation containing:
+Section 14 must include all of these named fields with actual findings and paths from the report:
 
 ```markdown
 - Batch name
 - User-visible outcome
-- Included findings
+- Included finding IDs
 - Exact implementation boundaries
-- Shared contract/schema decisions required
+- Shared contract or schema decisions required
 - Explicit exclusions
 - Verification gate
-- Why this precedes the next batch
+- Reason this batch precedes the following work
 ```
 
-The public procurement slice remains a hypothesis. Choose a narrower P0 correction first if product or owner-authorization conflicts block safe implementation.
+The public procurement vertical slice remains a hypothesis. Select a narrower P0 correction first when product or owner-authorization conflicts block safe implementation.
 
-- [ ] **Step 4: Write the executive summary last**
+- [ ] **Step 4: Write the executive summary from completed evidence**
 
-The executive summary must include:
-
-- overall implementation state;
-- highest-severity verified findings;
-- strongest completed areas;
-- major runtime-unverified areas;
-- recomputed gate summary;
-- exact next batch.
-
-Do not add conclusions not supported in later sections.
+Include overall state, highest-severity findings, strongest completed areas, major runtime-unverified areas, recomputed gates, and exact next batch. Every statement must be supported later in the report.
 
 - [ ] **Step 5: Run report consistency checks**
 
 ```bash
-rg -n 'TBD|TODO|implement later|fill in|probably|appears complete without evidence' docs/superpowers/audits/2026-08-03-implementation-gap-audit.md && exit 1 || true
-rg -n 'Verified implemented|Implemented, runtime-unverified|Partially implemented|Static or placeholder only|Missing|Product-rule conflict|Obsolete or duplicate path' docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
-rg -n 'AUD-P[0-4]-[0-9]{2}' docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
+if rg -n 'TBD|TODO|implement later|fill in details|<[^>]+>' \
+  docs/superpowers/audits/2026-08-03-implementation-gap-audit.md; then
+  exit 1
+fi
+rg -n 'Verified implemented|Implemented, runtime-unverified|Partially implemented|Static or placeholder only|Missing|Product-rule conflict|Obsolete or duplicate path' \
+  docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
+rg -n 'AUD-P[0-4]-[0-9]{2}' \
+  docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
 ```
 
-Expected: no placeholder language; classifications and finding IDs are present.
+Expected: no placeholders; classifications and finding IDs are present.
 
-- [ ] **Step 6: Commit the corrective roadmap**
+- [ ] **Step 6: Commit the roadmap**
 
 ```bash
 git add docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
@@ -842,17 +796,17 @@ git commit -m "docs: prioritize Rosa corrective implementation roadmap"
 
 ---
 
-### Task 9: Recheck latest main, update coordination, and finalize the audit branch
+### Task 9: Recheck main, update coordination, and finalize
 
 **Files:**
 - Modify: `README.md`
 - Modify: `docs/superpowers/audits/2026-08-03-implementation-gap-audit.md`
 
 **Interfaces:**
-- Consumes: completed audit, fresh `origin/main`, exact final finding IDs and next batch
-- Produces: final stale-base check, append-only coordination entry, documentation-only diff, reviewable pull request
+- Consumes: completed report and fresh `origin/main`
+- Produces: stale-base check, append-only coordination entry, documentation-only branch, reviewable PR
 
-- [ ] **Step 1: Re-fetch and compare latest main with the audited baseline**
+- [ ] **Step 1: Re-fetch and compare main**
 
 ```bash
 git fetch origin --prune
@@ -861,38 +815,49 @@ LATEST_MAIN="$(git rev-parse origin/main)"
 printf 'audited=%s\nlatest=%s\n' "$ORIGINAL_AUDITED_BASE" "$LATEST_MAIN"
 ```
 
-Expected: either identical SHAs or a clearly detected change.
+Expected: either identical SHAs or a detected change.
 
-- [ ] **Step 2: Handle a changed main without hiding it**
+- [ ] **Step 2: Reconcile changed main before finalization**
 
-If the SHAs differ:
+When the SHAs differ:
 
 ```bash
 git diff --name-status "$ORIGINAL_AUDITED_BASE".."$LATEST_MAIN"
 git log --oneline "$ORIGINAL_AUDITED_BASE".."$LATEST_MAIN"
 ```
 
-Reinspect every changed path that intersects the audit. Update affected findings and Section 15. Do not finalize against stale evidence. If changes are extensive enough to invalidate the report, stop and restart from the new baseline rather than patching conclusions casually.
+Reinspect every changed path intersecting the audit and update affected findings. Restart the audit from the new baseline when changes invalidate broad conclusions.
 
-- [ ] **Step 3: Append the coordination entry**
+- [ ] **Step 3: Complete Section 15 and Section 16**
 
-Update only the top coordination timestamp and append a dated entry under **Messages between AIs** using this exact structure:
+Section 15 records both SHAs, changed paths, and the reinspection result. Section 16 contains checked acceptance items for:
 
-```markdown
-### 2026-08-03 — Frontend AI → Backend AI
+- every approved journey has one primary status;
+- F0–F9 complete;
+- G0–G7 complete;
+- product conflicts cite exact paths and smallest corrections;
+- runtime claims marked unverified;
+- tests cited only for direct behavior;
+- duplicate paths identified without deletion;
+- no application or shared-interface change;
+- exactly one next batch selected;
+- latest main rechecked.
 
-- Branch: `audit/implementation-gap-2026-08-03`
-- Audited application commit: `<exact SHA>`
-- Scope: repository-wide code-only implementation-gap audit; no live Supabase, owner-session, email, storage, or deployment verification
-- Top P0/P1 findings: `<finding IDs and one-line descriptions>`
-- Recomputed gates: `<G0–G7 concise status summary>`
-- Recommended next batch: `<exact batch name>`
-- Shared decisions or response needed: `<contract/schema/ownership decisions, or None>`
-```
+- [ ] **Step 4: Append one README coordination entry**
 
-Do not rewrite historical lane entries or old decision records.
+Update only the top coordination timestamp and append a dated entry under **Messages between AIs** containing actual values already finalized in the report:
 
-- [ ] **Step 4: Verify the final diff is documentation-only**
+- branch `audit/implementation-gap-2026-08-03`;
+- exact audited application SHA;
+- code-only limitation;
+- actual P0/P1 finding IDs and one-line descriptions;
+- concise G0–G7 conclusions;
+- exact recommended batch name;
+- actual shared decisions or partner response required, or `None`.
+
+Do not rewrite historical entries or decision records.
+
+- [ ] **Step 5: Verify the final diff is documentation-only**
 
 ```bash
 git status --short
@@ -908,45 +873,34 @@ docs/superpowers/plans/2026-08-03-implementation-gap-audit.md
 docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
 ```
 
-No application, contract, migration, environment, security, or deployment file may be changed.
+- [ ] **Step 6: Check for placeholders and accidental application changes**
 
-- [ ] **Step 5: Validate every acceptance criterion**
-
-Check manually and record in the report:
-
-```markdown
-- [x] Every approved public and admin journey has one primary status.
-- [x] Every F0–F9 layer has an evidence-based assessment.
-- [x] Every G0–G7 gate has an evidence-based conclusion.
-- [x] Every product conflict names exact paths and a smallest safe correction.
-- [x] Runtime-dependent claims are marked unverified.
-- [x] Tests are cited only for what they directly establish.
-- [x] Duplicate and obsolete paths are identified without deletion.
-- [x] No application behavior or shared interface changed.
-- [x] One exact next implementation batch is selected.
-- [x] Latest main was rechecked before finalization.
+```bash
+if rg -n 'TBD|TODO|implement later|fill in details|<[^>]+>' \
+  README.md \
+  docs/superpowers/specs/2026-08-03-implementation-gap-audit-design.md \
+  docs/superpowers/plans/2026-08-03-implementation-gap-audit.md \
+  docs/superpowers/audits/2026-08-03-implementation-gap-audit.md; then
+  exit 1
+fi
+git diff --check origin/main..HEAD
 ```
 
-- [ ] **Step 6: Commit final coordination**
+Expected: no placeholders and no whitespace errors.
+
+- [ ] **Step 7: Commit final coordination**
 
 ```bash
 git add README.md docs/superpowers/audits/2026-08-03-implementation-gap-audit.md
 git commit -m "docs: finalize Rosa implementation gap audit"
 ```
 
-- [ ] **Step 7: Review the complete branch before pushing**
+- [ ] **Step 8: Review, push, and open the PR**
 
 ```bash
 git log --oneline --decorate origin/main..HEAD
 git diff --stat origin/main..HEAD
 git diff --check origin/main..HEAD
-```
-
-Expected: meaningful documentation commits, documentation-only statistics, and no whitespace errors.
-
-- [ ] **Step 8: Push and open a documentation-only pull request**
-
-```bash
 git push -u origin audit/implementation-gap-2026-08-03
 ```
 
@@ -956,4 +910,4 @@ PR title:
 Audit integrated Rosa implementation gaps
 ```
 
-PR body must state the audited application SHA, code-only limitations, top findings, recomputed gate summary, recommended next batch, and confirmation that no application behavior changed.
+The PR body must state the exact audited application SHA, code-only limitations, actual top findings, recomputed gate conclusions, exact next batch, and confirmation that no application behavior changed.
