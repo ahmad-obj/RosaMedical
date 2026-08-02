@@ -80,7 +80,9 @@ export async function AdminCataloguesPage() {
 
   const rows: LiveCatalogueRow[] = categories.map((cat, index) => {
     const seq = String(index + 1).padStart(2, "0");
+    const publicCataloguesHref = "/catalogues" as Route<string>;
     const publicFamilyHref = `/products?category=${cat.slug}` as Route<string>;
+    const adminHref = "/admin/catalogues" as Route<string>;
 
     return {
       familySlug: cat.slug,
@@ -91,9 +93,9 @@ export async function AdminCataloguesPage() {
       coverLabel: "Technical family catalogue",
       sourceStatus: "Live DB Record",
       availability: "Awaiting publication",
-      publicCataloguesHref: "/catalogues",
+      publicCataloguesHref,
       publicFamilyHref,
-      adminHref: "/admin/catalogues"
+      adminHref
     };
   });
 
