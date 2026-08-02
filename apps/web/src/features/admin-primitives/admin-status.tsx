@@ -2,6 +2,7 @@ import type { HTMLAttributes } from "react";
 
 export type AdminStatusTone =
   | "neutral"
+  | "info"
   | "warning"
   | "danger"
   | "success"
