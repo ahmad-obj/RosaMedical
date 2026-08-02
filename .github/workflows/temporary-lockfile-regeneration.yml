@@ -1,0 +1,46 @@
+name: Temporary Lockfile Regeneration
+
+on:
+  push:
+    branches:
+      - integration/main-frontend-f3ed-lockfile
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: ${{ !contains(github.event.head_commit.message, '[skip lockfile]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout lockfile branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/main-frontend-f3ed-lockfile
+
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Activate pnpm 11.4.0
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.4.0 --activate
+          pnpm --version
+
+      - name: Regenerate current workspace lockfile
+        run: pnpm install --lockfile-only --force --no-frozen-lockfile --ignore-scripts
+
+      - name: Commit regenerated lockfile
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "Lockfile already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore: regenerate pnpm 11 lockfile [skip lockfile]"
+          git push origin HEAD:integration/main-frontend-f3ed-lockfile
