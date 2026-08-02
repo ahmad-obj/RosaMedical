@@ -27,10 +27,10 @@ The catalogue remains the authority for product identity, code, visible geometry
 
 The verified Scissors catalogue mapping is:
 
-- Iris Scissors: codes `04/05/06-0800` straight at 9.5 cm, `04/05/06-0810` curved at 9.5 cm, `04/05/06-0802` straight at 11.5 cm, and `04/05/06-0812` curved at 11.5 cm. All are sharp variants.
-- Stevens Scissors: codes `04/05/06-0901` straight and `04/05/06-0911` curved, both 10.5 cm and sharp.
+- Iris Scissors: codes `04/05/06-0901` straight and `04/05/06-0911` curved, both 10.5 cm and sharp.
+- Stevens Scissors: codes `04/05/06-0800` straight at 9.5 cm, `04/05/06-0810` curved at 9.5 cm, `04/05/06-0802` straight at 11.5 cm, and `04/05/06-0812` curved at 11.5 cm. All are sharp variants.
 
-Earlier discussion and the first specification revision swapped the Iris and Stevens code groups. This corrected revision supersedes that mistake. The rendered catalogue page and extracted catalogue text are authoritative.
+An earlier implementation revision swapped the Iris and Stevens code groups after relying on visual inference instead of the catalogue text table. This corrected revision supersedes that mistake. The rendered catalogue page and extracted catalogue text are authoritative.
 
 ## Image acceptance gate
 
