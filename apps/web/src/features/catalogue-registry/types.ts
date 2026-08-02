@@ -13,6 +13,11 @@ export interface CatalogueFamilyRecord {
   catalogueLabel: string;
 }
 
+export interface CatalogueProductCode {
+  code: string;
+  size: string;
+}
+
 export interface CatalogueProductRecord {
   id: string;
   familySlug: FamilySlug;
@@ -26,7 +31,10 @@ export interface CatalogueProductRecord {
   primaryOption?: string;
   catalogueReference: CatalogueReference;
   mediaLabel: string;
+  catalogueCodes?: readonly CatalogueProductCode[];
+  mediaAssetId?: string;
   mediaPath?: string;
+  mediaFallbackPath?: string;
   mediaIndex?: number;
   mediaSourceUrl?: string;
   mediaReviewNote?: string;
