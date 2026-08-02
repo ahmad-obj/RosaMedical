@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { Button, ButtonLink } from "@/components/ui";
 import {
   AdminAlert,
@@ -21,12 +22,12 @@ interface LiveProductRow {
   name: string;
   code: string;
   familyName: string;
-  familyHref: string;
+  familyHref: Route<string>;
   optionSummary: string[];
   catalogueReference: string;
   mediaLabel: string;
-  publicHref: string;
-  adminHref: string;
+  publicHref: Route<string>;
+  adminHref: Route<string>;
 }
 
 const columns: readonly AdminDataTableColumn<LiveProductRow>[] = [
@@ -98,24 +99,28 @@ export async function AdminProductsListPage() {
     supabase.from("products").select("*").order("created_at", { ascending: false }),
     supabase.from("categories").select("*").eq("deleted_at", null)
   ]);
-  
+
   const products = (productsRes.data || []) as Product[];
   const categories = (categoriesRes.data || []) as Category[];
   const families = getAdminFamilyRows();
 
-  const rows: LiveProductRow[] = products.map((p) => {
-    const cat = categories.find((c) => c.id === p.category_id);
+  const rows: LiveProductRow[] = products.map((product) => {
+    const category = categories.find((candidate) => candidate.id === product.category_id);
+    const familyHref = (category ? `/products?category=${category.slug}` : "/products") as Route<string>;
+    const publicHref = `/products?category=${category?.slug || ""}` as Route<string>;
+    const adminHref = "/admin/products" as Route<string>;
+
     return {
-      id: p.id,
-      name: p.name_en,
-      code: p.item_code || "N/A",
-      familyName: cat?.name_en || "Uncategorized",
-      familyHref: cat ? `/products?category=${cat.slug}` : "/products",
-      optionSummary: [p.stock_status, p.sell_mode].filter(Boolean),
-      catalogueReference: cat?.name_en || "N/A",
+      id: product.id,
+      name: product.name_en,
+      code: product.item_code || "N/A",
+      familyName: category?.name_en || "Uncategorized",
+      familyHref,
+      optionSummary: [product.stock_status, product.sell_mode].filter(Boolean),
+      catalogueReference: category?.name_en || "N/A",
       mediaLabel: "Image required",
-      publicHref: `/products?category=${cat?.slug || ""}`,
-      adminHref: `/admin/products`
+      publicHref,
+      adminHref
     };
   });
 
