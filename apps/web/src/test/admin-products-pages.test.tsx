@@ -1,6 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { CATALOGUE_PRODUCTS } from "@/features/catalogue-registry";
 import {
   AdminProductArchiveConfirmationPreview,
   AdminProductDuplicateCodePreview,
@@ -15,29 +14,25 @@ import {
   AdminProductTitleWarningPreview,
   getAdminProductEditor
 } from "@/features/admin-products";
+import { renderServerComponent } from "@/test/render-server-component";
 
 describe("F3E-B product pages", () => {
-  it("renders one source-backed product heading and all source identities", () => {
-    const html = renderToStaticMarkup(<AdminProductsListPage />);
+  it("renders the live product collection boundary without fabricated records", async () => {
+    const html = await renderServerComponent(<AdminProductsListPage />);
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("Manage the instrument catalogue.");
-    expect(html).toContain(`${CATALOGUE_PRODUCTS.length} source products`);
-    for (const product of CATALOGUE_PRODUCTS) {
-      expect(html).toContain(product.name);
-      expect(html).toContain(product.code);
-      expect(html).toContain(`/admin/products/${product.familySlug}/${product.slug}`);
-      expect(html).toContain(`/products/${product.familySlug}/${product.slug}`);
-    }
+    expect(html).toContain("Showing 0 live products from Supabase.");
+    expect(html).toContain("0 live products");
+    expect(html).not.toContain("data-preview-only");
   });
 
-  it("keeps collection controls static and avoids demonstration data", () => {
-    const html = renderToStaticMarkup(<AdminProductsListPage />);
+  it("keeps unimplemented collection mutations disabled", async () => {
+    const html = await renderServerComponent(<AdminProductsListPage />);
     expect(html).not.toContain("<form");
     expect(html).toContain("readonly");
     expect((html.match(/disabled/g) ?? []).length).toBeGreaterThanOrEqual(4);
     expect(html).not.toContain("data-preview-only");
-    expect(html).not.toMatch(/126 products|Duplicate Code Record|Needs review|Blocking error|Today|Yesterday|Featured:/i);
-    expect(html).not.toMatch(/EN complete|AR complete|AR in progress/i);
+    expect(html).not.toMatch(/126 products|Duplicate Code Record|Blocking error|Today|Yesterday|Featured:/i);
   });
 
   it("renders a source-backed product editor without mutation behavior", () => {
