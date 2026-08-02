@@ -15,9 +15,10 @@ import { renderServerComponent } from "@/test/render-server-component";
 describe("F3E-B catalogue pages", () => {
   it("renders the live catalogue collection boundary without fake file metadata", async () => {
     const html = await renderServerComponent(<AdminCataloguesPage />);
+    const normalizedHtml = html.replaceAll("<!-- -->", "");
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("Maintain technical document records.");
-    expect(html).toContain("Showing 0 live catalogue records from Supabase.");
+    expect(normalizedHtml).toContain("Showing 0 live catalogue records from Supabase.");
     expect(html).not.toMatch(/href="[^"]+\.pdf"/i);
     expect(html).not.toMatch(/\b\d+(?:\.\d+)?\s*(?:KB|MB)\b/i);
     expect(html).not.toContain("data-preview-only");
