@@ -34,6 +34,11 @@ const FINISHES = [
 const DIRECTIONS = ["Straight", "Curved"] as const;
 
 const IRIS = {
+  Straight: [["0901", "10.5 cm"]],
+  Curved: [["0911", "10.5 cm"]]
+} as const;
+
+const STEVENS = {
   Straight: [
     ["0800", "9.5 cm"],
     ["0802", "11.5 cm"]
@@ -42,11 +47,6 @@ const IRIS = {
     ["0810", "9.5 cm"],
     ["0812", "11.5 cm"]
   ]
-} as const;
-
-const STEVENS = {
-  Straight: [["0901", "10.5 cm"]],
-  Curved: [["0911", "10.5 cm"]]
 } as const;
 
 const MAYO = {
