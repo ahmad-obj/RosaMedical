@@ -36,7 +36,7 @@ export const SCISSOR_PRODUCTS = [
   previewProduct("product_operating_scissors_regular", "operating-scissors-regular", "Operating Scissors", "04-0101", "Regular", "2", "scissors-operating-regular.svg"),
   previewProduct("product_operating_scissors_super_cut", "operating-scissors-super-cut", "Operating Scissors", "05-0101", "Super Cut", "2", "scissors-operating-super-cut.svg"),
   previewProduct("product_operating_scissors_tc", "operating-scissors-tc", "Operating Scissors", "06-0101", "Tungsten Carbide", "2", "scissors-operating-tc.svg"),
-  previewProduct("product_mayo_scissors_regular", "mayo-scissors-regular", "Mayo Scissors", "04-0401", "Regular", "3", "scissors-mayo-regular.svg"),
+  previewProduct("product_mayo_scissors_regular", "mayo-scissors", "Mayo Scissors", "04-0401", "Regular", "3", "scissors-mayo-regular.svg"),
   previewProduct("product_mayo_scissors_super_cut", "mayo-scissors-super-cut", "Mayo Scissors", "05-0401", "Super Cut", "3", "scissors-mayo-super-cut.svg"),
   previewProduct("product_mayo_scissors_tc", "mayo-scissors-tc", "Mayo Scissors", "06-0401", "Tungsten Carbide", "3", "scissors-mayo-tc.svg"),
   previewProduct("product_metzenbaum_scissors_regular", "metzenbaum-scissors-regular", "Metzenbaum Scissors", "04-1901", "Regular", "3", "scissors-metzenbaum-regular.svg"),
