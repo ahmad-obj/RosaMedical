@@ -36,11 +36,12 @@ for (const viewport of viewports) {
   }
 }
 
-test("contact stays read-only and search stays in discovery state", async ({ page }) => {
+test("contact exposes the connected form and search stays in discovery state", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
   await page.goto("/contact");
-  await expect(page.getByRole("button", { name: "Send Message" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Send Message" })).toBeEnabled();
+  await expect(page.locator('form[aria-label="General contact form preview"]')).toHaveCount(1);
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
 
