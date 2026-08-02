@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { Button, ButtonLink } from "@/components/ui";
 import {
   AdminAlert,
@@ -13,13 +14,13 @@ interface LiveFamilyRow {
   introduction: string;
   productCount: number;
   catalogueLabel: string;
-  publicHref: string;
-  adminHref: string;
+  publicHref: Route<string>;
+  adminHref: Route<string>;
 }
 
 export async function AdminFamiliesPage() {
   const supabase = await createClient();
-  
+
   const [catRes, prodRes] = await Promise.all([
     supabase.from("categories").select("*").is("deleted_at", null).order("sort_order", { ascending: true }),
     supabase.from("products").select("category_id")
@@ -29,8 +30,11 @@ export async function AdminFamiliesPage() {
   const products = (prodRes.data || []) as Product[];
 
   const families: LiveFamilyRow[] = categories.map((cat, index) => {
-    const count = products.filter(p => p.category_id === cat.id).length;
+    const count = products.filter((product) => product.category_id === cat.id).length;
     const seq = String(index + 1).padStart(2, "0");
+    const publicHref = `/products?category=${cat.slug}` as Route<string>;
+    const adminHref = "/admin/families" as Route<string>;
+
     return {
       slug: cat.slug,
       sequence: seq,
@@ -38,8 +42,8 @@ export async function AdminFamiliesPage() {
       introduction: "Live category managed from Supabase.",
       productCount: count,
       catalogueLabel: `${cat.name_en} catalogue`,
-      publicHref: `/products?category=${cat.slug}`,
-      adminHref: `/admin/families`
+      publicHref,
+      adminHref
     };
   });
 
