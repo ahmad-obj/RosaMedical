@@ -35,8 +35,9 @@ describe("F3E-B media requirements", () => {
 
   it("renders live media requirements without fabricated assets", async () => {
     const html = await renderServerComponent(<AdminMediaPage />);
+    const normalizedHtml = html.replaceAll("<!-- -->", "");
     expect(html).toContain("Purpose-led media requirements.");
-    expect(html).toContain("0 live products and 0 live categories in Supabase");
+    expect(normalizedHtml).toContain("0 live products and 0 live categories in Supabase");
     expect(html).toContain("Protected ROSA identity");
     expect(html).not.toContain("data-admin-media-requirement");
     expect(html).not.toContain("data-preview-only");
