@@ -21,6 +21,7 @@ export function ProductGallery({
               decorative
               aspect="portrait"
               src={index === 0 ? product.mediaPath : undefined}
+              spriteIndex={index === 0 ? product.mediaIndex : undefined}
             />
           </span>
         ))}
@@ -32,6 +33,7 @@ export function ProductGallery({
           decorative
           aspect="portrait"
           src={product.mediaPath}
+          spriteIndex={product.mediaIndex}
         />
         <span className="product-gallery__zoom-note">
           {product.mediaPath ? "Catalogue image · review branch" : "Zoom preview activates next phase"}
