@@ -28,6 +28,8 @@ export interface CatalogueProductRecord {
   mediaLabel: string;
   mediaPath?: string;
   mediaIndex?: number;
+  mediaSourceUrl?: string;
+  mediaReviewNote?: string;
 }
 
 export type CatalogueRouteResult =
