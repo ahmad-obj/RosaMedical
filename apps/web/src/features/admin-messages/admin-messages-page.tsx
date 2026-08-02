@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import {
   AdminAlert,
   AdminPageHeader,
@@ -9,7 +10,8 @@ import {
 import {
   ADMIN_MESSAGE_WORKFLOW,
   MESSAGE_WORKFLOW_COPY,
-  getMessageStatusTone
+  getMessageStatusTone,
+  type AdminMessageStatus
 } from "./admin-message-workflow";
 import { updateMessageStatus } from "./actions";
 import type { ContactMessage } from "@/lib/supabase/types";
@@ -77,12 +79,12 @@ export function AdminMessagesPage() {
 
   useEffect(() => {
     async function fetchMessages() {
-      const res = await fetch("/api/messages");
-      const data = await res.json();
-      setMessages(data);
+      const response = await fetch("/api/messages");
+      const data: unknown = await response.json();
+      setMessages(Array.isArray(data) ? data as ContactMessage[] : []);
       setLoaded(true);
     }
-    fetchMessages();
+    void fetchMessages();
   }, []);
 
   return (
@@ -95,44 +97,44 @@ export function AdminMessagesPage() {
 
       {messages.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
-          {messages.map((msg) => {
-            const currentStatus = msg.status || "New";
+          {messages.map((message) => {
+            const currentStatus = (message.status || "New") as AdminMessageStatus;
             return (
-              <div key={msg.id} style={{ border: "1px solid #333", padding: "1.5rem", borderRadius: "0.5rem", background: "#111" }}>
+              <div key={message.id} style={{ border: "1px solid #333", padding: "1.5rem", borderRadius: "0.5rem", background: "#111" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                  <h3 style={{ margin: 0, color: "white" }}>{msg.name}</h3>
-                  <AdminStatusBadge tone={getMessageStatusTone(currentStatus as any)}>
+                  <h3 style={{ margin: 0, color: "white" }}>{message.name}</h3>
+                  <AdminStatusBadge tone={getMessageStatusTone(currentStatus)}>
                     {currentStatus}
                   </AdminStatusBadge>
                 </div>
-                <p style={{ color: "#888", fontSize: "0.875rem", marginBottom: "0.5rem" }}>{msg.email} · {msg.phone}</p>
-                {msg.company && <p style={{ color: "#aaa", fontSize: "0.875rem", marginBottom: "0.25rem" }}>Company: {msg.company}</p>}
-                {msg.subject && <p style={{ color: "#aaa", fontSize: "0.875rem", marginBottom: "0.25rem" }}>Subject: {msg.subject}</p>}
-                <p style={{ color: "#ccc", marginTop: "0.5rem", whiteSpace: "pre-wrap" }}>{msg.message}</p>
-                {msg.admin_note && (
+                <p style={{ color: "#888", fontSize: "0.875rem", marginBottom: "0.5rem" }}>{message.email} · {message.phone}</p>
+                {message.company && <p style={{ color: "#aaa", fontSize: "0.875rem", marginBottom: "0.25rem" }}>Company: {message.company}</p>}
+                {message.subject && <p style={{ color: "#aaa", fontSize: "0.875rem", marginBottom: "0.25rem" }}>Subject: {message.subject}</p>}
+                <p style={{ color: "#ccc", marginTop: "0.5rem", whiteSpace: "pre-wrap" }}>{message.message}</p>
+                {message.admin_note && (
                   <div style={{ marginTop: "0.75rem", padding: "0.75rem", backgroundColor: "#0d1117", borderLeft: "3px solid #3b82f6", borderRadius: "0.25rem" }}>
                     <p style={{ margin: 0, color: "#60a5fa", fontSize: "0.75rem", fontWeight: "bold", marginBottom: "0.25rem" }}>Admin Note / Reply:</p>
-                    <p style={{ margin: 0, color: "#ccc", fontSize: "0.875rem", whiteSpace: "pre-wrap" }}>{msg.admin_note}</p>
+                    <p style={{ margin: 0, color: "#ccc", fontSize: "0.875rem", whiteSpace: "pre-wrap" }}>{message.admin_note}</p>
                   </div>
                 )}
-                
+
                 <form action={updateMessageStatus} style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                  <input type="hidden" name="id" value={msg.id} />
-                  <input 
-                    type="text" 
-                    name="admin_note" 
-                    placeholder="Add reply or note..." 
+                  <input type="hidden" name="id" value={message.id} />
+                  <input
+                    type="text"
+                    name="admin_note"
+                    placeholder="Add reply or note..."
                     style={{ padding: "0.5rem", borderRadius: "0.25rem", border: "1px solid #444", backgroundColor: "#222", color: "white", flexGrow: 1, fontSize: "0.875rem" }}
                   />
-                  <select 
-                    name="status" 
+                  <select
+                    name="status"
                     defaultValue={currentStatus}
                     style={{ padding: "0.5rem", borderRadius: "0.25rem", border: "1px solid #444", backgroundColor: "#222", color: "white" }}
                   >
-                    {ADMIN_MESSAGE_WORKFLOW.map((s) => <option key={s} value={s}>{s}</option>)}
+                    {ADMIN_MESSAGE_WORKFLOW.map((status) => <option key={status} value={status}>{status}</option>)}
                   </select>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     style={{ padding: "0.5rem 1rem", borderRadius: "0.25rem", border: "none", backgroundColor: "#3b82f6", color: "white", cursor: "pointer" }}
                   >
                     Update Status
