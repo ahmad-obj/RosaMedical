@@ -1,4 +1,3 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import {
   CATALOGUE_FAMILIES,
@@ -9,6 +8,7 @@ import {
   AdminDashboardPage,
   getAdminDashboardModel
 } from "@/features/admin-dashboard";
+import { renderServerComponent } from "@/test/render-server-component";
 
 describe("F3E-A dashboard", () => {
   it("derives catalogue metrics from existing registries", () => {
@@ -20,7 +20,7 @@ describe("F3E-A dashboard", () => {
     ]);
   });
 
-  it("keeps operational data unresolved", () => {
+  it("keeps the static model free of invented operational counts", () => {
     const model = getAdminDashboardModel();
     expect(model.operationalMetrics).toEqual([
       { key: "inquiries", label: "Quotation inquiries" },
@@ -33,14 +33,14 @@ describe("F3E-A dashboard", () => {
     expect(getAdminDashboardModel().readinessItems).toHaveLength(5);
   });
 
-  it("renders the source-backed dashboard without fake analytics", () => {
-    const html = renderToStaticMarkup(<AdminDashboardPage />);
+  it("renders catalogue metrics and live operational count boundaries without fake analytics", async () => {
+    const html = await renderServerComponent(<AdminDashboardPage />);
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("Rosa workspace overview.");
     expect(html).toContain("Product families");
     expect(html).toContain(">5<");
     expect(html).toContain(">20<");
-    expect((html.match(/Awaiting live data/g) ?? [])).toHaveLength(2);
+    expect((html.match(/>0</g) ?? []).length).toBeGreaterThanOrEqual(2);
     expect(html).not.toMatch(/revenue|orders|sales|growth|conversion|uptime/i);
     expect(html).not.toContain("data-preview-only");
   });
