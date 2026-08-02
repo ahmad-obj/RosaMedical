@@ -18,7 +18,11 @@ export function FamilyProductCard({
 }): ReactElement {
   return (
     <article className="family-product-card" data-product-card={product.id}>
-      <ProductMediaPlaceholder label={product.mediaLabel} decorative />
+      <ProductMediaPlaceholder
+        label={product.mediaLabel}
+        decorative
+        src={product.mediaPath}
+      />
       <div className="family-product-card__body">
         <p className="public-eyebrow">{family.name}</p>
         <h2>{product.name}</h2>
