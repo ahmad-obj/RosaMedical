@@ -1,5 +1,5 @@
 import { existsSync, statSync } from "node:fs";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   SCISSORS_BATCH_01_MEDIA,
@@ -8,6 +8,7 @@ import {
 } from "@/features/catalogue-media";
 import { SCISSORS_BATCH_01_CONFIGURATIONS } from "@/features/catalogue-registry/products/scissors-batch-01";
 
+const PUBLIC_ROOT = resolve(process.cwd(), "public");
 const VALID_ASSET: CatalogueMediaAsset = {
   id: "scissors-iris-regular-straight",
   familySlug: "scissors",
@@ -36,7 +37,7 @@ function expectManifestFailure(
 }
 
 function publicFile(runtimePath: string): string {
-  return resolve(process.cwd(), "public", runtimePath.replace(/^\//, ""));
+  return resolve(PUBLIC_ROOT, runtimePath.replace(/^\/+/, ""));
 }
 
 function mediaFor(...familyKeys: readonly string[]): readonly CatalogueMediaAsset[] {
@@ -46,6 +47,24 @@ function mediaFor(...familyKeys: readonly string[]): readonly CatalogueMediaAsse
     ).map((item) => item.mediaAssetId)
   );
   return SCISSORS_BATCH_01_MEDIA.filter((asset) => expectedIds.has(asset.id));
+}
+
+function expectLocalDerivative(
+  runtimePath: string,
+  extension: "avif" | "webp"
+): void {
+  expect(runtimePath).toMatch(
+    new RegExp(`^/media/catalogue-preview/scissors/.+\\.${extension}$`)
+  );
+  expect(runtimePath).not.toMatch(/^https?:\/\//);
+  expect(runtimePath).not.toContain("Thorhi-tools");
+
+  const file = publicFile(runtimePath);
+  const relativePath = relative(PUBLIC_ROOT, file);
+  expect(relativePath.startsWith("..")).toBe(false);
+  expect(relativePath).not.toBe("");
+  expect(existsSync(file), file).toBe(true);
+  expect(statSync(file).size, file).toBeGreaterThan(0);
 }
 
 describe("catalogue media manifest validation", () => {
@@ -108,20 +127,28 @@ describe("Scissors Batch 01 production media", () => {
     ).not.toThrow();
   });
 
-  it("stores non-empty AVIF and WebP derivatives locally", () => {
+  it("keeps every runtime derivative inside the local Scissors media directory", () => {
     for (const asset of SCISSORS_BATCH_01_MEDIA) {
-      expect(asset.avifPath).toMatch(
-        /^\/media\/catalogue-preview\/scissors\/.+\.avif$/
-      );
-      expect(asset.webpPath).toMatch(
-        /^\/media\/catalogue-preview\/scissors\/.+\.webp$/
-      );
+      expectLocalDerivative(asset.avifPath, "avif");
+      expectLocalDerivative(asset.webpPath, "webp");
+    }
+  });
 
-      for (const path of [asset.avifPath, asset.webpPath]) {
-        const file = publicFile(path);
-        expect(existsSync(file), file).toBe(true);
-        expect(statSync(file).size, file).toBeGreaterThan(0);
-      }
+  it("records complete provenance and review metadata for every asset", () => {
+    const matchGrades = ["exact", "strong-match", "acceptable-similar"];
+    const rightsModes = ["preferred-safe", "supplier-fallback"];
+    const backgrounds = ["transparent", "clean-white"];
+    const reviewStatuses = ["candidate", "approved", "needs-replacement"];
+
+    for (const asset of SCISSORS_BATCH_01_MEDIA) {
+      expect(asset.sourcePageUrl.trim(), asset.id).not.toBe("");
+      expect(asset.processingNotes.trim(), asset.id).not.toBe("");
+      expect(asset.orientationNotes.trim(), asset.id).not.toBe("");
+      expect(asset.reuseScope.trim(), asset.id).not.toBe("");
+      expect(matchGrades, asset.id).toContain(asset.matchGrade);
+      expect(rightsModes, asset.id).toContain(asset.rightsMode);
+      expect(backgrounds, asset.id).toContain(asset.background);
+      expect(reviewStatuses, asset.id).toContain(asset.reviewStatus);
     }
   });
 
