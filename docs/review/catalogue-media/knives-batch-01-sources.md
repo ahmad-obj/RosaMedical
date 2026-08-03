@@ -1,6 +1,6 @@
 # Knives Batch 01 Source and Review Ledger
 
-Status: isolated preview candidates; not merged, deployed, approved, or transferred to Supabase.
+Status: approved isolated preview media; not merged, deployed, or transferred to Supabase.
 
 ## Batch scope
 
@@ -19,14 +19,14 @@ Status: isolated preview candidates; not merged, deployed, approved, or transfer
 
 | Asset ID | Codes | Catalogue size | Match grade | Review status |
 |---|---|---|---|---|
-| `knives-number-3` | `18-0103`, `18-0103S` | 12.0 cm | strong-match | candidate |
-| `knives-number-4` | `18-0104`, `18-0104S` | 13.0 cm | strong-match | candidate |
-| `knives-number-7` | `18-0107` | 16.0 cm | strong-match | candidate |
-| `knives-micro-surgery-handle` | `18-0202` | 15.5 cm | strong-match | candidate |
-| `knives-number-3-long` | `18-0103L` | 21.0 cm | strong-match | candidate |
-| `knives-number-3-long-curved` | `18-0113L` | 20.5 cm | strong-match | candidate |
-| `knives-number-4-long` | `18-0104L` | 21.0 cm | strong-match | candidate |
-| `knives-liston` | `18-0401`–`18-0404` | 13.0–21.5 cm | strong-match | candidate |
+| `knives-number-3` | `18-0103`, `18-0103S` | 12.0 cm | strong-match | approved |
+| `knives-number-4` | `18-0104`, `18-0104S` | 13.0 cm | strong-match | approved |
+| `knives-number-7` | `18-0107` | 16.0 cm | strong-match | approved |
+| `knives-micro-surgery-handle` | `18-0202` | 15.5 cm | strong-match | approved |
+| `knives-number-3-long` | `18-0103L` | 21.0 cm | strong-match | approved |
+| `knives-number-3-long-curved` | `18-0113L` | 20.5 cm | strong-match | approved |
+| `knives-number-4-long` | `18-0104L` | 21.0 cm | strong-match | approved |
+| `knives-liston` | `18-0401`–`18-0404` | 13.0–21.5 cm | strong-match | approved |
 
 The No. 3 and No. 4 records each retain the two catalogue codes printed under one visible handle configuration. Liston groups only its four listed size variants.
 
@@ -34,12 +34,12 @@ The No. 3 and No. 4 records each retain the two catalogue codes printed under on
 
 | Asset ID | Codes | Catalogue size | Match grade | Review status |
 |---|---|---|---|---|
-| `knives-number-9` | `18-0109` | 12.0 cm | strong-match | candidate |
-| `knives-hexagonal` | `18-0646` | 16.0 cm | strong-match | candidate |
-| `knives-round-straight` | `18-0644` | 14.5 cm | strong-match | candidate |
-| `knives-round-curved` | `18-0645` | 14.5 cm | strong-match | candidate |
-| `knives-long-handle` | `18-0647` | 16.0 cm | strong-match | candidate |
-| `knives-short-handle` | `18-0648` | 10.0 cm | strong-match | candidate |
+| `knives-number-9` | `18-0109` | 12.0 cm | strong-match | approved |
+| `knives-hexagonal` | `18-0646` | 16.0 cm | strong-match | approved |
+| `knives-round-straight` | `18-0644` | 14.5 cm | strong-match | approved |
+| `knives-round-curved` | `18-0645` | 14.5 cm | strong-match | approved |
+| `knives-long-handle` | `18-0647` | 16.0 cm | strong-match | approved |
+| `knives-short-handle` | `18-0648` | 10.0 cm | strong-match | approved |
 
 The straight and curved round handles remain separate because the catalogue shows distinct full-body direction geometry. Long and Short adjustable handles remain separate and retain the detachable head shown with each catalogue body.
 
@@ -47,19 +47,15 @@ The straight and curved round handles remain separate because the catalogue show
 
 | Asset ID | Codes | Catalogue size | Match grade | Review status |
 |---|---|---|---|---|
-| `knives-saalfeld-comedo-extractor` | `19-0400` | 14.0 cm | strong-match | candidate |
-| `knives-fox-lupus-curettes` | `19-0503`–`19-0506` | 3–6 mm working ends | strong-match | candidate |
-| `knives-keyes-dermal-punches` | `19-0702`–`19-0708` | 2–8 mm diameters | strong-match | candidate |
-| `knives-keyes-dermal-punch-set` | `19-0800` | 19.0 cm | strong-match | candidate |
+| `knives-saalfeld-comedo-extractor` | `19-0400` | 14.0 cm | strong-match | approved |
+| `knives-fox-lupus-curettes` | `19-0503`–`19-0506` | 3–6 mm working ends | strong-match | approved |
+| `knives-keyes-dermal-punches` | `19-0702`–`19-0708` | 2–8 mm diameters | strong-match | approved |
+| `knives-keyes-dermal-punch-set` | `19-0800` | 19.0 cm | strong-match | approved |
 
 Fox retains the full-body instrument and all four exact printed working-end sizes in one grouped configuration. Keyes individual punches retain the body and all seven printed diameter references. The Keyes set preserves the photographed rack, handle, and six interchangeable tips as one catalogue set.
 
-## Review gate
+## Review decision
 
-Ahmad must classify the reviewed batch as one of:
+Ahmad reviewed the generated contact sheet after the focused 28-test Vitest gate and six responsive Playwright checks passed. On 2026-08-04 he approved all 18 assets with no accepted fallbacks and no requested replacements.
 
-- `approved`
-- `accepted-fallback`
-- `needs-replacement`
-
-No candidate is represented as approved production media before Ahmad reviews the generated contact sheet. Approval will not change the recorded match grade or authorize merge, deployment, or Supabase transfer.
+Approval does not alter the recorded match grades and does not authorize merge, deployment, or Supabase transfer.
