@@ -1,64 +1,56 @@
+import { SCISSORS_BATCH_01_MEDIA } from "@/features/catalogue-media";
 import type { CatalogueProductRecord } from "../types";
+import { SCISSORS_BATCH_01_CONFIGURATIONS } from "./scissors-batch-01";
 
-export const SCISSOR_PRODUCTS = [
-  {
-    id: "product_mayo_scissors",
-    familySlug: "scissors",
-    slug: "mayo-scissors",
-    name: "Mayo Scissors",
-    code: "04-0402",
-    description:
-      "Catalogue-listed Mayo Scissors presented with the stated length and direction.",
-    sizes: ["17 cm"],
-    variants: ["Regular"],
-    directions: ["Straight"],
-    primaryOption: "17 cm",
-    catalogueReference: { family: "Scissors", page: "2" },
-    mediaLabel: "Mayo Scissors placeholder"
-  },
-  {
-    id: "product_iris_scissors",
-    familySlug: "scissors",
-    slug: "iris-scissors",
-    name: "Iris Scissors",
-    code: "04-0901",
-    description:
-      "Catalogue-listed Iris Scissors presented with the stated length, direction and point option.",
-    sizes: ["10.5 cm"],
-    variants: ["Regular", "Sharp"],
-    directions: ["Straight"],
-    primaryOption: "10.5 cm",
-    catalogueReference: { family: "Scissors", page: "1" },
-    mediaLabel: "Iris Scissors placeholder"
-  },
-  {
-    id: "product_sims_scissors",
-    familySlug: "scissors",
-    slug: "sims-scissors",
-    name: "Sims Scissors",
-    code: "04-0701",
-    description:
-      "Catalogue-listed Sims Scissors presented with the stated length and direction.",
-    sizes: ["20 cm"],
-    variants: ["Regular"],
-    directions: ["Straight"],
-    primaryOption: "20 cm",
-    catalogueReference: { family: "Scissors", page: "4" },
-    mediaLabel: "Sims Scissors placeholder"
-  },
-  {
-    id: "product_pottsmith_scissors",
-    familySlug: "scissors",
-    slug: "pottsmith-scissors",
-    name: "Pottsmith Scissors",
-    code: "04-3701",
-    description:
-      "Catalogue-listed Pottsmith Scissors presented with the stated angle.",
-    sizes: [],
-    variants: ["Regular"],
-    directions: ["25° angled"],
-    primaryOption: "25° angled",
-    catalogueReference: { family: "Scissors", page: "10" },
-    mediaLabel: "Pottsmith Scissors placeholder"
+const MEDIA_BY_ID = new Map(
+  SCISSORS_BATCH_01_MEDIA.map((asset) => [asset.id, asset] as const)
+);
+
+function unique(values: readonly string[]): readonly string[] {
+  return [...new Set(values)];
+}
+
+export const SCISSOR_PRODUCTS = SCISSORS_BATCH_01_CONFIGURATIONS.map(
+  (configuration): CatalogueProductRecord => {
+    const catalogueCodes = configuration.codeOptions.map(({ code, size }) => ({
+      code,
+      size
+    }));
+    const primaryCode = catalogueCodes[0];
+    const media = MEDIA_BY_ID.get(configuration.mediaAssetId);
+
+    if (!primaryCode) {
+      throw new Error(`Missing catalogue code for ${configuration.id}`);
+    }
+
+    if (!media) {
+      throw new Error(
+        `Missing catalogue media for ${configuration.id}: ${configuration.mediaAssetId}`
+      );
+    }
+
+    return {
+      id: configuration.id,
+      familySlug: "scissors",
+      slug: configuration.slug,
+      name: configuration.name,
+      code: primaryCode.code,
+      description: `Catalogue-listed ${configuration.name} in ${configuration.finish}, ${configuration.direction.toLowerCase()}, ${configuration.pointStyle.toLowerCase()} configuration. Sizes are grouped only where the visible instrument configuration remains the same.`,
+      sizes: unique(catalogueCodes.map((option) => option.size)),
+      variants: [configuration.finish, configuration.pointStyle],
+      directions: [configuration.direction],
+      primaryOption: `${configuration.finish} · ${configuration.direction} · ${configuration.pointStyle}`,
+      catalogueReference: {
+        family: "Scissors",
+        page: configuration.cataloguePage
+      },
+      mediaLabel: `${configuration.name}, ${configuration.finish}, ${configuration.direction}, ${configuration.pointStyle}`,
+      catalogueCodes,
+      mediaAssetId: configuration.mediaAssetId,
+      mediaPath: media.avifPath,
+      mediaFallbackPath: media.webpPath,
+      mediaSourceUrl: media.sourcePageUrl,
+      mediaReviewNote: `${media.matchGrade} · ${media.rightsMode} · ${media.background} · ${media.reviewStatus}`
+    };
   }
-] as const satisfies readonly CatalogueProductRecord[];
+) as readonly CatalogueProductRecord[];
