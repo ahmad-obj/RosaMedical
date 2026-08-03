@@ -8,7 +8,7 @@ export type CatalogueMediaReviewStatus =
   | "candidate"
   | "approved"
   | "needs-replacement";
-export type CatalogueMediaFamilySlug = "scissors" | "chisels";
+export type CatalogueMediaFamilySlug = "scissors" | "chisels" | "cutters";
 
 export interface CatalogueMediaAsset {
   id: string;
