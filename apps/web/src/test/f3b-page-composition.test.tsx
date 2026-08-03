@@ -4,7 +4,7 @@ import { FamilyListingPage } from "@/features/family-listing/family-listing-page
 import { ProductDetailPage } from "@/features/product-detail/product-detail-page";
 
 const FAMILY_CASES = [
-  ["knives", 4],
+  ["knives", 22],
   ["scissors", 42],
   ["punches", 4],
   ["chisels", 20],
@@ -31,10 +31,10 @@ describe("F3B family composition", () => {
 describe("F3B product composition", () => {
   it("renders specifications and related products without false success", () => {
     const html = renderToStaticMarkup(
-      <ProductDetailPage familySlug="knives" productSlug="scalpel-handle-no-3" />
+      <ProductDetailPage familySlug="knives" productSlug="number-3" />
     );
     expect((html.match(/<h1/g) || [])).toHaveLength(1);
-    expect(html).toContain("18-0644");
+    expect(html).toContain("18-0103");
     expect(html).toContain("<table");
     expect(html).toContain("More from Knives");
     expect(html).not.toContain("Added to your inquiry");
@@ -51,7 +51,7 @@ describe("F3B product composition", () => {
     expect(
       ProductDetailPage({
         familySlug: "scissors",
-        productSlug: "scalpel-handle-no-3"
+        productSlug: "number-3"
       })
     ).toBeNull();
   });
