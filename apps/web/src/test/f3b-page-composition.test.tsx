@@ -3,13 +3,25 @@ import { describe, expect, it } from "vitest";
 import { FamilyListingPage } from "@/features/family-listing/family-listing-page";
 import { ProductDetailPage } from "@/features/product-detail/product-detail-page";
 
+const FAMILY_CASES = [
+  ["knives", 4],
+  ["scissors", 42],
+  ["punches", 4],
+  ["chisels", 4],
+  ["cutters", 4]
+] as const;
+
 describe("F3B family composition", () => {
-  it.each(["knives", "scissors", "punches", "chisels", "cutters"])(
-    "renders the %s family with one h1 and four products",
-    (familySlug) => {
-      const html = renderToStaticMarkup(<FamilyListingPage familySlug={familySlug} />);
+  it.each(FAMILY_CASES)(
+    "renders the %s family with one h1 and %i products",
+    (familySlug, expectedProducts) => {
+      const html = renderToStaticMarkup(
+        <FamilyListingPage familySlug={familySlug} />
+      );
       expect((html.match(/<h1/g) || [])).toHaveLength(1);
-      expect((html.match(/data-product-card=/g) || [])).toHaveLength(4);
+      expect((html.match(/data-product-card=/g) || [])).toHaveLength(
+        expectedProducts
+      );
       expect(html).not.toContain("<form");
       expect(html).not.toMatch(/in stock|checkout|rating|certified/i);
     }
@@ -36,6 +48,11 @@ describe("F3B product composition", () => {
   });
 
   it("returns null for invalid combinations", () => {
-    expect(ProductDetailPage({ familySlug: "scissors", productSlug: "scalpel-handle-no-3" })).toBeNull();
+    expect(
+      ProductDetailPage({
+        familySlug: "scissors",
+        productSlug: "scalpel-handle-no-3"
+      })
+    ).toBeNull();
   });
 });
