@@ -12,7 +12,8 @@ export type CatalogueMediaFamilySlug =
   | "scissors"
   | "chisels"
   | "cutters"
-  | "knives";
+  | "knives"
+  | "punches";
 
 export interface CatalogueMediaAsset {
   id: string;
