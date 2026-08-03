@@ -58,14 +58,14 @@ describe("Knives Batch 01 production media", () => {
     }
   });
 
-  it("records complete client-catalogue provenance for all candidates", () => {
+  it("records complete client-catalogue provenance for all approved assets", () => {
     for (const asset of KNIVES_BATCH_01_MEDIA) {
       expect(asset.familySlug).toBe("knives");
       expect(asset.sourcePageUrl).toContain("knives-batch-01-sources.md");
       expect(asset.matchGrade).toBe("strong-match");
       expect(asset.rightsMode).toBe("preferred-safe");
       expect(asset.background).toBe("transparent");
-      expect(asset.reviewStatus).toBe("candidate");
+      expect(asset.reviewStatus).toBe("approved");
       expect(asset.processingNotes.trim()).not.toBe("");
       expect(asset.orientationNotes.trim()).not.toBe("");
       expect(asset.reuseScope.trim()).not.toBe("");
