@@ -7,7 +7,7 @@ const FAMILY_CASES = [
   ["knives", 4],
   ["scissors", 42],
   ["punches", 4],
-  ["chisels", 4],
+  ["chisels", 20],
   ["cutters", 4]
 ] as const;
 
