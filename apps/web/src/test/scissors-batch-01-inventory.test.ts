@@ -30,6 +30,20 @@ describe("Scissors Batch 01 inventory", () => {
     expect(new Set(codes).size).toBe(132);
   });
 
+  it("maps every catalogue code to exactly one configuration", () => {
+    const ownerByCode = new Map<string, string>();
+
+    for (const configuration of SCISSORS_BATCH_01_CONFIGURATIONS) {
+      for (const option of configuration.codeOptions) {
+        expect(ownerByCode.has(option.code), option.code).toBe(false);
+        ownerByCode.set(option.code, configuration.id);
+      }
+    }
+
+    expect(ownerByCode.size).toBe(132);
+    expect(new Set(ownerByCode.values()).size).toBeLessThanOrEqual(42);
+  });
+
   it("uses the catalogue-confirmed Iris and Stevens mappings", () => {
     const irisCodes = SCISSORS_BATCH_01_CONFIGURATIONS
       .filter((item) => item.familyKey === "iris")
@@ -70,6 +84,28 @@ describe("Scissors Batch 01 inventory", () => {
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(slugs).size).toBe(slugs.length);
     expect(new Set(mediaIds).size).toBe(mediaIds.length);
+  });
+
+  it("does not share media across different visible configurations", () => {
+    const signatureByMediaId = new Map<string, string>();
+
+    for (const configuration of SCISSORS_BATCH_01_CONFIGURATIONS) {
+      const signature = [
+        configuration.familyKey,
+        configuration.finish,
+        configuration.direction,
+        configuration.pointStyle
+      ].join("|");
+      const existing = signatureByMediaId.get(configuration.mediaAssetId);
+
+      if (existing) {
+        expect(existing, configuration.mediaAssetId).toBe(signature);
+      } else {
+        signatureByMediaId.set(configuration.mediaAssetId, signature);
+      }
+    }
+
+    expect(signatureByMediaId.size).toBe(42);
   });
 
   it("preserves the established Mayo inquiry route", () => {
