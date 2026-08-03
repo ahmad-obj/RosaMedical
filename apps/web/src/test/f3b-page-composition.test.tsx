@@ -6,7 +6,7 @@ import { ProductDetailPage } from "@/features/product-detail/product-detail-page
 const FAMILY_CASES = [
   ["knives", 22],
   ["scissors", 42],
-  ["punches", 4],
+  ["punches", 15],
   ["chisels", 20],
   ["cutters", 14]
 ] as const;
@@ -38,6 +38,16 @@ describe("F3B product composition", () => {
     expect(html).toContain("<table");
     expect(html).toContain("More from Knives");
     expect(html).not.toContain("Added to your inquiry");
+  });
+
+  it("renders the established Yeoman route with Batch 01 catalogue data", () => {
+    const html = renderToStaticMarkup(
+      <ProductDetailPage familySlug="punches" productSlug="yeoman" />
+    );
+    expect((html.match(/<h1/g) || [])).toHaveLength(1);
+    expect(html).toContain("21-1001");
+    expect(html).toContain("28.0 cm");
+    expect(html).toContain("More from Punches");
   });
 
   it("omits unsupported specification rows", () => {
