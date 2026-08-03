@@ -46,6 +46,7 @@ function mediaFor(...familyKeys: readonly string[]): readonly CatalogueMediaAsse
       familyKeys.includes(item.familyKey)
     ).map((item) => item.mediaAssetId)
   );
+
   return SCISSORS_BATCH_01_MEDIA.filter((asset) => expectedIds.has(asset.id));
 }
 
@@ -134,11 +135,10 @@ describe("Scissors Batch 01 production media", () => {
     }
   });
 
-  it("records complete provenance and review metadata for every asset", () => {
+  it("records complete provenance and approved review metadata for every asset", () => {
     const matchGrades = ["exact", "strong-match", "acceptable-similar"];
     const rightsModes = ["preferred-safe", "supplier-fallback"];
     const backgrounds = ["transparent", "clean-white"];
-    const reviewStatuses = ["candidate", "approved", "needs-replacement"];
 
     for (const asset of SCISSORS_BATCH_01_MEDIA) {
       expect(asset.sourcePageUrl.trim(), asset.id).not.toBe("");
@@ -148,7 +148,7 @@ describe("Scissors Batch 01 production media", () => {
       expect(matchGrades, asset.id).toContain(asset.matchGrade);
       expect(rightsModes, asset.id).toContain(asset.rightsMode);
       expect(backgrounds, asset.id).toContain(asset.background);
-      expect(reviewStatuses, asset.id).toContain(asset.reviewStatus);
+      expect(asset.reviewStatus, asset.id).toBe("approved");
     }
   });
 
@@ -160,9 +160,9 @@ describe("Scissors Batch 01 production media", () => {
     expect(wave1).toHaveLength(12);
     expect(straight).toHaveLength(6);
     expect(curved).toHaveLength(6);
-    expect(
-      straight.every((asset) => asset.matchGrade === "strong-match")
-    ).toBe(true);
+    expect(straight.every((asset) => asset.matchGrade === "strong-match")).toBe(
+      true
+    );
     expect(
       curved.every((asset) => asset.matchGrade === "acceptable-similar")
     ).toBe(true);
@@ -171,12 +171,12 @@ describe("Scissors Batch 01 production media", () => {
         (asset) =>
           asset.rightsMode === "preferred-safe" &&
           asset.background === "transparent" &&
-          asset.reviewStatus === "candidate"
+          asset.reviewStatus === "approved"
       )
     ).toBe(true);
   });
 
-  it("records all 12 Mayo and Metzenbaum catalogue-derived candidates honestly", () => {
+  it("records all 12 approved Mayo and Metzenbaum catalogue-derived assets honestly", () => {
     const wave2 = mediaFor("mayo", "metzenbaum");
     const straight = wave2.filter((asset) => asset.id.endsWith("-straight"));
     const curved = wave2.filter((asset) => asset.id.endsWith("-curved"));
@@ -188,9 +188,9 @@ describe("Scissors Batch 01 production media", () => {
     ).toHaveLength(6);
     expect(straight).toHaveLength(6);
     expect(curved).toHaveLength(6);
-    expect(
-      straight.every((asset) => asset.matchGrade === "strong-match")
-    ).toBe(true);
+    expect(straight.every((asset) => asset.matchGrade === "strong-match")).toBe(
+      true
+    );
     expect(
       curved.every((asset) => asset.matchGrade === "acceptable-similar")
     ).toBe(true);
@@ -200,12 +200,12 @@ describe("Scissors Batch 01 production media", () => {
           asset.sourcePageUrl.includes("scissors-batch-01-sources.md") &&
           asset.rightsMode === "preferred-safe" &&
           asset.background === "transparent" &&
-          asset.reviewStatus === "candidate"
+          asset.reviewStatus === "approved"
       )
     ).toBe(true);
   });
 
-  it("records six exact-shape Regular Operating supplier candidates", () => {
+  it("records six approved exact-shape Regular Operating supplier assets", () => {
     const operating = mediaFor("operating");
     const regular = operating.filter((asset) =>
       asset.id.includes("-operating-regular-")
@@ -218,16 +218,18 @@ describe("Scissors Batch 01 production media", () => {
         (asset) =>
           asset.sourcePageUrl ===
             "https://www.mpmmedicalsupply.com/products/operating-scissors" &&
-          asset.originalImageUrl?.includes("/cdn/shop/products/operating-scissor-") &&
+          asset.originalImageUrl?.includes(
+            "/cdn/shop/products/operating-scissor-"
+          ) &&
           asset.matchGrade === "strong-match" &&
           asset.rightsMode === "supplier-fallback" &&
           asset.background === "transparent" &&
-          asset.reviewStatus === "candidate"
+          asset.reviewStatus === "approved"
       )
     ).toBe(true);
   });
 
-  it("records twelve finish-specific Operating montage candidates without overstating confidence", () => {
+  it("records twelve approved finish-specific Operating montages without overstating confidence", () => {
     const operating = mediaFor("operating");
     const montage = operating.filter(
       (asset) => !asset.id.includes("-operating-regular-")
@@ -237,12 +239,16 @@ describe("Scissors Batch 01 production media", () => {
     expect(
       montage.every(
         (asset) =>
-          asset.sourcePageUrl.includes("#client-catalogue-page-2-operating") &&
-          asset.originalImageUrl?.includes("/cdn/shop/products/operating-scissor-") &&
+          asset.sourcePageUrl.includes(
+            "#client-catalogue-page-2-operating"
+          ) &&
+          asset.originalImageUrl?.includes(
+            "/cdn/shop/products/operating-scissor-"
+          ) &&
           asset.matchGrade === "acceptable-similar" &&
           asset.rightsMode === "preferred-safe" &&
           asset.background === "transparent" &&
-          asset.reviewStatus === "candidate"
+          asset.reviewStatus === "approved"
       )
     ).toBe(true);
   });
