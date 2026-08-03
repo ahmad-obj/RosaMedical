@@ -6,7 +6,8 @@ import type {
 const SUPPORTED_FAMILIES: readonly CatalogueMediaFamilySlug[] = [
   "scissors",
   "chisels",
-  "cutters"
+  "cutters",
+  "knives"
 ];
 
 function assertNonEmpty(value: string, field: string, id: string): void {
