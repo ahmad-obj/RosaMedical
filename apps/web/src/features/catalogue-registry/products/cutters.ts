@@ -1,51 +1,75 @@
+import { CUTTERS_BATCH_01_MEDIA } from "@/features/catalogue-media";
 import type { CatalogueProductRecord } from "../types";
+import { CUTTERS_BATCH_01_CONFIGURATIONS } from "./cutters-batch-01";
 
-export const CUTTER_PRODUCTS = [
-  {
-    id: "product_liston",
-    familySlug: "cutters",
-    slug: "liston",
-    name: "Liston",
-    code: "36-5101",
-    description:
-      "Catalogue-listed Liston pattern presented with the stated length and direction.",
-    sizes: ["14.0 cm"],
-    variants: [],
-    directions: ["Straight"],
-    primaryOption: "14.0 cm",
-    catalogueReference: { family: "Cutters", page: "1" },
-    mediaLabel: "Liston placeholder"
-  },
-  {
-    id: "product_cleveland",
-    familySlug: "cutters",
-    slug: "cleveland",
-    name: "Cleveland",
-    code: "36-5401",
-    description:
-      "Catalogue-listed Cleveland pattern presented with the stated length.",
-    sizes: ["15.0 cm"],
-    variants: [],
-    directions: [],
-    primaryOption: "15.0 cm",
-    catalogueReference: { family: "Cutters", page: "1" },
-    mediaLabel: "Cleveland placeholder"
-  },
-  {
-    id: "product_bohler",
-    familySlug: "cutters",
-    slug: "bohler",
-    name: "Bohler",
-    code: "36-5501",
-    description:
-      "Catalogue-listed Bohler pattern presented with the stated length and direction.",
-    sizes: ["15.0 cm"],
-    variants: [],
-    directions: ["Straight"],
-    primaryOption: "15.0 cm",
-    catalogueReference: { family: "Cutters", page: "1" },
-    mediaLabel: "Bohler placeholder"
-  },
+const MEDIA_BY_ID = new Map(
+  CUTTERS_BATCH_01_MEDIA.map((asset) => [asset.id, asset] as const)
+);
+
+function unique(values: readonly string[]): readonly string[] {
+  return [...new Set(values)];
+}
+
+export const CUTTERS_BATCH_01_PRODUCTS = CUTTERS_BATCH_01_CONFIGURATIONS.map(
+  (configuration): CatalogueProductRecord => {
+    const catalogueCodes = configuration.codeOptions.map(({ code, size }) => ({
+      code,
+      size
+    }));
+    const primaryCode = catalogueCodes[0];
+    const media = MEDIA_BY_ID.get(configuration.mediaAssetId);
+
+    if (!primaryCode) {
+      throw new Error(`Missing catalogue code for ${configuration.id}`);
+    }
+
+    if (!media) {
+      throw new Error(
+        `Missing catalogue media for ${configuration.id}: ${configuration.mediaAssetId}`
+      );
+    }
+
+    const directionLabel =
+      configuration.direction === "Not specified"
+        ? ""
+        : ` in ${configuration.direction.toLowerCase()} form`;
+
+    return {
+      id: configuration.id,
+      familySlug: "cutters",
+      slug: configuration.slug,
+      name: configuration.name,
+      code: primaryCode.code,
+      description: `Catalogue-listed ${configuration.name}${directionLabel}. Size-only code variants remain grouped where the visible instrument configuration is unchanged.`,
+      sizes: unique(catalogueCodes.map((option) => option.size)),
+      variants: [],
+      directions:
+        configuration.direction === "Not specified"
+          ? []
+          : [configuration.direction],
+      primaryOption:
+        configuration.direction === "Not specified"
+          ? primaryCode.size
+          : configuration.direction,
+      catalogueReference: {
+        family: "Cutters",
+        page: configuration.cataloguePage
+      },
+      mediaLabel:
+        configuration.direction === "Not specified"
+          ? configuration.name
+          : `${configuration.name}, ${configuration.direction}`,
+      catalogueCodes,
+      mediaAssetId: configuration.mediaAssetId,
+      mediaPath: media.avifPath,
+      mediaFallbackPath: media.webpPath,
+      mediaSourceUrl: media.sourcePageUrl,
+      mediaReviewNote: `${media.matchGrade} · ${media.rightsMode} · ${media.background} · ${media.reviewStatus}`
+    };
+  }
+) as readonly CatalogueProductRecord[];
+
+const ESTABLISHED_CUTTER_PRODUCTS = [
   {
     id: "product_sc_01t",
     familySlug: "cutters",
@@ -61,4 +85,9 @@ export const CUTTER_PRODUCTS = [
     catalogueReference: { family: "Cutters", page: "10" },
     mediaLabel: "SC-01T placeholder"
   }
+] as const satisfies readonly CatalogueProductRecord[];
+
+export const CUTTER_PRODUCTS = [
+  ...CUTTERS_BATCH_01_PRODUCTS,
+  ...ESTABLISHED_CUTTER_PRODUCTS
 ] as const satisfies readonly CatalogueProductRecord[];
