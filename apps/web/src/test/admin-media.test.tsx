@@ -1,6 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { CATALOGUE_FAMILIES, CATALOGUE_PRODUCTS } from "@/features/catalogue-registry";
+import {
+  CATALOGUE_FAMILIES,
+  CATALOGUE_PRODUCTS
+} from "@/features/catalogue-registry";
 import { CATALOGUE_DOCUMENTS } from "@/features/catalogues";
 import {
   AdminMediaImageInUsePreview,
@@ -12,20 +15,34 @@ import {
   getAdminMediaRequirements
 } from "@/features/admin-media";
 
+function expectedRequirementCount(): number {
+  return (
+    CATALOGUE_PRODUCTS.length +
+    CATALOGUE_DOCUMENTS.length +
+    CATALOGUE_FAMILIES.length
+  );
+}
+
 describe("F3E-B media requirements", () => {
-  it("derives thirty transient requirements from current source", () => {
+  it("derives transient requirements from the current catalogue source", () => {
     const requirements = getAdminMediaRequirements();
-    expect(requirements).toHaveLength(
-      CATALOGUE_PRODUCTS.length + CATALOGUE_DOCUMENTS.length + CATALOGUE_FAMILIES.length
+    expect(requirements).toHaveLength(expectedRequirementCount());
+    expect(requirements.filter((item) => item.kind === "product")).toHaveLength(
+      CATALOGUE_PRODUCTS.length
     );
-    expect(requirements.filter((item) => item.kind === "product")).toHaveLength(20);
-    expect(requirements.filter((item) => item.kind === "catalogue-cover")).toHaveLength(5);
-    expect(requirements.filter((item) => item.kind === "family-imagery")).toHaveLength(5);
+    expect(
+      requirements.filter((item) => item.kind === "catalogue-cover")
+    ).toHaveLength(CATALOGUE_DOCUMENTS.length);
+    expect(
+      requirements.filter((item) => item.kind === "family-imagery")
+    ).toHaveLength(CATALOGUE_FAMILIES.length);
   });
 
   it("keeps family imagery explicitly derived and excludes ROSA identity", () => {
     const requirements = getAdminMediaRequirements();
-    for (const item of requirements.filter((candidate) => candidate.kind === "family-imagery")) {
+    for (const item of requirements.filter(
+      (candidate) => candidate.kind === "family-imagery"
+    )) {
       expect(item.sourceLabel).toBe("No managed asset registered");
       expect(item.label).toContain("family imagery requirement");
     }
@@ -34,11 +51,15 @@ describe("F3E-B media requirements", () => {
 
   it("renders an honest empty library rather than asset cards", () => {
     const html = renderToStaticMarkup(<AdminMediaPage />);
-    expect((html.match(/data-admin-media-requirement=/g) ?? [])).toHaveLength(30);
+    expect((html.match(/data-admin-media-requirement=/g) ?? [])).toHaveLength(
+      expectedRequirementCount()
+    );
     expect(html).toContain("No managed media assets are registered.");
     expect(html).toContain("Protected ROSA identity");
     expect(html).not.toContain("data-preview-only");
-    expect(html).not.toMatch(/\.jpg|\.png|\.svg|\.tif|\bKB\b|\bMB\b|\d+ × \d+/i);
+    expect(html).not.toMatch(
+      /\.jpg|\.png|\.svg|\.tif|\bKB\b|\bMB\b|\d+ × \d+/i
+    );
   });
 
   it("keeps media operational states isolated", () => {
