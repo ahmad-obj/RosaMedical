@@ -7,3 +7,4 @@ export { CUTTERS_BATCH_01_MEDIA } from "./cutters-batch-01";
 export {
   KNIVES_BATCH_01_APPROVED_MEDIA as KNIVES_BATCH_01_MEDIA
 } from "./knives-batch-01-approved";
+export { PUNCHES_BATCH_01_MEDIA } from "./punches-batch-01";
