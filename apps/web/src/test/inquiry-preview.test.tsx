@@ -11,7 +11,7 @@ describe("F3C inquiry previews", () => {
   it("resolves the three approved source-backed preview products", () => {
     expect(INQUIRY_PREVIEW_LINES.map((line) => line.product.code)).toEqual([
       "18-0644",
-      "04-0402",
+      "04-0401",
       "18-1202"
     ]);
   });
