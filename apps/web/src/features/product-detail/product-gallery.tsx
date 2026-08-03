@@ -20,6 +20,9 @@ export function ProductGallery({
               label={`${product.name} preview ${index + 1}`}
               decorative
               aspect="portrait"
+              src={index === 0 ? product.mediaPath : undefined}
+              fallbackSrc={index === 0 ? product.mediaFallbackPath : undefined}
+              spriteIndex={index === 0 ? product.mediaIndex : undefined}
             />
           </span>
         ))}
@@ -30,8 +33,13 @@ export function ProductGallery({
           label={product.mediaLabel}
           decorative
           aspect="portrait"
+          src={product.mediaPath}
+          fallbackSrc={product.mediaFallbackPath}
+          spriteIndex={product.mediaIndex}
         />
-        <span className="product-gallery__zoom-note">Zoom preview activates next phase</span>
+        <span className="product-gallery__zoom-note">
+          {product.mediaPath ? "Catalogue image · approved media" : "Zoom preview activates next phase"}
+        </span>
       </div>
     </section>
   );
