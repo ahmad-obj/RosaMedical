@@ -8,7 +8,7 @@ const FAMILY_CASES = [
   ["scissors", 42],
   ["punches", 4],
   ["chisels", 20],
-  ["cutters", 4]
+  ["cutters", 14]
 ] as const;
 
 describe("F3B family composition", () => {
