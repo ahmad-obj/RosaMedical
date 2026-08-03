@@ -23,7 +23,7 @@ describe("F3B family composition", () => {
         expectedProducts
       );
       expect(html).not.toContain("<form");
-      expect(html).not.toMatch(/in stock|checkout|rating|certified/i);
+      expect(html).not.toMatch(/\b(?:in stock|checkout|rating|certified)\b/i);
     }
   );
 });
