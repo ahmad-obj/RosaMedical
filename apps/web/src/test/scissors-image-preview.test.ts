@@ -48,6 +48,26 @@ describe("Scissors image batch 01", () => {
     }
   });
 
+  it("exposes exactly 84 distinct local runtime derivative paths", () => {
+    const runtimePaths = SCISSOR_PRODUCTS.flatMap((product) => [
+      product.mediaPath,
+      product.mediaFallbackPath
+    ]);
+
+    expect(runtimePaths).toHaveLength(84);
+    expect(runtimePaths.every((path) => typeof path === "string")).toBe(true);
+    expect(new Set(runtimePaths).size).toBe(84);
+    expect(
+      runtimePaths.every(
+        (path) =>
+          typeof path === "string" &&
+          path.startsWith("/media/catalogue-preview/scissors/") &&
+          !path.includes("Thorhi-tools") &&
+          !/^https?:\/\//.test(path)
+      )
+    ).toBe(true);
+  });
+
   it("preserves the established Mayo product route used by inquiry previews", () => {
     const mayo = SCISSOR_PRODUCTS.find((product) => product.slug === "mayo-scissors");
 
