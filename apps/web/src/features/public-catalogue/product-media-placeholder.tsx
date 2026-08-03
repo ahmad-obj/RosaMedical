@@ -6,6 +6,7 @@ export interface ProductMediaPlaceholderProps {
   aspect?: "landscape" | "portrait" | "square";
   className?: string;
   src?: string;
+  fallbackSrc?: string;
   spriteIndex?: number;
 }
 
@@ -15,6 +16,7 @@ export function ProductMediaPlaceholder({
   aspect = "landscape",
   className = "",
   src,
+  fallbackSrc,
   spriteIndex
 }: ProductMediaPlaceholderProps): ReactElement {
   const hasSprite = Boolean(src) && typeof spriteIndex === "number";
@@ -42,12 +44,16 @@ export function ProductMediaPlaceholder({
           }}
         />
       ) : src ? (
-        <img
-          src={src}
-          alt={decorative ? "" : label}
-          loading="lazy"
-          style={{ width: "100%", height: "100%", objectFit: "contain" }}
-        />
+        <picture>
+          {fallbackSrc ? <source srcSet={src} type="image/avif" /> : null}
+          <img
+            src={fallbackSrc ?? src}
+            alt={decorative ? "" : label}
+            loading="lazy"
+            decoding="async"
+            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          />
+        </picture>
       ) : (
         <>
           <span className="product-media-placeholder__axis" aria-hidden="true" />
