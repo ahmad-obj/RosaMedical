@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { SCISSORS_BATCH_01_MEDIA } from "@/features/catalogue-media";
 import { SCISSOR_PRODUCTS } from "@/features/catalogue-registry/products/scissors";
 import { config as middlewareConfig } from "@/middleware";
+
+const mediaById = new Map(
+  SCISSORS_BATCH_01_MEDIA.map((asset) => [asset.id, asset] as const)
+);
 
 describe("Scissors image batch 01", () => {
   it("groups the catalogue into 42 visible configurations", () => {
@@ -17,12 +22,29 @@ describe("Scissors image batch 01", () => {
     expect(new Set(mediaAssetIds).size).toBe(42);
   });
 
-  it("does not retain temporary external runtime images", () => {
+  it("joins every Scissors configuration to its local AVIF and WebP media", () => {
     for (const product of SCISSOR_PRODUCTS) {
-      expect(product.mediaPath).toBeUndefined();
-      expect(product.mediaFallbackPath).toBeUndefined();
-      expect(product.mediaSourceUrl).toBeUndefined();
-      expect(product.mediaReviewNote).toBeUndefined();
+      const asset = product.mediaAssetId
+        ? mediaById.get(product.mediaAssetId)
+        : undefined;
+
+      expect(asset, product.id).toBeDefined();
+      expect(product.mediaPath).toBe(asset?.avifPath);
+      expect(product.mediaFallbackPath).toBe(asset?.webpPath);
+      expect(product.mediaSourceUrl).toBe(asset?.sourcePageUrl);
+      expect(product.mediaReviewNote).toBe(
+        asset
+          ? `${asset.matchGrade} · ${asset.rightsMode} · ${asset.background} · ${asset.reviewStatus}`
+          : undefined
+      );
+      expect(product.mediaPath).toMatch(
+        /^\/media\/catalogue-preview\/scissors\/.+\.avif$/
+      );
+      expect(product.mediaFallbackPath).toMatch(
+        /^\/media\/catalogue-preview\/scissors\/.+\.webp$/
+      );
+      expect(product.mediaPath).not.toMatch(/^https?:\/\//);
+      expect(product.mediaFallbackPath).not.toMatch(/^https?:\/\//);
     }
   });
 
