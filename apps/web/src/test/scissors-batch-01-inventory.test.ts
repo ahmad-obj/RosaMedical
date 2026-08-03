@@ -41,7 +41,7 @@ describe("Scissors Batch 01 inventory", () => {
     }
 
     expect(ownerByCode.size).toBe(132);
-    expect(new Set(ownerByCode.values()).size).toBeLessThanOrEqual(42);
+    expect(new Set(ownerByCode.values()).size).toBe(42);
   });
 
   it("uses the catalogue-confirmed Iris and Stevens mappings", () => {
