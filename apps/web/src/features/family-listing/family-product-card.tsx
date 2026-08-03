@@ -16,19 +16,24 @@ export function FamilyProductCard({
   family: CatalogueFamilyRecord;
   product: CatalogueProductRecord;
 }): ReactElement {
+  const sizeCount = product.sizes.length;
+
   return (
     <article className="family-product-card" data-product-card={product.id}>
       <ProductMediaPlaceholder
         label={product.mediaLabel}
         decorative
         src={product.mediaPath}
+        fallbackSrc={product.mediaFallbackPath}
         spriteIndex={product.mediaIndex}
       />
       <div className="family-product-card__body">
         <p className="public-eyebrow">{family.name}</p>
         <h2>{product.name}</h2>
         <p className="family-product-card__meta">
-          {product.code}{product.primaryOption ? ` · ${product.primaryOption}` : ""}
+          {product.code}
+          {product.primaryOption ? ` · ${product.primaryOption}` : ""}
+          {` · ${sizeCount} ${sizeCount === 1 ? "size" : "sizes"}`}
         </p>
         <div className="family-product-card__actions">
           <Link href={productHref(product)}>View details <span aria-hidden="true">→</span></Link>
