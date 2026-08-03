@@ -16,7 +16,7 @@ const EXPECTED_PRODUCT_COUNTS = {
   knives: 4,
   scissors: 42,
   punches: 4,
-  chisels: 4,
+  chisels: 20,
   cutters: 4
 } as const;
 
@@ -61,7 +61,7 @@ describe("F3B catalogue registry", () => {
     expect(new Set(CATALOGUE_PRODUCTS.map((product) => product.id)).size).toBe(
       CATALOGUE_PRODUCTS.length
     );
-    expect(CATALOGUE_PRODUCTS).toHaveLength(58);
+    expect(CATALOGUE_PRODUCTS).toHaveLength(74);
     const routes = CATALOGUE_PRODUCTS.map(
       (product) => `${product.familySlug}/${product.slug}`
     );
