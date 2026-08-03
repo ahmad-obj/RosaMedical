@@ -2,7 +2,14 @@
   background: #ffffff;
 }
 
+.product-media-placeholder--image picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .product-media-placeholder--image img {
+  display: block;
   width: 100%;
   height: 100%;
   padding: clamp(1rem, 3vw, 2.25rem);
