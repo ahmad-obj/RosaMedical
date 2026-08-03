@@ -97,7 +97,7 @@ $forbidden = @(
     "apps/web/.env.local"
 )
 
-$changedPaths = @(git diff --name-only)
+$changedPaths = @(git diff --cached --name-only)
 foreach ($path in $changedPaths) {
     foreach ($prefix in $forbidden) {
         if ($path -eq $prefix -or $path.StartsWith("$prefix/")) {
