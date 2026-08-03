@@ -1,5 +1,0 @@
-@media (max-width: 640px) {
-  body:has(.public-page--product-detail) .site-footer {
-    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
-  }
-}
