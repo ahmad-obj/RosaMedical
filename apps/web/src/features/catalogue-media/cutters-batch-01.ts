@@ -33,7 +33,7 @@ function catalogueCandidate({
     orientationNotes:
       "The complete instrument is centered on a transparent 1800 px canvas with its working end pointing toward the upper-right. Scaling remains proportional and the instrument stays inside the 1420 px safe region. Catalogue working-end schematics are retained as secondary insets only when needed to distinguish listed directions.",
     reuseScope,
-    reviewStatus: "candidate"
+    reviewStatus: "approved"
   };
 }
 
