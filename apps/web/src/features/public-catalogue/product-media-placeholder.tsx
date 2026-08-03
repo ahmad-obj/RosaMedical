@@ -5,9 +5,9 @@ export interface ProductMediaPlaceholderProps {
   decorative?: boolean;
   aspect?: "landscape" | "portrait" | "square";
   className?: string;
-  src?: string;
-  fallbackSrc?: string;
-  spriteIndex?: number;
+  src?: string | undefined;
+  fallbackSrc?: string | undefined;
+  spriteIndex?: number | undefined;
 }
 
 export function ProductMediaPlaceholder({
