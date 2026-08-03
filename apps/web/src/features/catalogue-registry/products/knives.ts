@@ -1,6 +1,68 @@
+import { KNIVES_BATCH_01_MEDIA } from "@/features/catalogue-media";
 import type { CatalogueProductRecord } from "../types";
+import { KNIVES_BATCH_01_CONFIGURATIONS } from "./knives-batch-01";
 
-export const KNIFE_PRODUCTS = [
+const MEDIA_BY_ID = new Map(
+  KNIVES_BATCH_01_MEDIA.map((asset) => [asset.id, asset] as const)
+);
+
+function unique(values: readonly string[]): readonly string[] {
+  return [...new Set(values)];
+}
+
+export const KNIVES_BATCH_01_PRODUCTS = KNIVES_BATCH_01_CONFIGURATIONS.map(
+  (configuration): CatalogueProductRecord => {
+    const catalogueCodes = configuration.codeOptions.map(({ code, size }) => ({
+      code,
+      size
+    }));
+    const primaryCode = catalogueCodes[0];
+    const media = MEDIA_BY_ID.get(configuration.mediaAssetId);
+
+    if (!primaryCode) {
+      throw new Error(`Missing catalogue code for ${configuration.id}`);
+    }
+
+    if (!media) {
+      throw new Error(
+        `Missing catalogue media for ${configuration.id}: ${configuration.mediaAssetId}`
+      );
+    }
+
+    const directions =
+      configuration.variant === "Straight" || configuration.variant === "Curved"
+        ? [configuration.variant]
+        : configuration.variant === "Long curved"
+          ? ["Curved"]
+          : [];
+
+    return {
+      id: configuration.id,
+      familySlug: "knives",
+      slug: configuration.slug,
+      name: configuration.name,
+      code: primaryCode.code,
+      description: `Catalogue-listed ${configuration.name}. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.`,
+      sizes: unique(catalogueCodes.map((option) => option.size)),
+      variants: [configuration.variant],
+      directions,
+      primaryOption: configuration.variant,
+      catalogueReference: {
+        family: "Knives",
+        page: configuration.cataloguePage
+      },
+      mediaLabel: `${configuration.name}, ${configuration.variant}`,
+      catalogueCodes,
+      mediaAssetId: configuration.mediaAssetId,
+      mediaPath: media.avifPath,
+      mediaFallbackPath: media.webpPath,
+      mediaSourceUrl: media.sourcePageUrl,
+      mediaReviewNote: `${media.matchGrade} · ${media.rightsMode} · ${media.background} · ${media.reviewStatus}`
+    };
+  }
+) as readonly CatalogueProductRecord[];
+
+const ESTABLISHED_KNIFE_PRODUCTS = [
   {
     id: "product_scalpel_handle_3",
     familySlug: "knives",
@@ -61,4 +123,9 @@ export const KNIFE_PRODUCTS = [
     catalogueReference: { family: "Knives" },
     mediaLabel: "Resection Knife placeholder"
   }
+] as const satisfies readonly CatalogueProductRecord[];
+
+export const KNIFE_PRODUCTS = [
+  ...KNIVES_BATCH_01_PRODUCTS,
+  ...ESTABLISHED_KNIFE_PRODUCTS
 ] as const satisfies readonly CatalogueProductRecord[];
