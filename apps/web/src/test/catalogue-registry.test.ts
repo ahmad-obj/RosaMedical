@@ -15,7 +15,7 @@ import type {
 const EXPECTED_PRODUCT_COUNTS = {
   knives: 22,
   scissors: 42,
-  punches: 4,
+  punches: 15,
   chisels: 20,
   cutters: 14
 } as const;
@@ -61,7 +61,7 @@ describe("F3B catalogue registry", () => {
     expect(new Set(CATALOGUE_PRODUCTS.map((product) => product.id)).size).toBe(
       CATALOGUE_PRODUCTS.length
     );
-    expect(CATALOGUE_PRODUCTS).toHaveLength(102);
+    expect(CATALOGUE_PRODUCTS).toHaveLength(113);
     const routes = CATALOGUE_PRODUCTS.map(
       (product) => `${product.familySlug}/${product.slug}`
     );
@@ -83,6 +83,7 @@ describe("F3B catalogue registry", () => {
 
   it("resolves products and rejects mismatches", () => {
     expect(getProductDetailModel("knives", "number-3").kind).toBe("product");
+    expect(getProductDetailModel("punches", "yeoman").kind).toBe("product");
     expect(
       getProductDetailModel("knives", "scalpel-handle-no-3").kind
     ).toBe("product");
