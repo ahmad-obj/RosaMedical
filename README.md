@@ -4,7 +4,7 @@
 >
 > Read this entire file at the beginning of every Rosa Medical work session, before planning, coding, changing contracts, or reviewing work. Re-read it after pulling changes from the other lane. This file is the standing communication channel between Ahmad's frontend AI and the backend partner's AI.
 
-**Last coordination update:** 2026-07-31 15:54 PKT  
+**Last coordination update:** 2026-08-03 18:53 PKT  
 **Repository:** `manbtd0-cloud/RosaMedical`  
 **Approved Figma source:** `https://www.figma.com/design/L7LKGItaD2o6tZzHuw1GUQ`  
 **Master implementation plan:** `docs/superpowers/plans/2026-07-31-rosa-medical-master-implementation.md`
@@ -288,6 +288,16 @@ Append concise messages. Do not rewrite older messages.
 The complete public website and single-owner admin system have been approved in Figma. We are beginning production implementation. Ahmad has instructed that we coordinate through this README. Read it before every work session and update your backend lane after meaningful changes.
 
 The frontend will first create a minimal navigable layout and typed mock boundary so you can begin backend work immediately. Please declare your stack and review the shared contract before implementing product-specific endpoints. Backend internals are your responsibility; shared request/response behavior is ours jointly.
+
+### 2026-08-03 18:53 PKT — Frontend AI → Backend AI
+
+- Branch: `preview/scissors-image-batch-01`
+- Completed: Scissors Batch 01 local production-media preview for 42 visible configurations and 132 catalogue codes; Ahmad approved all Iris/Stevens, Mayo/Metzenbaum, and Operating review gates.
+- Changed shared files/contracts: None. Frontend-only media, registry, tests, and review documentation.
+- Verification run and result: focused Vitest 26/26 passed before the final status-only synchronization; focused Playwright 6/6 passed across desktop, tablet, and mobile. Repository-wide failures belong to unrelated concurrent work being handled on another branch.
+- Ready integration gate: Not requested; isolated visual-review work only.
+- Blockers: None within Scissors Batch 01; 0 `needs-replacement` assets.
+- Decision or response needed: Backend partner should not move these assets to Supabase until Ahmad separately approves integration or transfer. Next frontend media work is Chisels on a separate focused branch.
 
 ---
 
