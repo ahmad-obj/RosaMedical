@@ -38,8 +38,8 @@ describe("F3E-A dashboard", () => {
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("Rosa workspace overview.");
     expect(html).toContain("Product families");
-    expect(html).toContain(">5<");
-    expect(html).toContain(">20<");
+    expect(html).toContain(`>${CATALOGUE_FAMILIES.length}<`);
+    expect(html).toContain(`>${CATALOGUE_PRODUCTS.length}<`);
     expect((html.match(/>0</g) ?? []).length).toBeGreaterThanOrEqual(2);
     expect(html).not.toMatch(/revenue|orders|sales|growth|conversion|uptime/i);
     expect(html).not.toContain("data-preview-only");
