@@ -1,52 +1,25 @@
-name: Temporary Cinematic Media Generator
+name: Temporary Cinematic Media Review
 
 on:
   pull_request:
     branches: [main]
 
 concurrency:
-  group: temporary-cinematic-media-${{ github.event.pull_request.number }}
+  group: temporary-cinematic-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
-  contents: write
-
-env:
-  CI: true
+  contents: read
 
 jobs:
-  generate:
+  review:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-      - name: Detect regeneration marker
-        id: payload
-        shell: bash
-        run: |
-          if [[ -d .tmp/cinematic-media ]] && find .tmp/cinematic-media -type f -size +0c -print -quit | grep -q .; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-          fi
-      - uses: actions/setup-node@v4
-        if: steps.payload.outputs.present == 'true'
-        with:
-          node-version: 24
-      - name: Enable Corepack
-        if: steps.payload.outputs.present == 'true'
-        run: corepack enable
-      - name: Install dependencies and refresh lockfile
-        if: steps.payload.outputs.present == 'true'
-        run: pnpm install --no-frozen-lockfile --reporter=append-only
-      - name: Generate cinematic assets
-        if: steps.payload.outputs.present == 'true'
-        run: pnpm --filter @rosa/web exec node scripts/build_cinematic_media.mjs
-      - name: Validate generated assets
-        if: steps.payload.outputs.present == 'true'
+      - name: Validate committed review assets
         shell: bash
         run: |
           expected=(
@@ -61,29 +34,15 @@ jobs:
             apps/web/public/media/catalogue-covers/cutters.webp
           )
           for file in "${expected[@]}"; do
-            test -s "$file" || { echo "Missing generated asset: $file"; exit 1; }
+            test -s "$file" || { echo "Missing committed asset: $file"; exit 1; }
             file "$file"
           done
-      - name: Upload review assets
-        if: steps.payload.outputs.present == 'true'
+      - name: Upload corrected review assets
         uses: actions/upload-artifact@v4
         with:
-          name: cinematic-media-review
+          name: cinematic-media-review-v2
           path: |
             apps/web/public/media/cinematic/*.webp
             apps/web/public/media/catalogue-covers/*.webp
           if-no-files-found: error
           retention-days: 7
-      - name: Commit generated assets
-        if: steps.payload.outputs.present == 'true'
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml apps/web/public/media/cinematic apps/web/public/media/catalogue-covers
-          git add -u .tmp/cinematic-media
-          git commit -m "feat: regenerate cinematic media assets"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
-      - name: Confirm stable branch state
-        if: steps.payload.outputs.present != 'true'
-        run: echo "Cinematic assets are already generated; no regeneration marker remains."
