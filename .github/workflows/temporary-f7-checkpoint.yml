@@ -39,9 +39,9 @@ jobs:
       - name: Enable Corepack
         if: steps.payload.outputs.present == 'true'
         run: corepack enable
-      - name: Install dependencies
+      - name: Install dependencies and refresh lockfile
         if: steps.payload.outputs.present == 'true'
-        run: pnpm install --frozen-lockfile --reporter=append-only
+        run: pnpm install --no-frozen-lockfile --reporter=append-only
       - name: Generate cinematic assets
         if: steps.payload.outputs.present == 'true'
         run: pnpm --filter @rosa/web exec node scripts/build_cinematic_media.mjs
@@ -80,7 +80,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/web/public/media/cinematic apps/web/public/media/catalogue-covers
+          git add pnpm-lock.yaml apps/web/public/media/cinematic apps/web/public/media/catalogue-covers
           git add -u .tmp/cinematic-media
           git commit -m "feat: generate cinematic media assets"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
