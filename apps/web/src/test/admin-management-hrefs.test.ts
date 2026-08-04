@@ -10,6 +10,14 @@ import {
 } from "@/features/admin-management-routing";
 import { CATALOGUE_PRODUCTS } from "@/features/catalogue-registry";
 
+function firstCatalogueProduct() {
+  const product = CATALOGUE_PRODUCTS[0];
+  if (!product) {
+    throw new Error("Expected at least one catalogue product");
+  }
+  return product;
+}
+
 describe("F3E-B admin management hrefs", () => {
   it("builds the exact approved list routes", () => {
     expect(adminProductsHref()).toBe("/admin/products");
@@ -19,7 +27,7 @@ describe("F3E-B admin management hrefs", () => {
   });
 
   it("builds source-backed detail routes", () => {
-    const product = CATALOGUE_PRODUCTS[0];
+    const product = firstCatalogueProduct();
     expect(adminProductHref(product)).toBe(
       `/admin/products/${product.familySlug}/${product.slug}`
     );
