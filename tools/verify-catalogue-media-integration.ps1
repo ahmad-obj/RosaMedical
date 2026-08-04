@@ -13,6 +13,11 @@ if ($currentBranch -ne $ExpectedBranch) {
     throw "Expected branch '$ExpectedBranch', found '$currentBranch'."
 }
 
+$workingTreeChanges = @(git status --porcelain=v1)
+if ($workingTreeChanges.Count -gt 0) {
+    throw "Verification requires a clean, checkpointed working tree. Run tools/integrate-approved-catalogue-media.ps1 -CreateCheckpoint first, then push the checkpoint before verification."
+}
+
 function Invoke-Checked {
     param(
         [Parameter(Mandatory = $true)]
@@ -29,11 +34,40 @@ function Invoke-Checked {
     }
 }
 
+$requiredFiles = @(
+    "apps/web/src/features/catalogue-media/index.ts",
+    "apps/web/src/features/catalogue-media/types.ts",
+    "apps/web/src/features/catalogue-media/scissors-batch-01-combined.ts",
+    "apps/web/src/features/catalogue-media/chisels-batch-01.ts",
+    "apps/web/src/features/catalogue-media/cutters-batch-01.ts",
+    "apps/web/src/features/catalogue-media/knives-batch-01-approved.ts",
+    "apps/web/src/features/catalogue-media/punches-batch-01-approved.ts",
+    "apps/web/src/features/catalogue-registry/products/scissors-batch-01.ts",
+    "apps/web/src/features/catalogue-registry/products/chisels-batch-01.ts",
+    "apps/web/src/features/catalogue-registry/products/cutters-batch-01.ts",
+    "apps/web/src/features/catalogue-registry/products/knives-batch-01.ts",
+    "apps/web/src/features/catalogue-registry/products/punches-batch-01.ts"
+)
+
+$missingFiles = @(
+    $requiredFiles | Where-Object {
+        -not (Test-Path -LiteralPath (Join-Path $repoRoot $_) -PathType Leaf)
+    }
+)
+if ($missingFiles.Count -gt 0) {
+    $formatted = $missingFiles | ForEach-Object { " - $_" }
+    throw "Catalogue media transfer is absent or incomplete. Missing required files:`n$($formatted -join "`n")`nRun tools/integrate-approved-catalogue-media.ps1 -CreateCheckpoint before verification."
+}
+
 $mediaRoot = Join-Path $repoRoot "apps/web/public/media/catalogue-preview"
+if (-not (Test-Path -LiteralPath $mediaRoot -PathType Container)) {
+    throw "Catalogue media directory is missing: apps/web/public/media/catalogue-preview. Run tools/integrate-approved-catalogue-media.ps1 -CreateCheckpoint before verification."
+}
+
 $avifCount = @(Get-ChildItem -Path $mediaRoot -Recurse -File -Filter "*.avif").Count
 $webpCount = @(Get-ChildItem -Path $mediaRoot -Recurse -File -Filter "*.webp").Count
 if ($avifCount -ne 103 -or $webpCount -ne 103) {
-    throw "Expected 103 AVIF and 103 WebP files; found $avifCount AVIF and $webpCount WebP."
+    throw "Expected 103 AVIF and 103 WebP files; found $avifCount AVIF and $webpCount WebP. Run the controlled transfer checkpoint again before verification."
 }
 
 $focusedTests = @(
@@ -98,11 +132,7 @@ $forbidden = @(
     "apps/web/.env.local"
 )
 
-$changedPaths = @(
-    git diff --name-only main...HEAD
-    git diff --cached --name-only
-    git diff --name-only
-) | Sort-Object -Unique
+$changedPaths = @(git diff --name-only main...HEAD) | Sort-Object -Unique
 
 foreach ($path in $changedPaths) {
     foreach ($prefix in $forbidden) {
