@@ -132,7 +132,7 @@ const ESTABLISHED_CHISEL_PRODUCTS = [
   }
 ] as const satisfies readonly CatalogueProductRecord[];
 
-export const CHISEL_PRODUCTS = [
+export const CHISEL_PRODUCTS: readonly CatalogueProductRecord[] = [
   ...CHISELS_BATCH_01_PRODUCTS,
   ...ESTABLISHED_CHISEL_PRODUCTS
-] as const satisfies readonly CatalogueProductRecord[];
+];
