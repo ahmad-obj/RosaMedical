@@ -1,53 +1,77 @@
-name: Temporary Final Closeout Diagnostics
+name: Temporary ROSA Brand Correction
 
 on:
   pull_request:
     branches: [main]
 
 concurrency:
-  group: temporary-final-closeout-${{ github.event.pull_request.number }}
+  group: temporary-rosa-brand-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   CI: true
-  NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
-  SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
-  ROSA_OWNER_EMAIL: owner@example.com
-  ALERT_UNREAD_SECRET: placeholder-alert-secret
-  RESEND_API_KEY: placeholder-resend-key
 
 jobs:
-  admin-spec:
-    name: admin-${{ matrix.label }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - label: foundation
-            spec: tests/e2e/f3e-a-admin-foundation.spec.ts
-          - label: catalogue-management
-            spec: tests/e2e/f3e-b-catalogue-management.spec.ts
-          - label: operations
-            spec: tests/e2e/f3e-c-operations.spec.ts
-          - label: governance
-            spec: tests/e2e/f3e-d-governance.spec.ts
+  correct:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Detect forbidden branding
+        id: branding
+        shell: bash
+        run: |
+          if grep -qi "ROSA MEDICAL" apps/web/scripts/build_cinematic_media.mjs; then
+            echo "needs_fix=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_fix=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-node@v4
+        if: steps.branding.outputs.needs_fix == 'true'
         with:
           node-version: 24
-      - run: corepack enable
-      - run: pnpm install --frozen-lockfile --reporter=append-only
-      - run: pnpm --filter @rosa/web exec playwright install --with-deps chromium
-      - name: Test ${{ matrix.spec }}
+      - name: Enable Corepack
+        if: steps.branding.outputs.needs_fix == 'true'
+        run: corepack enable
+      - name: Install dependencies
+        if: steps.branding.outputs.needs_fix == 'true'
+        run: pnpm install --frozen-lockfile --reporter=append-only
+      - name: Correct branding and regenerate assets
+        if: steps.branding.outputs.needs_fix == 'true'
+        shell: bash
         run: |
-          cd apps/web
-          pnpm exec playwright test "${{ matrix.spec }}"
+          sed -i 's/ROSA MEDICAL/ROSA/g' apps/web/scripts/build_cinematic_media.mjs
+          pnpm --filter @rosa/web exec node scripts/build_cinematic_media.mjs
+          ! grep -qi "ROSA MEDICAL" apps/web/scripts/build_cinematic_media.mjs
+          grep -q '>ROSA</text>' apps/web/scripts/build_cinematic_media.mjs
+      - name: Run cinematic manifest regression test
+        if: steps.branding.outputs.needs_fix == 'true'
+        run: pnpm --filter @rosa/web test -- src/test/cinematic-media-manifest.test.ts
+      - name: Upload corrected review assets
+        if: steps.branding.outputs.needs_fix == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-media-review-v3
+          path: |
+            apps/web/public/media/cinematic/*.webp
+            apps/web/public/media/catalogue-covers/*.webp
+          if-no-files-found: error
+          retention-days: 7
+      - name: Commit corrected branding
+        if: steps.branding.outputs.needs_fix == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/scripts/build_cinematic_media.mjs apps/web/public/media/cinematic apps/web/public/media/catalogue-covers
+          git commit -m "fix: keep cinematic artwork on ROSA-only branding"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - name: Confirm branding is already corrected
+        if: steps.branding.outputs.needs_fix != 'true'
+        run: echo "Cinematic artwork generator already uses ROSA-only branding."
