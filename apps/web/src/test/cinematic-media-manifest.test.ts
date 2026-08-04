@@ -31,11 +31,13 @@ describe("cinematic media manifest", () => {
   });
 
   it("uses complete local source-backed media records", () => {
+    const sources = new Set<string>();
+
     for (const slot of REQUIRED_CINEMATIC_SLOTS) {
       const asset = CINEMATIC_MEDIA[slot];
 
       expect(asset.slot).toBe(slot);
-      expect(asset.src).toMatch(/^\/media\/(cinematic|catalogue-covers)\/.+\.svg$/);
+      expect(asset.src).toMatch(/^\/media\/(cinematic|catalogue-covers)\/.+\.webp$/);
       expect(asset.alt.trim()).not.toBe("");
       expect(asset.focalPoint).toMatch(/^\d+% \d+%$/);
       expect(asset.sizes.trim()).not.toBe("");
@@ -45,6 +47,9 @@ describe("cinematic media manifest", () => {
       const file = publicFile(asset.src);
       expect(existsSync(file), file).toBe(true);
       expect(statSync(file).size, file).toBeGreaterThan(1_000);
+      sources.add(asset.src);
     }
+
+    expect(sources.size).toBe(REQUIRED_CINEMATIC_SLOTS.length);
   });
 });
