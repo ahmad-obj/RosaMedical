@@ -2,8 +2,8 @@ import Link from "next/link";
 import type { ReactElement } from "react";
 import { Container, Section } from "@/components/layout";
 import { ButtonLink } from "@/components/ui";
+import { getCinematicMedia } from "@/features/cinematic-media";
 import { MediaFrame, Reveal, TextReveal } from "@/features/motion";
-import { ProductMediaPlaceholder } from "@/features/public-catalogue";
 import { PUBLIC_CONTENT_VALUES } from "@/features/public-content-registry";
 import { FamilyIndex } from "@/features/public-editorial";
 import { BuyerExpectations } from "./buyer-expectations";
@@ -12,6 +12,8 @@ import { SupportedBuyers } from "./supported-buyers";
 
 export function AboutPage(): ReactElement {
   const introduction = PUBLIC_CONTENT_VALUES.aboutIntroduction;
+  const heroMedia = getCinematicMedia("about-hero");
+  const procurementMedia = getCinematicMedia("about-procurement");
 
   return (
     <>
@@ -36,20 +38,17 @@ export function AboutPage(): ReactElement {
             </div>
             <Reveal direction="up" delay={0.08} className="story-hero-media-reveal">
               <MediaFrame
-                alt="Rosa Medical editorial image reserved for final approved photography"
+                src={heroMedia.src}
+                alt={heroMedia.alt}
+                focalPoint={heroMedia.focalPoint}
+                sizes={heroMedia.sizes}
+                loading="eager"
                 aspect="portrait"
                 tone="light"
                 overlay="soft"
-                mediaSlot="about-hero"
+                mediaSlot={heroMedia.slot}
                 className="f3d-hero__media story-media-frame"
-              >
-                <ProductMediaPlaceholder
-                  label="Replaceable Rosa editorial image"
-                  aspect="portrait"
-                  decorative
-                  className="story-media-frame__placeholder"
-                />
-              </MediaFrame>
+              />
             </Reveal>
           </div>
         </Container>
@@ -118,19 +117,16 @@ export function AboutPage(): ReactElement {
                 </div>
               </div>
               <MediaFrame
-                alt="Procurement process image reserved for final approved photography"
+                src={procurementMedia.src}
+                alt={procurementMedia.alt}
+                focalPoint={procurementMedia.focalPoint}
+                sizes={procurementMedia.sizes}
                 aspect="landscape"
                 tone="mist"
                 overlay="soft"
-                mediaSlot="about-procurement"
+                mediaSlot={procurementMedia.slot}
                 className="f3d-feature-panel__media story-media-frame"
-              >
-                <ProductMediaPlaceholder
-                  label="Replaceable procurement process image"
-                  decorative
-                  className="story-media-frame__placeholder"
-                />
-              </MediaFrame>
+              />
             </div>
           </Reveal>
         </Container>
