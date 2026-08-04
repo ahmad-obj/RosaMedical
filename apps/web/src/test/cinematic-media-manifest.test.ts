@@ -1,4 +1,4 @@
-import { existsSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
@@ -51,5 +51,15 @@ describe("cinematic media manifest", () => {
     }
 
     expect(sources.size).toBe(REQUIRED_CINEMATIC_SLOTS.length);
+  });
+
+  it("keeps generated catalogue artwork on the locked ROSA-only brand", () => {
+    const renderer = readFileSync(
+      resolve(process.cwd(), "scripts/build_cinematic_media.mjs"),
+      "utf8"
+    );
+
+    expect(renderer).toContain(">ROSA</text>");
+    expect(renderer).not.toMatch(/ROSA\s+MEDICAL/i);
   });
 });
