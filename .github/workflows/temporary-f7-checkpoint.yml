@@ -1,11 +1,11 @@
-name: Temporary Cinematic Media Verification
+name: Temporary Final Closeout Diagnostics
 
 on:
   pull_request:
     branches: [main]
 
 concurrency:
-  group: temporary-cinematic-verification-${{ github.event.pull_request.number }}
+  group: temporary-final-closeout-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
@@ -21,9 +21,22 @@ env:
   RESEND_API_KEY: placeholder-resend-key
 
 jobs:
-  verify:
+  admin-spec:
+    name: admin-${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: foundation
+            spec: tests/e2e/f3e-a-admin-foundation.spec.ts
+          - label: catalogue-management
+            spec: tests/e2e/f3e-b-catalogue-management.spec.ts
+          - label: operations
+            spec: tests/e2e/f3e-c-operations.spec.ts
+          - label: governance
+            spec: tests/e2e/f3e-d-governance.spec.ts
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,27 +45,9 @@ jobs:
         with:
           node-version: 24
       - run: corepack enable
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --reporter=append-only
-      - name: Check premium stylesheet contract
-        run: node --test apps/web/src/test/f7-premium-styles.static.test.mjs
-      - name: Lint web application
-        run: pnpm --filter @rosa/web lint
-      - name: Test web application
-        run: pnpm --filter @rosa/web test
-      - name: Typecheck web application
-        run: pnpm --filter @rosa/web typecheck
-      - name: Build web application
-        run: pnpm --filter @rosa/web build
-      - name: Install Playwright Chromium
-        run: pnpm --filter @rosa/web exec playwright install --with-deps chromium
-      - name: Test affected public journeys
-        run: >-
-          pnpm --filter @rosa/web exec playwright test
-          tests/e2e/f7-public-shell.spec.ts
-          tests/e2e/f7-homepage-polish.spec.ts
-          tests/e2e/f7-product-polish.spec.ts
-          tests/e2e/f7-story-pages.spec.ts
-          tests/e2e/f7-conversion-polish.spec.ts
-          tests/e2e/f7-reduced-motion.spec.ts
-          tests/e2e/f7-responsive-restraint.spec.ts
+      - run: pnpm install --frozen-lockfile --reporter=append-only
+      - run: pnpm --filter @rosa/web exec playwright install --with-deps chromium
+      - name: Test ${{ matrix.spec }}
+        run: |
+          cd apps/web
+          pnpm exec playwright test "${{ matrix.spec }}"
