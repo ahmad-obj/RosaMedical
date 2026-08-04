@@ -1,19 +1,89 @@
-name: Temporary Cinematic Tree Probe
+name: Temporary Cinematic Media Generator
 
 on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: temporary-cinematic-media-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 permissions:
-  contents: read
+  contents: write
+
+env:
+  CI: true
 
 jobs:
-  tree-sha:
+  generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: Print branch tree
-        run: git rev-parse HEAD^{tree}
+          fetch-depth: 0
+      - name: Detect staged source payload
+        id: payload
+        shell: bash
+        run: |
+          if [[ -s .tmp/cinematic-media/homepage-hero.b64 ]]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.payload.outputs.present == 'true'
+        with:
+          node-version: 24
+      - name: Enable Corepack
+        if: steps.payload.outputs.present == 'true'
+        run: corepack enable
+      - name: Install dependencies
+        if: steps.payload.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile --reporter=append-only
+      - name: Generate cinematic assets
+        if: steps.payload.outputs.present == 'true'
+        run: pnpm --filter @rosa/web exec node scripts/build_cinematic_media.mjs
+      - name: Validate generated assets
+        if: steps.payload.outputs.present == 'true'
+        shell: bash
+        run: |
+          expected=(
+            apps/web/public/media/cinematic/homepage-hero.webp
+            apps/web/public/media/cinematic/homepage-procurement.webp
+            apps/web/public/media/cinematic/about-hero.webp
+            apps/web/public/media/cinematic/about-procurement.webp
+            apps/web/public/media/catalogue-covers/knives.webp
+            apps/web/public/media/catalogue-covers/scissors.webp
+            apps/web/public/media/catalogue-covers/punches.webp
+            apps/web/public/media/catalogue-covers/chisels.webp
+            apps/web/public/media/catalogue-covers/cutters.webp
+          )
+          for file in "${expected[@]}"; do
+            test -s "$file" || { echo "Missing generated asset: $file"; exit 1; }
+            file "$file"
+          done
+      - name: Upload review assets
+        if: steps.payload.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-media-review
+          path: |
+            apps/web/public/media/cinematic/*.webp
+            apps/web/public/media/catalogue-covers/*.webp
+          if-no-files-found: error
+          retention-days: 7
+      - name: Commit generated assets
+        if: steps.payload.outputs.present == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/public/media/cinematic apps/web/public/media/catalogue-covers
+          git add -u .tmp/cinematic-media
+          git commit -m "feat: generate cinematic media assets"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - name: Confirm stable branch state
+        if: steps.payload.outputs.present != 'true'
+        run: echo "Cinematic assets are already generated; no staging payload remains."
