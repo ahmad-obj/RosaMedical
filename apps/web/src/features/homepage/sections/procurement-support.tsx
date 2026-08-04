@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { Container, Section } from "@/components/layout";
+import { getCinematicMedia } from "@/features/cinematic-media";
 import {
   MediaFrame,
   Reveal,
@@ -11,6 +12,8 @@ import { SectionHeading } from "@/features/public-catalogue";
 import type { HomeProcurementModel } from "../homepage.data";
 
 export function ProcurementSupport({ model }: { model: HomeProcurementModel }): ReactElement {
+  const media = getCinematicMedia("homepage-procurement");
+
   return (
     <Section tone="paper" data-section="procurement-support" aria-labelledby="procurement-support-title">
       <Container size="wide">
@@ -24,17 +27,16 @@ export function ProcurementSupport({ model }: { model: HomeProcurementModel }): 
         <div className="procurement-editorial">
           <Reveal direction="right" className="procurement-editorial__media-reveal">
             <MediaFrame
-              alt="Procurement review composition reserved for final imagery"
+              src={media.src}
+              alt={media.alt}
+              focalPoint={media.focalPoint}
+              sizes={media.sizes}
               aspect="portrait"
               tone="mist"
               overlay="soft"
-              mediaSlot="homepage-procurement"
+              mediaSlot={media.slot}
               className="procurement-editorial__visual"
-            >
-              <div className="procurement-editorial__visual-geometry" aria-hidden="true">
-                <span /><span /><span /><span />
-              </div>
-            </MediaFrame>
+            />
           </Reveal>
           <Reveal direction="left" className="procurement-editorial__copy" delay={0.08}>
             <p className="public-eyebrow">{model.detailEyebrow}</p>

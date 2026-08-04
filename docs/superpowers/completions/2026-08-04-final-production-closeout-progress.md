@@ -1,7 +1,8 @@
 # Final Production Closeout Progress
 
 Date: 2026-08-04
-Branch: `integration/final-production-closeout`
+Original integration branch: `integration/final-production-closeout`
+Cinematic closeout branch: `feature/cinematic-media-closeout`
 
 ## Status
 
@@ -12,12 +13,35 @@ Branch: `integration/final-production-closeout`
 - [x] Scissors, Chisels, Cutters and Knives catalogue-media integration.
 - [x] Punches technical media integration.
 - [ ] Punches visual approval.
-- [ ] Cinematic media integration (blocked on transferring approved binary assets from File Library into the repository).
+- [x] Cinematic media integration for the nine approved release slots.
 - [x] Scissors evolution section.
-- [ ] Final verification and release.
+- [x] Final code-owned verification for the cinematic media slice.
+- [ ] Production release approval and real-environment acceptance.
+
+## Cinematic media result
+
+- Added one typed manifest for exactly nine homepage and About media slots.
+- Added four cinematic editorial WebPs and five family catalogue-cover WebPs.
+- Replaced only the approved homepage and About placeholders; unrelated placeholders remain intact.
+- Recorded the client-catalogue derivative chain and source-page mapping in `docs/review/cinematic-media-sources.md`.
+- Rejected the first generated review for title obstruction, hero congestion and blend ghosting.
+- Accepted the corrected composition after preserving hero negative space, restoring cover-title legibility and removing ghost artifacts.
+- Required code review then found forbidden `ROSA MEDICAL` wording in the generated catalogue-cover artwork. The renderer and all five covers were regenerated with the locked ROSA-only brand, and a regression test now rejects that wording.
+- The final v3 visual review confirmed ROSA-only covers, unobstructed family titles, controlled hero composition and no blend ghosting.
+- Every manifest record remains marked `client-confirmation-required` for public reuse rights.
+- Punches-derived imagery remains candidate material and is not promoted to approved product media by this integration.
 
 ## Verified checkpoints
 
 - Run `30848037291`: stylesheet contract, lint, 265 Vitest tests, strict TypeScript, production build and the premium public Playwright matrix passed.
 - Run `30851389520`: stylesheet contract, lint, 330 Vitest tests, strict TypeScript, production build and the combined premium plus Scissors/Chisels/Cutters/Knives Playwright matrix passed.
 - Run `30853574029`: stylesheet contract, lint, 344 Vitest tests, strict TypeScript, production build and the combined premium plus all five catalogue-family Playwright journeys passed.
+- Run `30929465211`: premium stylesheet contract, lint, all 347 Vitest tests across 76 files, strict TypeScript, production build and the affected public Playwright matrix passed. Playwright result: 28 passed, 2 intentional skips, 0 failed.
+
+## Remaining production gates
+
+- Obtain explicit client confirmation for public reuse of catalogue photography and catalogue-derived cover artwork.
+- Complete visual approval or replacement decisions for the Punches candidate media batch.
+- Validate the quotation flow against real Supabase data, including insert success, exact-repeat handling, concurrent duplicate protection and a real protected owner session.
+- Add or confirm production rate limiting, abuse protection and transactional inquiry notification behavior.
+- Complete final deployment smoke testing with production environment variables and legal/contact content approved by the client.

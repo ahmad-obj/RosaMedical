@@ -25,15 +25,15 @@ describe("F7 homepage cinematic polish", () => {
     expect(html).toContain("Request a Quote");
   });
 
-  it("uses one editorial hero choreography and a stable cinematic media slot", () => {
+  it("uses one editorial hero choreography and the approved cinematic media", () => {
     const html = renderToStaticMarkup(<Homepage />);
 
     expect(html).toContain('data-home-choreography="hero"');
     expect(html).toContain('data-motion="text-reveal"');
     expect(html).toContain('data-media-slot="homepage-hero"');
-    expect(html).toContain('data-media-state="placeholder"');
+    expect(html).toContain('data-media-state="ready"');
     expect(html).toContain('data-motion="magnetic"');
-    expect(html).not.toContain("<img");
+    expect(html).toContain("<img");
   });
 
   it("stages family, product, process and catalogue groups through shared motion", () => {
@@ -61,15 +61,15 @@ describe("F7 homepage cinematic polish", () => {
     }
   });
 
-  it("does not claim final cinematic assets before the asset branch arrives", () => {
+  it("routes every release image through the shared manifest", () => {
     const files = [
       "src/features/homepage/sections/home-hero.tsx",
       "src/features/homepage/sections/procurement-support.tsx",
-      "src/features/homepage/sections/catalogue-access.tsx",
-      "src/features/homepage/sections/quotation-cta.tsx"
+      "src/features/homepage/sections/catalogue-access.tsx"
     ].map(source).join("\n");
 
-    expect(files).not.toMatch(/\/media\/|\.webp|\.avif|\.jpe?g|\.png/i);
+    expect(files).not.toMatch(/src=["']\/media\//i);
+    expect(files).toContain("getCinematicMedia");
     expect(files).toContain("MediaFrame");
   });
 });

@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { ButtonLink } from "@/components/ui/button";
 import { Container, Section } from "@/components/layout";
+import { getCinematicMedia } from "@/features/cinematic-media";
 import {
   Magnetic,
   MediaFrame,
@@ -13,6 +14,8 @@ import {
 import type { HomeHeroModel } from "../homepage.data";
 
 export function HomeHero({ model }: { model: HomeHeroModel }): ReactElement {
+  const media = getCinematicMedia("homepage-hero");
+
   return (
     <Section
       className="home-hero public-hero"
@@ -57,20 +60,17 @@ export function HomeHero({ model }: { model: HomeHeroModel }): ReactElement {
           <SpotlightSurface className="home-hero__visual-surface">
             <TiltSurface className="home-hero__visual-tilt" maxDegrees={1.6}>
               <MediaFrame
-                alt="Cinematic surgical instrument composition reserved for final imagery"
+                src={media.src}
+                alt={media.alt}
+                focalPoint={media.focalPoint}
+                sizes={media.sizes}
+                loading="eager"
                 aspect="cinematic"
                 tone="dark"
                 overlay="soft"
-                mediaSlot="homepage-hero"
+                mediaSlot={media.slot}
                 className="home-hero__media"
-              >
-                <div className="home-hero__instrument-composition" aria-hidden="true">
-                  <span className="home-hero__instrument home-hero__instrument--primary" />
-                  <span className="home-hero__instrument home-hero__instrument--secondary" />
-                  <span className="home-hero__instrument home-hero__instrument--detail" />
-                  <span className="home-hero__instrument-orbit" />
-                </div>
-              </MediaFrame>
+              />
             </TiltSurface>
             <ProgressiveBlur edge="bottom" className="home-hero__blur" />
           </SpotlightSurface>

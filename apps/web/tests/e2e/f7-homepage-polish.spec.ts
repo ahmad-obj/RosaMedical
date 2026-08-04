@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
 const sections = [
   "home-hero",
@@ -8,6 +8,22 @@ const sections = [
   "catalogue-access",
   "quotation-cta"
 ] as const;
+
+async function expectImageLoaded(frame: Locator): Promise<void> {
+  const image = frame.locator("img");
+  await expect(image).toHaveCount(1);
+  await expect
+    .poll(() =>
+      image.evaluate(
+        (element) =>
+          element instanceof HTMLImageElement
+          && element.complete
+          && element.naturalWidth > 0
+          && element.naturalHeight > 0
+      )
+    )
+    .toBe(true);
+}
 
 test("homepage keeps its cinematic hierarchy and media geometry", async ({ page }, testInfo) => {
   const response = await page.goto("/");
@@ -23,7 +39,8 @@ test("homepage keeps its cinematic hierarchy and media geometry", async ({ page 
 
   const heroMedia = page.locator("[data-media-slot='homepage-hero']");
   await expect(heroMedia).toBeVisible();
-  await expect(heroMedia).toHaveAttribute("data-media-state", "placeholder");
+  await expect(heroMedia).toHaveAttribute("data-media-state", "ready");
+  await expectImageLoaded(heroMedia);
   const heroBox = await heroMedia.boundingBox();
   expect(heroBox).not.toBeNull();
   if (heroBox) {
@@ -35,7 +52,20 @@ test("homepage keeps its cinematic hierarchy and media geometry", async ({ page 
   expect(await page.locator("[data-motion='stagger-item']").count()).toBeGreaterThanOrEqual(16);
   expect(await page.locator("[data-motion='tilt']").count()).toBeGreaterThanOrEqual(8);
   expect(await page.locator("[data-motion='spotlight']").count()).toBeGreaterThanOrEqual(2);
-  await expect(page.locator("[data-media-slot^='homepage-catalogue-']")).toHaveCount(5);
+
+  const procurementMedia = page.locator("[data-media-slot='homepage-procurement']");
+  await procurementMedia.scrollIntoViewIfNeeded();
+  await expect(procurementMedia).toHaveAttribute("data-media-state", "ready");
+  await expectImageLoaded(procurementMedia);
+
+  const catalogueMedia = page.locator("[data-media-slot^='homepage-catalogue-']");
+  await expect(catalogueMedia).toHaveCount(5);
+  for (let index = 0; index < 5; index += 1) {
+    const frame = catalogueMedia.nth(index);
+    await frame.scrollIntoViewIfNeeded();
+    await expect(frame).toHaveAttribute("data-media-state", "ready");
+    await expectImageLoaded(frame);
+  }
 
   await page.locator("[data-section='catalogue-access']").scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "Technical catalogues for structured browsing." })).toBeVisible();
