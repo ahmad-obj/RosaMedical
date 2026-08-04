@@ -87,7 +87,7 @@ const ESTABLISHED_CUTTER_PRODUCTS = [
   }
 ] as const satisfies readonly CatalogueProductRecord[];
 
-export const CUTTER_PRODUCTS = [
+export const CUTTER_PRODUCTS: readonly CatalogueProductRecord[] = [
   ...CUTTERS_BATCH_01_PRODUCTS,
   ...ESTABLISHED_CUTTER_PRODUCTS
-] as const satisfies readonly CatalogueProductRecord[];
+];
