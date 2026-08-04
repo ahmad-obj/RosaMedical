@@ -6,6 +6,14 @@ import {
   getDocumentedOptionSummary
 } from "@/features/admin-products";
 
+function firstCatalogueProduct() {
+  const product = CATALOGUE_PRODUCTS[0];
+  if (!product) {
+    throw new Error("Expected at least one catalogue product");
+  }
+  return product;
+}
+
 describe("F3E-B product selectors", () => {
   it("derives exactly one row for every source product", () => {
     const rows = getAdminProductRows();
@@ -16,7 +24,7 @@ describe("F3E-B product selectors", () => {
   });
 
   it("preserves source identity and uses real route helpers", () => {
-    const source = CATALOGUE_PRODUCTS[0];
+    const source = firstCatalogueProduct();
     const row = getAdminProductRows().at(0);
     expect(row).toBeDefined();
     expect(row!).toMatchObject({
@@ -34,12 +42,12 @@ describe("F3E-B product selectors", () => {
     for (const product of CATALOGUE_PRODUCTS) {
       expect(getAdminProductEditor(product.familySlug, product.slug)?.product.id).toBe(product.id);
     }
-    const product = CATALOGUE_PRODUCTS[0];
+    const product = firstCatalogueProduct();
     expect(getAdminProductEditor("scissors", product.slug)).toBeUndefined();
   });
 
   it("deduplicates documented options and provides an explicit fallback", () => {
-    const source = CATALOGUE_PRODUCTS[0];
+    const source = firstCatalogueProduct();
     expect(getDocumentedOptionSummary(source).length).toBeGreaterThan(0);
     expect(getDocumentedOptionSummary({
       id: source.id,
