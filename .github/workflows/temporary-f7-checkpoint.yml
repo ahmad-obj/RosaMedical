@@ -1,48 +1,58 @@
-name: Temporary Cinematic Media Review
+name: Temporary Cinematic Media Verification
 
 on:
   pull_request:
     branches: [main]
 
 concurrency:
-  group: temporary-cinematic-review-${{ github.event.pull_request.number }}
+  group: temporary-cinematic-verification-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
+env:
+  CI: true
+  NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+  SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+  ROSA_OWNER_EMAIL: owner@example.com
+  ALERT_UNREAD_SECRET: placeholder-alert-secret
+  RESEND_API_KEY: placeholder-resend-key
+
 jobs:
-  review:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: Validate committed review assets
-        shell: bash
-        run: |
-          expected=(
-            apps/web/public/media/cinematic/homepage-hero.webp
-            apps/web/public/media/cinematic/homepage-procurement.webp
-            apps/web/public/media/cinematic/about-hero.webp
-            apps/web/public/media/cinematic/about-procurement.webp
-            apps/web/public/media/catalogue-covers/knives.webp
-            apps/web/public/media/catalogue-covers/scissors.webp
-            apps/web/public/media/catalogue-covers/punches.webp
-            apps/web/public/media/catalogue-covers/chisels.webp
-            apps/web/public/media/catalogue-covers/cutters.webp
-          )
-          for file in "${expected[@]}"; do
-            test -s "$file" || { echo "Missing committed asset: $file"; exit 1; }
-            file "$file"
-          done
-      - name: Upload corrected review assets
-        uses: actions/upload-artifact@v4
+      - uses: actions/setup-node@v4
         with:
-          name: cinematic-media-review-v2
-          path: |
-            apps/web/public/media/cinematic/*.webp
-            apps/web/public/media/catalogue-covers/*.webp
-          if-no-files-found: error
-          retention-days: 7
+          node-version: 24
+      - run: corepack enable
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --reporter=append-only
+      - name: Check premium stylesheet contract
+        run: node --test apps/web/src/test/f7-premium-styles.static.test.mjs
+      - name: Lint web application
+        run: pnpm --filter @rosa/web lint
+      - name: Test web application
+        run: pnpm --filter @rosa/web test
+      - name: Typecheck web application
+        run: pnpm --filter @rosa/web typecheck
+      - name: Build web application
+        run: pnpm --filter @rosa/web build
+      - name: Install Playwright Chromium
+        run: pnpm --filter @rosa/web exec playwright install --with-deps chromium
+      - name: Test affected public journeys
+        run: >-
+          pnpm --filter @rosa/web exec playwright test
+          tests/e2e/f7-public-shell.spec.ts
+          tests/e2e/f7-homepage-polish.spec.ts
+          tests/e2e/f7-product-polish.spec.ts
+          tests/e2e/f7-story-pages.spec.ts
+          tests/e2e/f7-conversion-polish.spec.ts
+          tests/e2e/f7-reduced-motion.spec.ts
+          tests/e2e/f7-responsive-restraint.spec.ts
