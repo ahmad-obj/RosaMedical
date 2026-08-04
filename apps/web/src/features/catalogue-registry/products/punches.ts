@@ -77,7 +77,7 @@ const PRESERVED_PUNCH_PRODUCTS = [
   }
 ] as const satisfies readonly CatalogueProductRecord[];
 
-export const PUNCH_PRODUCTS = [
+export const PUNCH_PRODUCTS: readonly CatalogueProductRecord[] = [
   ...PUNCHES_BATCH_01_PRODUCTS,
   ...PRESERVED_PUNCH_PRODUCTS
-] as const satisfies readonly CatalogueProductRecord[];
+];
