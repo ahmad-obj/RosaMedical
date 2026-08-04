@@ -23,11 +23,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
-      - name: Detect staged source payload
+      - name: Detect regeneration marker
         id: payload
         shell: bash
         run: |
-          if [[ -s .tmp/cinematic-media/homepage-hero.b64 ]]; then
+          if [[ -d .tmp/cinematic-media ]] && find .tmp/cinematic-media -type f -size +0c -print -quit | grep -q .; then
             echo "present=true" >> "$GITHUB_OUTPUT"
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
@@ -82,8 +82,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add pnpm-lock.yaml apps/web/public/media/cinematic apps/web/public/media/catalogue-covers
           git add -u .tmp/cinematic-media
-          git commit -m "feat: generate cinematic media assets"
+          git commit -m "feat: regenerate cinematic media assets"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
       - name: Confirm stable branch state
         if: steps.payload.outputs.present != 'true'
-        run: echo "Cinematic assets are already generated; no staging payload remains."
+        run: echo "Cinematic assets are already generated; no regeneration marker remains."
