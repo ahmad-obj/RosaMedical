@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import sharp from "sharp";
 
@@ -32,12 +32,24 @@ async function ensureParent(path) {
   await mkdir(dirname(path), { recursive: true });
 }
 
-async function contain(path, width, height, opacity = 1) {
-  return sharp(path)
-    .resize({ width, height, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .ensureAlpha(opacity)
+async function instrument(path, width, height, rotation = 0) {
+  const resized = await sharp(path)
+    .resize({
+      width,
+      height,
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 }
+    })
+    .ensureAlpha()
     .png()
     .toBuffer();
+
+  return rotation === 0
+    ? resized
+    : sharp(resized)
+        .rotate(rotation, { background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .png()
+        .toBuffer();
 }
 
 async function writeWebp(canvas, layers, output, quality = 84) {
@@ -48,18 +60,55 @@ async function writeWebp(canvas, layers, output, quality = 84) {
     .toFile(output);
 }
 
-async function decodeHero() {
-  const payload = (await readFile(resolve(STAGING, "homepage-hero.b64"), "utf8")).trim();
-  const output = resolve(PUBLIC, "media/cinematic/homepage-hero.webp");
-  await ensureParent(output);
-  await writeFile(output, Buffer.from(payload, "base64"));
-  await sharp(output).metadata();
+async function buildHomepageHero() {
+  const width = 1600;
+  const height = 900;
+  const [punch, scissors, chisel, knife, cutter] = await Promise.all([
+    instrument(PRODUCT_MEDIA.punches, 780, 360, -4),
+    instrument(PRODUCT_MEDIA.scissors, 610, 610, -17),
+    instrument(PRODUCT_MEDIA.chisels, 440, 600, 8),
+    instrument(PRODUCT_MEDIA.knives, 320, 460, 18),
+    instrument(PRODUCT_MEDIA.cutters, 440, 440, 10)
+  ]);
+  const background = svg(width, height, `
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#070808"/>
+        <stop offset=".44" stop-color="#0b1112"/>
+        <stop offset="1" stop-color="#173136"/>
+      </linearGradient>
+      <radialGradient id="light" cx="72%" cy="44%" r="56%">
+        <stop offset="0" stop-color="#6f8f91" stop-opacity=".25"/>
+        <stop offset="1" stop-color="#122326" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="1600" height="900" fill="url(#bg)"/>
+    <rect width="1600" height="900" fill="url(#light)"/>
+    <circle cx="1320" cy="170" r="220" fill="none" stroke="#b71924" stroke-width="2" opacity=".22"/>
+    <circle cx="1320" cy="170" r="156" fill="none" stroke="#d7e0de" stroke-width="1" opacity=".12"/>
+    <line x1="1516" y1="88" x2="1516" y2="812" stroke="#b71924" stroke-width="5"/>
+    <line x1="850" y1="760" x2="1450" y2="760" stroke="#d7e0de" stroke-width="2" opacity=".18"/>
+  `);
+
+  await writeWebp(
+    { create: { width, height, channels: 4, background: "#080a0a" } },
+    [
+      { input: background },
+      { input: punch, left: 710, top: 245, blend: "over" },
+      { input: knife, left: 1010, top: 80, blend: "over" },
+      { input: chisel, left: 1230, top: 60, blend: "over" },
+      { input: scissors, left: 880, top: 220, blend: "over" },
+      { input: cutter, left: 1190, top: 400, blend: "over" }
+    ],
+    resolve(PUBLIC, "media/cinematic/homepage-hero.webp"),
+    87
+  );
 }
 
 async function buildCatalogueCover({ key, title, accent }) {
   const width = 800;
   const height = 1000;
-  const instrument = await contain(PRODUCT_MEDIA[key], 560, 560);
+  const product = await instrument(PRODUCT_MEDIA[key], 470, 510);
   const frame = svg(width, height, `
     <defs>
       <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
@@ -76,23 +125,24 @@ async function buildCatalogueCover({ key, title, accent }) {
     <rect x="690" y="34" width="5" height="924" fill="${accent}" opacity=".82"/>
     <g fill="${accent}" opacity=".92">
       ${Array.from({ length: 5 }, (_, row) =>
-        Array.from({ length: 5 }, (_, col) => `<circle cx="${126 + col * 27}" cy="${116 + row * 23}" r="5.5"/>`).join("")
+        Array.from({ length: 5 }, (_, col) => `<circle cx="${530 + col * 27}" cy="${100 + row * 23}" r="5.5"/>`).join("")
       ).join("")}
     </g>
-    <rect x="54" y="620" width="636" height="188" fill="#d8d9d9" opacity=".72"/>
-    <text x="390" y="520" text-anchor="middle" fill="#161615" font-family="Georgia, serif" font-size="72" font-weight="700" letter-spacing="3">${title}</text>
-    <text x="390" y="574" text-anchor="middle" fill="${accent}" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="8">ROSA MEDICAL</text>
-    <line x1="112" y1="874" x2="638" y2="874" stroke="${accent}" stroke-width="2" opacity=".7"/>
+    <text x="112" y="168" fill="#161615" font-family="Georgia, serif" font-size="67" font-weight="700" letter-spacing="2">${title}</text>
+    <text x="116" y="216" fill="${accent}" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="8">ROSA MEDICAL</text>
+    <line x1="112" y1="252" x2="638" y2="252" stroke="${accent}" stroke-width="2" opacity=".62"/>
+    <rect x="54" y="650" width="636" height="176" fill="#d8d9d9" opacity=".68"/>
+    <line x1="112" y1="884" x2="638" y2="884" stroke="${accent}" stroke-width="2" opacity=".7"/>
   `);
 
   await writeWebp(
     { create: { width, height, channels: 4, background: "#e6e6e3" } },
     [
       { input: frame },
-      { input: instrument, left: 120, top: 230, blend: "over" }
+      { input: product, left: 165, top: 315, blend: "over" }
     ],
     resolve(PUBLIC, `media/catalogue-covers/${key}.webp`),
-    86
+    87
   );
 }
 
@@ -100,9 +150,9 @@ async function buildHomepageProcurement() {
   const width = 1200;
   const height = 1450;
   const [scissors, knife, cutter] = await Promise.all([
-    contain(PRODUCT_MEDIA.scissors, 640, 640),
-    contain(PRODUCT_MEDIA.knives, 430, 430),
-    contain(PRODUCT_MEDIA.cutters, 430, 430)
+    instrument(PRODUCT_MEDIA.scissors, 640, 640),
+    instrument(PRODUCT_MEDIA.knives, 430, 430),
+    instrument(PRODUCT_MEDIA.cutters, 430, 430)
   ]);
   const background = svg(width, height, `
     <defs>
@@ -137,7 +187,7 @@ async function buildHomepageProcurement() {
       { input: cutter, left: 735, top: 870, blend: "over" }
     ],
     resolve(PUBLIC, "media/cinematic/homepage-procurement.webp"),
-    85
+    86
   );
 }
 
@@ -145,8 +195,8 @@ async function buildAboutHero() {
   const width = 1000;
   const height = 1280;
   const [chisel, cutter] = await Promise.all([
-    contain(PRODUCT_MEDIA.chisels, 760, 900),
-    contain(PRODUCT_MEDIA.cutters, 520, 620)
+    instrument(PRODUCT_MEDIA.chisels, 700, 820, -7),
+    instrument(PRODUCT_MEDIA.cutters, 480, 560, 8)
   ]);
   const background = svg(width, height, `
     <defs>
@@ -167,20 +217,20 @@ async function buildAboutHero() {
     { create: { width, height, channels: 4, background: "#0d0d0d" } },
     [
       { input: background },
-      { input: chisel, left: 230, top: 120, blend: "screen" },
-      { input: cutter, left: 500, top: 560, blend: "screen" }
+      { input: chisel, left: 245, top: 115, blend: "over" },
+      { input: cutter, left: 500, top: 545, blend: "over" }
     ],
     resolve(PUBLIC, "media/cinematic/about-hero.webp"),
-    86
+    87
   );
 }
 
 async function buildAboutProcurement() {
   const width = 1500;
   const height = 1050;
-  const [scissors, punches] = await Promise.all([
-    contain(PRODUCT_MEDIA.scissors, 720, 720),
-    contain(PRODUCT_MEDIA.punches, 620, 620)
+  const [scissors, chisel] = await Promise.all([
+    instrument(PRODUCT_MEDIA.scissors, 690, 690, -5),
+    instrument(PRODUCT_MEDIA.chisels, 470, 720, 4)
   ]);
   const background = svg(width, height, `
     <defs>
@@ -201,28 +251,29 @@ async function buildAboutProcurement() {
     <text x="212" y="285" fill="#6d6b66" font-family="Arial, sans-serif" font-size="20" letter-spacing="6">PRODUCT DISCOVERY TO FOLLOW-UP</text>
     ${Array.from({ length: 6 }, (_, index) => `<line x1="215" y1="${390 + index * 75}" x2="850" y2="${390 + index * 75}" stroke="#cbc8c0" stroke-width="3"/>`).join("")}
     <rect x="1050" y="0" width="450" height="1050" fill="#171714" opacity=".96"/>
-    <circle cx="1290" cy="230" r="210" fill="#b71924" opacity=".25"/>
+    <circle cx="1280" cy="230" r="205" fill="#b71924" opacity=".22"/>
+    <line x1="1120" y1="900" x2="1430" y2="900" stroke="#f4f0e8" stroke-width="2" opacity=".35"/>
   `);
 
   await writeWebp(
     { create: { width, height, channels: 4, background: "#f5f2eb" } },
     [
       { input: background },
-      { input: scissors, left: 650, top: 310, blend: "over" },
-      { input: punches, left: 940, top: 400, blend: "screen" }
+      { input: scissors, left: 600, top: 360, blend: "over" },
+      { input: chisel, left: 1040, top: 245, blend: "over" }
     ],
     resolve(PUBLIC, "media/cinematic/about-procurement.webp"),
-    85
+    86
   );
 }
 
 async function main() {
-  await decodeHero();
-  await Promise.all(FAMILIES.map(buildCatalogueCover));
   await Promise.all([
+    buildHomepageHero(),
     buildHomepageProcurement(),
     buildAboutHero(),
-    buildAboutProcurement()
+    buildAboutProcurement(),
+    ...FAMILIES.map(buildCatalogueCover)
   ]);
   await rm(STAGING, { recursive: true, force: true });
 }
