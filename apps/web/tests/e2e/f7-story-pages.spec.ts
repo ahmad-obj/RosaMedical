@@ -1,4 +1,20 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+
+async function expectImageLoaded(frame: Locator): Promise<void> {
+  const image = frame.locator("img");
+  await expect(image).toHaveCount(1);
+  await expect
+    .poll(() =>
+      image.evaluate(
+        (element) =>
+          element instanceof HTMLImageElement
+          && element.complete
+          && element.naturalWidth > 0
+          && element.naturalHeight > 0
+      )
+    )
+    .toBe(true);
+}
 
 async function expectNoHorizontalOverflow(page: Page) {
   const details = await page.evaluate(() => {
@@ -44,8 +60,16 @@ test("About, procurement and catalogue stories remain complete and media-ready",
   await expect(
     page.getByRole("heading", { name: "A clearer way to source medical instruments.", level: 1 })
   ).toBeVisible();
-  await expect(page.locator("[data-media-slot='about-hero']")).toHaveAttribute("data-media-state", "placeholder");
-  await expect(page.locator("[data-media-slot='about-procurement']")).toHaveAttribute("data-media-state", "placeholder");
+
+  const aboutHero = page.locator("[data-media-slot='about-hero']");
+  await expect(aboutHero).toHaveAttribute("data-media-state", "ready");
+  await expectImageLoaded(aboutHero);
+
+  const aboutProcurement = page.locator("[data-media-slot='about-procurement']");
+  await aboutProcurement.scrollIntoViewIfNeeded();
+  await expect(aboutProcurement).toHaveAttribute("data-media-state", "ready");
+  await expectImageLoaded(aboutProcurement);
+
   await expect(page.getByRole("heading", { name: "How surgical scissors became more specialised.", level: 2 })).toBeVisible();
   await expect(page.locator("[data-scissors-evolution-stage]")).toHaveCount(5);
   await expect(page.locator("[data-media-slot='about-scissors-evolution']")).toHaveAttribute("data-media-state", "placeholder");
