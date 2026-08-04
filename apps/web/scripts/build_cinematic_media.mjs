@@ -129,7 +129,7 @@ async function buildCatalogueCover({ key, title, accent }) {
       ).join("")}
     </g>
     <text x="112" y="168" fill="#161615" font-family="Georgia, serif" font-size="67" font-weight="700" letter-spacing="2">${title}</text>
-    <text x="116" y="216" fill="${accent}" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="8">ROSA MEDICAL</text>
+    <text x="116" y="216" fill="${accent}" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="8">ROSA</text>
     <line x1="112" y1="252" x2="638" y2="252" stroke="${accent}" stroke-width="2" opacity=".62"/>
     <rect x="54" y="650" width="636" height="176" fill="#d8d9d9" opacity=".68"/>
     <line x1="112" y1="884" x2="638" y2="884" stroke="${accent}" stroke-width="2" opacity=".7"/>
