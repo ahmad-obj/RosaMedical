@@ -1,53 +1,19 @@
-name: Temporary Final Closeout Diagnostics
+name: Temporary Cinematic Tree Probe
 
 on:
   pull_request:
     branches: [main]
 
-concurrency:
-  group: temporary-final-closeout-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
 
-env:
-  CI: true
-  NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
-  SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
-  ROSA_OWNER_EMAIL: owner@example.com
-  ALERT_UNREAD_SECRET: placeholder-alert-secret
-  RESEND_API_KEY: placeholder-resend-key
-
 jobs:
-  admin-spec:
-    name: admin-${{ matrix.label }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - label: foundation
-            spec: tests/e2e/f3e-a-admin-foundation.spec.ts
-          - label: catalogue-management
-            spec: tests/e2e/f3e-b-catalogue-management.spec.ts
-          - label: operations
-            spec: tests/e2e/f3e-c-operations.spec.ts
-          - label: governance
-            spec: tests/e2e/f3e-d-governance.spec.ts
+  tree-sha:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - run: corepack enable
-      - run: pnpm install --frozen-lockfile --reporter=append-only
-      - run: pnpm --filter @rosa/web exec playwright install --with-deps chromium
-      - name: Test ${{ matrix.spec }}
-        run: |
-          cd apps/web
-          pnpm exec playwright test "${{ matrix.spec }}"
+      - name: Print branch tree
+        run: git rev-parse HEAD^{tree}
