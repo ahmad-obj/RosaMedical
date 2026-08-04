@@ -125,7 +125,7 @@ const ESTABLISHED_KNIFE_PRODUCTS = [
   }
 ] as const satisfies readonly CatalogueProductRecord[];
 
-export const KNIFE_PRODUCTS = [
+export const KNIFE_PRODUCTS: readonly CatalogueProductRecord[] = [
   ...KNIVES_BATCH_01_PRODUCTS,
   ...ESTABLISHED_KNIFE_PRODUCTS
-] as const satisfies readonly CatalogueProductRecord[];
+];
