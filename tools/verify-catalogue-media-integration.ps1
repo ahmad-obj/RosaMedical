@@ -104,23 +104,38 @@ $e2eSpecs = @(
     "tests/e2e/punches-image-batch-01.spec.ts"
 )
 
-Invoke-Checked -Label "Focused catalogue integration tests" -Command {
-    & pnpm --filter @rosa/web test -- @focusedTests
+$generatedNextEnv = "apps/web/next-env.d.ts"
+try {
+    Invoke-Checked -Label "Focused catalogue integration tests" -Command {
+        & pnpm --filter @rosa/web test -- @focusedTests
+    }
+    Invoke-Checked -Label "Workspace lint" -Command {
+        & pnpm lint
+    }
+    Invoke-Checked -Label "Workspace typecheck" -Command {
+        & pnpm typecheck
+    }
+    Invoke-Checked -Label "Complete web test suite" -Command {
+        & pnpm --filter @rosa/web test
+    }
+    Invoke-Checked -Label "Production web build" -Command {
+        & pnpm --filter @rosa/web build
+    }
+    Invoke-Checked -Label "All five catalogue media E2E specifications" -Command {
+        & pnpm --filter @rosa/web test:e2e -- @e2eSpecs --workers=3
+    }
 }
-Invoke-Checked -Label "Workspace lint" -Command {
-    & pnpm lint
-}
-Invoke-Checked -Label "Workspace typecheck" -Command {
-    & pnpm typecheck
-}
-Invoke-Checked -Label "Complete web test suite" -Command {
-    & pnpm --filter @rosa/web test
-}
-Invoke-Checked -Label "Production web build" -Command {
-    & pnpm --filter @rosa/web build
-}
-Invoke-Checked -Label "All five catalogue media E2E specifications" -Command {
-    & pnpm --filter @rosa/web test:e2e -- @e2eSpecs --workers=3
+finally {
+    $nextEnvChanges = @(git status --porcelain=v1 -- $generatedNextEnv)
+    if ($nextEnvChanges.Count -gt 0) {
+        & git restore --source=HEAD --worktree -- $generatedNextEnv
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Unable to restore generated drift in $generatedNextEnv."
+        }
+        else {
+            Write-Host "Restored generated drift in $generatedNextEnv."
+        }
+    }
 }
 
 $forbidden = @(
@@ -140,6 +155,12 @@ foreach ($path in $changedPaths) {
             throw "Integration diff contains forbidden path: $path"
         }
     }
+}
+
+$finalWorkingTreeChanges = @(git status --porcelain=v1)
+if ($finalWorkingTreeChanges.Count -gt 0) {
+    $formatted = $finalWorkingTreeChanges | ForEach-Object { " - $_" }
+    throw "Verification left unexpected working-tree changes:`n$($formatted -join "`n")"
 }
 
 Write-Host ""
