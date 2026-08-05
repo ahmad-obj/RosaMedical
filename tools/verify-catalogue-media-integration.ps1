@@ -120,7 +120,7 @@ Invoke-Checked -Label "Production web build" -Command {
     & pnpm --filter @rosa/web build
 }
 Invoke-Checked -Label "All five catalogue media E2E specifications" -Command {
-    & pnpm --filter @rosa/web test:e2e -- @e2eSpecs
+    & pnpm --filter @rosa/web test:e2e -- @e2eSpecs --workers=3
 }
 
 $forbidden = @(
