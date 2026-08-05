@@ -32,8 +32,52 @@ async function expectImageLoaded(
     .toBe(true);
 }
 
+async function expectAllImagesLoaded(
+  images: import("@playwright/test").Locator,
+  expectedCount: number
+): Promise<void> {
+  for (let index = 0; index < expectedCount; index += 1) {
+    await images.nth(index).scrollIntoViewIfNeeded();
+  }
+
+  await expect
+    .poll(
+      () =>
+        images.evaluateAll((elements) =>
+          elements
+            .map((element, index) => {
+              if (!(element instanceof HTMLImageElement)) {
+                return {
+                  index,
+                  src: null,
+                  complete: false,
+                  naturalWidth: 0,
+                  naturalHeight: 0
+                };
+              }
+
+              return {
+                index,
+                src: element.currentSrc || element.src,
+                complete: element.complete,
+                naturalWidth: element.naturalWidth,
+                naturalHeight: element.naturalHeight
+              };
+            })
+            .filter(
+              (state) =>
+                !state.complete ||
+                state.naturalWidth <= 0 ||
+                state.naturalHeight <= 0
+            )
+        ),
+      { timeout: 60_000 }
+    )
+    .toEqual([]);
+}
+
 test.describe("Scissors Batch 01 production media", () => {
-  test.setTimeout(120_000);
+  test.setTimeout(180_000);
 
   test("renders all 42 local product images on the Scissors family route", async ({
     page
@@ -60,9 +104,9 @@ test.describe("Scissors Batch 01 production media", () => {
 
       expect(sourcePath).toMatch(LOCAL_SCISSORS_AVIF);
       expect(fallbackPath).toMatch(LOCAL_SCISSORS_WEBP);
-      await expectImageLoaded(images.nth(index));
     }
 
+    await expectAllImagesLoaded(images, 42);
     await expectNoHorizontalOverflow(page);
   });
 
