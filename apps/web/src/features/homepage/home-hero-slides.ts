@@ -66,16 +66,16 @@ export const HOME_HERO_SLIDES = [
     tone: "dark",
     eyebrow: { en: "Medical instruments supplier", ar: "مورّد أدوات طبية" },
     title: {
-      en: "Precision instruments. Procurement made clear.",
-      ar: "أدوات دقيقة. ومشتريات أكثر وضوحًا."
+      en: "Precision instruments for professional procurement.",
+      ar: "أدوات دقيقة للمشتريات المهنية."
     },
     copy: {
-      en: "A composed catalogue and quotation experience for hospitals, distributors and procurement teams.",
-      ar: "تجربة منظمة لاستعراض الكتالوجات وطلب عروض الأسعار للمستشفيات والموزعين وفرق المشتريات."
+      en: "Explore Rosa instrument families, product codes and catalogue references through one clear catalogue experience.",
+      ar: "استعرض عائلات أدوات روزا ورموز المنتجات ومراجع الكتالوج ضمن تجربة واضحة ومترابطة."
     },
     ctas: [
       { label: { en: "Explore Products", ar: "استعرض المنتجات" }, href: "/products" as const },
-      { label: { en: "Request a Quote", ar: "اطلب عرض سعر" }, href: "/request-quotation" as const, variant: "secondary" as const }
+      { label: { en: "View Catalogues", ar: "عرض الكتالوجات" }, href: "/catalogues" as const, variant: "secondary" as const }
     ]
   },
   {
@@ -94,12 +94,12 @@ export const HOME_HERO_SLIDES = [
     tone: "dark",
     eyebrow: { en: "Structured product discovery", ar: "استعراض منظم للمنتجات" },
     title: {
-      en: "A clearer view of the instruments you need.",
-      ar: "رؤية أوضح للأدوات التي تحتاجها."
+      en: "Find the instrument you need with less friction.",
+      ar: "اعثر على الأداة التي تحتاجها بسهولة أكبر."
     },
     copy: {
-      en: "Browse focused instrument families, review product codes and variants, and carry the right details into your inquiry.",
-      ar: "استعرض عائلات الأدوات المركزة، وراجع الرموز والخيارات، واحتفظ بالتفاصيل الصحيحة داخل استفسارك."
+      en: "Browse focused families and review codes, sizes and configurations without losing product context.",
+      ar: "استعرض العائلات وراجع الرموز والمقاسات والخيارات مع الحفاظ على سياق كل منتج."
     },
     ctas: [
       { label: { en: "Browse Instruments", ar: "استعرض الأدوات" }, href: "/products" as const },
@@ -122,16 +122,16 @@ export const HOME_HERO_SLIDES = [
     tone: "dark",
     eyebrow: { en: "Instrument selection", ar: "اختيار الأدوات" },
     title: {
-      en: "Clearer instrument selection, from the start.",
-      ar: "اختيار أوضح للأدوات منذ البداية."
+      en: "Product information that stays clear.",
+      ar: "معلومات منتجات تبقى واضحة."
     },
     copy: {
-      en: "Move from family browsing to product codes, configurations and quantities in one composed quotation path.",
-      ar: "انتقل من استعراض العائلات إلى رموز المنتجات وخياراتها وكمياتها ضمن مسار واحد منظم لطلب عرض السعر."
+      en: "Move from family to product detail with the specifications that matter kept in view.",
+      ar: "انتقل من عائلة الأداة إلى تفاصيل المنتج مع إبقاء المواصفات المهمة أمامك."
     },
     ctas: [
       { label: { en: "Explore Products", ar: "استعرض المنتجات" }, href: "/products" as const },
-      { label: { en: "Request a Quote", ar: "اطلب عرض سعر" }, href: "/request-quotation" as const, variant: "secondary" as const }
+      { label: { en: "View Catalogues", ar: "عرض الكتالوجات" }, href: "/catalogues" as const, variant: "secondary" as const }
     ]
   },
   {
@@ -148,17 +148,17 @@ export const HOME_HERO_SLIDES = [
     },
     copySide: "right",
     tone: "dark",
-    eyebrow: { en: "Catalogue to quotation", ar: "من الكتالوج إلى عرض السعر" },
+    eyebrow: { en: "Catalogue to inquiry", ar: "من الكتالوج إلى الاستفسار" },
     title: {
-      en: "From catalogue detail to one organised request.",
-      ar: "حوّل تفاصيل الكتالوج إلى طلب واحد منظم."
+      en: "From catalogue reference to a structured inquiry.",
+      ar: "من مرجع الكتالوج إلى استفسار منظم."
     },
     copy: {
-      en: "Identify the instrument family, review available configurations, and bring quantities together without losing product context.",
-      ar: "حدد عائلة الأداة، وراجع الخيارات المتاحة، واجمع الكميات مع الحفاظ على سياق كل منتج."
+      en: "Use product and catalogue details to prepare one organised request when you are ready.",
+      ar: "استخدم تفاصيل المنتج والكتالوج لإعداد طلب واحد منظم عندما تكون جاهزًا."
     },
     ctas: [
-      { label: { en: "Request a Quote", ar: "اطلب عرض سعر" }, href: "/request-quotation" as const },
+      { label: { en: "View Catalogues", ar: "عرض الكتالوجات" }, href: "/catalogues" as const },
       { label: { en: "Explore Products", ar: "استعرض المنتجات" }, href: "/products" as const, variant: "secondary" as const }
     ]
   }

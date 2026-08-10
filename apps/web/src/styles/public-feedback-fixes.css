@@ -21,3 +21,210 @@
     }
   }
 }
+
+/* Imdad-inspired public refinement: quieter corporate hierarchy while preserving Rosa motion and brand. */
+body:has(.public-page) {
+  --font-public: var(--font-interface);
+}
+
+body:has(.public-page) h1,
+body:has(.public-page) h2,
+body:has(.public-page) h3,
+body:has(.public-page) .brand,
+body:has(.public-page) .public-section-heading__title,
+body:has(.public-page) .procurement-panel__title,
+body:has(.public-page) .product-preview-card__title,
+body:has(.public-page) .catalogue-card__title,
+body:has(.public-page) .home-family-gallery__title,
+body:has(.public-page) .products-hero__title,
+body:has(.public-page) .family-hero h1,
+body:has(.public-page) .catalogues-intro h1 {
+  font-family: var(--font-public);
+}
+
+body:has(.public-page) h1,
+body:has(.public-page) h2,
+body:has(.public-page) h3,
+body:has(.public-page) .public-section-heading__title,
+body:has(.public-page) .procurement-panel__title,
+body:has(.public-page) .product-preview-card__title,
+body:has(.public-page) .catalogue-card__title,
+body:has(.public-page) .home-family-gallery__title {
+  font-weight: 600;
+}
+
+body:has(.public-page) .nav-link {
+  font-weight: 500;
+}
+
+body:has(.public-page) .button,
+body:has(.public-page) .text-link,
+body:has(.public-page) .product-preview-card__action,
+body:has(.public-page) .catalogue-card__action {
+  font-weight: 600;
+}
+
+body:has(.public-page) .public-eyebrow,
+body:has(.public-page) .product-preview-card__family,
+body:has(.public-page) .site-footer__title {
+  font-weight: 600;
+  letter-spacing: 0.035em;
+}
+
+body:has(.public-page) .public-section-heading__title {
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+}
+
+body:has(.public-page) .public-section-heading__copy,
+body:has(.public-page) .procurement-panel__copy {
+  max-width: 42rem;
+  line-height: 1.7;
+}
+
+body:has(.public-page--home) .home-hero__title {
+  font-family: var(--font-public);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+}
+
+body:has(.public-page--home) .home-hero__copy-text {
+  max-width: 35rem;
+  line-height: 1.65;
+}
+
+body:has(.public-page--home) .home-hero__actions {
+  gap: 0.75rem;
+}
+
+body:has(.public-page--home) .home-hero__actions .button--secondary {
+  border-color: rgb(255 255 255 / 0.68);
+  background: transparent;
+  color: var(--color-paper);
+}
+
+body:has(.public-page--home) .home-hero__actions .button--secondary:hover {
+  border-color: var(--color-paper);
+  background: rgb(255 255 255 / 0.1);
+}
+
+body:has(.public-page--home) .public-section-heading {
+  margin-bottom: clamp(1.6rem, 3vw, 2.5rem);
+}
+
+body:has(.public-page--home) .home-family-gallery__title {
+  letter-spacing: -0.02em;
+}
+
+.home-procurement-refined__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: start;
+}
+
+.home-procurement-refined__intro .public-section-heading {
+  display: block;
+  margin: 0;
+}
+
+.home-procurement-refined__intro .public-section-heading__content {
+  max-width: 36rem;
+}
+
+.home-procurement-refined__details {
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.home-procurement-refined__title {
+  max-width: 31rem;
+  margin: clamp(1.2rem, 2.4vw, 2rem) 0 0;
+  font-size: clamp(1.25rem, 1.6vw, 1.55rem);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.home-procurement-refined__body {
+  max-width: 36rem;
+  margin: 1rem 0 0;
+  color: var(--color-steel);
+  line-height: 1.75;
+}
+
+.home-procurement-refined__steps {
+  display: grid;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-procurement-refined__steps li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 3.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.home-procurement-refined__steps li:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.home-procurement-refined__steps span {
+  color: var(--color-rosa-red);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.home-procurement-refined__steps strong {
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+body:has(.public-page--home) .product-preview-card__family {
+  text-transform: none;
+}
+
+body:has(.public-page--home) .product-preview-card__title {
+  font-size: clamp(1.15rem, 1.5vw, 1.35rem);
+  line-height: 1.3;
+}
+
+body:has(.public-page--home) .product-preview-card__action {
+  font-weight: 500;
+}
+
+body:has(.public-page--home) .catalogue-card__number,
+body:has(.public-page--home) .catalogue-card__action {
+  font-weight: 500;
+}
+
+body:has(.public-page) .site-footer__links a {
+  font-weight: 400;
+}
+
+html[dir="rtl"] body:has(.public-page) h1,
+html[dir="rtl"] body:has(.public-page) h2,
+html[dir="rtl"] body:has(.public-page) h3,
+html[dir="rtl"] body:has(.public-page) .brand,
+html[dir="rtl"] body:has(.public-page) .public-section-heading__title,
+html[dir="rtl"] body:has(.public-page) .procurement-panel__title,
+html[dir="rtl"] body:has(.public-page) .product-preview-card__title,
+html[dir="rtl"] body:has(.public-page) .catalogue-card__title,
+html[dir="rtl"] body:has(.public-page) .home-family-gallery__title {
+  font-family: var(--font-arabic);
+}
+
+@media (max-width: 48rem) {
+  .home-procurement-refined__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 7vw, 3rem);
+  }
+
+  .home-procurement-refined__details {
+    padding-top: 0;
+  }
+}

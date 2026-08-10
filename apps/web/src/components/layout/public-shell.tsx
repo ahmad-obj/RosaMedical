@@ -87,9 +87,6 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
           <div className="site-footer__brand stack">
             <LocaleLink className="brand" href="/">ROSA</LocaleLink>
             <p><LocalizedText en={PUBLIC_CONTENT_VALUES.footerDescription.copy} ar="كتالوج منظم للأدوات الطبية ودعم واضح لطلبات عروض الأسعار والمشتريات المهنية." /></p>
-            <LocalizedButtonLink href="/request-quotation" size="small">
-              <LocalizedText en="Request a quote" ar="اطلب عرض سعر" />
-            </LocalizedButtonLink>
           </div>
           <nav aria-label="Product families / عائلات المنتجات">
             <p className="site-footer__title"><LocalizedText en="Products" ar="المنتجات" /></p>

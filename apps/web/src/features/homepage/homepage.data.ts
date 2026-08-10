@@ -8,7 +8,6 @@ import {
   type PublicMediaModel
 } from "@/features/public-catalogue";
 import { HOME_CATALOGUE_MEDIA_BY_SLUG } from "@/features/public-media";
-import { PUBLIC_CONTENT_VALUES } from "@/features/public-content-registry";
 import {
   FAMILY_NAMES_AR,
   HOME_PAGE_MODEL_AR
@@ -20,27 +19,29 @@ const families = selectFamilyCards();
 
 export const HOME_PAGE_MODEL = {
   familyIntro: {
-    eyebrow: "Our products",
-    title: "Explore the ROSA instrument collection.",
-    copy: "Five focused instrument collections, presented clearly for product browsing."
+    eyebrow: "Instrument families",
+    title: "Explore the ROSA instrument range.",
+    copy: "Five focused instrument families presented clearly for product browsing."
   },
   families,
   procurement: {
-    ...PUBLIC_CONTENT_VALUES.homeSupport,
+    eyebrow: "Procurement support",
+    title: "Clear support from catalogue to inquiry.",
+    copy: "Straightforward product information and a practical path from browsing to a structured request.",
     detailEyebrow: "Structured product information",
-    detailTitle: "Built for practical buying decisions.",
-    detailCopy: "Search by instrument family, review product codes and variants, collect quantities, and submit one organised request for quotation.",
-    steps: ["Clear product codes", "Variant-aware inquiry", "One organised request"]
+    detailTitle: "Support built around the way buyers work.",
+    detailCopy: "Browse by family, confirm product codes and variants, then carry the right details into one organised inquiry.",
+    steps: ["Find by family", "Confirm codes and variants", "Build one clear inquiry"]
   },
   productsIntro: {
     eyebrow: "Selected instruments",
-    title: "Representative products.",
-    copy: "A concise preview. Full dimensions and options belong on the individual product page."
+    title: "A focused view of the range.",
+    copy: "Open any product for codes, sizes and available configurations."
   },
   catalogue: {
     eyebrow: "Catalogues",
-    title: "Technical catalogues for structured browsing.",
-    copy: "Five instrument-family documents presented as part of the product experience, not as a file archive.",
+    title: "Technical catalogues.",
+    copy: "Browse the five instrument-family catalogues alongside the product range.",
     items: FAMILY_SLUGS.map((slug, index) => ({
       number: String(index + 1).padStart(2, "0"),
       slug,

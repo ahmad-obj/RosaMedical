@@ -71,4 +71,32 @@ describe("client-feedback responsive homepage contract", () => {
     expect(gallery).toContain("data-home-family-gallery");
     expect(gallery).not.toContain("Explore collection");
   });
+
+  it("keeps the homepage quotation action singular instead of repeating it through hero and footer", () => {
+    const homepage = source("src/features/homepage/homepage.tsx");
+    const shell = source("src/components/layout/public-shell.tsx");
+    const heroQuoteLabels = HOME_HERO_SLIDES.flatMap((slide) => slide.ctas)
+      .filter((cta) => cta.label.en.toLowerCase().includes("quote"));
+
+    expect(heroQuoteLabels).toHaveLength(0);
+    expect(homepage).not.toContain("QuotationCta");
+    expect(shell.match(/en="Request a quote"/g) ?? []).toHaveLength(1);
+  });
+
+  it("uses a restrained public sans hierarchy without removing the existing motion systems", () => {
+    const refinement = source("src/styles/public-feedback-fixes.css");
+    const carousel = source("src/features/homepage/sections/home-hero-carousel.tsx");
+    const density = source("src/styles/public-density.css");
+    const procurement = source("src/features/homepage/sections/procurement-support.tsx");
+
+    expect(refinement).toContain("--font-public: var(--font-interface)");
+    expect(refinement).toContain("font-family: var(--font-public)");
+    expect(refinement).toContain('html[dir="rtl"]');
+    expect(carousel).toContain("AnimatePresence");
+    expect(carousel).toContain("MOTION_DURATION.hero");
+    expect(density).toContain("transition: flex-grow var(--motion-section)");
+    expect(procurement).toContain("Reveal");
+    expect(procurement).toContain("Stagger");
+    expect(procurement).not.toContain("ROSA_LOGO_MEDIA");
+  });
 });

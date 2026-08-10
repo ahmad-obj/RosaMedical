@@ -7,7 +7,6 @@ import { FamilyDiscovery } from "./sections/family-discovery";
 import { ProcurementSupport } from "./sections/procurement-support";
 import { FeaturedInstruments } from "./sections/featured-instruments";
 import { CatalogueAccess } from "./sections/catalogue-access";
-import { QuotationCta } from "./sections/quotation-cta";
 
 export async function Homepage({ locale = "en" }: { locale?: PublicLocale }): Promise<ReactElement> {
   const products = await getFeaturedCatalogueProducts();
@@ -16,10 +15,9 @@ export async function Homepage({ locale = "en" }: { locale?: PublicLocale }): Pr
     <div className="public-page public-page--home">
       <HomeHeroCarousel locale={locale} />
       <FamilyDiscovery intro={model.familyIntro} families={model.families} locale={locale} />
-      <ProcurementSupport model={model.procurement} locale={locale} />
+      <ProcurementSupport model={model.procurement} />
       <FeaturedInstruments intro={model.productsIntro} products={model.products} />
       <CatalogueAccess model={model.catalogue} locale={locale} />
-      <QuotationCta model={model.quotation} />
     </div>
   );
 }
