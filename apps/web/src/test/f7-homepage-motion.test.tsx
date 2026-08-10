@@ -5,7 +5,7 @@ import { Homepage } from "@/features/homepage/homepage";
 import { renderServerComponent } from "@/test/render-server-component";
 
 describe("F7 homepage cinematic polish", () => {
-  it("preserves the approved six-section homepage hierarchy", async () => {
+  it("preserves the approved five-section homepage hierarchy", async () => {
     const html = await renderServerComponent(<Homepage />);
 
     for (const section of [
@@ -13,14 +13,14 @@ describe("F7 homepage cinematic polish", () => {
       "family-discovery",
       "procurement-support",
       "featured-instruments",
-      "catalogue-access",
-      "quotation-cta"
+      "catalogue-access"
     ]) {
       expect(html).toContain(`data-section=\"${section}\"`);
     }
+    expect(html).not.toContain('data-section="quotation-cta"');
     expect((html.match(/<h1/g) ?? [])).toHaveLength(1);
     expect(html).toContain("Explore Products");
-    expect(html).toContain("Request a Quote");
+    expect(html).not.toContain("Request a Quote");
   });
 
   it("uses one editorial hero choreography and a stable cinematic media slot", async () => {
@@ -53,7 +53,7 @@ describe("F7 homepage cinematic polish", () => {
     expect((html.match(/data-motion="stagger-item"/g) ?? []).length).toBeGreaterThanOrEqual(11);
     expect((html.match(/data-motion="tilt"/g) ?? [])).toHaveLength(1);
     expect((html.match(/data-family-panel/g) ?? [])).toHaveLength(5);
-    expect(html).toContain('data-motion="spotlight"');
+    expect(html).not.toContain('data-motion="spotlight"');
     expect(html).toContain('data-motion="progressive-blur"');
   });
 
@@ -72,12 +72,11 @@ describe("F7 homepage cinematic polish", () => {
     }
   });
 
-  it("uses the approved owner media in the hero, brand panel, families and catalogues", async () => {
+  it("uses the approved owner media in the hero, families and catalogues", async () => {
     const html = await renderServerComponent(<Homepage />);
 
     for (const asset of [
       "home-hero-01-desktop.webp",
-      "rosa-primary-logo.jpeg",
       "knives-family.jpg",
       "scissors-family.jpg",
       "cutters-family.webp",
@@ -86,6 +85,7 @@ describe("F7 homepage cinematic polish", () => {
     ]) {
       expect(html).toContain(asset);
     }
+    expect(html).not.toContain("rosa-primary-logo.jpeg");
     expect((html.match(/data-catalogue-family-media=/g) ?? [])).toHaveLength(5);
   });
 

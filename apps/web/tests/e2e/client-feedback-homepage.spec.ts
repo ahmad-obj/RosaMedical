@@ -92,7 +92,7 @@ test("coarse pointer keeps the family rail even at wide width", async ({ page },
 });
 
 
-test("homepage preserves all six sections and five catalogue media cards", async ({ page }, testInfo) => {
+test("homepage preserves the refined five-section story and five catalogue media cards", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
   await page.goto("/");
   const sections = [
@@ -100,12 +100,12 @@ test("homepage preserves all six sections and five catalogue media cards", async
     "family-discovery",
     "procurement-support",
     "featured-instruments",
-    "catalogue-access",
-    "quotation-cta"
+    "catalogue-access"
   ];
   for (const section of sections) {
     await expect(page.locator(`[data-section='${section}']`)).toHaveCount(1);
   }
+  await expect(page.locator("[data-section='quotation-cta']")).toHaveCount(0);
   await expect(page.locator("[data-section='catalogue-access'] [data-media-slot^='homepage-catalogue-']")).toHaveCount(5);
 });
 
@@ -129,18 +129,16 @@ test("1366x768 keeps the remaining homepage sections within compact density boun
     };
     return {
       sectionTitle: css("[data-section='procurement-support'] .public-section-heading__title"),
-      procurementMedia: css(".procurement-editorial__visual"),
+      procurementDetails: css(".home-procurement-refined__details"),
       productBody: css(".product-preview-card__body"),
-      catalogueCard: css(".catalogue-card"),
-      quotationPanel: css(".procurement-panel--premium-cta")
+      catalogueCard: css(".catalogue-card")
     };
   });
 
   expect(metrics.sectionTitle.fontSize).toBeLessThanOrEqual(44);
-  expect(metrics.procurementMedia.height).toBeLessThanOrEqual(448);
+  expect(metrics.procurementDetails.height).toBeLessThanOrEqual(360);
   expect(metrics.productBody.minHeight).toBeLessThanOrEqual(168);
   expect(metrics.catalogueCard.minHeight).toBeLessThanOrEqual(224);
-  expect(metrics.quotationPanel.paddingTop).toBeLessThanOrEqual(52);
 });
 
 test("shared social links render safely above the footer and in the dedicated Contact section", async ({ page }) => {

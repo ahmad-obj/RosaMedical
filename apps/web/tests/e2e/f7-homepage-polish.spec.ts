@@ -5,8 +5,7 @@ const sections = [
   "family-discovery",
   "procurement-support",
   "featured-instruments",
-  "catalogue-access",
-  "quotation-cta"
+  "catalogue-access"
 ] as const;
 
 test("homepage keeps its cinematic hierarchy and media geometry", async ({ page }) => {
@@ -15,11 +14,11 @@ test("homepage keeps its cinematic hierarchy and media geometry", async ({ page 
 
   await expect(page.locator("h1")).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore Products" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Request a Quote" }).first()).toBeVisible();
 
   for (const section of sections) {
     await expect(page.locator(`[data-section='${section}']`)).toHaveCount(1);
   }
+  await expect(page.locator("[data-section='quotation-cta']")).toHaveCount(0);
 
   await expect(page.locator("[data-home-choreography='carousel']")).toHaveCount(1);
   await expect(page.locator(".home-hero-carousel__dot")).toHaveCount(4);
@@ -34,16 +33,13 @@ test("homepage keeps its cinematic hierarchy and media geometry", async ({ page 
   await expect(page.locator("[data-motion='stagger']")).toHaveCount(3);
   expect(await page.locator("[data-motion='stagger-item']").count()).toBeGreaterThanOrEqual(11);
   expect(await page.locator("[data-motion='tilt']").count()).toBeGreaterThanOrEqual(1);
-  expect(await page.locator("[data-motion='spotlight']").count()).toBeGreaterThanOrEqual(1);
+  await expect(page.locator("[data-motion='spotlight']")).toHaveCount(0);
   await expect(page.locator("[data-home-family-gallery] [data-family-panel]")).toHaveCount(5);
   await expect(page.locator("[data-media-slot^='homepage-catalogue-']")).toHaveCount(5);
 
   await page.locator("[data-section='catalogue-access']").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading", { name: "Technical catalogues for structured browsing." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Technical catalogues." })).toBeVisible();
   await expect(page.getByRole("link", { name: "View Knives catalogue" })).toBeVisible();
-
-  await page.locator("[data-section='quotation-cta']").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading", { name: "Prepare your instrument inquiry." })).toBeVisible();
 
   const hasOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth
