@@ -5,7 +5,11 @@ for (const route of ["/", "/products"] as const) {
     await page.goto(route);
     await expect(page.locator("main")).toHaveCount(1);
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.locator("body")).not.toContainText(/price|in stock|rating|checkout/i);
+    await expect(page.locator("body")).not.toContainText(/in stock|rating|checkout|payment|shipping/i);
+    if (route === "/products") {
+      await expect(page.locator("body")).toContainText("Price on request");
+      await expect(page.locator("body")).not.toContainText(/\b(?:20|25|200|300)\s*SAR\b/i);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
   });
 
@@ -23,9 +27,11 @@ test("homepage exposes all five family links", async ({ page }) => {
   }
 });
 
-test("products discovery shell links to search without a fake form", async ({ page }) => {
+test("products exposes a functional search and inquiry-safe product discovery workspace", async ({ page }) => {
   await page.goto("/products");
-  await expect(page.locator("form")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Search by product name or code" })).toBeVisible();
-  await expect(page.locator('main a[href="/inquiry"]').first()).toBeVisible();
+  await expect(page.getByRole("search")).toBeVisible();
+  await expect(page.getByRole("searchbox", { name: /search products by name, code, size or option/i })).toBeVisible();
+  await expect(page.locator("[data-products-results]")).toBeVisible();
+  await expect(page.getByText("All products", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Price on request").first()).toBeVisible();
 });
