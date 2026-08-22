@@ -45,8 +45,7 @@ describe("client About compact redesign", () => {
       "about-client-contact",
       "about-client-compliance",
       "about-client-documents",
-      "about-client-quotation",
-      "about-client-social"
+      "about-client-quotation"
     ];
     let cursor = -1;
     for (const section of order) {
@@ -55,16 +54,14 @@ describe("client About compact redesign", () => {
       cursor = next;
     }
 
+    expect(html).not.toContain('data-section="about-client-social"');
     expect((html.match(/data-about-story=/g) ?? [])).toHaveLength(3);
     expect((html.match(/data-about-compliance-item=/g) ?? [])).toHaveLength(6);
     expect((html.match(/data-about-document=/g) ?? [])).toHaveLength(5);
     expect((html.match(/data-media-slot="about-client-/g) ?? [])).toHaveLength(9);
     expect(html).toContain('data-motion="text-reveal"');
     expect(html).toContain('data-motion="stagger"');
-    expect((html.match(/data-motion="reveal"/g) ?? []).length).toBeGreaterThanOrEqual(8);
-
-    const social = html.match(/<aside[^>]*data-section="about-client-social"[\s\S]*?<\/aside>/)?.[0] ?? "";
-    expect(social).toContain('data-motion="reveal"');
+    expect((html.match(/data-motion="reveal"/g) ?? []).length).toBeGreaterThanOrEqual(7);
   });
 
   it("keeps real routes, contact actions and removes the retired About composition", () => {
@@ -81,7 +78,7 @@ describe("client About compact redesign", () => {
     expect(html).not.toMatch(/certificate number|approval number|licensed by|certified by/i);
   });
 
-  it("locks compact responsive About geometry and suppresses only the duplicate shell contact strip", () => {
+  it("locks compact responsive About geometry while leaving the shared shell footer ribbon visible", () => {
     const css = source("src/styles/about-client-redesign.css");
     const globals = source("src/app/globals.css");
     const shell = source("src/components/layout/public-shell.tsx");
@@ -94,7 +91,7 @@ describe("client About compact redesign", () => {
     expect(css).toMatch(/@media \(max-width: 63\.99rem\)[\s\S]*\.about-client-documents__grid[\s\S]*repeat\(3,/);
     expect(css).toMatch(/@media \(max-width: 40rem\)[\s\S]*repeat\(2,/);
     expect(css).toMatch(/@media \(max-width: 40rem\)[\s\S]*scroll-snap-type:\s*inline mandatory/);
-    expect(css).toContain('.page-main:has([data-section="about-client-hero"]) + .public-contact-strip');
+    expect(css).not.toContain('.page-main:has([data-section="about-client-hero"]) + .public-contact-strip');
     expect(shell.indexOf('<main className="page-main"')).toBeGreaterThanOrEqual(0);
     expect(shell.indexOf("<PublicContactStrip />")).toBeGreaterThan(shell.indexOf('<main className="page-main"'));
     expect(css).not.toContain("text-align: justify");
