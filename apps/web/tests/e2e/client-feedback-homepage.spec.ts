@@ -21,11 +21,12 @@ test("1366x768 keeps the hero deliberately compact with immediate page continuat
   expect(ratio).toBeLessThanOrEqual(0.72);
 });
 
-test("390x844 keeps message CTA and image inside a compact integrated hero", async ({ page }, testInfo) => {
+test("390x844 keeps message and image inside a compact integrated hero", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   await page.goto("/");
   await expect(page.locator(".home-hero__title")).toBeVisible();
   await expect(page.locator("[data-media-slot='homepage-hero-active'] img")).toBeVisible();
+  await expect(page.locator("[data-section='home-hero'] a")).toHaveCount(0);
   const hero = await page.locator("[data-section='home-hero']").boundingBox();
   expect(hero).not.toBeNull();
   expect(hero!.height).toBeLessThan(760);
@@ -106,17 +107,34 @@ test("homepage preserves the approved compact section sequence and media invento
     "securing-confidence",
     "home-contact-band",
     "client-success-assurance",
-    "quotation-cta",
-    "home-social-strip"
+    "quotation-cta"
   ];
   for (const section of sections) {
     await expect(page.locator(`[data-section='${section}']`)).toHaveCount(1);
   }
+  await expect(page.locator("[data-section='home-social-strip']")).toHaveCount(0);
+  await expect(page.locator(".public-contact-strip")).toBeVisible();
   await expect(page.locator("[data-home-family-gallery] [data-family-panel]")).toHaveCount(5);
-  await expect(page.locator(".home-clinical-media img")).toHaveCount(6);
+  const clinicalImages = page.locator(".home-clinical-media img");
+  await expect(clinicalImages).toHaveCount(6);
+  expect(await clinicalImages.evaluateAll((images) => images.every((image) => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
   await expect(page.locator("[data-section='catalogue-access']")).toHaveCount(0);
   await expect(page.locator("[data-section='procurement-support']")).toHaveCount(0);
   await expect(page.locator("[data-section='featured-instruments']")).toHaveCount(0);
+});
+
+test("Comprehensive Plans lead and specialty row share the same desktop width", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop");
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await page.goto("/");
+  const section = page.locator("[data-section='comprehensive-plans']");
+  await section.scrollIntoViewIfNeeded();
+  const lead = await section.locator(".home-comprehensive__lead").boundingBox();
+  const specialties = await section.locator(".home-comprehensive__specialties").boundingBox();
+  expect(lead).not.toBeNull();
+  expect(specialties).not.toBeNull();
+  expect(Math.abs(lead!.x - specialties!.x)).toBeLessThanOrEqual(2);
+  expect(Math.abs((lead!.x + lead!.width) - (specialties!.x + specialties!.width))).toBeLessThanOrEqual(2);
 });
 
 test("1366x768 keeps redesigned homepage typography and spacing within compact density bounds", async ({ page }, testInfo) => {
@@ -147,12 +165,12 @@ test("1366x768 keeps redesigned homepage typography and spacing within compact d
   expect(metrics.assuranceTitle).toBeLessThanOrEqual(16);
 });
 
-test("shared social links render in the homepage strip and dedicated Contact section", async ({ page }) => {
+test("shared footer Contact us ribbon renders the social links on homepage and Contact", async ({ page }) => {
   await page.goto("/");
-  const socials = page.locator(".home-social-strip [data-social-links] a");
-  await expect(socials).toHaveCount(4);
-  await expect(page.locator(".public-contact-strip")).toBeHidden();
-  for (const link of await socials.all()) {
+  const homepageSocials = page.locator(".public-contact-strip [data-social-links] a");
+  await expect(page.locator(".public-contact-strip")).toBeVisible();
+  await expect(homepageSocials).toHaveCount(4);
+  for (const link of await homepageSocials.all()) {
     await expect(link).toHaveAttribute("href", /^https:\/\//);
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", /noopener/);
@@ -160,6 +178,8 @@ test("shared social links render in the homepage strip and dedicated Contact sec
   }
 
   await page.goto("/contact");
+  await expect(page.locator(".public-contact-strip")).toBeVisible();
+  await expect(page.locator(".public-contact-strip [data-social-links] a")).toHaveCount(4);
   await expect(page.locator(".contact-social-section [data-social-links] a")).toHaveCount(4);
   await expect(page.locator("body")).not.toContainText("@rosamedicalexample");
 });
@@ -184,7 +204,7 @@ test("Arabic homepage keeps RTL typography and the same physical hero compositio
   expect(computed.fontFamily).toContain("GE SS");
   expect(computed.overflow).toBe(false);
   await expect(page.locator("[data-home-family-gallery]")).toBeVisible();
-  await expect(page.locator(".home-social-strip [data-social-links] a")).toHaveCount(4);
+  await expect(page.locator(".public-contact-strip [data-social-links] a")).toHaveCount(4);
 });
 
 test("hero dot keyboard navigation wraps and keeps roving focus", async ({ page }, testInfo) => {
@@ -250,11 +270,12 @@ test("mostly vertical mobile gesture does not change hero slide", async ({ page 
   await expect(hero).toHaveAttribute("data-active-slide", "precision-instruments");
 });
 
-test("hero exposes dots only with 44px targets and visible keyboard focus", async ({ page }, testInfo) => {
+test("hero exposes only carousel dots as interactive controls", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
   await page.goto("/");
   const hero = page.locator("[data-section='home-hero']");
   await expect(hero.locator("button:not(.home-hero-carousel__dot)")).toHaveCount(0);
+  await expect(hero.locator("a")).toHaveCount(0);
   const dots = hero.locator(".home-hero-carousel__dot");
   await expect(dots).toHaveCount(4);
   for (const box of await dots.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().toJSON()))) {
@@ -262,9 +283,6 @@ test("hero exposes dots only with 44px targets and visible keyboard focus", asyn
     expect(box.height).toBeGreaterThanOrEqual(44);
   }
 
-  const cta = hero.getByRole("link", { name: "Explore Products" });
-  await cta.focus();
-  expect(await cta.evaluate((node) => getComputedStyle(node).outlineStyle)).not.toBe("none");
   const family = page.locator("[data-home-family-gallery] [data-family-panel]").first().getByRole("link");
   await family.focus();
   expect(await family.evaluate((node) => getComputedStyle(node).outlineStyle)).not.toBe("none");
