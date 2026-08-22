@@ -11,7 +11,7 @@ import {
   type ReactElement
 } from "react";
 import { AnimatePresence, motion, useReducedMotion, type MotionStyle } from "motion/react";
-import { LocalizedButtonLink, type PublicLocale } from "@/features/localization";
+import type { PublicLocale } from "@/features/localization";
 import { MOTION_DURATION, MOTION_EASING } from "@/features/motion/motion.config";
 import {
   HOME_HERO_SLIDES,
@@ -226,17 +226,6 @@ export function HomeHeroCarousel({
               <p className="public-eyebrow">{slide.eyebrow}</p>
               <h1 className="home-hero__title" id="home-title">{slide.title}</h1>
               <p className="home-hero__copy-text">{slide.copy}</p>
-              <div className="home-hero__actions">
-                {slide.ctas.map((cta) => (
-                  <LocalizedButtonLink
-                    key={`${slide.id}-${cta.href}`}
-                    href={cta.href}
-                    variant={cta.variant ?? "primary"}
-                  >
-                    {cta.label}
-                  </LocalizedButtonLink>
-                ))}
-              </div>
             </motion.div>
           </div>
         </motion.div>
