@@ -5,7 +5,7 @@ import type { PublicLocale } from "@/features/localization";
 import { PublicHeroCarousel } from "@/features/public-hero";
 import { SectionHeading } from "@/features/public-catalogue";
 import { createProductsPageModel } from "./products.data";
-import { CatalogueSupport } from "./sections/catalogue-support";
+import { ProductsCatalogueCards } from "./sections/products-catalogue-cards";
 import { ProductsDirectContactBand } from "./sections/products-direct-contact-band";
 import { ProductsDiscoveryWorkspace } from "./sections/products-discovery-workspace";
 import { ProductsProcurementCta } from "./sections/products-procurement-cta";
@@ -36,7 +36,7 @@ export async function ProductsOverview({ locale = "en" }: { locale?: PublicLocal
       </Section>
 
       <ProductsDirectContactBand locale={locale} />
-      <CatalogueSupport model={model.catalogue} />
+      <ProductsCatalogueCards locale={locale} />
       <ProductsProcurementCta model={model.procurement} />
     </div>
   );
