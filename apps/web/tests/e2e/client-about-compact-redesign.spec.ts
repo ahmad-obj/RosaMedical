@@ -58,13 +58,16 @@ test("1023px uses upper-tablet compliance and document geometry", async ({ page 
   await expectNoHorizontalOverflow(page);
 });
 
-test("About owns its contact band without duplicating the global shell contact strip", async ({ page }) => {
+test("About keeps its internal contact band and the same shared footer ribbon as other public pages", async ({ page }) => {
   await page.goto("/about");
   await expect(page.locator("[data-section='about-client-contact']")).toBeVisible();
-  await expect(page.locator(".public-contact-strip")).toBeHidden();
+  await expect(page.locator("[data-section='about-client-social']")).toHaveCount(0);
+  await expect(page.locator(".public-contact-strip")).toBeVisible();
+  await expect(page.locator(".public-contact-strip")).toContainText("Contact us");
 
   await page.goto("/products");
   await expect(page.locator(".public-contact-strip")).toBeVisible();
+  await expect(page.locator(".public-contact-strip")).toContainText("Contact us");
 });
 
 test("mobile documents use a contained snap rail", async ({ page }) => {
