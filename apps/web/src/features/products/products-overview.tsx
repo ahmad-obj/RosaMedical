@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { getFeaturedCatalogueProducts } from "@/features/catalogue-live";
 import { createProductsPageModel } from "./products.data";
 import type { PublicLocale } from "@/features/localization";
-import { ProductsHero } from "./sections/products-hero";
+import { PublicHeroCarousel } from "@/features/public-hero";
 import { DiscoveryToolbarShell } from "./sections/discovery-toolbar-shell";
 import { FamilyIndex } from "./sections/family-index";
 import { ProductPreviewGrid } from "./sections/product-preview-grid";
@@ -14,7 +14,7 @@ export async function ProductsOverview({ locale = "en" }: { locale?: PublicLocal
   const model = createProductsPageModel(products, locale);
   return (
     <div className="public-page public-page--products">
-      <ProductsHero model={model.hero} />
+      <PublicHeroCarousel page="products" locale={locale} headingId="products-public-hero-title" />
       <DiscoveryToolbarShell model={model.discovery} />
       <FamilyIndex intro={model.familyIntro} families={model.families} locale={locale} />
       <ProductPreviewGrid intro={model.productsIntro} products={model.products} />
