@@ -1,0 +1,213 @@
+/* Shared public hero for Home, About, Products, Inquiry and Contact. */
+
+.public-hero-carousel {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(23.5rem, 44vw, 31rem);
+  height: min(57svh, 31rem);
+  overflow: hidden;
+  background: #10100f;
+  color: #fff;
+}
+
+.public-hero-carousel__slide {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.public-hero-carousel__media,
+.public-hero-carousel__picture,
+.public-hero-carousel__picture img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.public-hero-carousel__media {
+  z-index: 0;
+  transform-origin: center;
+}
+
+.public-hero-carousel__picture img {
+  object-fit: cover;
+  object-position: var(--hero-desktop-focal, 50% 50%);
+}
+
+.public-hero-carousel__overlay {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(5 5 5 / 0.82) 0%, rgb(5 5 5 / 0.62) 34%, rgb(5 5 5 / 0.18) 65%, rgb(5 5 5 / 0.08) 100%),
+    linear-gradient(180deg, rgb(0 0 0 / 0.08) 35%, rgb(0 0 0 / 0.34) 100%);
+}
+
+.public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__overlay {
+  background:
+    linear-gradient(270deg, rgb(5 5 5 / 0.82) 0%, rgb(5 5 5 / 0.62) 34%, rgb(5 5 5 / 0.18) 65%, rgb(5 5 5 / 0.08) 100%),
+    linear-gradient(180deg, rgb(0 0 0 / 0.08) 35%, rgb(0 0 0 / 0.34) 100%);
+}
+
+.public-hero-carousel__content {
+  position: relative;
+  z-index: 2;
+  inline-size: min(calc(100% - var(--page-gutter) - var(--page-gutter)), 80rem);
+  block-size: 100%;
+  min-block-size: inherit;
+  display: flex;
+  align-items: center;
+  margin-inline: auto;
+}
+
+.public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__content {
+  justify-content: flex-end;
+}
+
+.public-hero-carousel__copy {
+  inline-size: min(100%, 31rem);
+  padding-block: clamp(1.5rem, 3.5vh, 2.5rem);
+  text-shadow: 0 0.12rem 1.4rem rgb(0 0 0 / 0.34);
+}
+
+.public-hero-carousel .public-eyebrow,
+.public-hero-carousel .home-hero__eyebrow {
+  margin: 0 0 0.7rem;
+  color: rgb(255 255 255 / 0.88);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.public-hero-carousel__title,
+.public-hero-carousel .home-hero__title {
+  max-inline-size: 15ch;
+  margin: 0 0 0.85rem;
+  color: #fff;
+  font-family: var(--font-interface);
+  font-size: clamp(2.05rem, 3.35vw, 3.05rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.public-hero-carousel__copy-text,
+.public-hero-carousel .home-hero__copy-text {
+  max-inline-size: 34rem;
+  margin: 0;
+  color: rgb(255 255 255 / 0.9);
+  font-size: clamp(0.88rem, 0.25vw + 0.84rem, 0.98rem);
+  line-height: 1.48;
+}
+
+.public-hero-carousel__dots {
+  position: absolute;
+  z-index: 4;
+  inset-inline: 50% auto;
+  bottom: 0.6rem;
+  display: flex;
+  gap: 0.5rem;
+  transform: translateX(-50%);
+}
+
+html[dir="rtl"] .public-hero-carousel__dots {
+  transform: translateX(50%);
+}
+
+.public-hero-carousel__dot {
+  inline-size: 2.1rem;
+  block-size: 2rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.public-hero-carousel__dot::before {
+  content: "";
+  inline-size: 100%;
+  block-size: 2px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.42);
+  transform: scaleX(0.72);
+  transition:
+    background-color var(--motion-micro) var(--motion-ease),
+    transform var(--motion-micro) var(--motion-ease);
+}
+
+.public-hero-carousel__dot[aria-current="true"]::before,
+.public-hero-carousel__dot:hover::before,
+.public-hero-carousel__dot:focus-visible::before {
+  background: #fff;
+  transform: scaleX(1);
+}
+
+.public-hero-carousel__dot:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+html[dir="rtl"] .public-hero-carousel__title {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+}
+
+@media (max-height: 800px) and (min-width: 64.001rem) {
+  .public-hero-carousel {
+    min-height: 22.5rem;
+    height: min(55svh, 27rem);
+  }
+}
+
+@media (max-width: 40rem) {
+  .public-hero-carousel {
+    min-height: 31rem;
+    height: min(71svh, 35rem);
+  }
+
+  .public-hero-carousel__picture img {
+    object-position: var(--hero-mobile-focal, 50% 50%);
+  }
+
+  .public-hero-carousel__overlay,
+  .public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__overlay {
+    background:
+      linear-gradient(180deg, rgb(0 0 0 / 0.12) 15%, rgb(0 0 0 / 0.4) 47%, rgb(0 0 0 / 0.86) 100%);
+  }
+
+  .public-hero-carousel__content,
+  .public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__content {
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding-bottom: clamp(3.9rem, 10vh, 5rem);
+  }
+
+  .public-hero-carousel__copy {
+    inline-size: 100%;
+    padding-block: 0;
+  }
+
+  .public-hero-carousel__title,
+  .public-hero-carousel .home-hero__title {
+    max-inline-size: 12ch;
+    font-size: clamp(1.9rem, 8.7vw, 2.45rem);
+    line-height: 1.05;
+  }
+
+  .public-hero-carousel__copy-text {
+    max-inline-size: 31rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-hero-carousel__dot::before {
+    transition: none;
+  }
+}
