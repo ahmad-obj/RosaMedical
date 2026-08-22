@@ -38,8 +38,6 @@ body:has(.public-page--home) .site-header .button--small { min-height: 2.5rem; p
 .public-page--home .home-hero-carousel .home-hero__eyebrow { margin-bottom: 0.7rem; font-size: 0.78rem; }
 .public-page--home .home-hero-carousel .home-hero__title { max-width: 15ch; margin-bottom: 0.85rem; font-size: clamp(2.05rem, 3.35vw, 3.05rem); line-height: 1.04; letter-spacing: -0.035em; }
 .public-page--home .home-hero-carousel .home-hero__copy-text { max-width: 34rem; margin-bottom: 1rem; font-size: clamp(0.88rem, 0.25vw + 0.84rem, 0.98rem); line-height: 1.48; }
-.public-page--home .home-hero__actions { gap: 0.55rem; }
-.public-page--home .home-hero__actions .button { min-height: 2.75rem; padding: 0.58rem 0.85rem; font-size: 0.78rem; }
 .public-page--home .home-hero-carousel__dots { bottom: 0.55rem; }
 .public-page--home .home-hero-carousel__picture,
 .public-page--home .home-hero-carousel__picture img {
@@ -80,7 +78,7 @@ body:has(.public-page--home) .site-header .button--small { min-height: 2.5rem; p
 .home-comprehensive__lead { display: grid; grid-template-columns: minmax(12rem, 0.72fr) minmax(0, 2.15fr); align-items: center; gap: clamp(1.25rem, 2.6vw, 2.5rem); max-width: 70rem; margin-inline: auto; }
 .home-specialty { margin: 0; }
 .home-specialty figcaption { margin-top: 0.42rem; color: var(--color-rosa-red); font-size: 0.78rem; font-weight: 500; text-align: center; }
-.home-comprehensive__specialties { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.9rem, 2vw, 1.7rem); max-width: 64rem; margin: clamp(1.35rem, 2.5vw, 2rem) auto 0; padding: 0; list-style: none; }
+.home-comprehensive__specialties { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.9rem, 2vw, 1.7rem); max-width: 70rem; margin: clamp(1.35rem, 2.5vw, 2rem) auto 0; padding: 0; list-style: none; }
 
 .home-confidence__grid { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(13rem, 0.7fr); align-items: center; gap: clamp(1.5rem, 3.6vw, 3.8rem); }
 .home-confidence__copy { max-width: 50rem; }
@@ -113,26 +111,9 @@ body:has(.public-page--home) .site-header .button--small { min-height: 2.5rem; p
 .public-page--home .procurement-panel--premium-cta .procurement-panel__title { font-size: clamp(1.25rem, 1.8vw, 1.65rem); }
 .public-page--home .procurement-panel--premium-cta .procurement-panel__copy { font-size: 0.78rem; }
 
-.home-social-strip { background: var(--color-rosa-red); color: white; }
-.home-social-strip__inner { min-height: 4rem; display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding-block: 0.65rem; }
-.home-social-strip h2 { margin: 0; color: white; font-family: var(--font-interface); font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 600; white-space: nowrap; }
-.home-social-strip .social-links-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: clamp(0.7rem, 2vw, 1.4rem); }
-.home-social-strip .social-links-row a { color: white; font-size: 0.78rem; }
-.home-social-strip .social-links-row svg { color: white; }
-
-body:has(.public-page--home) .public-contact-strip { display: none; }
-body:has(.public-page--home) .site-footer__grid { gap: clamp(1.5rem, 3vw, 2.5rem); padding-block: clamp(2rem, 3.8vw, 3.25rem); }
-body:has(.public-page--home) .site-footer__brand { --stack-gap: 0.8rem; }
-body:has(.public-page--home) .site-footer__brand .button { display: none; }
-body:has(.public-page--home) .site-footer__title { margin-bottom: 0.45rem; }
-body:has(.public-page--home) .site-footer__links { gap: 0.45rem; }
-body:has(.public-page--home) .site-footer__links a,
-body:has(.public-page--home) .site-footer__brand p { font-size: 0.78rem; line-height: 1.45; }
-body:has(.public-page--home) .site-footer__bottom { padding-block: 0.85rem; font-size: 0.7rem; }
-
 html[dir="rtl"] .public-page--home :is(.home-editorial-copy, .home-assurance-card p) { line-height: 1.6; }
 html[dir="rtl"] .public-page--home .home-compact-section-title,
-html[dir="rtl"] .public-page--home :is(.home-contact-band h2, .home-assurance__heading, .home-assurance-card h3, .home-social-strip h2) { font-family: var(--font-arabic); letter-spacing: 0; }
+html[dir="rtl"] .public-page--home :is(.home-contact-band h2, .home-assurance__heading, .home-assurance-card h3) { font-family: var(--font-arabic); letter-spacing: 0; }
 
 @media (max-height: 800px) and (min-width: 64.001rem) {
   .public-page--home .home-hero.home-hero-carousel { min-height: 22.5rem; height: min(55svh, 27rem); }
@@ -164,8 +145,6 @@ html[dir="rtl"] .public-page--home :is(.home-contact-band h2, .home-assurance__h
   .home-assurance-card h3 { padding-inline: 0.35rem; font-size: 0.8rem; }
   .home-assurance-card__body { padding: 0.7rem 0.55rem; }
   .home-assurance-card p { font-size: 0.74rem; line-height: 1.4; }
-  .home-social-strip__inner { align-items: flex-start; flex-direction: column; gap: 0.55rem; padding-block: 0.75rem; }
-  .home-social-strip .social-links-row { justify-content: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {
