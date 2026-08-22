@@ -24,9 +24,7 @@ for (const [family, productCount] of Object.entries(productCounts)) {
     await expect(page.locator('main a[href="/contact"]')).toHaveCount(1);
     expect(
       await page.evaluate(
-        () =>
-          document.documentElement.scrollWidth >
-          document.documentElement.clientWidth
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth
       )
     ).toBe(false);
   });
@@ -37,24 +35,24 @@ test("product detail exposes catalogue-backed specifications and an active inqui
   expect(response?.ok()).toBe(true);
   await expect(page.locator("h1")).toHaveText("Scalpel Handle No. 3");
   await expect(page.locator("table")).toBeVisible();
+  await expect(page.locator(".product-price-state")).toContainText("On request");
 
-  const action = testInfo.project.name === "mobile"
-    ? page.locator(".mobile-inquiry-bar").getByRole("button", { name: "Add to inquiry" })
-    : page.locator(".product-procurement-summary").getByRole("button", { name: "Add to inquiry" });
+  if (testInfo.project.name === "mobile") {
+    const stickyAction = page.locator('.mobile-inquiry-bar a[href="#product-inquiry-controls"]');
+    await expect(stickyAction).toBeVisible();
+    await expect(stickyAction).toContainText("Choose quantity");
+  }
 
+  const action = page.locator(".product-procurement-summary").getByRole("button", { name: "Add to inquiry" });
   await expect(action).toBeEnabled();
   await action.click();
-  const addedAction = testInfo.project.name === "mobile"
-    ? page.locator(".mobile-inquiry-bar").getByRole("link", { name: /Added.*View inquiry/i })
-    : page.locator(".product-procurement-summary").getByRole("link", { name: /Added.*View inquiry/i });
+  const addedAction = page.locator(".product-procurement-summary").getByRole("link", { name: /Added.*View inquiry/i });
   await expect(addedAction).toHaveAttribute("href", "/inquiry");
 
   await expect(page.getByRole("link", { name: /catalogue reference/i })).toBeVisible();
   expect(
     await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth >
-        document.documentElement.clientWidth
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth
     )
   ).toBe(false);
 });
@@ -88,8 +86,12 @@ test("mobile sticky action leaves the footer reachable", async ({ page }, testIn
   await page.goto("/products/knives/scalpel-handle-no-3");
 
   const sticky = page.locator(".mobile-inquiry-bar");
+  const stickyAction = sticky.locator('a[href="#product-inquiry-controls"]');
   const lastFooterLink = page.locator(".site-footer a").last();
   await expect(sticky).toBeVisible();
+  await expect(stickyAction).toBeVisible();
+  await stickyAction.click();
+  await expect(page.locator("#product-inquiry-controls")).toBeInViewport();
   await lastFooterLink.scrollIntoViewIfNeeded();
   await expect(lastFooterLink).toBeVisible();
 
