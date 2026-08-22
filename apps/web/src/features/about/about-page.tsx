@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import type { PublicLocale } from "@/features/localization";
+import { PublicHeroCarousel } from "@/features/public-hero";
 import { createAboutPageModel } from "./about.data";
-import { AboutCompactHero } from "./sections/about-compact-hero";
 import { AboutCompliance } from "./sections/about-compliance";
 import { AboutContactBand } from "./sections/about-contact-band";
 import { AboutDocuments } from "./sections/about-documents";
@@ -13,8 +13,8 @@ export function AboutPage({ locale = "en" }: { locale?: PublicLocale }): ReactEl
   const model = createAboutPageModel(locale);
 
   return (
-    <>
-      <AboutCompactHero model={model.hero} />
+    <div className="public-page public-page--about">
+      <PublicHeroCarousel page="about" locale={locale} headingId="about-public-hero-title" />
       <AboutIntroduction model={model.introduction} />
       {model.stories.map((story) => (
         <AboutStorySection key={story.id} model={story} />
@@ -23,6 +23,6 @@ export function AboutPage({ locale = "en" }: { locale?: PublicLocale }): ReactEl
       <AboutCompliance model={model.compliance} />
       <AboutDocuments documents={model.documents} locale={locale} />
       <AboutQuotationCta model={model.quotation} />
-    </>
+    </div>
   );
 }
