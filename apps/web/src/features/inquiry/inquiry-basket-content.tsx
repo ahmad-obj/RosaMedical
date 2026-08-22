@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Container, Section } from "@/components/layout";
 import { EmptyInquiryPage } from "@/features/inquiry-preview";
+import { InquiryLineMedia } from "./inquiry-line-media";
 import {
   clearInquiry,
   INQUIRY_MAX_QUANTITY,
@@ -96,9 +97,9 @@ export function InquiryBasketContent(): ReactElement {
             transition={{ duration: reduceMotion ? 0 : 0.34 }}
           >
             <div>
-              <p className="inquiry-preview-intro__eyebrow">{ar ? "استفسار عرض السعر" : "Quotation inquiry"}</p>
-              <h2>{ar ? "راجع استفسار المنتجات." : "Review your product inquiry."}</h2>
-              <p>{ar ? "عدّل الكميات وأضف ملاحظات المتطلبات قبل الإرسال." : "Adjust quantities and add requirement notes before submitting."}</p>
+              <p className="inquiry-preview-intro__eyebrow">{ar ? "المنتجات المحددة" : "Selected products"}</p>
+              <h2>{ar ? "راجع استفسار عرض السعر." : "Review your quotation inquiry."}</h2>
+              <p>{ar ? "عدّل الكميات وأضف ملاحظات المتطلبات قبل إرسال طلب عرض السعر." : "Adjust quantities and line notes before sending the quotation request."}</p>
               <strong aria-live="polite">
                 {ar ? `${items.length} منتج فريد · الكمية الإجمالية ${totalQuantity}` : `${items.length} unique products · ${totalQuantity} total quantity`}
               </strong>
@@ -124,6 +125,13 @@ export function InquiryBasketContent(): ReactElement {
                     exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, borderWidth: 0 }}
                     transition={{ duration: reduceMotion ? 0 : 0.24 }}
                   >
+                    <div className="inquiry-preview-line__media">
+                      <InquiryLineMedia
+                        mediaPath={item.mediaPath}
+                        mediaFallbackPath={item.mediaFallbackPath}
+                        alt={item.imageLabel || item.name}
+                      />
+                    </div>
                     <div className="inquiry-preview-line__identity">
                       <p className="inquiry-preview-line__family">{familyLabel(item.familySlug, ar)}</p>
                       <h2>{item.name}</h2>
@@ -187,13 +195,13 @@ export function InquiryBasketContent(): ReactElement {
               transition={{ duration: reduceMotion ? 0 : 0.34, delay: reduceMotion ? 0 : 0.08 }}
             >
               <p className="inquiry-preview-summary__eyebrow">{ar ? "ملخص الاستفسار" : "Inquiry summary"}</p>
-              <h2 id="inquiry-summary-title">{ar ? "هل أنت جاهز للمتابعة؟" : "Ready to continue?"}</h2>
+              <h2 id="inquiry-summary-title">{ar ? "هل أنت جاهز لطلب عرض السعر؟" : "Ready to request a quotation?"}</h2>
               <dl>
                 <div><dt>{ar ? "المنتجات الفريدة" : "Unique products"}</dt><dd><motion.output key={`products-${items.length}`} className="conversion-value" aria-live="polite" initial={reduceMotion ? false : { opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>{items.length}</motion.output></dd></div>
                 <div><dt>{ar ? "الكمية الإجمالية" : "Total quantity"}</dt><dd><motion.output key={`quantity-${totalQuantity}`} className="conversion-value" aria-live="polite" initial={reduceMotion ? false : { opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>{totalQuantity}</motion.output></dd></div>
               </dl>
               <p>{ar ? "ستراجع روزا المنتجات المحددة قبل إعداد عرض السعر." : "Rosa will review the selected products before preparing a quotation."}</p>
-              <LocaleLink href="/request-quotation" className="button button--primary button--standard">{ar ? "متابعة الطلب" : "Proceed to request"}</LocaleLink>
+              <LocaleLink href="/request-quotation" className="button button--primary button--standard">{ar ? "طلب عرض سعر" : "Request quotation"}</LocaleLink>
               <button type="button" className="text-link" onClick={handleClear}>{ar ? "مسح الاستفسار" : "Clear inquiry"}</button>
             </motion.aside>
           </div>
