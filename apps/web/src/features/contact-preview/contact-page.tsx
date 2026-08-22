@@ -1,8 +1,8 @@
 import type { ReactElement } from "react";
 import { Container, Section } from "@/components/layout";
-import { LocaleLink, LocalizedButtonLink } from "@/features/localization";
-import { Reveal, TextReveal } from "@/features/motion";
-import { PUBLIC_CONTENT_VALUES } from "@/features/public-content-registry";
+import { LocalizedButtonLink } from "@/features/localization";
+import { Reveal } from "@/features/motion";
+import { PublicHeroCarousel } from "@/features/public-hero";
 import { SocialLinksRow } from "@/features/social-links";
 import { ContactFormPreview } from "./contact-form-preview";
 import { ContactInformationPanel } from "./contact-information-panel";
@@ -18,40 +18,10 @@ export async function ContactPage({ locale = "en" }: { locale?: PublicLocale }):
     .select("key,value_en,value_ar");
   const contactRows = buildContactInformation(settingsData ?? []);
   const ar = locale === "ar";
-  const introduction = PUBLIC_CONTENT_VALUES.contactIntroduction;
-  const hero = ar ? {
-    eyebrow: "اتصل بروزا",
-    title: "أرسل رسالة أعمال عامة.",
-    copy: "استخدم هذه الصفحة لأسئلة الشركة أو الكتالوج أو الدعم. أما طلبات عروض الأسعار فتنتمي إلى مسار الاستفسار حتى تبقى تفاصيل المنتجات مرفقة."
-  } : introduction;
 
   return (
-    <div className="contact-page">
-      <Section tone="paper" spacing="compact" className="contact-hero">
-        <Container size="wide">
-          <Reveal direction="none" className="story-breadcrumb-reveal">
-            <nav className="public-breadcrumbs" aria-label={ar ? "مسار التنقل" : "Breadcrumb"}>
-              <LocaleLink href="/">{ar ? "الرئيسية" : "Home"}</LocaleLink>
-              <span aria-hidden="true">/</span>
-              <span aria-current="page">{ar ? "اتصل بنا" : "Contact"}</span>
-            </nav>
-          </Reveal>
-          <div className="contact-hero__copy">
-            <Reveal direction="up">
-              <p className="page-eyebrow">{hero.eyebrow}</p>
-            </Reveal>
-            <TextReveal as="h1" text={hero.title} mode="words" delay={0.05} />
-            <Reveal direction="up" delay={0.13}>
-              <p>{hero.copy}</p>
-            </Reveal>
-            <Reveal direction="up" delay={0.18}>
-              <LocalizedButtonLink href="/inquiry" variant="secondary">
-                {ar ? "افتح استفسار المنتجات" : "Open Product Inquiry"}
-              </LocalizedButtonLink>
-            </Reveal>
-          </div>
-        </Container>
-      </Section>
+    <div className="public-page public-page--contact contact-page">
+      <PublicHeroCarousel page="contact" locale={locale} headingId="contact-public-hero-title" />
 
       <Section tone="warm" className="contact-main-section">
         <Container size="wide">
