@@ -12,7 +12,7 @@ export function ProductInquiryControls({ item }: { item: InquiryItem }): ReactEl
   const ar = getLocaleFromPathname(usePathname()) === "ar";
 
   return (
-    <div className="product-inquiry-controls">
+    <div className="product-inquiry-controls" id="product-inquiry-controls">
       <StaticQuantityField value={quantity} onChange={setQuantity} />
       <AddToInquiryButton item={{ ...item, quantity, notes }} />
       <label className="product-inquiry-controls__note" htmlFor="product-inquiry-note">
