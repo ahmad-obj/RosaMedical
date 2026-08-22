@@ -27,13 +27,18 @@ describe("client review round 2026-08-22", () => {
     expect(hero).not.toContain("slide.ctas.map");
   });
 
-  it("keeps Comprehensive Plans on one shared desktop width and includes the lead image asset", () => {
+  it("keeps Comprehensive Plans on one shared desktop width and includes a complete lead WebP", () => {
     const redesign = source("src/styles/home-client-redesign.css");
+    const plasticSurgeryPath = resolve(process.cwd(), "public/media/editorial/home-specialties/plastic-surgery.webp");
+
     expect(redesign).toMatch(/\.home-comprehensive__lead[\s\S]*?max-width:\s*70rem/);
     expect(redesign).toMatch(/\.home-comprehensive__specialties[\s\S]*?max-width:\s*70rem/);
-    expect(
-      existsSync(resolve(process.cwd(), "public/media/editorial/home-specialties/plastic-surgery.webp"))
-    ).toBe(true);
+    expect(existsSync(plasticSurgeryPath)).toBe(true);
+
+    const image = readFileSync(plasticSurgeryPath);
+    expect(image.subarray(0, 4).toString("ascii")).toBe("RIFF");
+    expect(image.subarray(8, 12).toString("ascii")).toBe("WEBP");
+    expect(image.readUInt32LE(4) + 8).toBe(image.length);
   });
 
   it("keeps Business Growth visibly narrower than the other desktop story media without changing mobile", () => {
