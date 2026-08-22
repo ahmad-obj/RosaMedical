@@ -4,28 +4,29 @@
 
 **Goal:** Turn `/products` into the client-directed search/filter/product-grid workspace backed by the complete public catalogue while exposing only real supported data.
 
-**Architecture:** Server-render the complete public catalogue through `getPublicCatalogueProducts()` and convert records into a stable client-safe discovery model. A focused client workspace owns query/category/sort/view state in memory and never performs a second product fetch. Product cards link to the existing canonical detail route; unsupported filters are omitted; price renders as localized `Price on request` until a verified numeric contract exists.
+**Architecture:** Server-render the complete catalogue through `getPublicCatalogueProducts()` and map it to client-safe `ProductPreviewModel` records. A single client workspace owns query/family/sort/view state in memory; it performs no second fetch. Product cards link to existing canonical detail routes. Unsupported filters are not rendered. Numeric prices are not invented; cards use localized `Price on request` until a real data contract exists.
 
-**Tech Stack:** Next.js server/client components, React, TypeScript, Vitest, Playwright, existing catalogue-live/public-catalogue modules.
+**Tech Stack:** Next.js server/client components, React, TypeScript, existing catalogue-live/public-catalogue modules, Vitest, Playwright.
 
 **Spec:** `docs/superpowers/specs/2026-08-22-client-products-site-shell-redesign-design.md`
 
 ## Global Constraints
 
-- Use all active public products, not only fixtures selected as featured.
-- Search real fields: name, code, family, sizes, variants/directions.
-- Category/family filter is functional.
-- Do not show fake Price/Country of origin/Brand/Delivery Method controls.
-- No numeric price unless a verified field exists; current fallback is `Price on request`.
-- Default display is grid.
-- Product click/View Details goes to `/products/[family]/[product]`.
-- No direct add-to-inquiry from the grid when size/variant ambiguity exists.
-- Desktop gets filter sidebar; smaller layouts use a disclosure/drawer-like compact filter control without a dependency.
+- Use all active public products, not only featured fixture selections.
+- Search real fields: name, code, family, size/variant summary.
+- Family/category filter is functional.
+- Do not render fake Price/Country of origin/Brand/Delivery Method filter dropdowns.
+- No numeric price until a verified source exists; render `Price on request` / `السعر عند الطلب`.
+- Default view is grid; list is an alternate presentation of the same records.
+- Product card and View Details route to `/products/[family]/[product]`.
+- Do not add directly from result cards because size/variant context belongs on Product Detail.
+- Desktop uses persistent family filter sidebar; below desktop use native `<details>/<summary>` compact filters.
 - No horizontal overflow.
+- Keep the old `CatalogueSupport` section temporarily through this subplan; the subsequent catalogue-access subplan replaces it with the five open/download cards. This avoids a circular plan dependency.
 
 ---
 
-### Task 1: Add an all-products preview selector
+### Task 1: Add a complete product preview selector
 
 **Files:**
 - Modify: `apps/web/src/features/public-catalogue/selectors.ts`
@@ -33,34 +34,37 @@
 - Test: `apps/web/src/test/products-client-redesign.test.tsx`
 
 **Interfaces:**
-- Consumes: `readonly CatalogueProductRecord[]`
-- Produces:
 
 ```ts
 export function selectProductPreviews(
-  products: readonly CatalogueProductRecord[],
-  locale?: PublicLocale
+  products: readonly CatalogueProductRecord[]
 ): readonly ProductPreviewModel[]
 ```
 
-If importing `PublicLocale` into this shared selector would create an undesirable localization dependency, instead produce English family names here and localize the family label in the Products page model. Do not duplicate route/product normalization logic.
+Localization remains outside this low-level mapper; `products.data.ts` localizes family labels after selection.
 
-- [ ] **Step 1: Write failing selector tests**
+- [ ] **Step 1: Write the failing selector tests**
 
-Test with two catalogue records from different families and assert:
+Use two representative `CatalogueProductRecord` values and assert:
 
 ```ts
-expect(selectProductPreviews(products)).toHaveLength(2);
+const result = selectProductPreviews(products);
+expect(result).toHaveLength(2);
 expect(result[0]).toMatchObject({
-  id: products[0].id,
-  slug: products[0].slug,
-  familySlug: products[0].familySlug,
-  name: products[0].name,
-  code: products[0].code
+  id: products[0]!.id,
+  slug: products[0]!.slug,
+  familySlug: products[0]!.familySlug,
+  name: products[0]!.name,
+  code: products[0]!.code
 });
 ```
 
-Also assert `optionSummary` deduplicates blank/repeated values and media fields are carried through only when present.
+Also assert:
+
+- blank option values are removed;
+- repeated option values are deduplicated;
+- `mediaPath`, `mediaFallbackPath`, and `mediaIndex` are carried only when present;
+- input order is preserved.
 
 - [ ] **Step 2: Run RED**
 
@@ -70,9 +74,7 @@ pnpm --filter @rosa/web test -- src/test/products-client-redesign.test.tsx
 
 Expected: FAIL because `selectProductPreviews` does not exist.
 
-- [ ] **Step 3: Extract the common record→preview mapping used by `selectFeaturedProducts`**
-
-Add one internal mapper:
+- [ ] **Step 3: Extract one internal record mapper**
 
 ```ts
 function toProductPreview(product: CatalogueProductRecord): ProductPreviewModel {
@@ -96,11 +98,7 @@ function toProductPreview(product: CatalogueProductRecord): ProductPreviewModel 
     ...(typeof product.mediaIndex === "number" ? { mediaIndex: product.mediaIndex } : {})
   };
 }
-```
 
-Then:
-
-```ts
 export function selectProductPreviews(
   products: readonly CatalogueProductRecord[]
 ): readonly ProductPreviewModel[] {
@@ -108,7 +106,7 @@ export function selectProductPreviews(
 }
 ```
 
-Refactor `selectFeaturedProducts` to call the same mapper after resolving fixture selections.
+Refactor `selectFeaturedProducts` to resolve its fixture subset, then call `toProductPreview` for each resolved product so mapping logic exists once.
 
 - [ ] **Step 4: Run GREEN**
 
@@ -119,7 +117,7 @@ git add apps/web/src/features/public-catalogue apps/web/src/test/products-client
 git commit -m "refactor(web): expose complete product preview mapping"
 ```
 
-### Task 2: Define deterministic discovery state and filtering logic
+### Task 2: Define deterministic search/filter/sort logic
 
 **Files:**
 - Create: `apps/web/src/features/products/products-discovery.types.ts`
@@ -156,30 +154,18 @@ export function filterProducts(
 
 Cover:
 
-1. blank query + all family returns input order for `recommended`;
-2. query matches product name case-insensitively;
+1. blank query + `all` + `recommended` preserves input order;
+2. query matches name case-insensitively;
 3. query matches code;
 4. query matches family name;
-5. query matches `optionSummary` size/variant values;
-6. family filter narrows to exact slug;
-7. name sort uses locale-stable `localeCompare` and does not mutate the original array;
-8. whitespace query is normalized.
-
-Example:
-
-```ts
-const state: ProductsDiscoveryState = {
-  query: "mayo",
-  family: "all",
-  sort: "recommended",
-  view: "grid"
-};
-expect(filterProducts(products, state).products.map((item) => item.name)).toEqual(["Mayo Scissors"]);
-```
+5. query matches `optionSummary`;
+6. family filter matches exact slug;
+7. `name-asc` sorts a copy and does not mutate input;
+8. surrounding whitespace is ignored.
 
 - [ ] **Step 2: Run RED**
 
-- [ ] **Step 3: Implement normalization and filtering**
+- [ ] **Step 3: Implement filtering**
 
 ```ts
 function searchableText(product: ProductPreviewModel): string {
@@ -214,26 +200,21 @@ export function filterProducts(
 - [ ] **Step 5: Commit**
 
 ```bash
-git add apps/web/src/features/products/products-discovery.* apps/web/src/test/products-client-redesign.test.tsx
+git add apps/web/src/features/products/products-discovery.types.ts apps/web/src/features/products/products-discovery.logic.ts apps/web/src/test/products-client-redesign.test.tsx
 git commit -m "feat(web): add deterministic Products discovery logic"
 ```
 
-### Task 3: Change `/products` to use the complete public catalogue
+### Task 3: Feed `/products` from the full public catalogue
 
 **Files:**
 - Modify: `apps/web/src/features/products/products-overview.tsx`
 - Modify: `apps/web/src/features/products/products.data.ts`
 - Modify: `apps/web/src/test/products-client-redesign.test.tsx`
 
-**Interfaces:**
-- Consume: `getPublicCatalogueProducts()`
-- Consume: `selectProductPreviews(products)`
-- Produce a Products page model containing localized family list and all preview products.
-
-- [ ] **Step 1: Add static contract assertions**
+- [ ] **Step 1: Add source contract**
 
 ```ts
-it("uses the full public catalogue instead of the featured projection", () => {
+it("uses the complete public catalogue", () => {
   const page = source("src/features/products/products-overview.tsx");
   expect(page).toContain("getPublicCatalogueProducts");
   expect(page).not.toContain("getFeaturedCatalogueProducts");
@@ -242,27 +223,31 @@ it("uses the full public catalogue instead of the featured projection", () => {
 
 - [ ] **Step 2: Run RED**
 
-- [ ] **Step 3: Replace the fetch**
+- [ ] **Step 3: Replace the server fetch**
 
 ```ts
 const products = await getPublicCatalogueProducts();
 const model = createProductsPageModel(products, locale);
 ```
 
-Update `createProductsPageModel` to call `selectProductPreviews(products)` rather than `selectFeaturedProducts(products)`.
+- [ ] **Step 4: Replace featured selection in `createProductsPageModel`**
 
-Preserve Arabic family naming using `FAMILY_NAMES_AR` without altering product routes/codes.
+```ts
+const previews = selectProductPreviews(products).map((product) =>
+  ar ? { ...product, familyName: FAMILY_NAMES_AR[product.familySlug] } : product
+);
+```
 
-- [ ] **Step 4: Run GREEN**
+Return `products: previews`.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Run GREEN and commit**
 
 ```bash
 git add apps/web/src/features/products apps/web/src/test/products-client-redesign.test.tsx
 git commit -m "feat(web): feed Products from full public catalogue"
 ```
 
-### Task 4: Build the client discovery workspace
+### Task 4: Build discovery controls
 
 **Files:**
 - Create: `apps/web/src/features/products/sections/products-discovery-workspace.tsx`
@@ -284,20 +269,52 @@ export function ProductsDiscoveryWorkspace({
 }): ReactElement
 ```
 
-- [ ] **Step 1: Write a component contract test**
+```tsx
+export function ProductsFilterPanel({
+  family,
+  families,
+  locale,
+  onFamilyChange
+}: {
+  family: FamilySlug | "all";
+  families: readonly FamilyCardModel[];
+  locale: PublicLocale;
+  onFamilyChange: (family: FamilySlug | "all") => void;
+}): ReactElement
+```
 
-Require the workspace to expose:
+```tsx
+export function ProductsResultsToolbar({
+  total,
+  sort,
+  view,
+  locale,
+  onSortChange,
+  onViewChange
+}: {
+  total: number;
+  sort: ProductsSort;
+  view: ProductsView;
+  locale: PublicLocale;
+  onSortChange: (sort: ProductsSort) => void;
+  onViewChange: (view: ProductsView) => void;
+}): ReactElement
+```
 
-- one search input with an accessible label;
-- `all` plus five family options;
-- sort values `recommended` and `name-asc`;
-- grid/list view buttons;
+- [ ] **Step 1: Write component contracts**
+
+Require:
+
+- one text search input with accessible label;
+- family options `all` + five real families;
+- only `recommended` and `name-asc` sort options;
+- grid/list buttons with `aria-pressed`;
 - result count with `aria-live="polite"`;
-- no `Price`, `Country of origin`, `Brand`, or `Delivery Method` filter labels.
+- no fake filter labels.
 
 - [ ] **Step 2: Run RED**
 
-- [ ] **Step 3: Implement one state object**
+- [ ] **Step 3: Implement one discovery state**
 
 ```ts
 const [state, setState] = useState<ProductsDiscoveryState>({
@@ -309,45 +326,42 @@ const [state, setState] = useState<ProductsDiscoveryState>({
 const result = useMemo(() => filterProducts(products, state), [products, state]);
 ```
 
-Do not sync filters to URL in this phase; that is unnecessary complexity unless an existing requirement demands shareable filter URLs.
+Do not add URL-state synchronization in this phase.
 
-- [ ] **Step 4: Implement desktop filter panel**
+- [ ] **Step 4: Implement desktop filter sidebar**
 
-`ProductsFilterPanel` receives `family`, `families`, and `onFamilyChange`. Render radio/select semantics with explicit labels. Family is the only sidebar filter in this phase.
+Render family controls only. Use button/radio/select semantics with visible labels and selected state.
 
-- [ ] **Step 5: Implement compact mobile filter disclosure**
+- [ ] **Step 5: Implement mobile compact filter using native `<details>`**
 
-Use native `<details>`/`<summary>` or an existing disclosure primitive if present. Do not add a modal/drawer dependency.
-
-- [ ] **Step 6: Implement results toolbar**
-
-The toolbar renders:
-
-```text
-{N} products
-Sort: Recommended | Name A–Z
-[Grid] [List]
+```tsx
+<details className="products-filter-disclosure">
+  <summary>{locale === "ar" ? "تصفية المنتجات" : "Filter products"}</summary>
+  <ProductsFilterPanel ... />
+</details>
 ```
 
-Both view buttons must expose `aria-pressed`.
+No modal/drawer package.
 
-- [ ] **Step 7: Run GREEN**
+- [ ] **Step 6: Implement result toolbar**
 
-- [ ] **Step 8: Commit**
+Display localized count, sort `<select>`, and grid/list buttons.
+
+- [ ] **Step 7: Run GREEN and commit**
 
 ```bash
 git add apps/web/src/features/products/sections apps/web/src/test/products-client-redesign.test.tsx
 git commit -m "feat(web): build Products discovery controls"
 ```
 
-### Task 5: Build dense client-directed product cards
+### Task 5: Build the result card
 
 **Files:**
 - Create: `apps/web/src/features/products/sections/products-result-card.tsx`
 - Modify: `apps/web/src/features/products/sections/products-discovery-workspace.tsx`
 - Modify: `apps/web/src/test/products-client-redesign.test.tsx`
 
-**Interfaces:**
+**Interface:**
 
 ```tsx
 export function ProductsResultCard({
@@ -363,34 +377,22 @@ export function ProductsResultCard({
 
 - [ ] **Step 1: Write card contract tests**
 
-Require:
-
-- product image/placeholder using existing public media behavior;
-- family label;
-- product name;
-- code;
-- option summary when present;
-- localized `Price on request`;
-- canonical `productHref(product)`;
-- visible `View details` label;
-- no `Add to cart`/`Add to inquiry` button on the grid card.
+Require real media/placeholder behavior, family, name, code, option summary, `Price on request`, canonical `productHref(product)`, and visible View Details. Assert no add-to-inquiry control on the card.
 
 - [ ] **Step 2: Run RED**
 
-- [ ] **Step 3: Implement semantic card**
-
-Recommended shape:
+- [ ] **Step 3: Implement one semantic card for both views**
 
 ```tsx
 <article className={`products-result-card products-result-card--${view}`}>
   <LocaleLink className="products-result-card__media" href={productHref(product)}>
-    {/* existing image/placeholder rendering */}
+    {/* use existing product media rendering primitive */}
   </LocaleLink>
   <div className="products-result-card__body">
     <p className="products-result-card__family">{product.familyName}</p>
     <h3><LocaleLink href={productHref(product)}>{product.name}</LocaleLink></h3>
     <p className="products-result-card__code"><bdi dir="ltr">{product.code}</bdi></p>
-    {product.optionSummary.length > 0 ? <p>{product.optionSummary.join(" · ")}</p> : null}
+    {product.optionSummary.length ? <p>{product.optionSummary.join(" · ")}</p> : null}
     <p className="products-result-card__price">{locale === "ar" ? "السعر عند الطلب" : "Price on request"}</p>
     <LocaleLink className="products-result-card__details" href={productHref(product)}>
       {locale === "ar" ? "عرض التفاصيل" : "View details"}
@@ -399,43 +401,31 @@ Recommended shape:
 </article>
 ```
 
-- [ ] **Step 4: Use the same data for grid/list modes**
+Use the existing public catalogue product-media primitive already used by `ProductPreviewCard`; do not fork image fallback logic.
 
-Only CSS/layout differs by `view`; do not create a second card implementation.
-
-- [ ] **Step 5: Run GREEN**
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 4: Run GREEN and commit**
 
 ```bash
 git add apps/web/src/features/products/sections apps/web/src/test/products-client-redesign.test.tsx
 git commit -m "feat(web): add client-directed product result cards"
 ```
 
-### Task 6: Add the Products direct-contact band
+### Task 6: Add the black Products direct-contact band
 
 **Files:**
 - Create: `apps/web/src/features/products/sections/products-direct-contact-band.tsx`
 - Modify: `apps/web/src/features/products/products-overview.tsx`
 - Modify: `apps/web/src/test/products-client-redesign.test.tsx`
 
-**Interfaces:**
-- Read centralized email/phone/WhatsApp values; do not hard-code duplicates.
+- [ ] **Step 1: Add failing contract**
 
-- [ ] **Step 1: Test that the component imports centralized public content values**
-
-```ts
-expect(component).toContain("PUBLIC_CONTENT_VALUES");
-expect(component).toContain("Get in Touch Now");
-```
-
-Also assert no literal `info@rosamedical.org` or phone number is duplicated in this component if the central registry already owns those strings.
+Require centralized `PUBLIC_CONTENT_VALUES`, localized `Get in Touch Now`, WhatsApp action, and email action. Assert the component does not hard-code duplicate contact strings already owned by the central registry.
 
 - [ ] **Step 2: Run RED**
 
-- [ ] **Step 3: Implement black conversion band**
+- [ ] **Step 3: Implement the band**
 
-Include WhatsApp and Email actions plus localized heading. Keep it visually separate from the global red contact strip.
+Keep this black band inside Products middle content. It must not replace or hide the shell-level red contact strip.
 
 - [ ] **Step 4: Run GREEN and commit**
 
@@ -444,71 +434,64 @@ git add apps/web/src/features/products apps/web/src/test/products-client-redesig
 git commit -m "feat(web): add Products direct contact band"
 ```
 
-### Task 7: Compose the Products page in client hierarchy order
+### Task 7: Compose the Products page without creating a catalogue-plan dependency
 
 **Files:**
 - Modify: `apps/web/src/features/products/products-overview.tsx`
-- Remove from render path, but do not delete until grep proves unused:
-  - `sections/discovery-toolbar-shell.tsx`
-  - `sections/family-index.tsx`
-  - `sections/product-preview-grid.tsx`
-  - `sections/catalogue-support.tsx`
-- Keep or reshape: `sections/products-procurement-cta.tsx`
-- Test: `apps/web/src/test/products-client-redesign.test.tsx`
+- Stop rendering: `apps/web/src/features/products/sections/discovery-toolbar-shell.tsx`
+- Stop rendering: `apps/web/src/features/products/sections/family-index.tsx`
+- Stop rendering: `apps/web/src/features/products/sections/product-preview-grid.tsx`
+- Keep rendering temporarily: `apps/web/src/features/products/sections/catalogue-support.tsx`
+- Keep/reshape: `apps/web/src/features/products/sections/products-procurement-cta.tsx`
+- Modify: `apps/web/src/test/products-client-redesign.test.tsx`
 
-- [ ] **Step 1: Add source-order assertions**
+- [ ] **Step 1: Add order assertion**
 
-The rendered component should order:
+At the end of this subplan the Products middle-content order is exactly:
 
 ```text
-PublicHeroCarousel
+PublicHeroCarousel(page="products")
 ProductsDiscoveryWorkspace
 ProductsDirectContactBand
-ProductsCatalogueCards   // introduced by the catalogue subplan
+CatalogueSupport        // temporary, replaced by the next subplan
 ProductsProcurementCta
 ```
 
-During this subplan, use a temporary typed import boundary for `ProductsCatalogueCards` only after the catalogue subplan exists; otherwise complete Tasks 1–6 first and perform this final composition after catalogue Task 2.
+- [ ] **Step 2: Replace the old discovery/family/featured grid renders**
 
-- [ ] **Step 2: Remove the old editorial sequence from the production render**
+Do not render both old and new discovery systems.
 
-Do not render both old and new grids.
-
-- [ ] **Step 3: Grep before deleting dead sections**
+- [ ] **Step 3: Grep old sections before deleting anything**
 
 ```bash
-git grep -n "DiscoveryToolbarShell\|FamilyIndex\|ProductPreviewGrid\|CatalogueSupport" -- apps/web/src
+git grep -n "DiscoveryToolbarShell\|FamilyIndex\|ProductPreviewGrid" -- apps/web/src
 ```
 
-Delete only production-dead files whose tests are also migrated.
+Delete a file only when there is no remaining import/test dependency. Leave `CatalogueSupport` intact until the catalogue-access subplan.
 
-- [ ] **Step 4: Run focused unit tests**
+- [ ] **Step 4: Run focused tests and commit**
 
-### Task 8: Add responsive Products styling
+```bash
+pnpm --filter @rosa/web test -- src/test/products-client-redesign.test.tsx
+git add apps/web/src/features/products apps/web/src/test/products-client-redesign.test.tsx
+git commit -m "feat(web): compose client Products discovery page"
+```
+
+### Task 8: Add responsive Products styling and browser coverage
 
 **Files:**
 - Create: `apps/web/src/styles/products-client-redesign.css`
 - Modify: `apps/web/src/app/globals.css`
-- Test: `apps/web/src/test/products-client-redesign.test.tsx`
-- E2E: `apps/web/tests/e2e/products-client-redesign.spec.ts`
+- Modify: `apps/web/src/test/products-client-redesign.test.tsx`
+- Create: `apps/web/tests/e2e/products-client-redesign.spec.ts`
 
-- [ ] **Step 1: Add CSS contract assertions**
+- [ ] **Step 1: Add CSS contract**
 
-Require:
-
-- wide Products content container;
-- desktop two-column discovery layout with sidebar + results;
-- adaptive grid using `repeat(... minmax(...))`;
-- list-mode rule;
-- mobile breakpoint hiding desktop sidebar and exposing compact filter control;
-- no persistent `will-change`;
-- image hover uses transform only and reduced-motion disables it.
+Require desktop sidebar/result grid, adaptive result columns, list layout, mobile filter disclosure, transform-only image hover, reduced-motion override, and no persistent `will-change`.
 
 - [ ] **Step 2: Run RED**
 
-- [ ] **Step 3: Implement responsive CSS**
-
-Desktop target:
+- [ ] **Step 3: Implement desktop geometry**
 
 ```css
 .products-discovery-workspace__layout {
@@ -524,30 +507,32 @@ Desktop target:
 }
 ```
 
-At smaller breakpoints, collapse to one column and use the compact filter disclosure.
+At mobile widths hide the persistent sidebar, show the `<details>` filter disclosure, and use one readable result column.
 
-- [ ] **Step 4: Add Playwright behavior checks**
+- [ ] **Step 4: Add Playwright tests at 1366 and 390**
 
-At 1366px:
+At 1366 assert:
 
-- filter sidebar visible;
-- at least 3 product columns when enough products exist;
-- first/last grid cards remain inside viewport;
+- persistent family filter visible;
+- result cards remain within viewport;
+- search for a known fixture-backed product narrows results;
+- name sort changes visible ordering;
+- grid/list toggle updates the result-region class/state;
 - no horizontal overflow.
 
-At 390px:
+At 390 assert:
 
-- desktop sidebar hidden;
-- compact filter control visible;
-- product cards readable and single/compact-column;
-- `View details` remains tappable.
+- desktop filter sidebar hidden;
+- compact filter disclosure visible;
+- View Details remains tappable;
+- no horizontal overflow.
 
-Test search by typing a known visible product name/code from fixture-backed fallback and verify result count narrows.
-
-- [ ] **Step 5: Run focused browser test**
+- [ ] **Step 5: Run**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/products-client-redesign.test.tsx
 pnpm --filter @rosa/web test:e2e -- tests/e2e/products-client-redesign.spec.ts
+pnpm --filter @rosa/web typecheck
 ```
 
 - [ ] **Step 6: Commit**
@@ -565,4 +550,4 @@ pnpm --filter @rosa/web test:e2e -- tests/e2e/products-client-redesign.spec.ts
 pnpm --filter @rosa/web typecheck
 ```
 
-Do not claim the client price requirement is fully data-backed until a real price field/source is separately approved and implemented.
+The subsequent `2026-08-22-products-catalogue-access.md` subplan then replaces temporary `CatalogueSupport` with the five client-directed catalogue open/download cards.
