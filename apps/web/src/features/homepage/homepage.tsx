@@ -8,7 +8,6 @@ import {
   ClientSuccessAssurance,
   ComprehensivePlans,
   HomeContactBand,
-  HomeSocialStrip,
   SecuringConfidence
 } from "./sections/client-home-sections";
 
@@ -24,7 +23,6 @@ export function Homepage({ locale = "en" }: { locale?: PublicLocale }): ReactEle
       <HomeContactBand model={model.contactBand} />
       <ClientSuccessAssurance model={model.assurance} />
       <QuotationCta model={model.quotation} />
-      <HomeSocialStrip model={model.social} locale={locale} />
     </div>
   );
 }
