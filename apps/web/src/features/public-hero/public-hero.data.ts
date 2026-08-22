@@ -331,7 +331,7 @@ export function getLocalizedPublicHeroSlides(
   const copy = PUBLIC_HERO_COPY[page];
 
   return PUBLIC_HERO_MEDIA.map((media, index) => {
-    const text = copy[index];
+    const text = copy[index] ?? copy[0];
     return {
       id: media.id,
       media: {
