@@ -27,12 +27,13 @@ describe("client review round 2026-08-22", () => {
     expect(hero).not.toContain("slide.ctas.map");
   });
 
-  it("keeps Comprehensive Plans on one shared desktop width and includes a complete lead WebP", () => {
+  it("extends the four Comprehensive Plans supporting images to the wide page boundary and keeps a complete lead WebP", () => {
     const redesign = source("src/styles/home-client-redesign.css");
+    const polish = source("src/styles/client-review-final-polish.css");
     const plasticSurgeryPath = resolve(process.cwd(), "public/media/editorial/home-specialties/plastic-surgery.webp");
 
     expect(redesign).toMatch(/\.home-comprehensive__lead[\s\S]*?max-width:\s*70rem/);
-    expect(redesign).toMatch(/\.home-comprehensive__specialties[\s\S]*?max-width:\s*70rem/);
+    expect(polish).toMatch(/\.home-comprehensive__specialties\s*\{[\s\S]*?width:\s*100%[\s\S]*?max-width:\s*80rem/);
     expect(existsSync(plasticSurgeryPath)).toBe(true);
 
     const image = readFileSync(plasticSurgeryPath);
@@ -41,7 +42,7 @@ describe("client review round 2026-08-22", () => {
     expect(image.readUInt32LE(4) + 8).toBe(image.length);
   });
 
-  it("keeps Business Growth visibly narrower than the other desktop story media without changing mobile", () => {
+  it("keeps Business Growth at 55 percent copy and 45 percent media on desktop without changing mobile", () => {
     const globals = source("src/app/globals.css");
     const polishPath = resolve(process.cwd(), "src/styles/client-review-final-polish.css");
 
@@ -49,7 +50,7 @@ describe("client review round 2026-08-22", () => {
     expect(existsSync(polishPath)).toBe(true);
 
     const polish = readFileSync(polishPath, "utf8");
-    expect(polish).toMatch(/@media \(min-width: 50rem\)[\s\S]*\[data-section="about-client-growth"\] \.about-client-story__grid[\s\S]*grid-template-columns:\s*minmax\(0,\s*9fr\)\s*minmax\(0,\s*11fr\)/);
+    expect(polish).toMatch(/@media \(min-width: 50rem\)[\s\S]*\[data-section="about-client-growth"\] \.about-client-story__grid[\s\S]*grid-template-columns:\s*minmax\(0,\s*11fr\)\s*minmax\(0,\s*9fr\)/);
     expect(polish).not.toMatch(/@media \(max-width: 49\.99rem\)[\s\S]*about-client-growth/);
   });
 
