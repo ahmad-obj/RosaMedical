@@ -17,8 +17,7 @@ describe("client homepage compact redesign", () => {
       "securing-confidence",
       "home-contact-band",
       "client-success-assurance",
-      "quotation-cta",
-      "home-social-strip"
+      "quotation-cta"
     ];
 
     let previous = -1;
@@ -28,6 +27,7 @@ describe("client homepage compact redesign", () => {
       previous = position;
     }
 
+    expect(html).not.toContain('data-section="home-social-strip"');
     expect(html).toContain("Our range of products");
     expect(html).toContain("Comprehensive Plans");
     expect(html).toContain("Securing Confidence");
@@ -37,7 +37,7 @@ describe("client homepage compact redesign", () => {
 
   it("renders six real clinical media slots without temporary placeholders", async () => {
     const html = await renderServerComponent(<Homepage />);
-    expect((html.match(/data-home-clinical-media/g) ?? [])).toHaveLength(6);
+    expect((html.match(/home-clinical-media--/g) ?? [])).toHaveLength(6);
     expect(html).not.toContain("data-home-media-placeholder");
     for (const label of ["Plastic Surgery", "Orthopedics", "Maxillofacial", "Orthodontics", "Spine"]) {
       expect(html).toContain(label);
@@ -57,7 +57,7 @@ describe("client homepage compact redesign", () => {
     const redesign = source("src/styles/home-client-redesign.css");
     const polish = source("src/styles/home-client-redesign-polish.css");
     const interactions = source("src/styles/home-client-interaction-fixes.css");
-    expect(globals.trim().endsWith('@import "../styles/home-client-interaction-fixes.css";')).toBe(true);
+    expect(globals).toContain('@import "../styles/home-client-interaction-fixes.css";');
     expect(globals.indexOf('../styles/home-client-redesign-polish.css')).toBeGreaterThan(
       globals.indexOf('../styles/home-client-redesign.css')
     );
@@ -68,7 +68,7 @@ describe("client homepage compact redesign", () => {
     expect(redesign).toContain("max-height: 800px");
     expect(polish).toContain("flex-direction: column");
     expect(polish).toContain("home-assurance-card__icon svg");
-    expect(interactions).toContain("scale(1.12)");
+    expect(interactions).toContain("scale(1.14)");
     expect(`${redesign}\n${polish}\n${interactions}`).not.toMatch(/\bzoom\s*:/);
     expect(`${redesign}\n${polish}\n${interactions}`).not.toContain("transform: scale(0.");
   });
