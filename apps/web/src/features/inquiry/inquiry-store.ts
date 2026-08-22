@@ -12,6 +12,13 @@ export interface InquiryItem {
   variant: string;
   quantity: number;
   notes: string;
+  mediaPath?: string;
+  mediaFallbackPath?: string;
+  imageLabel?: string;
+}
+
+function isOptionalString(value: unknown): value is string | undefined {
+  return value === undefined || typeof value === "string";
 }
 
 function isInquiryItem(value: unknown): value is InquiryItem {
@@ -27,7 +34,10 @@ function isInquiryItem(value: unknown): value is InquiryItem {
     typeof item.variant === "string" &&
     typeof item.quantity === "number" &&
     Number.isFinite(item.quantity) &&
-    typeof item.notes === "string"
+    typeof item.notes === "string" &&
+    isOptionalString(item.mediaPath) &&
+    isOptionalString(item.mediaFallbackPath) &&
+    isOptionalString(item.imageLabel)
   );
 }
 
@@ -96,6 +106,7 @@ export function addInquiryItem(item: InquiryItem): InquiryItem[] {
   const next = [...items];
   next[existingIndex] = normalizeItem({
     ...existing,
+    ...normalized,
     quantity: existing.quantity + normalized.quantity,
     notes: normalized.notes.trim() ? normalized.notes : existing.notes
   });
