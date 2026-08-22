@@ -46,6 +46,38 @@ export function selectFamilyCards(): readonly FamilyCardModel[] {
   });
 }
 
+function toProductPreview(product: CatalogueProductRecord): ProductPreviewModel {
+  const optionSummary = uniqueNonEmpty([
+    product.sizes[0],
+    product.variants[0] ?? product.directions[0]
+  ]);
+
+  return {
+    id: product.id,
+    slug: product.slug,
+    familySlug: product.familySlug,
+    familyName: familyNameBySlug(product.familySlug),
+    name: product.name,
+    code: product.code,
+    optionSummary,
+    ...(product.description ? { description: product.description } : {}),
+    imageLabel: product.mediaLabel,
+    ...(product.mediaPath ? { mediaPath: product.mediaPath } : {}),
+    ...(product.mediaFallbackPath
+      ? { mediaFallbackPath: product.mediaFallbackPath }
+      : {}),
+    ...(typeof product.mediaIndex === "number"
+      ? { mediaIndex: product.mediaIndex }
+      : {})
+  };
+}
+
+export function selectProductPreviews(
+  products: readonly CatalogueProductRecord[]
+): readonly ProductPreviewModel[] {
+  return products.map(toProductPreview);
+}
+
 export function selectFeaturedProducts(
   products: readonly CatalogueProductRecord[]
 ): readonly ProductPreviewModel[] {
@@ -66,28 +98,6 @@ export function selectFeaturedProducts(
       );
     }
 
-    const optionSummary = uniqueNonEmpty([
-      product.sizes[0],
-      product.variants[0] ?? product.directions[0]
-    ]);
-
-    return {
-      id: product.id,
-      slug: product.slug,
-      familySlug: product.familySlug,
-      familyName: familyNameBySlug(product.familySlug),
-      name: product.name,
-      code: product.code,
-      optionSummary,
-      ...(product.description ? { description: product.description } : {}),
-      imageLabel: product.mediaLabel,
-      ...(product.mediaPath ? { mediaPath: product.mediaPath } : {}),
-      ...(product.mediaFallbackPath
-        ? { mediaFallbackPath: product.mediaFallbackPath }
-        : {}),
-      ...(typeof product.mediaIndex === "number"
-        ? { mediaIndex: product.mediaIndex }
-        : {})
-    };
+    return toProductPreview(product);
   });
 }
