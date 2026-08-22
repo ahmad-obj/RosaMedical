@@ -1,9 +1,10 @@
 import type { CatalogueProductRecord } from "@/features/catalogue-registry";
-import { selectFamilyCards, selectFeaturedProducts } from "@/features/public-catalogue";
+import { selectFamilyCards, selectProductPreviews } from "@/features/public-catalogue";
 import type { PublicLocale } from "@/features/localization/locales";
 import type { Route } from "next";
 import { FAMILY_NAMES_AR } from "@/features/localization/public-copy";
-import type { FamilyCardModel, ProductPreviewModel } from "@/features/public-catalogue";
+import type { FamilyCardModel } from "@/features/public-catalogue";
+import type { ProductsDiscoveryItem } from "./products-discovery.types";
 
 const families = selectFamilyCards();
 const familiesAr = families.map((family) => ({
@@ -13,67 +14,101 @@ const familiesAr = families.map((family) => ({
 
 const PRODUCTS_PAGE_COPY = {
   en: {
-    hero: {
-      eyebrow: "Product catalogue",
-      title: "Medical instruments, organised for procurement.",
-      copy: "Browse Rosa Medical by instrument family, product code, size and variant. Add selected instruments to one structured request for quotation."
-    },
     discovery: {
-      searchLabel: "Search by product name or code",
-      searchAction: { label: "Search", href: "/search" as const },
-      inquiryAction: { label: "Inquiry", href: "/inquiry" as const }
+      searchLabel: "Search products by name, code, size or option"
     },
     familyIntro: {
-      eyebrow: "Instrument families",
-      title: "Start with the right family."
+      eyebrow: "Medical devices",
+      title: "Find the right instrument."
     },
     productsIntro: {
-      eyebrow: "Representative products",
-      title: "A concise view into the catalogue.",
-      copy: "Product cards surface only the information needed to identify and prepare an inquiry."
+      eyebrow: "Product catalogue",
+      title: "Medical Devices",
+      copy: "Search the complete Rosa catalogue, narrow by instrument family and open the exact product before adding it to your quotation inquiry."
     },
     catalogue: {
       eyebrow: "Technical catalogues",
-      title: "Prefer document-led browsing?",
-      copy: "Open a family catalogue, then return to the matching web collection when you are ready to build an inquiry."
+      title: "Product Categories",
+      copy: "Open a family catalogue for document-led review."
     },
     procurement: {
       eyebrow: "Request a quotation",
-      title: "Found the instruments you need?",
-      copy: "Add products to an inquiry or send a general procurement request.",
+      title: "Prepare your instruments inquiry",
+      copy: "Build a structured product list and send one clear request to Rosa Medical.",
       primary: { label: "Request a Quote", href: "/request-quotation" as const }
     }
   },
   ar: {
-    hero: {
-      eyebrow: "كتالوج المنتجات",
-      title: "أدوات طبية منظمة لتسهيل المشتريات.",
-      copy: "استعرض منتجات روزا ميديكال حسب عائلة الأدوات أو رمز المنتج أو المقاس أو الخيار، وأضف اختياراتك إلى طلب عرض سعر واحد."
-    },
     discovery: {
-      searchLabel: "ابحث باسم المنتج أو رمزه",
-      searchAction: { label: "بحث", href: "/search" as const },
-      inquiryAction: { label: "الاستفسار", href: "/inquiry" as const }
+      searchLabel: "ابحث باسم المنتج أو الرمز أو المقاس أو الخيار"
     },
-    familyIntro: { eyebrow: "عائلات الأدوات", title: "ابدأ بالعائلة المناسبة." },
+    familyIntro: {
+      eyebrow: "الأدوات الطبية",
+      title: "اعثر على الأداة المناسبة."
+    },
     productsIntro: {
-      eyebrow: "منتجات تمثيلية",
-      title: "نظرة موجزة إلى الكتالوج.",
-      copy: "تعرض البطاقات المعلومات اللازمة لتحديد المنتج وإضافته إلى الاستفسار."
+      eyebrow: "كتالوج المنتجات",
+      title: "الأجهزة والأدوات الطبية",
+      copy: "ابحث في كتالوج روزا الكامل وحدد عائلة الأدوات ثم افتح المنتج المطلوب قبل إضافته إلى استفسار عرض السعر."
     },
     catalogue: {
       eyebrow: "الكتالوجات التقنية",
-      title: "تفضّل الاستعراض عبر الوثائق؟",
-      copy: "افتح كتالوج العائلة ثم عد إلى المجموعة المطابقة لإعداد استفسارك."
+      title: "فئات المنتجات",
+      copy: "افتح كتالوج العائلة للمراجعة المباشرة عبر الوثيقة."
     },
     procurement: {
       eyebrow: "طلب عرض سعر",
-      title: "هل وجدت الأدوات المطلوبة؟",
-      copy: "أضف المنتجات إلى الاستفسار أو أرسل طلب مشتريات عامًا.",
+      title: "جهّز استفسار الأدوات",
+      copy: "أنشئ قائمة منتجات منظمة وأرسل طلبًا واضحًا واحدًا إلى روزا ميديكال.",
       primary: { label: "اطلب عرض سعر", href: "/request-quotation" as const }
     }
   }
 } as const;
+
+function uniqueSearchTerms(values: readonly (string | undefined)[]): readonly string[] {
+  const result: string[] = [];
+  for (const value of values) {
+    const normalized = value?.trim();
+    if (normalized && !result.includes(normalized)) result.push(normalized);
+  }
+  return result;
+}
+
+export function createProductsDiscoveryItems(
+  products: readonly CatalogueProductRecord[],
+  locale: PublicLocale
+): readonly ProductsDiscoveryItem[] {
+  const ar = locale === "ar";
+  const previews = selectProductPreviews(products);
+
+  return previews.map((preview, index): ProductsDiscoveryItem => {
+    const sourceProduct = products[index];
+    if (!sourceProduct) {
+      throw new Error(`Products discovery source mismatch at index ${index}.`);
+    }
+
+    const familyName = ar ? FAMILY_NAMES_AR[preview.familySlug] : preview.familyName;
+    const localizedName = ar && sourceProduct.nameAr?.trim()
+      ? sourceProduct.nameAr.trim()
+      : preview.name;
+
+    return {
+      ...preview,
+      name: localizedName,
+      familyName,
+      searchTerms: uniqueSearchTerms([
+        localizedName,
+        preview.name,
+        preview.code,
+        familyName,
+        ...sourceProduct.sizes,
+        ...sourceProduct.variants,
+        ...sourceProduct.directions,
+        ...(sourceProduct.catalogueCodes ?? []).flatMap((entry) => [entry.code, entry.size])
+      ])
+    };
+  });
+}
 
 export function createProductsPageModel(
   products: readonly CatalogueProductRecord[],
@@ -82,17 +117,14 @@ export function createProductsPageModel(
   const ar = locale === "ar";
   const copy = PRODUCTS_PAGE_COPY[locale];
   const localizedFamilies = ar ? familiesAr : families;
-  const featured = selectFeaturedProducts(products).map((product) =>
-    ar ? { ...product, familyName: FAMILY_NAMES_AR[product.familySlug] } : product
-  );
+  const discoveryProducts = createProductsDiscoveryItems(products, locale);
 
   return {
-    hero: copy.hero,
     discovery: copy.discovery,
     familyIntro: copy.familyIntro,
     families: localizedFamilies,
     productsIntro: copy.productsIntro,
-    products: featured,
+    products: discoveryProducts,
     catalogue: {
       ...copy.catalogue,
       items: localizedFamilies.map((family, index) => ({
@@ -105,20 +137,20 @@ export function createProductsPageModel(
   };
 }
 
-export interface ProductsHeroModel { eyebrow: string; title: string; copy: string }
-export interface ProductsDiscoveryModel { searchLabel: string; searchAction: { label: string; href: Route<string> }; inquiryAction: { label: string; href: Route<string> } }
+export interface ProductsDiscoveryModel {
+  searchLabel: string;
+}
 export interface ProductsFamilyIntroModel { eyebrow: string; title: string }
 export interface ProductsIntroModel { eyebrow: string; title: string; copy: string }
 export interface ProductsCatalogueModel { eyebrow: string; title: string; copy: string; items: readonly { number: string; name: string; href: Route<string> }[] }
 export interface ProductsProcurementModel { eyebrow: string; title: string; copy: string; primary: { label: string; href: Route<string> } }
 
 export interface ProductsPageModel {
-  hero: ProductsHeroModel;
   discovery: ProductsDiscoveryModel;
   familyIntro: ProductsFamilyIntroModel;
   families: readonly FamilyCardModel[];
   productsIntro: ProductsIntroModel;
-  products: readonly ProductPreviewModel[];
+  products: readonly ProductsDiscoveryItem[];
   catalogue: ProductsCatalogueModel;
   procurement: ProductsProcurementModel;
 }
