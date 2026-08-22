@@ -36,13 +36,26 @@ describe("client review round 2026-08-22", () => {
     ).toBe(true);
   });
 
-  it("uses the shared Contact us footer ribbon on Home and About", () => {
+  it("keeps Business Growth visibly narrower than the other desktop story media without changing mobile", () => {
+    const globals = source("src/app/globals.css");
+    const polishPath = resolve(process.cwd(), "src/styles/client-review-final-polish.css");
+
+    expect(globals).toContain('@import "../styles/client-review-final-polish.css";');
+    expect(existsSync(polishPath)).toBe(true);
+
+    const polish = readFileSync(polishPath, "utf8");
+    expect(polish).toMatch(/@media \(min-width: 50rem\)[\s\S]*\[data-section="about-client-growth"\] \.about-client-story__grid[\s\S]*grid-template-columns:\s*minmax\(0,\s*9fr\)\s*minmax\(0,\s*11fr\)/);
+    expect(polish).not.toMatch(/@media \(max-width: 49\.99rem\)[\s\S]*about-client-growth/);
+  });
+
+  it("uses the shared Contact us footer ribbon for every main public page", () => {
     const shell = source("src/components/layout/public-shell.tsx");
     const home = source("src/features/homepage/homepage.tsx");
     const about = source("src/features/about/about-page.tsx");
     const homeCss = source("src/styles/home-client-redesign.css");
 
     expect(shell).toContain("<PublicContactStrip />");
+    expect(shell.indexOf("<PublicContactStrip />")).toBeGreaterThan(shell.indexOf("</main>"));
     expect(home).not.toContain("HomeSocialStrip");
     expect(about).not.toContain("AboutSocialStrip");
     expect(homeCss).not.toContain("body:has(.public-page--home) .public-contact-strip { display: none; }");
