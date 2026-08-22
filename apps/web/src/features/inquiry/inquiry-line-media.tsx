@@ -3,8 +3,8 @@
 import { useState, type ReactElement } from "react";
 
 interface InquiryLineMediaProps {
-  mediaPath?: string;
-  mediaFallbackPath?: string;
+  mediaPath?: string | undefined;
+  mediaFallbackPath?: string | undefined;
   alt: string;
 }
 
