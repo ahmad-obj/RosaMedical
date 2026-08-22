@@ -1,8 +1,14 @@
 /* Final client-review geometry corrections. */
 
+.home-comprehensive__specialties {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+}
+
 @media (min-width: 50rem) {
   [data-section="about-client-growth"] .about-client-story__grid {
-    grid-template-columns: minmax(0, 9fr) minmax(0, 11fr);
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
   }
 
   [data-section="about-client-growth"] .about-client-story__media-reveal {
