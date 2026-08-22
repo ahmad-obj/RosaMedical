@@ -50,7 +50,10 @@ export async function ProductDetailPage({
     size: data.sizeValue,
     variant: data.variantValue,
     quantity: 1,
-    notes: ""
+    notes: "",
+    ...(product.mediaPath ? { mediaPath: product.mediaPath } : {}),
+    ...(product.mediaFallbackPath ? { mediaFallbackPath: product.mediaFallbackPath } : {}),
+    ...(product.mediaLabel ? { imageLabel: product.mediaLabel } : {})
   };
 
   return (
@@ -111,7 +114,7 @@ export async function ProductDetailPage({
           </Reveal>
         </Container>
       </Section>
-      <MobileInquiryBar item={inquiryItem} />
+      <MobileInquiryBar />
     </div>
   );
 }
