@@ -27,6 +27,27 @@
 - Review widths: 390, 768, 1024, 1366, 1920, 2560.
 - Respect `prefers-reduced-motion` and prevent horizontal page overflow.
 
+## Shared Hero Replacement Contract
+
+The reusable banner is the **only page hero** on the five main routes. It replaces the previous local hero role; it must never be prepended while leaving another hero immediately below it.
+
+Exact replacement rules:
+
+- **Home:** replace the current Home-only carousel with `PublicHeroCarousel page="home"`; keep all content after the Home hero unchanged.
+- **About Us:** stop rendering `AboutCompactHero`; render `PublicHeroCarousel page="about"` followed directly by `AboutIntroduction`, existing story sections, contact band, compliance, documents, and quotation CTA. Keep the existing About story imagery, Business Growth 55/45 geometry, hover zoom, compliance and document behavior intact.
+- **Products:** stop rendering `ProductsHero`; render `PublicHeroCarousel page="products"` followed by the new Products discovery workspace.
+- **Inquiry:** add `PublicHeroCarousel page="inquiry"` outside loading/empty/populated state branches. The existing populated `h1` and `EmptyInquiryPage` `h1` become `h2` because the shared banner owns the page `h1`.
+- **Contact Us:** remove the current `contact-hero` section from render, including its local breadcrumb/title/copy/hero CTA. Render `PublicHeroCarousel page="contact"` followed by the existing contact information/form middle content, social content, map and quotation CTA.
+
+Heading rule on all five main pages:
+
+- active shared banner slide owns the single page `h1`;
+- middle-content section headings begin at `h2`;
+- carousel slide changes may swap which slide contains the active visible `h1`, but the DOM must not expose multiple simultaneously rendered visible `h1` headings;
+- hidden/inactive slide heading semantics must follow the existing carousel accessibility strategy and be covered by browser tests.
+
+Do not delete old hero components/data until `git grep` proves there is no remaining production/test dependency. Removal from the render path is mandatory; file deletion is optional cleanup after proof.
+
 ---
 
 ## Execution Setup
@@ -71,12 +92,20 @@ Modify:
 - `apps/web/src/features/about/about-page.tsx`
 - `apps/web/src/features/products/products-overview.tsx`
 - `apps/web/src/features/inquiry/inquiry-page.tsx`
+- `apps/web/src/features/inquiry-preview/empty-inquiry-page.tsx`
 - `apps/web/src/features/contact-preview/contact-page.tsx`
 - `apps/web/src/components/layout/public-shell.tsx`
 - `apps/web/src/styles/home-client-redesign.css`
 - `apps/web/src/app/globals.css`
 
-Home-only hero files may be deleted only after `git grep` proves there are no remaining production/test imports.
+Remove from render path:
+
+- `AboutCompactHero`
+- `ProductsHero`
+- the local `contact-hero` section
+- state-specific Inquiry `h1` headings
+
+Home-only/local-hero files may be deleted only after `git grep` proves no remaining production/test imports.
 
 ### Products discovery
 
@@ -108,6 +137,7 @@ Retain rather than duplicate `getPublicCatalogueProducts()`, canonical product r
 Create:
 
 - `apps/web/src/features/product-detail/product-price-state.tsx`
+- `apps/web/src/features/inquiry/inquiry-line-media.tsx`
 - `apps/web/src/styles/client-inquiry-cart.css`
 - `apps/web/src/test/client-inquiry-cart-redesign.test.tsx`
 - `apps/web/tests/e2e/client-inquiry-cart-redesign.spec.ts`
@@ -120,8 +150,9 @@ Modify:
 - `apps/web/src/features/product-detail/mobile-inquiry-bar.tsx`
 - `apps/web/src/features/inquiry/add-to-inquiry-button.tsx`
 - `apps/web/src/features/inquiry/inquiry-store.ts`
+- `apps/web/src/features/inquiry/index.ts`
 - `apps/web/src/features/inquiry/inquiry-page.tsx`
-- `apps/web/src/features/inquiry-preview/empty-inquiry-page.tsx` only if the final empty-state composition requires a focused adjustment.
+- `apps/web/src/features/inquiry-preview/empty-inquiry-page.tsx`
 - `apps/web/src/app/globals.css`
 
 Do not create a second inquiry/cart store. The existing store remains authoritative; optional media fields are backward-compatible display metadata only.
@@ -136,7 +167,7 @@ Create:
 
 Modify:
 
-- `apps/web/src/features/catalogues/index.ts` to export existing catalogue primitives cleanly if necessary.
+- `apps/web/src/features/catalogues/index.ts` if required to expose already-existing catalogue primitives.
 - `apps/web/src/features/products/products-overview.tsx`
 - `apps/web/src/styles/products-client-redesign.css`
 
@@ -157,8 +188,10 @@ Modify RTL/reduced-motion/shared responsive styles only when the integration mat
 ### Gate A — shared shell/banner
 
 - all five main pages use one `PublicHeroCarousel` implementation;
+- all previous local hero roles are removed from render, not duplicated below the shared banner;
 - Home keeps the four existing media assets and approved Home copy;
-- About/Products/Inquiry/Contact use page-specific copy profiles;
+- About/Products/Inquiry/Contact use the exact page-specific copy profiles in the shared-banner subplan;
+- shared banner owns the main page `h1`; middle content starts at `h2`;
 - no hero CTA buttons;
 - primary header remains exactly five links;
 - one shell-level red ribbon + one shell-level black footer.
@@ -186,6 +219,7 @@ Modify RTL/reduced-motion/shared responsive styles only when the integration mat
 - five category covers appear on Products;
 - cover click opens the exact existing PDF;
 - visible Download Catalogue action downloads the same PDF;
+- desktop five-column/tablet three-column/mobile snap-rail geometry matches the catalogue subplan;
 - no Downloads main page is added.
 
 ### Gate E — final integration/deployment
@@ -231,7 +265,7 @@ Preferred sequence:
 ```text
 refactor(web): define shared public hero profiles
 refactor(web): extract shared public hero carousel
-feat(web): apply shared banner to main public pages
+feat(web): replace local page heroes with shared banner
 feat(web): lock shared public shell consistency
 refactor(web): expose complete product preview mapping
 feat(web): add deterministic Products discovery logic
@@ -239,8 +273,9 @@ feat(web): build Products discovery controls
 feat(web): add client-directed product result cards
 feat(web): add Products direct contact band
 feat(web): preserve inquiry product media metadata
-feat(web): refine product detail inquiry controls
-fix(web): unify mobile and desktop inquiry controls
+feat(web): add explicit price-on-request product state
+fix(web): unify Product Detail inquiry controls
+feat(web): add inquiry product media fallback
 feat(web): redesign inquiry as quotation cart
 feat(web): add direct Products catalogue access
 feat(web): place catalogue covers in Products journey
