@@ -7,7 +7,6 @@ import { AboutContactBand } from "./sections/about-contact-band";
 import { AboutDocuments } from "./sections/about-documents";
 import { AboutIntroduction } from "./sections/about-introduction";
 import { AboutQuotationCta } from "./sections/about-quotation-cta";
-import { AboutSocialStrip } from "./sections/about-social-strip";
 import { AboutStorySection } from "./sections/about-story-section";
 
 export function AboutPage({ locale = "en" }: { locale?: PublicLocale }): ReactElement {
@@ -24,7 +23,6 @@ export function AboutPage({ locale = "en" }: { locale?: PublicLocale }): ReactEl
       <AboutCompliance model={model.compliance} />
       <AboutDocuments documents={model.documents} locale={locale} />
       <AboutQuotationCta model={model.quotation} />
-      <AboutSocialStrip model={model.social} locale={locale} />
     </>
   );
 }
