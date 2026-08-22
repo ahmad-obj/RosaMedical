@@ -1,0 +1,11 @@
+/* Final client-review geometry corrections. */
+
+@media (min-width: 50rem) {
+  [data-section="about-client-growth"] .about-client-story__grid {
+    grid-template-columns: minmax(0, 9fr) minmax(0, 11fr);
+  }
+
+  [data-section="about-client-growth"] .about-client-story__media-reveal {
+    justify-self: end;
+  }
+}
