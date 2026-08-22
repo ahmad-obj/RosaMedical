@@ -1,6 +1,5 @@
 import { RouteTransition, ScrollHeaderController } from "@/features/motion";
 import { PUBLIC_CONTENT_VALUES } from "@/features/public-content-registry";
-import { InquiryCountLabel } from "@/features/inquiry";
 import {
   LanguageSwitcher,
   LocaleDocumentController,
@@ -18,16 +17,14 @@ import { PublicBrandMark } from "./public-brand-mark";
 import { PublicContactStrip } from "./public-contact-strip";
 
 const primaryLinks = [
+  ["Home", "/"],
+  ["About Us", "/about"],
   ["Products", "/products"],
-  ["Catalogues", "/catalogues"],
-  ["About", "/about"],
-  ["Contact", "/contact"]
+  ["Inquiry", "/inquiry"],
+  ["Contact Us", "/contact"]
 ] as const satisfies readonly NavigationItem[];
 
-const utilityLinks = [
-  ["Search", "/search"],
-  ["Inquiry", "/inquiry"]
-] as const satisfies readonly NavigationItem[];
+const utilityLinks = [] as const satisfies readonly NavigationItem[];
 
 const familyLinks = [
   ["Knives", "المشارط والسكاكين الجراحية", "/products/knives"],
@@ -36,6 +33,14 @@ const familyLinks = [
   ["Chisels", "الأزاميل الجراحية", "/products/chisels"],
   ["Cutters", "أدوات القطع", "/products/cutters"]
 ] as const;
+
+function primaryNavigationLabel(label: string, href: string) {
+  if (href === "/") return <LocalizedText en={label} ar="الرئيسية" />;
+  if (href === "/about") return <LocalizedText en={label} ar="من نحن" />;
+  if (href === "/products") return <LocalizedText en={label} ar="المنتجات" />;
+  if (href === "/inquiry") return <LocalizedText en={label} ar="الاستفسار" />;
+  return <LocalizedText en={label} ar="اتصل بنا" />;
+}
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   const year = new Date().getFullYear();
@@ -51,25 +56,13 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
                 <li key={href}>
                   <PublicNavigationLink
                     href={href}
-                    label={
-                      href === "/products" ? <LocalizedText en={label} ar="المنتجات" /> :
-                      href === "/catalogues" ? <LocalizedText en={label} ar="الكتالوجات" /> :
-                      href === "/about" ? <LocalizedText en={label} ar="من نحن" /> :
-                      <LocalizedText en={label} ar="اتصل بنا" />
-                    }
+                    label={primaryNavigationLabel(label, href)}
                   />
                 </li>
               ))}
             </ul>
           </nav>
           <div className="cluster site-header__actions">
-            {utilityLinks.map(([label, href]) => (
-              <PublicNavigationLink
-                href={href}
-                label={href === "/inquiry" ? <InquiryCountLabel /> : <LocalizedText en={label} ar="بحث" />}
-                key={href}
-              />
-            ))}
             <LanguageSwitcher />
             <LocalizedButtonLink href="/request-quotation" size="small">
               <LocalizedText en="Request a quote" ar="اطلب عرض سعر" />
