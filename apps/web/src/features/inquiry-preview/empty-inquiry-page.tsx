@@ -14,7 +14,7 @@ export function EmptyInquiryPage(): ReactElement {
         <div className="empty-inquiry-page__layout">
           <div className="empty-inquiry-page__content">
             <p className="empty-inquiry-page__eyebrow">{ar ? "استفسار فارغ" : "Empty inquiry"}</p>
-            <h1 data-inquiry-empty-focus tabIndex={-1}>{ar ? "قائمة استفسارك فارغة." : "Your inquiry list is empty."}</h1>
+            <h2 data-inquiry-empty-focus tabIndex={-1}>{ar ? "قائمة استفسارك فارغة." : "Your inquiry list is empty."}</h2>
             <p>
               {ar ? "استعرض إحدى عائلات الأدوات وحدد المنتجات التي تريد من روزا مراجعتها لعرض السعر." : "Browse an instrument family and review the products you want Rosa to consider for quotation."}
             </p>
