@@ -4,7 +4,7 @@
 
 **Goal:** Turn the five Product Categories covers on `/products` into direct catalogue document entry points with both browser-open and download actions using the existing authoritative PDFs.
 
-**Architecture:** Reuse `CATALOGUE_DOCUMENTS`, `CatalogueCover`, localized family names, and the existing five PDF paths. Add a Products-specific document card surface because the client wants the cover itself to open the PDF, while the existing Catalogues page card has different semantics (download + Explore products). Do not add a Downloads main page and do not duplicate PDF path constants.
+**Architecture:** Reuse `CATALOGUE_DOCUMENTS`, `CatalogueCover`, localized family names, and the five existing PDF paths. Add one Products-specific document-card section because the client wants the cover itself to open the PDF, while the standalone Catalogues page keeps its existing document/explore semantics. Desktop is five columns, tablet is three columns, and mobile is a horizontal snap rail.
 
 **Tech Stack:** React/Next.js, TypeScript, existing catalogues/public-media modules, Vitest, Playwright.
 
@@ -12,25 +12,27 @@
 
 ## Global Constraints
 
-- Exactly five catalogue documents: Knives, Scissors, Punches, Chisels, Cutters.
+- Exactly five documents: Knives, Scissors, Punches, Chisels, Cutters.
 - Existing PDF paths in `catalogue-document-model.ts` remain authoritative.
-- Clicking the Products category cover opens the PDF document.
-- A distinct visible Download Catalogue action downloads the same PDF.
-- Do not create a separate Downloads primary page.
-- The card is document-oriented; family product browsing remains available via product discovery/filtering and canonical family routes.
-- Use approved existing catalogue-cover artwork.
+- Cover click opens the PDF in a new browser tab.
+- Separate visible Download Catalogue action downloads the same PDF.
+- No Downloads main page.
+- No duplicated PDF-path constants.
+- Use existing approved catalogue-cover artwork.
+- Desktop: five columns.
+- Tablet: three columns, naturally yielding a 3+2 second row.
+- Mobile: horizontal snap rail, not a two-column alternative.
 
 ---
 
-### Task 1: Add a Products-specific catalogue card component
+### Task 1: Add `ProductsCatalogueCards`
 
 **Files:**
 - Create: `apps/web/src/features/products/sections/products-catalogue-cards.tsx`
-- Modify: `apps/web/src/test/products-catalogue-access.test.tsx`
-- Reference: `apps/web/src/features/catalogues/catalogue-cover.tsx`
-- Reference: `apps/web/src/features/catalogues/catalogue-document-model.ts`
+- Modify if exports are missing: `apps/web/src/features/catalogues/index.ts`
+- Create: `apps/web/src/test/products-catalogue-access.test.tsx`
 
-**Interfaces:**
+**Interface:**
 
 ```tsx
 export function ProductsCatalogueCards({
@@ -40,25 +42,17 @@ export function ProductsCatalogueCards({
 }): ReactElement
 ```
 
-- [ ] **Step 1: Write the failing contract test**
+- [ ] **Step 1: Write RED contract**
 
 ```ts
-import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-
-const source = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");
-
-describe("Products catalogue access", () => {
-  it("uses the authoritative catalogue document model and provides open plus download actions", () => {
-    const component = source("src/features/products/sections/products-catalogue-cards.tsx");
-    expect(component).toContain("CATALOGUE_DOCUMENTS");
-    expect(component).toContain("CatalogueCover");
-    expect(component).toContain("document.pdfPath");
-    expect(component).toContain("download=");
-    expect(component).toContain('target="_blank"');
-    expect(component).not.toContain("/downloads");
-  });
+it("uses authoritative catalogue documents with open and download actions", () => {
+  const component = source("src/features/products/sections/products-catalogue-cards.tsx");
+  expect(component).toContain("CATALOGUE_DOCUMENTS");
+  expect(component).toContain("CatalogueCover");
+  expect(component).toContain("document.pdfPath");
+  expect(component).toContain('target="_blank"');
+  expect(component).toContain("download=");
+  expect(component).not.toContain("/downloads");
 });
 ```
 
@@ -68,11 +62,21 @@ describe("Products catalogue access", () => {
 pnpm --filter @rosa/web test -- src/test/products-catalogue-access.test.tsx
 ```
 
-Expected: FAIL because the Products catalogue component does not exist.
+Expected: FAIL because the component does not exist.
 
-- [ ] **Step 3: Implement the section using existing model records**
+- [ ] **Step 3: Export existing catalogue primitives through the feature index**
 
-Recommended structure:
+If missing, add:
+
+```ts
+export { CatalogueCover } from "./catalogue-cover";
+export { CATALOGUE_DOCUMENTS } from "./catalogue-document-model";
+export type { CatalogueDocument } from "./catalogue-document-model";
+```
+
+Do not move or duplicate `PDF_PATH_BY_FAMILY`.
+
+- [ ] **Step 4: Implement the exact Products section**
 
 ```tsx
 import { CATALOGUE_DOCUMENTS, CatalogueCover } from "@/features/catalogues";
@@ -92,7 +96,7 @@ export function ProductsCatalogueCards({ locale = "en" }: { locale?: PublicLocal
         </header>
         <ul className="products-catalogue-grid">
           {CATALOGUE_DOCUMENTS.map((document) => (
-            <li key={document.familySlug}>
+            <li key={document.familySlug} data-products-catalogue={document.familySlug}>
               <article className="products-catalogue-card">
                 <a
                   className="products-catalogue-card__cover-link"
@@ -108,6 +112,7 @@ export function ProductsCatalogueCards({ locale = "en" }: { locale?: PublicLocal
                 <div className="products-catalogue-card__actions">
                   <strong>{ar ? FAMILY_NAMES_AR[document.familySlug] : document.name}</strong>
                   <a
+                    className="products-catalogue-card__download"
                     href={document.pdfPath}
                     download={`rosa-${document.familySlug}-catalogue.pdf`}
                   >
@@ -124,40 +129,32 @@ export function ProductsCatalogueCards({ locale = "en" }: { locale?: PublicLocal
 }
 ```
 
-Do not duplicate `PDF_PATH_BY_FAMILY` in Products.
+The cover and download links are siblings; never nest interactive elements.
 
-- [ ] **Step 4: Export any currently non-exported catalogue primitives cleanly**
-
-If `CatalogueCover` or `CATALOGUE_DOCUMENTS` is not exported by `@/features/catalogues/index.ts`, add explicit exports there rather than importing deep private paths from Products.
-
-- [ ] **Step 5: Run GREEN**
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Run GREEN and commit**
 
 ```bash
-git add apps/web/src/features/products/sections/products-catalogue-cards.tsx apps/web/src/features/catalogues/index.ts apps/web/src/test/products-catalogue-access.test.tsx
+pnpm --filter @rosa/web test -- src/test/products-catalogue-access.test.tsx
+git add apps/web/src/features/catalogues/index.ts apps/web/src/features/products/sections/products-catalogue-cards.tsx apps/web/src/test/products-catalogue-access.test.tsx
 git commit -m "feat(web): add direct Products catalogue access"
 ```
 
-### Task 2: Compose catalogue cards into the client Products hierarchy
+### Task 2: Replace temporary `CatalogueSupport` in Products composition
 
 **Files:**
 - Modify: `apps/web/src/features/products/products-overview.tsx`
 - Modify: `apps/web/src/test/products-catalogue-access.test.tsx`
 
-- [ ] **Step 1: Add source-order test**
-
-Require `ProductsCatalogueCards` to appear after `ProductsDirectContactBand` and before `ProductsProcurementCta`.
+- [ ] **Step 1: Add RED source-order test**
 
 ```ts
 const page = source("src/features/products/products-overview.tsx");
 expect(page.indexOf("ProductsCatalogueCards")).toBeGreaterThan(page.indexOf("ProductsDirectContactBand"));
 expect(page.indexOf("ProductsCatalogueCards")).toBeLessThan(page.indexOf("ProductsProcurementCta"));
+expect(page).not.toContain("<CatalogueSupport");
 ```
 
-- [ ] **Step 2: Run RED**
-
-- [ ] **Step 3: Insert the section**
+- [ ] **Step 2: Replace render**
 
 ```tsx
 <ProductsDirectContactBand locale={locale} />
@@ -165,35 +162,41 @@ expect(page.indexOf("ProductsCatalogueCards")).toBeLessThan(page.indexOf("Produc
 <ProductsProcurementCta model={model.procurement} />
 ```
 
-- [ ] **Step 4: Remove the old Products `CatalogueSupport` render**
+Keep `/catalogues` route and its standalone `CatalogueCard` implementation intact.
 
-The new catalogue section replaces the old text-led support section on `/products`. Keep the standalone `/catalogues` route intact.
-
-- [ ] **Step 5: Run GREEN and commit**
+- [ ] **Step 3: Grep before deleting the old Products-only support component**
 
 ```bash
-git add apps/web/src/features/products/products-overview.tsx apps/web/src/test/products-catalogue-access.test.tsx
+git grep -n "CatalogueSupport" -- apps/web/src
+```
+
+Delete `apps/web/src/features/products/sections/catalogue-support.tsx` only when no other import/test uses it.
+
+- [ ] **Step 4: Run GREEN and commit**
+
+```bash
+pnpm --filter @rosa/web test -- src/test/products-catalogue-access.test.tsx
+git add apps/web/src/features/products apps/web/src/test/products-catalogue-access.test.tsx
 git commit -m "feat(web): place catalogue covers in Products journey"
 ```
 
-### Task 3: Style the five covers as a responsive document row
+### Task 3: Lock responsive catalogue geometry
 
 **Files:**
 - Modify: `apps/web/src/styles/products-client-redesign.css`
 - Modify: `apps/web/src/test/products-catalogue-access.test.tsx`
 
-- [ ] **Step 1: Add CSS contract assertions**
+- [ ] **Step 1: Add CSS contract**
 
-Require:
+Require exact structural rules:
 
-- five-column desktop grid when space allows;
-- 3+2 or adaptive tablet arrangement;
-- mobile horizontal snap rail or responsive 2-column layout, choosing whichever preserves cover legibility better in browser review;
-- visible open affordance on cover hover/focus;
-- download link remains outside the cover link to avoid nested interactive elements;
-- reduced-motion-safe hover transform.
+```ts
+expect(css).toMatch(/\.products-catalogue-grid[\s\S]*grid-template-columns:\s*repeat\(5,\s*minmax\(0,\s*1fr\)\)/);
+expect(css).toMatch(/@media \(max-width: 63\.99rem\)[\s\S]*\.products-catalogue-grid[\s\S]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
+expect(css).toMatch(/@media \(max-width: 40rem\)[\s\S]*grid-auto-flow:\s*column[\s\S]*scroll-snap-type:\s*x mandatory/);
+```
 
-- [ ] **Step 2: Implement desktop grid**
+- [ ] **Step 2: Implement desktop five-column grid**
 
 ```css
 .products-catalogue-grid {
@@ -204,7 +207,42 @@ Require:
   margin: 0;
   padding: 0;
 }
+```
 
+- [ ] **Step 3: Implement tablet 3+2**
+
+```css
+@media (max-width: 63.99rem) {
+  .products-catalogue-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+```
+
+- [ ] **Step 4: Implement mobile snap rail**
+
+```css
+@media (max-width: 40rem) {
+  .products-catalogue-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(10rem, 72vw);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    padding-block-end: 0.5rem;
+  }
+
+  .products-catalogue-grid > li {
+    scroll-snap-align: start;
+  }
+}
+```
+
+- [ ] **Step 5: Add restrained cover interaction**
+
+```css
 .products-catalogue-card__cover-link {
   display: block;
   overflow: hidden;
@@ -215,50 +253,34 @@ Require:
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .products-catalogue-card__cover-link:hover > * {
+  .products-catalogue-card__cover-link:hover > *,
+  .products-catalogue-card__cover-link:focus-visible > * {
     transform: scale(1.035);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .products-catalogue-card__cover-link > * {
+    transition: none;
+    transform: none;
   }
 }
 ```
 
-Use existing CSS tokens where available instead of hard-coding duplicate colors.
+- [ ] **Step 6: Run unit test and commit**
 
-- [ ] **Step 3: Implement responsive fallback**
-
-At tablet widths reduce columns adaptively. At ~390px either:
-
-```css
-.products-catalogue-grid {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(10rem, 72vw);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
+```bash
+pnpm --filter @rosa/web test -- src/test/products-catalogue-access.test.tsx
+git add apps/web/src/styles/products-client-redesign.css apps/web/src/test/products-catalogue-access.test.tsx
+git commit -m "feat(web): lock responsive Products catalogue rail"
 ```
 
-or a two-column grid if visual browser review shows better cover readability. Lock the chosen behavior in the test after review; do not maintain two competing mobile modes.
-
-- [ ] **Step 4: Run focused unit test**
-
-### Task 4: Add browser tests for open/download behavior
+### Task 4: Add browser open/download/PDF verification
 
 **Files:**
 - Create: `apps/web/tests/e2e/products-catalogue-access.spec.ts`
 
-- [ ] **Step 1: Verify all five cards render**
-
-Use `data-catalogue-document` or add `data-products-catalogue={document.familySlug}` for stable selectors.
-
-Expected family set:
-
-```ts
-["knives", "scissors", "punches", "chisels", "cutters"]
-```
-
-- [ ] **Step 2: Verify each cover href targets the correct existing PDF**
-
-Expected paths:
+**Exact expected paths:**
 
 ```ts
 const expected = {
@@ -267,38 +289,50 @@ const expected = {
   punches: "/media/catalogues/pdf/rosa-punches-catalogue.pdf",
   chisels: "/media/catalogues/pdf/rosa-chisels-catalogue.pdf",
   cutters: "/media/catalogues/pdf/rosa-cutters-catalogue.pdf"
-};
+} as const;
 ```
 
-For each card assert:
+- [ ] **Step 1: Assert five stable card selectors**
 
-- cover `href` equals expected PDF;
-- cover `target="_blank"`;
-- download link `href` equals same PDF;
-- download attribute is present.
+```ts
+for (const family of Object.keys(expected)) {
+  await expect(page.locator(`[data-products-catalogue="${family}"]`)).toHaveCount(1);
+}
+```
 
-- [ ] **Step 3: Verify the PDFs are served successfully in the test environment**
+- [ ] **Step 2: Assert open/download href equality**
 
-For each PDF:
+For each family:
+
+- cover link href ends with the expected PDF;
+- cover link target is `_blank`;
+- download link href ends with the same PDF;
+- download attribute equals `rosa-${family}-catalogue.pdf`.
+
+- [ ] **Step 3: Verify each static PDF is actually served**
 
 ```ts
 const response = await page.request.get(path);
 expect(response.ok()).toBe(true);
-expect(response.headers()["content-type"]).toContain("application/pdf");
+const bytes = await response.body();
+expect(bytes.subarray(0, 4).toString("ascii")).toBe("%PDF");
 ```
 
-If the dev server uses an octet-stream content type for static PDFs, assert success + `%PDF` file signature instead of weakening the check to URL presence only.
+Use the PDF signature rather than relying on a specific server `content-type` header.
 
-- [ ] **Step 4: Run Playwright**
+- [ ] **Step 4: Verify responsive layout**
+
+At 1366: five cards fit one row without page overflow.
+
+At 768: three columns are computed.
+
+At 390: the catalogue grid has horizontal overflow of its own, page document does not overflow, and scrolling/snap can reveal the fifth card.
+
+- [ ] **Step 5: Run and commit**
 
 ```bash
 pnpm --filter @rosa/web test:e2e -- tests/e2e/products-catalogue-access.spec.ts
-```
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add apps/web/src/styles/products-client-redesign.css apps/web/src/test/products-catalogue-access.test.tsx apps/web/tests/e2e/products-catalogue-access.spec.ts
+git add apps/web/tests/e2e/products-catalogue-access.spec.ts
 git commit -m "test(web): verify Products catalogue open and download flow"
 ```
 
@@ -310,4 +344,4 @@ pnpm --filter @rosa/web test:e2e -- tests/e2e/products-catalogue-access.spec.ts
 pnpm --filter @rosa/web typecheck
 ```
 
-The standalone `/catalogues` page may remain as a supporting route, but it must not become a sixth primary navigation item.
+The standalone `/catalogues` route remains a supporting route and must not become a sixth primary navigation item.
