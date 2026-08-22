@@ -6,6 +6,7 @@ import type {
 import type { InquiryItem } from "@/features/inquiry";
 import { StaticOptionField } from "./static-option-field";
 import { ProductInquiryControls } from "./product-inquiry-controls";
+import { ProductPriceState } from "./product-price-state";
 import type { PublicLocale } from "@/features/localization/locales";
 import { LocaleLink } from "@/features/localization";
 
@@ -39,8 +40,10 @@ export function ProductProcurementSummary({
       <div className="product-procurement-summary__options">
         <StaticOptionField label={ar ? "المقاس" : "Size"} value={sizeValue} />
         <StaticOptionField label={ar ? "الخيار" : "Variant"} value={variantValue} />
-        <ProductInquiryControls item={inquiryItem} />
       </div>
+
+      <ProductPriceState locale={locale} />
+      <ProductInquiryControls item={inquiryItem} />
 
       <p className="product-controls-note" id={controlsNoteId}>
         {ar ? "أضف هذه الأداة إلى استفسار عرض السعر ثم راجع الكميات والملاحظات." : "Add this instrument to your quotation inquiry, then review quantities and notes."}
@@ -48,7 +51,6 @@ export function ProductProcurementSummary({
       <LocaleLink className="product-catalogue-reference" href="/catalogues">
         {ar ? "مرجع الكتالوج" : "Catalogue reference"}: <bdi dir="ltr">{catalogueReference}</bdi> <span aria-hidden="true">→</span>
       </LocaleLink>
-      <p className="product-quotation-note">{ar ? "لا يوجد سعر عام · يلزم عرض سعر" : "No public price · Quotation required"}</p>
     </section>
   );
 }
