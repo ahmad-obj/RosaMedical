@@ -11,7 +11,6 @@ import {
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ButtonLink } from "@/components/ui/button";
-import { InquiryCountLabel } from "@/features/inquiry";
 import { getLocaleFromPathname, LanguageSwitcher, localizePath, stripLocalePath } from "@/features/localization";
 import { MOTION_DURATION, MOTION_EASING } from "@/features/motion";
 import { isPublicNavigationActive } from "./public-navigation-link";
@@ -23,6 +22,16 @@ interface MobileNavigationProps {
   primaryLinks: readonly NavigationItem[];
   utilityLinks: readonly NavigationItem[];
 }
+
+const MOBILE_LABELS_AR: Record<string, string> = {
+  "/": "الرئيسية",
+  "/about": "من نحن",
+  "/products": "المنتجات",
+  "/inquiry": "الاستفسار",
+  "/contact": "اتصل بنا",
+  "/catalogues": "الكتالوجات",
+  "/search": "بحث"
+};
 
 export function MobileNavigation({
   primaryLinks,
@@ -129,10 +138,7 @@ export function MobileNavigation({
                         onClick={close}
                         aria-current={isPublicNavigationActive(stripLocalePath(pathname), href) ? "page" : undefined}
                       >
-                        {href === "/inquiry" ? <InquiryCountLabel /> : locale === "ar" ? ({
-                          "/products": "المنتجات", "/catalogues": "الكتالوجات", "/about": "من نحن",
-                          "/contact": "اتصل بنا", "/search": "بحث"
-                        } as Record<string, string>)[href] ?? label : label}
+                        {locale === "ar" ? MOBILE_LABELS_AR[href] ?? label : label}
                       </Link>
                     </motion.li>
                   ))}
