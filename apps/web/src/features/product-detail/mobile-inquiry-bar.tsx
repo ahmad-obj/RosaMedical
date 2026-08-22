@@ -1,19 +1,17 @@
 import type { ReactElement } from "react";
-import { AddToInquiryButton, type InquiryItem } from "@/features/inquiry";
 import { LocalizedText } from "@/features/localization";
 
-export function MobileInquiryBar({ item }: { item: InquiryItem }): ReactElement {
+export function MobileInquiryBar(): ReactElement {
   return (
     <aside
       className="mobile-inquiry-bar"
       aria-label="Inquiry action"
       data-motion="mobile-inquiry-bar"
     >
-      <span><LocalizedText en="Quotation required" ar="يلزم عرض سعر" /></span>
-      <AddToInquiryButton
-        item={item}
-        className="button button--primary button--standard"
-      />
+      <span><LocalizedText en="Price on request" ar="السعر عند الطلب" /></span>
+      <a className="button button--primary button--standard" href="#product-inquiry-controls">
+        <LocalizedText en="Choose quantity" ar="اختر الكمية" />
+      </a>
     </aside>
   );
 }
