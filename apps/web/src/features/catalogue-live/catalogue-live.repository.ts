@@ -24,9 +24,9 @@ import type {
 } from "./catalogue-live.types";
 
 const PUBLIC_PRODUCT_SELECT = `
-  id,category_id,item_code,name_en,name_ar,description_en,description_ar,is_active,slug,created_at,
+  id,category_id,item_code,name_en,name_ar,description_en,description_ar,is_active,slug,created_at,price,
   category:categories!inner(id,slug,name_en,name_ar,is_active,deleted_at),
-  variants:product_variants(product_id,sku,size,variant_type,created_at),
+  variants:product_variants(id,product_id,sku,size,variant_type,price_override,created_at),
   images:product_images(product_id,image_path,sort_order)
 `;
 
@@ -198,7 +198,7 @@ const supabaseCatalogueReader: CatalogueSnapshotReader = {
         supabase
           .from("products")
           .select(
-            "id,category_id,item_code,name_en,name_ar,description_en,description_ar,is_active,slug,created_at"
+            "id,category_id,item_code,name_en,name_ar,description_en,description_ar,is_active,slug,created_at,price"
           )
           .eq("is_active", true),
         supabase
@@ -208,7 +208,7 @@ const supabaseCatalogueReader: CatalogueSnapshotReader = {
           .is("deleted_at", null),
         supabase
           .from("product_variants")
-          .select("product_id,sku,size,variant_type,created_at")
+          .select("id,product_id,sku,size,variant_type,price_override,created_at")
           .order("created_at", { ascending: true }),
         supabase
           .from("product_images")
@@ -263,7 +263,7 @@ const adminCatalogueReader: CatalogueSnapshotReader = {
         supabase
           .from("products")
           .select(
-            "id,category_id,item_code,name_en,name_ar,description_en,description_ar,is_active,slug,created_at"
+            "id,category_id,item_code,name_en,name_ar,description_en,description_ar,is_active,slug,created_at,price"
           ),
         supabase
           .from("categories")
@@ -272,7 +272,7 @@ const adminCatalogueReader: CatalogueSnapshotReader = {
           .is("deleted_at", null),
         supabase
           .from("product_variants")
-          .select("product_id,sku,size,variant_type,created_at")
+          .select("id,product_id,sku,size,variant_type,price_override,created_at")
           .order("created_at", { ascending: true }),
         supabase
           .from("product_images")
@@ -410,13 +410,7 @@ export function selectProductCatalogueContext(
   const product = familyProducts.find(
     (candidate) => candidate.slug === productSlug.trim()
   );
-  if (!product) return [];
-
-  const related = familyProducts
-    .filter((candidate) => candidate.id !== product.id)
-    .slice(0, 3);
-
-  return [product, ...related];
+  return product ? [product] : [];
 }
 
 export async function getSearchCatalogueProducts(): Promise<
