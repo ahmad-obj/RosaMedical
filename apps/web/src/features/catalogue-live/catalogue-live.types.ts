@@ -9,6 +9,7 @@ export interface LiveProductRow {
   is_active: boolean;
   slug: string;
   created_at: string;
+  price: number | string | null;
 }
 
 export interface LiveCategoryRow {
@@ -21,10 +22,12 @@ export interface LiveCategoryRow {
 }
 
 export interface LiveVariantRow {
+  id: string;
   product_id: string;
   sku: string | null;
   size: string | null;
   variant_type: string | null;
+  price_override: number | string | null;
   created_at: string;
 }
 
