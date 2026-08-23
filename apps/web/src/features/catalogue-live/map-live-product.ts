@@ -1,6 +1,7 @@
-import type { CatalogueProductRecord } from "@/features/catalogue-registry";
+import type { CatalogueProductRecord, CatalogueProductConfiguration } from "@/features/catalogue-registry";
 import type { CatalogueMetadataManifestEntry } from "@/features/catalogue-migration/catalogue-metadata-manifest";
 import { FAMILY_SLUGS, type FamilySlug } from "@/features/public-catalogue/models";
+import { normalizeSarAmount } from "@/features/pricing";
 import type {
   LiveCatalogueSnapshot,
   LiveCategoryRow,
@@ -63,11 +64,6 @@ function primaryImageFor(
   return path;
 }
 
-/**
- * Same lookup, but tolerant of zero images — used only for admin/inactive
- * products, where a freshly created draft has no image yet. Still throws on
- * more than one primary image (genuinely ambiguous state).
- */
 function primaryImageForOptional(
   product: LiveProductRow,
   images: readonly LiveImageRow[]
@@ -85,6 +81,23 @@ function primaryImageForOptional(
 
   const path = primaryImages[0]!.image_path.trim();
   return path || undefined;
+}
+
+function configurationsFor(
+  productId: string,
+  variants: readonly LiveVariantRow[]
+): readonly CatalogueProductConfiguration[] {
+  return variants
+    .filter((variant) => variant.product_id === productId)
+    .slice()
+    .sort(byCreatedAt)
+    .map((variant) => ({
+      id: variant.id,
+      sku: variant.sku?.trim() ?? "",
+      size: variant.size?.trim() ?? "",
+      variantType: variant.variant_type?.trim() ?? "",
+      priceOverrideSar: normalizeSarAmount(variant.price_override)
+    }));
 }
 
 function liveCatalogueCodesFor(
@@ -175,17 +188,12 @@ function mapManifestProduct(
     mediaLabel: entry.metadata.mediaLabel,
     ...(catalogueCodes.length ? { catalogueCodes } : {}),
     mediaPath,
-    isActive: product.is_active
+    isActive: product.is_active,
+    basePriceSar: normalizeSarAmount(product.price),
+    configurations: configurationsFor(product.id, snapshot.variants)
   };
 }
 
-/**
- * Active (or, when includeInactive is set, any) product with no manifest
- * entry — a genuinely new product added via the admin "Add product" flow.
- * Built directly from its own Supabase columns instead of the strict legacy
- * parity check. Returns null (and warns) instead of throwing, so one
- * incomplete draft never takes down the whole catalogue.
- */
 function mapLiveOnlyProduct(
   product: LiveProductRow,
   categoriesById: ReadonlyMap<string, LiveCategoryRow>,
@@ -227,7 +235,9 @@ function mapLiveOnlyProduct(
       mediaLabel: product.name_en,
       ...(catalogueCodes.length ? { catalogueCodes } : {}),
       ...(mediaPath ? { mediaPath } : {}),
-      isActive: product.is_active
+      isActive: product.is_active,
+      basePriceSar: normalizeSarAmount(product.price),
+      configurations: configurationsFor(product.id, snapshot.variants)
     };
   } catch (error) {
     console.warn(
@@ -263,16 +273,11 @@ export function mapLiveCatalogue(
     snapshot.categories.map((category) => [category.id, category] as const)
   );
 
-  // Existing manifest entries keep their verified option metadata while the
-  // live products table remains authoritative about which records exist.
   const manifestResults = manifest.flatMap((entry): CatalogueProductRecord[] => {
     const product = productsBySlug.get(entry.dbSlug);
     return product ? [mapManifestProduct(product, entry, categoriesById, snapshot)] : [];
   });
 
-  // Live-only path: active (or, in admin mode, any eligible) products with no
-  // manifest entry no longer crash anything — they're built straight from
-  // their own Supabase data instead.
   const liveOnlyResults = eligibleProducts
     .filter((product) => !manifestBySlug.has(product.slug))
     .map((product) => mapLiveOnlyProduct(product, categoriesById, snapshot, includeInactive))
