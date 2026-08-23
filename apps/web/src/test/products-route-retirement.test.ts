@@ -11,6 +11,12 @@ describe("retired family discovery routes and Product Detail cleanup", () => {
     expect(page).toContain("/products?family=");
   });
 
+  it("links Product Detail family breadcrumbs directly to the filtered Products hub", () => {
+    const breadcrumbs = source("src/features/product-detail/product-breadcrumbs.tsx");
+    expect(breadcrumbs).toContain("/products?family=");
+    expect(breadcrumbs).not.toContain("familyHref(");
+  });
+
   it("does not render or calculate Related Products on Product Detail", () => {
     const page = source("src/features/product-detail/product-detail-page.tsx");
     const data = source("src/features/product-detail/product-detail.data.ts");
