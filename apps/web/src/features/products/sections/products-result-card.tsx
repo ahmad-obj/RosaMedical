@@ -5,6 +5,7 @@ import {
 } from "@/features/public-catalogue";
 import { LocaleLink } from "@/features/localization";
 import type { PublicLocale } from "@/features/localization/locales";
+import { formatProductPriceSummary } from "@/features/pricing";
 import type { ProductsDiscoveryItem, ProductsView } from "../products-discovery.types";
 
 export function ProductsResultCard({
@@ -18,12 +19,14 @@ export function ProductsResultCard({
 }): ReactElement {
   const ar = locale === "ar";
   const href = productHref(product);
+  const priceLabel = formatProductPriceSummary(product.priceSummary, locale);
 
   return (
     <article
       className={`products-result-card products-result-card--${view}`}
       data-product-result={product.id}
       data-family={product.familySlug}
+      data-price-state={product.priceSummary.kind}
     >
       <LocaleLink className="products-result-card__media" href={href}>
         <ProductMediaPlaceholder
@@ -48,7 +51,7 @@ export function ProductsResultCard({
         ) : null}
         <p className="products-result-card__price">
           <span>{ar ? "السعر" : "Price"}</span>
-          <strong>{ar ? "عند الطلب" : "Price on request"}</strong>
+          <strong>{priceLabel}</strong>
         </p>
         <LocaleLink className="products-result-card__details" href={href}>
           {ar ? "عرض التفاصيل" : "View details"}
