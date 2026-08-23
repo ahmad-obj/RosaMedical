@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ButtonLink } from "@/components/ui";
 import { AdminDataTable, AdminStatusBadge, AdminToolbar, type AdminDataTableColumn } from "@/features/admin-primitives";
+import { formatProductPriceSummary } from "@/features/pricing";
 import { ProductMediaPlaceholder } from "@/features/public-catalogue";
 import type { AdminProductRow } from "./admin-product-model";
 
@@ -18,6 +19,7 @@ const columns: readonly AdminDataTableColumn<AdminProductRow>[] = [
     )
   },
   { key: "family", header: "Family", render: (row) => row.familyName },
+  { key: "price", header: "Price", render: (row) => formatProductPriceSummary(row.priceSummary, "en") },
   { key: "status", header: "Status", render: (row) => <AdminStatusBadge tone={row.isActive ? "success" : "draft"}>{row.isActive ? "Live" : "Draft"}</AdminStatusBadge> },
   { key: "options", header: "Options", render: (row) => row.optionSummary.join(" · ") },
   {
