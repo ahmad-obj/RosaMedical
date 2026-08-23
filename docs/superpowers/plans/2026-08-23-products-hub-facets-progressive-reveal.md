@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make `/products` the single robust discovery workspace with crash-free search, URL-backed contextual facets, deterministic ROSA-red controls, progressive result disclosure, family-route redirects and no Product Detail recommendations.
+**Goal:** Make `/products` the single robust discovery workspace with crash-free search, URL-backed contextual facets, deterministic ROSA-red controls, progressive result disclosure, permanent family-route redirects and no Product Detail recommendations.
 
-**Architecture:** Keep the entire public catalogue loaded once by `ProductsOverview`, enrich `ProductsDiscoveryItem` with normalized facet/search metadata, and keep filtering as pure memoizable selectors. UI state synchronizes with query parameters without server refetch on each interaction. Family URLs redirect into that same state model.
+**Architecture:** Keep the entire public catalogue loaded once by `ProductsOverview`, enrich `ProductsDiscoveryItem` with normalized facet/search metadata, and keep filtering as pure memoizable selectors. UI state synchronizes with query parameters without server refetch on each interaction. Family URLs permanently redirect into that same state model.
 
 **Tech Stack:** React client state, Next navigation/search params, TypeScript, Vitest, Playwright, existing public catalogue/live projection.
 
@@ -17,8 +17,11 @@
 - Family, Size, Direction, Variant and Code group facets use only real catalogue data.
 - Family is single-select; other facets are multi-select.
 - OR within one facet, AND across facets/search.
-- Large facet lists use controlled disclosure/search rather than dumping all values.
+- Long facet groups initially show 8 values and become internally searchable at 14+ available values.
 - Search/filter/sort changes reset visible batch count.
+- Clear filters resets query/family/multi-facets but preserves current sort and grid/list view.
+- Mobile/tablet uses the existing accessible `<details>` disclosure pattern; no new drawer dependency.
+- Initial result policy is 8 during hydration/compact layouts and 12 after a desktop media-query snapshot is available.
 - No fake country/origin/brand/delivery filters.
 - No Related Products section.
 
@@ -29,10 +32,10 @@
 **Files:**
 - Modify: `apps/web/src/features/products/products-discovery.types.ts`
 - Modify: `apps/web/src/features/products/products.data.ts`
+- Create: `apps/web/src/features/products/products-facets.ts`
 - Test: create `apps/web/src/test/products-discovery-facets.test.ts`
 
 **Interfaces:**
-- Produces the following stable contract for later tasks:
 
 ```ts
 export type ProductsFacetKey = "size" | "direction" | "variant" | "codeGroup";
@@ -61,33 +64,32 @@ export interface ProductsDiscoveryState {
 
 - [ ] **Step 1: Write failing data-model tests**
 
-Use representative products and assert:
+Use representative products and assert all sizes, variants and directions are preserved; search includes non-first SKU/size values; code groups are derived from real product/catalogue codes.
 
-- all sizes preserved;
-- all variants preserved;
-- all directions preserved;
-- code groups derived from real product/catalogue codes;
-- search terms include non-first SKU/size values.
+- [ ] **Step 2: Implement the exact code-group rule**
 
-- [ ] **Step 2: Define `deriveCodeGroup(code: string): string | null`**
+`deriveCodeGroup(code: string): string | null` uses:
 
-Put it in a focused helper file if `products.data.ts` would become overloaded:
+```ts
+const match = code.trim().match(/^(\d{2})-(\d{2})\d{2}[A-Za-z]*$/);
+return match ? `${match[1]}-${match[2]}xx` : null;
+```
 
-`apps/web/src/features/products/products-facets.ts`
+Examples locked by test:
 
-Rules:
+```text
+21-1001  -> 21-10xx
+21-1199A -> 21-11xx
+18-0103  -> 18-01xx
+18-0103S -> 18-01xx
+blank/malformed -> null
+```
 
-- trim whitespace;
-- recognize Rosa numeric-hyphen code families;
-- return a stable group label/prefix;
-- return null for malformed/blank values;
-- never mutate actual code.
-
-Unit-test representative codes before using it in model creation.
+The grouping label is derived metadata only; actual product/SKU values remain unchanged.
 
 - [ ] **Step 3: Populate facet values in `createProductsDiscoveryItems`**
 
-Use unique normalized values from the authoritative `CatalogueProductRecord` including catalogue codes.
+Use unique trimmed values from `sizes`, `variants`, `directions`, primary code and every `catalogueCodes[].code`.
 
 - [ ] **Step 4: Run focused test**
 
@@ -110,19 +112,16 @@ git commit -m "refactor(products): model contextual product facets"
 
 **Files:**
 - Modify: `apps/web/src/features/products/products-discovery.logic.ts`
-- Create if needed: `apps/web/src/features/products/products-facet-model.ts`
+- Create: `apps/web/src/features/products/products-facet-model.ts`
 - Test: `apps/web/src/test/products-discovery-facets.test.ts`
 
 **Interfaces:**
-- Produces:
 
 ```ts
 filterProducts(products, state): ProductsDiscoveryResult
 buildFacetModel(products, state): ProductsFacetModel
 compareProductSizes(a, b): number
 ```
-
-Facet model shape:
 
 ```ts
 interface ProductsFacetOption {
@@ -140,27 +139,11 @@ interface ProductsFacetModel {
 }
 ```
 
-- [ ] **Step 1: Write failing selector matrix**
+- [ ] **Step 1: Write the failing selector matrix**
 
-Tests must cover:
+Cover family, each individual facet, query + family, family + size + direction, multiple sizes (OR), size + variant (AND), selected zero-count option preservation and clear state.
 
-```text
-family only
-size only
-direction only
-variant only
-code group only
-query + family
-family + size + direction
-multiple sizes => OR
-size + variant => AND
-selected option with zero contextual count remains represented
-Clear => original result count
-```
-
-- [ ] **Step 2: Implement one shared set-intersection matcher**
-
-For a multi facet:
+- [ ] **Step 2: Implement one shared matcher**
 
 ```ts
 function matchesAny(productValues: readonly string[], selected: readonly string[]) {
@@ -170,31 +153,24 @@ function matchesAny(productValues: readonly string[], selected: readonly string[
 }
 ```
 
-Do not duplicate matching logic per facet.
+- [ ] **Step 3: Implement contextual counts**
 
-- [ ] **Step 3: Implement contextual counts correctly**
+While building one facet, apply query/family and all other facets but omit that facet's own selection constraint. Selected values remain present even at count zero.
 
-When building one facet's available choices, apply all other active constraints but omit that facet's own selected values from the context calculation. This produces useful counts without circularly eliminating alternatives inside the same facet.
+- [ ] **Step 4: Implement numeric-aware size sorting**
 
-- [ ] **Step 4: Implement numeric-aware size sort**
-
-Tests:
+Parse leading number + normalized unit; compare numeric value, then unit, then locale text. Lock:
 
 ```text
 1.0 mm < 1.5 mm < 2.0 mm < 4 mm
 8.0 cm < 16.5 cm < 28.0 cm
 ```
 
-Unknown labels fall back to locale string order.
-
-- [ ] **Step 5: Run focused selectors**
-
-Expected: PASS.
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Run focused selectors and commit**
 
 ```bash
-git add apps/web/src/features/products/products-discovery.logic.ts apps/web/src/features/products/products-facet-model.ts apps/web/src/test/products-discovery-facets.test.ts
+pnpm --filter @rosa/web test -- src/test/products-discovery-facets.test.ts
+git add apps/web/src/features/products apps/web/src/test/products-discovery-facets.test.ts
 git commit -m "feat(products): add contextual faceted filtering"
 ```
 
@@ -204,30 +180,21 @@ git commit -m "feat(products): add contextual faceted filtering"
 
 **Files:**
 - Modify: `apps/web/src/features/products/sections/products-discovery-workspace.tsx`
-- Test: create/update component test `apps/web/src/test/products-discovery-workspace.test.tsx`
+- Create/update: `apps/web/src/test/products-discovery-workspace.test.tsx`
 - Browser: `apps/web/tests/e2e/products-search-and-filters.spec.ts`
 
-**Interfaces:**
-- Consumes the expanded `ProductsDiscoveryState`.
-
 - [ ] **Step 1: Write a test that actually types**
-
-Mount/render the workspace and execute a user-like input change to `products-search-input`.
-
-Browser test:
 
 ```ts
 await page.goto("/products")
 await page.getByRole("searchbox").fill("iris")
-await expect(page.locator("text=Something went wrong")).toHaveCount(0)
+await expect(page.getByText("Something went wrong")).toHaveCount(0)
 await expect(page.locator("[data-products-results]")).toBeVisible()
 ```
 
-- [ ] **Step 2: Verify current behavior fails or reproduces error**
+- [ ] **Step 2: Verify RED on current event handling**
 
-- [ ] **Step 3: Capture event value synchronously**
-
-Required form:
+- [ ] **Step 3: Capture the value synchronously**
 
 ```tsx
 onChange={(event) => {
@@ -236,9 +203,7 @@ onChange={(event) => {
 }}
 ```
 
-- [ ] **Step 4: Test representative queries**
-
-Browser/unit checks for name, exact item code, non-first SKU, size and direction.
+- [ ] **Step 4: Test name, exact code, non-primary SKU, size and direction searches**
 
 - [ ] **Step 5: Commit**
 
@@ -254,12 +219,10 @@ git commit -m "fix(products): make catalogue search input stable"
 **Files:**
 - Create: `apps/web/src/features/products/products-discovery-url.ts`
 - Modify: `apps/web/src/features/products/sections/products-discovery-workspace.tsx`
-- Modify: `apps/web/src/features/products/products-overview.tsx` if initial search-param model is passed server-side
 - Test: `apps/web/src/test/products-discovery-url.test.ts`
 - Browser: `apps/web/tests/e2e/products-search-and-filters.spec.ts`
 
 **Interfaces:**
-- Produces:
 
 ```ts
 parseProductsDiscoverySearchParams(params: URLSearchParams): Partial<ProductsDiscoveryState>
@@ -268,44 +231,25 @@ serializeProductsDiscoveryState(state: ProductsDiscoveryState): URLSearchParams
 
 - [ ] **Step 1: Write round-trip tests**
 
-Include all keys:
+Keys are exactly `q`, `family`, repeated `size`, repeated `direction`, repeated `variant`, repeated `codeGroup`, `sort`, `view`. Invalid family/sort/view values are ignored.
 
-```text
-q
-family
-size
-direction
-variant
-codeGroup
-sort
-view
-```
+- [ ] **Step 2: Lock repeated-param encoding**
 
-Invalid family/sort/view values are ignored.
-
-- [ ] **Step 2: Pick and lock multi-value encoding**
-
-Use repeated params for clarity:
+Example:
 
 ```text
 ?size=14%20cm&size=16%20cm&direction=Straight
 ```
 
-Serialize in deterministic order so URLs/tests remain stable.
+Serialize keys/values deterministically.
 
-- [ ] **Step 3: Hydrate workspace state from `useSearchParams()`**
+- [ ] **Step 3: Hydrate from `useSearchParams()` and synchronize with `router.replace()`**
 
-Use `useRouter()` + `usePathname()` to replace the current query string without full page reload.
+Use `useRouter()` + `usePathname()`. No full navigation/refetch on checkbox clicks.
 
-Do not refetch catalogue data on every facet click.
+- [ ] **Step 4: Reconcile Back/Forward without replace loops**
 
-- [ ] **Step 4: Handle browser Back/Forward**
-
-When `searchParams` changes externally, reconcile state from the URL without creating an infinite replace loop.
-
-- [ ] **Step 5: Run URL unit/browser tests**
-
-Refresh `/products?family=cutters&direction=Straight` and verify UI state/results.
+- [ ] **Step 5: Verify refresh of `/products?family=cutters&direction=Straight`**
 
 - [ ] **Step 6: Commit**
 
@@ -316,7 +260,7 @@ git commit -m "feat(products): persist discovery filters in URL"
 
 ---
 
-### Task 5: Build master-quality desktop/mobile filter UI
+### Task 5: Build the desktop/mobile contextual filter UI
 
 **Files:**
 - Rewrite/expand: `apps/web/src/features/products/sections/products-filter-panel.tsx`
@@ -326,16 +270,6 @@ git commit -m "feat(products): persist discovery filters in URL"
 - Browser: `apps/web/tests/e2e/products-search-and-filters.spec.ts`
 
 **Interfaces:**
-- Consumes: `ProductsFacetModel`, selected state, callbacks.
-- Produces controlled filter UI only; no filtering logic duplicated in components.
-
-- [ ] **Step 1: Write checked-state accessibility test**
-
-Assert family uses radios and multi facets use checkboxes. For selected elements assert `checked === true` and visible custom marker class/data attribute is present.
-
-- [ ] **Step 2: Create reusable filter group**
-
-Props:
 
 ```ts
 interface ProductsFilterGroupProps {
@@ -344,38 +278,54 @@ interface ProductsFilterGroupProps {
   options: readonly ProductsFacetOption[];
   selected: readonly string[];
   onToggle(value: string): void;
-  initialLimit?: number;
-  searchableThreshold?: number;
 }
 ```
 
-Long list behavior:
+Constants are locked:
 
-- render first N relevant/selected options;
+```ts
+const FACET_INITIAL_VISIBLE = 8;
+const FACET_SEARCH_THRESHOLD = 14;
+```
+
+- [ ] **Step 1: Write checked-state/accessibility tests**
+
+Family uses radios; Size/Direction/Variant/Code group use checkboxes. Selected native inputs are checked and the custom visual marker renders.
+
+- [ ] **Step 2: Implement long-list behavior**
+
+- first 8 relevant options visible;
 - selected values always visible;
-- Show more reveals rest;
-- Show less collapses;
-- when option count exceeds threshold, expose internal filter search.
+- Show more reveals all;
+- Show less returns to 8;
+- 14+ available options enables a small within-facet text filter.
 
-- [ ] **Step 3: Implement deterministic custom radio/checkbox CSS**
+- [ ] **Step 3: Implement deterministic custom controls**
 
-Use visually styled control pseudo-elements while native input remains focusable/operable.
+Native input remains focusable. Styled marker supplies ROSA-red selected border/fill/dot/check, white check mark, focus ring, disabled state and no layout shift.
 
-Required selected CSS includes ROSA red and a non-colour state marker.
+- [ ] **Step 4: Lock Clear filters behavior**
 
-- [ ] **Step 4: Add Clear filters**
+Reset:
 
-Clear resets family + all multi facets + query, while preserving current `view` if desired by the locked UX. Sort resets to recommended unless test/spec explicitly preserves it; choose one and encode it consistently. Recommended: clear query/facets only, preserve view and sort.
+```ts
+query = ""
+family = "all"
+sizes = []
+directions = []
+variants = []
+codeGroups = []
+```
 
-- [ ] **Step 5: Desktop/mobile composition**
+Preserve existing `sort` and `view`.
 
-Desktop keeps sticky left sidebar.
+- [ ] **Step 5: Lock responsive composition**
 
-Below desktop, use the existing `details`/disclosure or a lightweight accessible drawer; do not duplicate filter state. One `ProductsFilterPanel` instance per visible layout is acceptable only if controls remain synchronized from parent state.
+Desktop: sticky left sidebar.
 
-- [ ] **Step 6: Run visual/interaction browser suite**
+Tablet/mobile: the existing `<details className="products-filter-disclosure">` pattern containing the same controlled panel model. Do not add a drawer library.
 
-Verify red checked indicator at Chromium screenshot level if necessary.
+- [ ] **Step 6: Browser/screenshot verify red checked markers and keyboard operation**
 
 - [ ] **Step 7: Commit**
 
@@ -390,63 +340,52 @@ git commit -m "feat(products): build contextual filter sidebar"
 
 **Files:**
 - Create: `apps/web/src/features/products/products-pagination.ts`
+- Create: `apps/web/src/features/products/use-products-batch-size.ts`
 - Modify: `apps/web/src/features/products/sections/products-discovery-workspace.tsx`
 - Modify: `apps/web/src/styles/products-client-redesign.css`
 - Test: `apps/web/src/test/products-pagination.test.ts`
-- Browser: create `apps/web/tests/e2e/products-progressive-results.spec.ts`
+- Browser: `apps/web/tests/e2e/products-progressive-results.spec.ts`
 
 **Interfaces:**
-- Produces:
 
 ```ts
 export const PRODUCTS_INITIAL_DESKTOP = 12;
 export const PRODUCTS_INITIAL_COMPACT = 8;
 export function nextVisibleCount(current: number, total: number, batch: number): number;
+export function useProductsBatchSize(): 8 | 12;
 ```
 
-- [ ] **Step 1: Unit-test batch math**
-
-Cases:
+- [ ] **Step 1: Unit-test exact batch math**
 
 ```text
-12 of 40 -> 24
-24 of 40 -> 36
-36 of 40 -> 40
-40 of 40 -> 40
+12/40 -> 24
+24/40 -> 36
+36/40 -> 40
+40/40 -> 40
 ```
 
-- [ ] **Step 2: Define compact-vs-desktop policy without hydration mismatch**
+- [ ] **Step 2: Implement hydration-safe batch-size hook**
 
-Do not read `window.innerWidth` during server render. Recommended client approach:
+Use `useSyncExternalStore` around `window.matchMedia("(min-width: 64.001rem)")`.
 
-- initial stable count uses 8 for hydration;
-- media-query hook may expand to 12 on desktop after mount without reducing already visible cards;
+- server snapshot returns compact batch `8`;
+- client snapshot returns `12` when the media query matches, otherwise `8`;
+- after hydration, a desktop may grow from 8 to 12 automatically;
+- resize must never reduce a user's already revealed count; only a query/filter/sort reset returns to the current batch size.
 
-or use one 12-item initial count across breakpoints if testing shows mobile length remains acceptable. The spec preference is 12 desktop / 8 compact; implement with a hydration-safe hook and test it.
+- [ ] **Step 3: Reset on query/facet/sort signature changes**
 
-- [ ] **Step 3: Reset visible count on discovery-result identity change**
+View changes preserve visible count.
 
-A stable filter/query/sort signature should reset count. View change may preserve current count.
+- [ ] **Step 4: Render `result.products.slice(0, visibleCount)`**
 
-- [ ] **Step 4: Render only `result.products.slice(0, visibleCount)`**
+Use a centered `See more products` button. Include remaining count in `aria-label` and optional subordinate copy.
 
-Button copy:
+- [ ] **Step 5: Append one batch without scroll jump**
 
-```text
-See more products
-```
+Animate only newly added cards; reduced-motion appears immediately.
 
-Optionally include remaining count in a subordinate span/aria label.
-
-- [ ] **Step 5: Animate only newly appended cards**
-
-Reuse existing Reveal/Stagger primitives or a CSS entry class. Do not remount/animate all previously visible cards on every click.
-
-- [ ] **Step 6: Browser acceptance**
-
-Assert initial list count, one-button increment, reset after filter, and button disappearance when complete.
-
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Browser acceptance and commit**
 
 ```bash
 git add apps/web/src/features/products apps/web/src/styles/products-client-redesign.css apps/web/src/test/products-pagination.test.ts apps/web/tests/e2e/products-progressive-results.spec.ts
@@ -455,52 +394,48 @@ git commit -m "feat(products): progressively reveal catalogue results"
 
 ---
 
-### Task 7: Soft-retire family pages into filtered Products redirects
+### Task 7: Permanently retire family pages into filtered Products redirects
 
 **Files:**
 - Modify: `apps/web/src/app/(public)/[[...segments]]/page.tsx`
 - Modify: `apps/web/src/features/public-routing/resolve-public-page.tsx`
 - Modify: `apps/web/src/features/product-detail/product-breadcrumbs.tsx`
-- Modify any remaining public family links discovered by repository search
+- Modify remaining public family links found by repository search
 - Modify: `apps/web/src/app/sitemap.ts`
-- Test: `apps/web/src/test/public-routing.test.tsx` or create `family-route-retirement.test.ts`
+- Test: create/update `apps/web/src/test/family-route-retirement.test.ts`
 - Browser: `apps/web/tests/e2e/family-route-redirects.spec.ts`
 
-**Interfaces:**
-- Produces family URL -> Products query redirect.
+- [ ] **Step 1: Write all ten redirect tests**
 
-- [ ] **Step 1: Write routing tests first**
+Five EN + five AR destinations.
 
-For each family and locale assert expected destination.
+- [ ] **Step 2: Use Next `permanentRedirect()` before family-page rendering**
 
-- [ ] **Step 2: Redirect in the catch-all route before rendering old family UI**
+Destinations are exactly:
 
-Use Next `redirect()` or `permanentRedirect()` only after deciding SEO behavior. Recommended: `permanentRedirect` if the owner intends permanent retirement; if rollout risk remains, use temporary `redirect` during verification and convert after client approval. Lock one choice before deployment. Given explicit retirement approval, recommended final = permanent redirect.
+```text
+/products?family=<slug>
+/ar/products?family=<slug>
+```
 
-- [ ] **Step 3: Remove `FamilyListingPage` from active `resolvePublicPage` switch**
+- [ ] **Step 3: Remove `FamilyListingPage` from the active render switch/import**
 
-`resolvePublicPageKind` may retain a family kind solely so metadata/router can recognize the route before redirect, but no family page should render.
+The route kind may remain recognizable only to trigger the redirect/metadata path; it must not render the old family experience.
 
 - [ ] **Step 4: Update breadcrumbs/internal links**
 
-Family breadcrumb href:
+Family links point to filtered Products. Locale infrastructure preserves Arabic prefix.
 
-```ts
-/products?family=${family.slug}
-```
+- [ ] **Step 5: Remove retired family pages from sitemap canonical entries**
 
-Localized link infrastructure prepends `/ar` where appropriate.
+Product Detail URLs remain.
 
-- [ ] **Step 5: Update sitemap**
-
-Do not advertise retired family landing URLs as canonical content pages. Product Detail URLs remain listed.
-
-- [ ] **Step 6: Browser verify EN/AR redirect and selected filter**
+- [ ] **Step 6: Browser verify redirect + selected radio hydration**
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add 'apps/web/src/app/(public)/[[...segments]]/page.tsx' apps/web/src/features/public-routing apps/web/src/features/product-detail/product-breadcrumbs.tsx apps/web/src/app/sitemap.ts apps/web/src/test apps/web/tests/e2e/family-route-redirects.spec.ts
+git add 'apps/web/src/app/(public)/[[...segments]]/page.tsx' apps/web/src/features/public-routing apps/web/src/features/product-detail/product-breadcrumbs.tsx apps/web/src/app/sitemap.ts apps/web/src/test/family-route-retirement.test.ts apps/web/tests/e2e/family-route-redirects.spec.ts
 git commit -m "refactor(products): retire family pages into filtered hub"
 ```
 
@@ -511,34 +446,32 @@ git commit -m "refactor(products): retire family pages into filtered hub"
 **Files:**
 - Modify: `apps/web/src/features/product-detail/product-detail-page.tsx`
 - Modify: `apps/web/src/features/product-detail/product-detail.data.ts`
-- Modify: `apps/web/src/features/catalogue-live/catalogue-live.repository.ts` only if related-product context is no longer required by any consumer
-- Delete only if unused after search: `apps/web/src/features/product-detail/related-product-grid.tsx`
+- Modify: `apps/web/src/features/catalogue-live/catalogue-live.repository.ts`
+- Delete if repository search confirms no remaining import: `apps/web/src/features/product-detail/related-product-grid.tsx`
 - Test: `apps/web/src/test/product-detail-page.test.tsx`
 - Browser: `apps/web/tests/e2e/product-detail-no-related.spec.ts`
 
 **Interfaces:**
+- Add/produce `getProductCatalogueProduct(familySlug, productSlug): Promise<CatalogueProductRecord | null>` for the focused Product Detail lookup.
 - Product Detail data no longer exposes `related`.
 
 - [ ] **Step 1: Write failing render assertion**
 
-```ts
-expect(screen.queryByText(/Related products/i)).not.toBeInTheDocument()
-expect(screen.queryByText(/More from/i)).not.toBeInTheDocument()
-```
+No `Related products`, no `More from`, no related cards.
 
-Current implementation should fail.
-
-- [ ] **Step 2: Remove RelatedProductGrid section from page**
+- [ ] **Step 2: Remove RelatedProductGrid section/import**
 
 - [ ] **Step 3: Remove related calculation from `createProductDetailData`**
 
-- [ ] **Step 4: Simplify catalogue context fetch if safe**
+- [ ] **Step 4: Add focused catalogue lookup**
 
-If Product Detail only needs one product after removal, introduce/favor a selector that returns that product rather than fetching related records solely for the old UI. Preserve existing live parity behavior.
+`getProductCatalogueProduct` may reuse the cached family projection but returns only the matching canonical product and does not build a related slice.
 
-- [ ] **Step 5: Delete component only after repository search proves no remaining imports**
+Update `ProductDetailPage` and catch-all existence check to consume the focused lookup where appropriate.
 
-- [ ] **Step 6: Run tests and commit**
+- [ ] **Step 5: Delete RelatedProductGrid only after repository search proves it is unused**
+
+- [ ] **Step 6: Test and commit**
 
 ```bash
 git add apps/web/src/features/product-detail apps/web/src/features/catalogue-live apps/web/src/test/product-detail-page.test.tsx apps/web/tests/e2e/product-detail-no-related.spec.ts
@@ -558,6 +491,7 @@ pnpm --filter @rosa/web test -- \
   src/test/products-discovery-url.test.ts \
   src/test/products-filter-panel.test.tsx \
   src/test/products-pagination.test.ts \
+  src/test/family-route-retirement.test.ts \
   src/test/product-detail-page.test.tsx
 ```
 
@@ -579,12 +513,4 @@ pnpm --filter @rosa/web typecheck
 
 - [ ] **Step 4: Manual quality audit**
 
-At 390/768/1024/1366/1920 verify:
-
-- no giant permanent facet list;
-- selected markers visibly red;
-- sticky sidebar does not collide with header;
-- mobile disclosure works;
-- See More centered and polished;
-- no horizontal overflow;
-- no Related Products.
+At 390/768/1024/1366/1920 verify no giant permanent facet list, selected markers visibly red, sticky sidebar does not collide with header, mobile disclosure works, See More is centered/polished, URL state survives refresh, no horizontal overflow and no Related Products.
