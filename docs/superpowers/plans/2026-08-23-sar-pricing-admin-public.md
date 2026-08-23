@@ -4,7 +4,7 @@
 
 **Goal:** Make the existing Supabase base-price and variant-override fields first-class, editable SAR data that flows safely into live catalogue records, Admin Product surfaces and public product/card price states without inventing values.
 
-**Architecture:** Preserve Supabase as source of truth. Extend the live projection with product price plus real variant identity/override, normalize money into decimal strings at application boundaries, centralize SAR formatting/effective-price logic in a small pricing module, then wire Admin create/edit/override operations and public card/detail consumers. No new pricing database column is required in this gate because `products.price` and `product_variants.price_override` already exist.
+**Architecture:** Preserve Supabase as source of truth. Extend the live projection with product price plus real variant identity/override, normalize money into decimal strings at application boundaries, centralize SAR formatting/effective-price logic, then wire Admin create/edit and one-row-at-a-time variant override actions. Each variant override save is individually atomic at the database-row level; there is no ambiguous multi-row best-effort save.
 
 **Tech Stack:** TypeScript strict mode, Supabase JS/PostgREST, React/Next.js server actions, Vitest.
 
@@ -19,8 +19,9 @@
 - UI accepts at most two decimal places.
 - Effective configuration price = override ?? base ?? null.
 - No production prices are seeded/fabricated during implementation.
-- Public card summary must distinguish exact / From / partially unpriced / fully unpriced states.
+- Public card summary distinguishes exact / From / partially unpriced / fully unpriced states.
 - Admin pricing absence does not block product activation.
+- Variant pricing edits save one real variant row at a time through `saveVariantPriceOverride`; no multi-row partial-write mode.
 
 ---
 
@@ -37,7 +38,9 @@
 export type SarAmount = string;
 
 export function normalizeSarAmount(value: unknown): SarAmount | null;
-export function validateSarInput(value: string): { ok: true; value: SarAmount | null } | { ok: false; error: string };
+export function validateSarInput(value: string):
+  | { ok: true; value: SarAmount | null }
+  | { ok: false; error: string };
 export function sarToHalalas(value: SarAmount): bigint;
 export function halalasToSar(value: bigint): SarAmount;
 export function multiplySar(value: SarAmount, quantity: number): SarAmount;
@@ -47,7 +50,7 @@ export function minSar(values: readonly SarAmount[]): SarAmount | null;
 
 - [ ] **Step 1: Write failing validation/format tests**
 
-Required cases:
+Lock:
 
 ```text
 "" -> null
@@ -59,61 +62,42 @@ Required cases:
 "-1" -> invalid
 "12.345" -> invalid
 "abc" -> invalid
+0.10 * 3 -> 0.30 exactly
 ```
 
-Arithmetic:
+- [ ] **Step 2: Implement normalization with decimal strings + BigInt halalas**
 
-```text
-120.50 * 3 = 361.50
-0.10 * 3 = 0.30 exactly
-```
+Do not sum binary floating-point values.
 
-This exact `0.10` test prevents binary-float accumulation.
+- [ ] **Step 3: Implement locale display formatter**
 
-- [ ] **Step 2: Implement normalization using decimal strings / BigInt halalas**
+`Intl.NumberFormat` is display-only; arithmetic remains exact.
 
-Do not sum JS floating-point numbers.
-
-Input normalization may accept a finite number from Supabase but immediately convert to a two-decimal string.
-
-- [ ] **Step 3: Implement locale formatter**
-
-Use `Intl.NumberFormat` only for display after exact amount is normalized. Do not use formatted strings for arithmetic.
-
-- [ ] **Step 4: Run test**
+- [ ] **Step 4: Run and commit**
 
 ```bash
 pnpm --filter @rosa/web test -- src/test/sar-money.test.ts
-```
-
-Expected: PASS.
-
-- [ ] **Step 5: Commit**
-
-```bash
 git add apps/web/src/features/pricing apps/web/src/test/sar-money.test.ts
 git commit -m "feat(pricing): add exact SAR money primitives"
 ```
 
 ---
 
-### Task 2: Extend catalogue/live types with price and real configurations
+### Task 2: Extend live catalogue types with prices and real configurations
 
 **Files:**
 - Modify: `apps/web/src/features/catalogue-live/catalogue-live.types.ts`
 - Modify: `apps/web/src/features/catalogue-registry/types.ts`
 - Modify: `apps/web/src/features/catalogue-live/catalogue-live.repository.ts`
 - Modify: `apps/web/src/features/catalogue-live/map-live-product.ts`
-- Test: create/update `apps/web/src/test/catalogue-live-pricing.test.ts`
-- Test: relevant existing catalogue parity tests
+- Test: create `apps/web/src/test/catalogue-live-pricing.test.ts`
+- Run existing catalogue parity/live tests after the focused test.
 
 **Interfaces:**
 
-Extend live rows:
-
 ```ts
 export interface LiveProductRow {
-  // existing
+  // existing fields
   price: number | string | null;
 }
 
@@ -128,8 +112,6 @@ export interface LiveVariantRow {
 }
 ```
 
-Add registry configuration:
-
 ```ts
 export interface CatalogueProductConfiguration {
   id: string;
@@ -140,59 +122,41 @@ export interface CatalogueProductConfiguration {
 }
 
 export interface CatalogueProductRecord {
-  // existing
+  // existing fields
   basePriceSar?: SarAmount | null;
   configurations?: readonly CatalogueProductConfiguration[];
 }
 ```
 
-Prefer explicit `null` for loaded live no-price state; optional remains necessary for static legacy fixtures only if changing every fixture is unnecessarily broad.
+`undefined` is reserved for old static fixture records that have never been through a live pricing projection; loaded live rows normalize missing DB price to `null`.
 
 - [ ] **Step 1: Write failing mapper tests**
 
-Snapshot fixture should include:
+Fixture base price `120.00`; variant A override null; variant B `145.50`. Assert base amount, real variant IDs/SKUs/sizes/types and exact overrides survive mapping.
 
-```ts
-product.price = "120.00"
-variant A price_override = null
-variant B price_override = "145.50"
-```
+- [ ] **Step 2: Extend every live select**
 
-Assert mapped record keeps:
+Add product `price` and variant `id,price_override` to:
 
-- base `120.00`;
-- variant IDs;
-- SKU/size/type;
-- A override null;
-- B override `145.50`.
+- `PUBLIC_PRODUCT_SELECT`;
+- public snapshot reader;
+- admin snapshot reader;
+- projection row path.
 
-- [ ] **Step 2: Extend every public/admin Supabase select**
+- [ ] **Step 3: Map real variant rows into `configurations`**
 
-Add `price` to products selections and `id,price_override` to variant selections, including `PUBLIC_PRODUCT_SELECT`, `supabaseCatalogueReader`, `adminCatalogueReader` and any projection-row path.
+Sort by existing `created_at` order and normalize prices through `normalizeSarAmount`.
 
-Do not update only one reader; public/admin must agree.
+Manifest product descriptive metadata remains intact; real configuration identity is additional live commercial data.
 
-- [ ] **Step 3: Map live variants into configurations**
+- [ ] **Step 4: Preserve live-only/draft behavior**
 
-Use actual snapshot variants, sorted by `created_at`, and normalize monetary values through `normalizeSarAmount`.
+Admin-created records receive base/configuration pricing even without static manifest metadata.
 
-Manifest products still retain verified catalogue metadata for descriptive sizes/variants, but price selection later consumes real `configurations`.
-
-- [ ] **Step 4: Preserve live-only product behavior**
-
-New admin-created products also receive base price/configurations without requiring a static manifest.
-
-- [ ] **Step 5: Run live catalogue + parity tests**
+- [ ] **Step 5: Run focused + existing catalogue tests and commit**
 
 ```bash
 pnpm --filter @rosa/web test -- src/test/catalogue-live-pricing.test.ts
-```
-
-Then run the existing `catalogue-live`/migration tests identified by test search.
-
-- [ ] **Step 6: Commit**
-
-```bash
 git add apps/web/src/features/catalogue-live apps/web/src/features/catalogue-registry apps/web/src/test/catalogue-live-pricing.test.ts
 git commit -m "feat(catalogue): project live product pricing"
 ```
@@ -225,22 +189,15 @@ export function formatProductPriceSummary(summary: ProductPriceSummary, locale: 
 
 - [ ] **Step 1: Write summary matrix**
 
-Cases:
+Cover no price, inherited exact base, override range, mixed numeric/unpriced and `0.00` exact state.
 
-1. no base, no configurations/overrides -> on-request;
-2. base 120, all configs inherit -> exact 120;
-3. base 120, one override 145 -> from 120, no unpriced options;
-4. no base, overrides 120 and 145 -> from 120, `hasUnpricedOptions` true if another config has null;
-5. one config override 120 and no base -> exact 120 only when all selectable configs resolve to 120;
-6. 0.00 remains exact zero, not on-request.
+- [ ] **Step 2: Implement shared summary logic**
 
-- [ ] **Step 2: Implement pure summary logic**
+No component reimplements this calculation.
 
-Use exact normalized amounts; de-duplicate by decimal string.
+- [ ] **Step 3: Lock localized display states**
 
-- [ ] **Step 3: Localize display**
-
-English compact states:
+English:
 
 ```text
 Price on request
@@ -249,18 +206,19 @@ From SAR 120.00
 From SAR 120.00 · some options on request
 ```
 
-Arabic equivalent goes through the same formatter/copy table.
+Arabic uses the same state machine and locale formatter.
 
-- [ ] **Step 4: Run tests and commit**
+- [ ] **Step 4: Test and commit**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/product-price.test.ts
 git add apps/web/src/features/pricing apps/web/src/test/product-price.test.ts
 git commit -m "feat(pricing): derive product price display states"
 ```
 
 ---
 
-### Task 4: Wire pricing into Products result cards
+### Task 4: Wire price summaries into Products cards
 
 **Files:**
 - Modify: `apps/web/src/features/products/products-discovery.types.ts`
@@ -271,21 +229,20 @@ git commit -m "feat(pricing): derive product price display states"
 **Interfaces:**
 - `ProductsDiscoveryItem` gains `priceSummary: ProductPriceSummary`.
 
-- [ ] **Step 1: Write failing card tests**
-
-Render cards for exact/from/on-request states and assert correct localized copy.
+- [ ] **Step 1: Write exact/from/on-request card tests**
 
 - [ ] **Step 2: Populate summary in `createProductsDiscoveryItems`**
 
-Call shared `summarizeProductPrice`; do not recreate price logic inside the card.
+Call `summarizeProductPrice(sourceProduct)`.
 
-- [ ] **Step 3: Replace hard-coded `Price on request`**
+- [ ] **Step 3: Replace current hard-coded Price on request**
 
-`ProductsResultCard` displays `formatProductPriceSummary(product.priceSummary, locale)`.
+Render only `formatProductPriceSummary` output.
 
-- [ ] **Step 4: Run test and commit**
+- [ ] **Step 4: Run and commit**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/products-price-display.test.tsx
 git add apps/web/src/features/products apps/web/src/test/products-price-display.test.tsx
 git commit -m "feat(products): display live SAR price states"
 ```
@@ -299,73 +256,54 @@ git commit -m "feat(products): display live SAR price states"
 - Modify: `apps/web/src/features/admin-products/admin-product-editor-page.tsx`
 - Modify: `apps/web/src/features/admin-products/actions.ts`
 - Modify: `apps/web/src/features/admin-products/admin-product-model.ts`
-- Modify: `apps/web/src/lib/supabase/types.ts` only if current types need nullable/string precision adjustment
 - Test: create/update `apps/web/src/test/admin-product-pricing.test.tsx`
-- Test: action tests if current repository has admin action mocks
 
 **Interfaces:**
-- Form field name: `price_sar`.
-- Helper: `formOptionalSar(formData, "price_sar")` returning exact decimal string/null or throwing user-safe validation error.
+- Form field is exactly `price_sar`.
+- Add private helper in `actions.ts` or focused module:
 
-- [ ] **Step 1: Write form rendering tests**
-
-Create form and editor must expose:
-
-```text
-Base price — SAR
-Blank means Price on request
+```ts
+function formOptionalSar(formData: FormData, key: "price_sar"): SarAmount | null
 ```
 
-Editor default value reflects current base price.
+Invalid input throws one user-safe pricing validation error before database writes.
+
+- [ ] **Step 1: Write create/editor field tests**
+
+Label: `Base price — SAR`; hint: blank means Price on request; editor default reflects current base price.
 
 - [ ] **Step 2: Write action validation tests**
 
-Accept blank, 0, integer and two-decimal values. Reject negative, nonnumeric and >2 decimals.
+Accept blank/zero/integer/1-2 decimals; reject negative/nonnumeric/>2 decimals.
 
-- [ ] **Step 3: Add optional price to `createProduct` insert**
+- [ ] **Step 3: Add `price` to `createProduct` insert**
 
-```ts
-price: parsedPrice
-```
+Blank -> null.
 
-No price -> null.
+- [ ] **Step 4: Add `price` to `saveProduct` update**
 
-- [ ] **Step 4: Add price to `saveProduct` update**
+After save clear catalogue cache and revalidate Home, Products, Search, current Product Detail and Admin product routes.
 
-Also revalidate:
+- [ ] **Step 5: Add formatted pricing preview to editor**
 
-```text
-/
-/products
-/search
-/products/<family>/<product>
-/admin/products
-/admin/products/<family>/<product>
-```
-
-Clear catalogue projection cache.
-
-- [ ] **Step 5: Add pricing preview in Admin editor**
-
-Show formatted current base price or Price on request next to field/help text.
-
-- [ ] **Step 6: Run tests and commit**
+- [ ] **Step 6: Test and commit**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/admin-product-pricing.test.tsx
 git add apps/web/src/features/admin-products apps/web/src/test/admin-product-pricing.test.tsx
 git commit -m "feat(admin-products): manage base SAR price"
 ```
 
 ---
 
-### Task 6: Add Admin per-variant price overrides
+### Task 6: Add one-row-at-a-time Admin variant price overrides
 
 **Files:**
 - Create: `apps/web/src/features/admin-products/admin-variant-pricing.tsx`
 - Modify: `apps/web/src/features/admin-products/admin-product-editor-page.tsx`
 - Modify: `apps/web/src/features/admin-products/admin-product-model.ts`
 - Modify: `apps/web/src/features/admin-products/actions.ts`
-- Modify/retain: `apps/web/src/features/admin-products/admin-product-options.tsx`
+- Keep: `apps/web/src/features/admin-products/admin-product-options.tsx` for catalogue metadata display
 - Test: `apps/web/src/test/admin-product-pricing.test.tsx`
 
 **Interfaces:**
@@ -383,45 +321,58 @@ variantPricing: readonly {
 }[];
 ```
 
-Server action:
+Server action is locked to one row:
 
 ```ts
-export async function saveVariantPrices(formData: FormData): Promise<void>
+export async function saveVariantPriceOverride(formData: FormData): Promise<void>
 ```
 
-Form fields use variant ID keys, e.g. `variant_price_<uuid>` or a JSON payload generated server-safely. Prefer explicit hidden `variant_id` rows only if each row is its own form; avoid trusting arbitrary product IDs from the client without ownership validation.
+Each row form submits:
+
+```text
+product_id
+variant_id
+family_slug
+product_slug
+price_override_sar
+```
 
 - [ ] **Step 1: Write model tests**
 
-Assert base inheritance and override replacement.
+Verify base inheritance, override replacement and null->Price on request.
 
-- [ ] **Step 2: Render pricing table**
+- [ ] **Step 2: Render one form per real variant row**
 
 Columns:
 
 ```text
-SKU | Size | Type/Direction | Price override (SAR) | Effective price
+SKU | Size | Type/Direction | Price override (SAR) | Effective price | Save
 ```
 
-- [ ] **Step 3: Implement protected save action**
+Blank override explicitly means inherit base.
 
-Requirements:
+- [ ] **Step 3: Implement protected one-row action**
 
-1. `requireAdminUser()`;
-2. load product/variant relationship or filter updates by known product ID;
-3. validate every amount;
-4. update only submitted variants belonging to that product;
-5. clear cache/revalidate public/admin paths.
+Exact sequence:
 
-If batch atomicity cannot be guaranteed by simple sequential updates, use an RPC/transactional SQL function only if already supported; otherwise perform validation for all rows before writing so a validation failure cannot cause partial updates.
+1. parse IDs/path values;
+2. validate price before DB access;
+3. `requireAdminUser()`;
+4. query `product_variants` by `variant_id` and confirm `product_id` matches submitted product;
+5. update only that variant's `price_override`;
+6. clear catalogue cache;
+7. revalidate public/admin paths.
 
-- [ ] **Step 4: Keep documented options separate from pricing**
+A failure affects only that one row; no multi-row partial-write problem exists.
 
-Do not turn the existing catalogue-metadata option editor into a general variant CRUD feature. Pricing table edits price only.
+- [ ] **Step 4: Keep option metadata separate**
 
-- [ ] **Step 5: Run tests and commit**
+Do not make `AdminProductOptions` a general variant CRUD editor. This task edits price only.
+
+- [ ] **Step 5: Test save/clear/ownership rejection and commit**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/admin-product-pricing.test.tsx
 git add apps/web/src/features/admin-products apps/web/src/test/admin-product-pricing.test.tsx
 git commit -m "feat(admin-products): edit variant SAR overrides"
 ```
@@ -433,34 +384,25 @@ git commit -m "feat(admin-products): edit variant SAR overrides"
 **Files:**
 - Modify: `apps/web/src/features/admin-products/admin-product-model.ts`
 - Modify: `apps/web/src/features/admin-products/admin-products-collection.tsx`
-- Modify: `apps/web/src/features/admin-products/admin-products-list-page.tsx` if row presentation lives there
-- Modify: `apps/web/src/features/admin-products/admin-product-completeness.tsx` only if key rendering requires it
+- Modify: `apps/web/src/features/admin-products/admin-products-list-page.tsx`
 - Test: `apps/web/src/test/admin-product-pricing.test.tsx`
 
 **Interfaces:**
-- `AdminProductRow` gains `priceLabel: string` or structured `priceSummary`.
+- `AdminProductRow` gains structured `priceSummary` or already-formatted `priceLabel`; prefer structured summary and format at render.
 - `AdminProductCompletenessItem.key` gains `"pricing"`.
 
 - [ ] **Step 1: Write row/completeness tests**
 
-Price absence is a valid `Price on request` business state, but completeness should report whether numeric pricing is configured.
+Numeric price present => pricing Present. No numeric effective price => Not supplied. Activation remains allowed in either case.
 
-Recommended completeness state:
+- [ ] **Step 2: Add compact list pricing state**
 
-```text
-Present          => at least one numeric effective price exists
-Not supplied     => no numeric price configured
-```
+Use the same summary formatter as public cards.
 
-It must not block activation.
-
-- [ ] **Step 2: Add compact pricing column/badge to Admin product collection**
-
-Use the shared formatter/summary logic.
-
-- [ ] **Step 3: Run tests and commit**
+- [ ] **Step 3: Test and commit**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/admin-product-pricing.test.tsx
 git add apps/web/src/features/admin-products apps/web/src/test/admin-product-pricing.test.tsx
 git commit -m "feat(admin-products): surface product pricing status"
 ```
@@ -480,9 +422,7 @@ pnpm --filter @rosa/web test -- \
   src/test/admin-product-pricing.test.tsx
 ```
 
-- [ ] **Step 2: Run existing catalogue/admin regression groups**
-
-Use test file discovery to run all current tests referencing `catalogue-live`, `admin-products`, `map-live-product` and product pages.
+- [ ] **Step 2: Run existing catalogue/admin regression tests discovered for `catalogue-live` and `admin-products`**
 
 - [ ] **Step 3: Typecheck**
 
@@ -490,18 +430,18 @@ Use test file discovery to run all current tests referencing `catalogue-live`, `
 pnpm --filter @rosa/web typecheck
 ```
 
-- [ ] **Step 4: Supabase non-destructive acceptance**
+- [ ] **Step 4: Controlled Supabase acceptance**
 
-Using a designated test/draft product, verify:
+On a designated test/draft product:
 
-1. blank base price -> null;
-2. save valid base price -> public projection reads it;
-3. set one variant override -> effective override reads it;
+1. blank base -> null;
+2. save valid base -> public projection reads it;
+3. set one override -> effective override reads it;
 4. clear override -> inherits base;
 5. clear base -> Price on request.
 
-Restore the test product to the client's intended data state after acceptance.
+Restore client-intended data state afterward.
 
-- [ ] **Step 5: Do not claim pricing complete yet**
+- [ ] **Step 5: Gate boundary**
 
-Gate C proves source/admin/public price projection only. Inquiry/server snapshot work belongs to Gate D.
+Do not call full pricing complete at Gate C. Product Detail selection, Inquiry totals and authoritative quote snapshots are Gate D.
