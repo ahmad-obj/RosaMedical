@@ -4,7 +4,7 @@
 
 **Goal:** Make Product Detail configuration-aware, carry trustworthy SAR price states through the existing inquiry cart, re-resolve prices on the server, persist immutable structured quotation line snapshots transactionally, and expose those lines in Admin Inquiry review.
 
-**Architecture:** Product Detail selects one real Supabase variant/configuration record. The existing inquiry localStorage stores a display snapshot but is never authoritative for money. `/api/checkout` resolves product/configuration IDs against Supabase, calculates exact SAR values with shared money helpers, then calls one transaction-capable database RPC that creates `quote_requests` plus `quote_request_items` atomically. Admin inquiry reads child rows and falls back to the historical message for old requests.
+**Architecture:** Product Detail selects one real Supabase variant/configuration record. The existing inquiry localStorage stores a display snapshot but is never authoritative for money. Every cart line has a deterministic `lineId = productId + ":" + configurationId`. `/api/checkout` resolves product/configuration IDs against Supabase, calculates exact SAR values with shared money helpers, then calls one PostgreSQL RPC that creates `quote_requests` plus ordered `quote_request_items` atomically. Admin inquiry reads child rows by `sort_order` and falls back to the historical message for old requests.
 
 **Tech Stack:** React, Next.js Route Handlers, TypeScript, Supabase/PostgreSQL, Vitest, Playwright.
 
@@ -14,12 +14,14 @@
 
 - Existing inquiry store remains the only browser cart store.
 - Same product with different configurations is different inquiry lines.
+- `lineId` is deterministic and is the key used for update/remove/merge behavior.
+- Real variant configuration ID is used when present; product-only fallback ID is exactly `product:<productId>`.
 - Server never trusts client money.
 - SAR arithmetic is exact via shared pricing helpers.
 - Mixed priced/unpriced inquiries never show a misleading complete total.
 - Historical inquiries without structured child rows remain readable.
-- Quote parent + line snapshots must commit atomically.
-- Anonymous browser clients do not gain direct table access to quote line rows.
+- Quote parent + ordered line snapshots commit atomically.
+- Anonymous browser clients do not gain direct table/RPC access to quote line persistence.
 
 ---
 
@@ -35,10 +37,6 @@
 - Browser: create `apps/web/tests/e2e/product-detail-pricing.spec.ts`
 
 **Interfaces:**
-- Consumes `CatalogueProductRecord.configurations` from Gate C.
-- Produces a controlled selected configuration and an inquiry-item builder.
-
-Recommended UI-facing configuration:
 
 ```ts
 interface ProductConfigurationOption {
@@ -50,49 +48,45 @@ interface ProductConfigurationOption {
 }
 ```
 
-- [ ] **Step 1: Write failing data tests**
+- [ ] **Step 1: Write failing Product Detail data tests**
 
-For product configurations A/B assert Product Detail data keeps both and derives exact effective price via base/override helper.
+A product with base `100.00`, configuration A override null and B override `125.00` must expose two exact selectable configurations with effective prices 100/125.
 
-- [ ] **Step 2: Stop using `sizes[0]` / `variants[0]` as canonical selected configuration**
+- [ ] **Step 2: Remove first-array-item configuration behavior**
 
-Keep specification tables descriptive, but selection/add-to-inquiry must use one real configuration row.
+`sizes[0]`, `variants[0]` and `directions[0]` may remain descriptive table defaults but must not determine the selected cart configuration.
 
-- [ ] **Step 3: Build selector component**
+- [ ] **Step 3: Build focused client selector**
 
-If one configuration:
+If there is one real configuration: show static SKU/size/type context without an unnecessary dropdown.
 
-- render static SKU/size/type context;
-- no pointless select.
+If multiple: render an accessible selector whose option label includes SKU + size + type when present.
 
-If multiple:
-
-- use accessible `<select>` or equivalent native-semantic control;
-- label each option with useful configuration identity, e.g. `18-0402 · 16.0 cm` plus type if present;
-- selected price updates immediately.
-
-If no real configuration rows exist:
-
-- fall back to product-level identity and base price;
-- create a stable product-only configuration key for inquiry identity.
-
-- [ ] **Step 4: Make Product Procurement Summary a client boundary only where necessary**
-
-Do not convert the whole Product Detail page to client rendering. Isolate configuration state to a focused client component that receives serializable product/configuration data from the server component.
-
-- [ ] **Step 5: Update ProductPriceState**
-
-Props:
+If no real configuration: expose exactly one synthetic option:
 
 ```ts
-{ amount: SarAmount | null; locale: PublicLocale }
+{
+  id: `product:${product.id}`,
+  sku: product.code,
+  size: product.primaryOption ?? "",
+  variantType: "",
+  effectivePriceSar: product.basePriceSar ?? null
+}
 ```
 
-Render exact SAR or Price on request, with `aria-live="polite"` on configuration-driven updates.
+- [ ] **Step 4: Keep server/client boundary narrow**
 
-- [ ] **Step 6: Browser test configuration switching**
+Product Detail page remains a server component. Only the procurement/configuration block becomes client state.
 
-Select a configuration with override and assert displayed price changes; select unpriced configuration and assert Price on request.
+- [ ] **Step 5: Update ProductPriceState contract**
+
+```ts
+ProductPriceState({ amount, locale }: { amount: SarAmount | null; locale: PublicLocale })
+```
+
+Price updates use `aria-live="polite"`.
+
+- [ ] **Step 6: Browser test switching and displayed price**
 
 - [ ] **Step 7: Commit**
 
@@ -103,25 +97,24 @@ git commit -m "feat(product-detail): select real priced configurations"
 
 ---
 
-### Task 2: Version the inquiry item model for configuration/price snapshots
+### Task 2: Version the inquiry line model with deterministic configuration identity
 
 **Files:**
 - Modify: `apps/web/src/features/inquiry/inquiry-store.ts`
-- Modify: Product Detail inquiry-control builder/component files
-- Test: `apps/web/src/test/inquiry-store.test.ts` and/or create `inquiry-pricing-store.test.ts`
+- Modify: Product Detail inquiry controls/builder files
+- Test: create/update `apps/web/src/test/inquiry-pricing-store.test.ts`
 
 **Interfaces:**
 
-Extend `InquiryItem`:
-
 ```ts
 export interface InquiryItem {
+  lineId: string;
   id: string;                  // product id
   familySlug: string;
   slug: string;
   name: string;
   code: string;
-  configurationId: string;     // real variant id or stable "product:<id>" fallback
+  configurationId: string;
   sku: string;
   size: string;
   variant: string;
@@ -133,57 +126,62 @@ export interface InquiryItem {
   mediaFallbackPath?: string;
   imageLabel?: string;
 }
+
+export function createInquiryLineId(productId: string, configurationId: string): string {
+  return `${productId}:${configurationId}`;
+}
 ```
 
-- [ ] **Step 1: Write backward-compatibility tests**
+For synthetic product-only configuration, because `configurationId` already contains `product:<id>`, the resulting lineId is still deterministic and opaque; callers never parse it.
 
-Existing `rosa-medical-inquiry-v1` localStorage records without new pricing fields must not crash the page.
+- [ ] **Step 1: Write old-storage migration tests**
 
-Migration strategy:
+An existing V1 record without new fields is normalized to:
 
-- old item gets `configurationId = "product:" + id`;
-- `sku = code`;
-- `unitPriceSar = null`;
-- `currency = "SAR"`.
-
-Do not drop an old customer's saved inquiry merely because the schema evolved.
-
-- [ ] **Step 2: Change duplicate identity**
-
-Replace current same-line logic (`familySlug + slug`) with:
-
-```ts
-product id + configurationId
+```text
+configurationId = product:<id>
+lineId = createInquiryLineId(id, configurationId)
+sku = code
+unitPriceSar = null
+currency = SAR
 ```
 
-or an equivalent stable combination.
+Do not discard saved inquiry data.
 
-- [ ] **Step 3: Update Product Detail add action**
+- [ ] **Step 2: Make `lineId` the merge/update/remove key**
 
-Build the item from the currently selected configuration, not a server-rendered first-option snapshot.
+- `addInquiryItem`: merge only same `lineId`;
+- `updateInquiryItem(lineId, patch)`;
+- `removeInquiryItem(lineId)`.
 
-- [ ] **Step 4: Keep update/remove APIs stable**
+Different configurations of the same product remain separate.
 
-`updateInquiryItem` may need a stable line key rather than product ID because one product can now appear twice. Recommended: add derived `lineId = productId + ":" + configurationId` and use it for update/remove. If adding `lineId`, migrate old storage deterministically.
+- [ ] **Step 3: Build added item from current selected configuration**
+
+No stale server-rendered first-option item object.
+
+- [ ] **Step 4: Validate snapshot pricing fields during localStorage read**
+
+`unitPriceSar` accepts normalized string/null only; malformed money degrades to null rather than crashing the cart.
 
 - [ ] **Step 5: Run store tests and commit**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/inquiry-pricing-store.test.ts
 git add apps/web/src/features/inquiry apps/web/src/features/product-detail apps/web/src/test/inquiry-pricing-store.test.ts
 git commit -m "feat(inquiry): snapshot selected product configuration"
 ```
 
 ---
 
-### Task 3: Add exact line/basket price calculations to Inquiry and Quotation UI
+### Task 3: Add exact line/basket calculations to Inquiry and Request Quotation
 
 **Files:**
 - Create: `apps/web/src/features/inquiry/inquiry-pricing.ts`
-- Modify: `apps/web/src/features/inquiry/inquiry-content.tsx` or current Inquiry cart content component
+- Modify: current Inquiry cart content component under `apps/web/src/features/inquiry/`
 - Modify: `apps/web/src/features/inquiry/quotation-page.tsx`
 - Modify: `apps/web/src/styles/client-inquiry-cart.css`
 - Test: create `apps/web/src/test/inquiry-pricing.test.ts`
-- Test: create/update Inquiry component tests
 - Browser: create `apps/web/tests/e2e/inquiry-pricing.spec.ts`
 
 **Interfaces:**
@@ -192,6 +190,7 @@ git commit -m "feat(inquiry): snapshot selected product configuration"
 export interface InquiryPricingSummary {
   pricedSubtotalSar: SarAmount | null;
   unpricedLineCount: number;
+  unpricedQuantity: number;
   totalSar: SarAmount | null;
   allPriced: boolean;
   allUnpriced: boolean;
@@ -203,86 +202,66 @@ export function summarizeInquiryPricing(items: readonly InquiryItem[]): InquiryP
 
 - [ ] **Step 1: Write calculation matrix**
 
-Cases:
+Cover one line, quantity multiplication, multiple priced lines, mixed lines, all null and exact `0.10 * 3` behavior.
 
-- one priced line;
-- quantity multiplication;
-- two priced lines;
-- mixed priced + null;
-- all null;
-- exact `0.10 * 3` behavior.
+- [ ] **Step 2: Add unit price + line subtotal to Inquiry rows**
 
-- [ ] **Step 2: Add line pricing to Inquiry**
+Unpriced line says Price on request.
 
-Each row shows:
-
-```text
-Unit price
-Quantity
-Line subtotal
-```
-
-Unpriced row shows Price on request.
-
-- [ ] **Step 3: Add basket summary**
+- [ ] **Step 3: Add exact basket summary semantics**
 
 All priced:
 
 ```text
-Estimated total   SAR X.XX
+Estimated total — SAR X.XX
 ```
 
 Mixed:
 
 ```text
-Priced items subtotal   SAR X.XX
-N items/lines            Price on request
-Complete quotation total Pending
+Priced items subtotal — SAR X.XX
+N unpriced line(s) / Q unit(s) — Price on request
+Complete quotation total — Pending
 ```
 
-All unpriced:
+All unpriced: no zero amount; show that all selected items require quotation pricing.
 
-```text
-All selected items require quotation pricing
-```
+- [ ] **Step 4: Quantity edits recalculate immediately**
 
-- [ ] **Step 4: Quantity changes recalculate immediately**
+- [ ] **Step 5: Reuse the same summary on Request Quotation**
 
-Browser test modifies quantity and checks line + basket display.
+Remove quantity-only summary as the sole commercial summary; retain total quantity as secondary information if useful.
 
-- [ ] **Step 5: Mirror summary on Request Quotation**
-
-`quotation-page.tsx` currently shows total quantity only. Add the same centralized pricing summary; do not reimplement arithmetic.
-
-- [ ] **Step 6: Run tests and commit**
+- [ ] **Step 6: Test and commit**
 
 ```bash
+pnpm --filter @rosa/web test -- src/test/inquiry-pricing.test.ts
 git add apps/web/src/features/inquiry apps/web/src/styles/client-inquiry-cart.css apps/web/src/test/inquiry-pricing.test.ts apps/web/tests/e2e/inquiry-pricing.spec.ts
 git commit -m "feat(inquiry): calculate SAR quotation basket totals"
 ```
 
 ---
 
-### Task 4: Add versioned structured quotation-line migration
+### Task 4: Add versioned structured quotation-line migration and atomic RPC
 
 **Files:**
 - Create: `supabase/migrations/202608230001_quote_request_items.sql`
-- Create/update migration documentation: `docs/architecture/2026-08-23-quotation-pricing-schema.md`
-- Update generated/manual types later: `apps/web/src/lib/supabase/types.ts`
-- Test: SQL acceptance through Supabase project/branch and application API tests
+- Create: `docs/architecture/2026-08-23-quotation-pricing-schema.md`
+- Update later: `apps/web/src/lib/supabase/types.ts`
 
 **Interfaces:**
-- Produces table `public.quote_request_items`.
-- Produces RPC `public.create_quote_request_with_items(...)` returning quote request UUID.
+- Table: `public.quote_request_items`.
+- RPC: `public.create_quote_request_with_items(...) returns uuid`.
 
-- [ ] **Step 1: Write migration SQL in source control before applying it**
+- [ ] **Step 1: Write the migration file before applying it**
 
-Table contract:
+Exact table shape:
 
 ```sql
 create table public.quote_request_items (
   id uuid primary key default gen_random_uuid(),
   quote_request_id uuid not null references public.quote_requests(id) on delete cascade,
+  sort_order integer not null check (sort_order >= 0),
   product_id uuid null references public.products(id) on delete set null,
   product_variant_id uuid null references public.product_variants(id) on delete set null,
   product_name text not null,
@@ -295,16 +274,17 @@ create table public.quote_request_items (
   currency text not null default 'SAR' check (currency = 'SAR'),
   line_subtotal numeric(16,2) null check (line_subtotal is null or line_subtotal >= 0),
   notes text null,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique (quote_request_id, sort_order)
 );
 
 create index idx_quote_request_items_request_id
   on public.quote_request_items(quote_request_id);
 ```
 
-- [ ] **Step 2: Add duplicate-race protection for current cart hash**
+- [ ] **Step 2: Add current-hash duplicate race protection**
 
-Current production has a small set of non-null cart hashes and no duplicate hash values. Add:
+Preflight must assert no duplicate non-null cart hashes. Then:
 
 ```sql
 create unique index uq_quote_requests_cart_hash
@@ -312,13 +292,9 @@ create unique index uq_quote_requests_cart_hash
   where cart_hash is not null;
 ```
 
-Before applying, run a preflight query that rejects migration if duplicate non-null hashes exist.
+- [ ] **Step 3: Add atomic `SECURITY INVOKER` RPC**
 
-The application keeps legacy hash-candidate lookup for historical compatibility, but the current generated hash also gets database race protection.
-
-- [ ] **Step 3: Add atomic RPC**
-
-Create a `SECURITY INVOKER` function conceptually:
+Signature:
 
 ```sql
 public.create_quote_request_with_items(
@@ -331,37 +307,24 @@ public.create_quote_request_with_items(
 ) returns uuid
 ```
 
-Inside one PostgreSQL transaction/function invocation:
+Implementation uses `jsonb_array_elements(p_items) with ordinality`, storing `ordinality - 1` as `sort_order`. In one function invocation/transaction:
 
-1. insert `quote_requests`;
-2. capture ID;
-3. insert every JSON item into `quote_request_items`;
-4. return request ID.
+1. insert `quote_requests` (`user_id=null`, `status='New'`, `product_id=null` for multi-line request);
+2. capture request UUID;
+3. insert every item with stable order;
+4. return request UUID.
 
-Validate item JSON inside the function sufficiently to protect constraints and line ownership assumptions already established by app-side authoritative resolution.
+- [ ] **Step 4: Lock grants/RLS**
 
-Grant execute only to the role used by the server-side Supabase admin/service client; revoke public/anon/authenticated execute unless explicitly required.
+Revoke execute from `public`, `anon`, `authenticated`; grant only to server service role used by `createAdminClient`. Child table gets no direct anonymous read/write policy.
 
-- [ ] **Step 4: Enable appropriate RLS/access**
+- [ ] **Step 5: Apply through Supabase migration tooling**
 
-If RLS is enabled on sibling operational tables, match that posture. Anonymous browser users must not be able to select/insert child snapshots directly.
+No undocumented dashboard-only DDL.
 
-- [ ] **Step 5: Apply migration using Supabase migration tooling**
+- [ ] **Step 6: Post-migration checks**
 
-Do not paste one-off undocumented SQL into production and lose migration history.
-
-If a development database branch is available, apply/test there first. If not, use the approved production migration path with explicit preflight and rollback/forward-fix notes.
-
-- [ ] **Step 6: Run post-migration checks**
-
-Check:
-
-- table/constraints/index/function exist;
-- duplicate index succeeds;
-- anon cannot read/write line rows;
-- service/admin path can execute RPC;
-- security advisor;
-- performance advisor for missing FK/index warnings.
+Verify constraints/index/RPC/grants, then run security and performance advisors.
 
 - [ ] **Step 7: Commit migration/docs**
 
@@ -372,7 +335,7 @@ git commit -m "feat(db): add transactional quotation line snapshots"
 
 ---
 
-### Task 5: Re-resolve authoritative price on `/api/checkout`
+### Task 5: Resolve authoritative prices and submit through the RPC
 
 **Files:**
 - Modify: `apps/web/src/features/inquiry/quotation-payload.ts`
@@ -380,16 +343,12 @@ git commit -m "feat(db): add transactional quotation line snapshots"
 - Modify: `apps/web/src/app/api/checkout/route.ts`
 - Modify: `apps/web/src/lib/supabase/types.ts`
 - Test: create `apps/web/src/test/quotation-authoritative-pricing.test.ts`
-- Test: existing checkout route tests
 
 **Interfaces:**
 
-Normalized request items accept identity/configuration but client price is ignored for persistence.
-
-Server result:
-
 ```ts
 interface AuthoritativeQuoteLine {
+  sortOrder: number;
   productId: string;
   productVariantId: string | null;
   productName: string;
@@ -404,56 +363,33 @@ interface AuthoritativeQuoteLine {
 }
 ```
 
-- [ ] **Step 1: Write tampering test before implementation**
+- [ ] **Step 1: Write forged-price test**
 
-Submit item with client `unitPriceSar: "0.01"` while mocked Supabase says base/override is `120.00`.
+Client sends `unitPriceSar="0.01"`; mocked DB says 120.00. RPC payload must contain 120.00.
 
-Expected persisted/RPC line uses `120.00`, never `0.01`.
+- [ ] **Step 2: Batch-load requested product/variant identities**
 
-- [ ] **Step 2: Resolve identity in one batched read where practical**
+Avoid N+1 reads. Verify variant belongs to submitted product. Reject missing/inactive product safely.
 
-Avoid N+1 queries for up to 50 lines.
+- [ ] **Step 3: Resolve server price**
 
-Load requested products and variants by IDs, then verify:
+Use DB base + DB override only. Client price is ignored except it may remain in browser display before submission.
 
-- every product exists/active as appropriate for quotation;
-- each variant belongs to its submitted product;
-- item code/name snapshot comes from authoritative live row;
-- effective price derives from DB base/override.
+- [ ] **Step 4: Build readable compatibility message from authoritative lines**
 
-If a product becomes inactive between cart add and submit, choose safe behavior: reject with a user-safe `selected product is no longer available` message rather than quoting stale data silently.
+- [ ] **Step 5: Call `create_quote_request_with_items` RPC**
 
-- [ ] **Step 3: Preserve human-readable message**
+Translate unique `cart_hash` violation to existing 409 duplicate response.
 
-Build `formatQuotationMessage` from normalized customer data plus authoritative lines, including price state where useful. The message is compatibility/readability, not source of truth.
+- [ ] **Step 6: Preserve duplicate hash semantics**
 
-- [ ] **Step 4: Call RPC instead of direct parent insert**
+Hash identity/configuration/quantity/notes/customer envelope, not price, so a price change does not make an accidental duplicate look unique. Keep legacy hash candidate check for historical rows.
 
-`/api/checkout` performs duplicate candidate check, then `rpc("create_quote_request_with_items", ...)`.
+- [ ] **Step 7: Test matrix**
 
-Handle unique cart hash conflict as 409 duplicate request.
+Priced, override, unpriced, mixed, forged price, wrong variant ownership, inactive/missing product, duplicate, RPC failure.
 
-- [ ] **Step 5: Include authoritative lines in quotation hash policy carefully**
-
-The duplicate hash should remain based on customer-selected identity/configuration/quantity/notes, not volatile current prices, so a price edit does not allow an otherwise identical accidental double submission. Preserve legacy hash candidates during migration window.
-
-- [ ] **Step 6: Run API tests**
-
-Cases:
-
-```text
-priced product
-variant override
-unpriced product
-mixed basket
-forged client amount
-variant does not belong to product
-missing/inactive product
-duplicate cart hash
-RPC/database failure
-```
-
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add apps/web/src/features/inquiry/quotation-payload.ts apps/web/src/features/inquiry/quotation-pricing-server.ts apps/web/src/app/api/checkout/route.ts apps/web/src/lib/supabase/types.ts apps/web/src/test/quotation-authoritative-pricing.test.ts
@@ -462,25 +398,23 @@ git commit -m "feat(quotation): persist authoritative priced line snapshots"
 
 ---
 
-### Task 6: Read structured lines in Admin inquiries with legacy fallback
+### Task 6: Read structured ordered lines in Admin inquiries with legacy fallback
 
 **Files:**
 - Modify: `apps/web/src/app/api/inquiries/route.ts`
 - Modify: `apps/web/src/features/admin-inquiries/admin-inquiries-page.tsx`
 - Create: `apps/web/src/features/admin-inquiries/admin-inquiry-pricing.tsx`
 - Modify: `apps/web/src/lib/supabase/types.ts`
-- Modify: admin inquiry CSS file identified during implementation
-- Test: create/update `apps/web/src/test/admin-inquiry-pricing.test.tsx`
-- Browser: protected admin acceptance where session is available
+- Modify: existing Admin operations CSS file used by inquiry cards
+- Test: create `apps/web/src/test/admin-inquiry-pricing.test.tsx`
 
 **Interfaces:**
-
-Add type:
 
 ```ts
 export interface QuoteRequestItem {
   id: string;
   quote_request_id: string;
+  sort_order: number;
   product_id: string | null;
   product_variant_id: string | null;
   product_name: string;
@@ -501,36 +435,23 @@ export interface QuoteRequestWithItems extends QuoteRequest {
 }
 ```
 
-- [ ] **Step 1: Write route/model test**
+- [ ] **Step 1: Write API/model test**
 
-Admin API response must return items sorted deterministically by creation/id.
+Items are sorted by `sort_order ASC`.
 
-- [ ] **Step 2: Extend protected query**
+- [ ] **Step 2: Extend protected inquiry read**
 
-Fetch quote requests plus child lines using Supabase relation select or two batched queries. Do not expose this relation in public API routes.
+Fetch child lines with quote requests or in one batched secondary query; no public exposure.
 
-- [ ] **Step 3: Build structured line UI**
+- [ ] **Step 3: Render structured commercial breakdown**
 
-For new records render:
+Product/code/SKU, configuration, quantity, unit price, line subtotal, notes and exact/mixed summary.
 
-```text
-Product / code / SKU
-Configuration
-Quantity
-Unit price
-Line subtotal
-Notes
-```
+- [ ] **Step 4: Keep legacy fallback**
 
-Then summary with exact/mixed semantics.
+Zero child rows -> render existing `record.message` and no empty pricing table.
 
-- [ ] **Step 4: Legacy fallback**
-
-If `items.length === 0`, render existing `record.message` exactly as the operational fallback. Do not show an empty pricing table.
-
-- [ ] **Step 5: Preserve status/private-note/delete functions**
-
-Pricing review must not regress existing admin workflow controls.
+- [ ] **Step 5: Preserve status/private-note/delete workflow**
 
 - [ ] **Step 6: Test and commit**
 
@@ -562,36 +483,17 @@ pnpm --filter @rosa/web exec playwright test \
   tests/e2e/inquiry-pricing.spec.ts
 ```
 
-- [ ] **Step 3: Real Supabase acceptance with controlled test data**
+- [ ] **Step 3: Real Supabase controlled acceptance**
 
-Create/use a draft/test product configuration:
+Use designated test/draft configuration with base 100.00, override 125.00 and an unpriced scenario. Submit and query parent/children. Assert order, exact authoritative prices/subtotals and absence of forged client values.
 
-- base price 100.00;
-- override 125.00;
-- one unpriced configuration if needed for mixed case.
+- [ ] **Step 4: Verify duplicate behavior**
 
-Submit quotation and query database to assert:
+One parent + one ordered child set only; no orphan rows.
 
-```text
-quote_requests row created
-quote_request_items rows count matches cart
-unit prices equal DB source
-override selected line = 125.00
-subtotals exact
-client forged amount absent
-```
+- [ ] **Step 5: Verify Admin structured + legacy records**
 
-- [ ] **Step 4: Verify duplicate submission behavior**
-
-Same exact request returns existing 409 behavior and does not create orphan child rows.
-
-- [ ] **Step 5: Verify Admin rendering**
-
-Protected owner sees structured rows/totals and an older message-only inquiry still renders.
-
-- [ ] **Step 6: Run Supabase advisors**
-
-Record security/performance findings. Any new critical security issue blocks completion.
+- [ ] **Step 6: Run Supabase security/performance advisors**
 
 - [ ] **Step 7: Typecheck**
 
