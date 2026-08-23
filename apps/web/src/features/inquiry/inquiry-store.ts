@@ -1,56 +1,104 @@
+import { normalizeSarAmount, type SarAmount } from "@/features/pricing";
+
 export const INQUIRY_STORAGE_KEY = "rosa-medical-inquiry-v1";
 export const INQUIRY_CHANGE_EVENT = "rosa-inquiry-change";
 export const INQUIRY_MAX_QUANTITY = 999;
 
 export interface InquiryItem {
+  lineId: string;
   id: string;
   familySlug: string;
   slug: string;
   name: string;
   code: string;
+  configurationId: string;
+  sku: string;
   size: string;
   variant: string;
   quantity: number;
   notes: string;
+  unitPriceSar: SarAmount | null;
+  currency: "SAR";
   mediaPath?: string;
   mediaFallbackPath?: string;
   imageLabel?: string;
+}
+
+export function createInquiryLineId(productId: string, configurationId: string): string {
+  return `${productId}:${configurationId}`;
 }
 
 function isOptionalString(value: unknown): value is string | undefined {
   return value === undefined || typeof value === "string";
 }
 
-function isInquiryItem(value: unknown): value is InquiryItem {
-  if (!value || typeof value !== "object") return false;
+function requiredString(item: Record<string, unknown>, key: string): string | null {
+  return typeof item[key] === "string" ? item[key] as string : null;
+}
+
+function normalizeQuantity(value: unknown): number {
+  const numeric = typeof value === "number" && Number.isFinite(value) ? value : 1;
+  return Math.min(INQUIRY_MAX_QUANTITY, Math.max(1, Math.floor(numeric || 1)));
+}
+
+function normalizeStoredItem(value: unknown): InquiryItem | null {
+  if (!value || typeof value !== "object") return null;
   const item = value as Record<string, unknown>;
-  return (
-    typeof item.id === "string" &&
-    typeof item.familySlug === "string" &&
-    typeof item.slug === "string" &&
-    typeof item.name === "string" &&
-    typeof item.code === "string" &&
-    typeof item.size === "string" &&
-    typeof item.variant === "string" &&
-    typeof item.quantity === "number" &&
-    Number.isFinite(item.quantity) &&
-    typeof item.notes === "string" &&
-    isOptionalString(item.mediaPath) &&
-    isOptionalString(item.mediaFallbackPath) &&
-    isOptionalString(item.imageLabel)
-  );
+  const id = requiredString(item, "id");
+  const familySlug = requiredString(item, "familySlug");
+  const slug = requiredString(item, "slug");
+  const name = requiredString(item, "name");
+  const code = requiredString(item, "code");
+  const size = requiredString(item, "size");
+  const variant = requiredString(item, "variant");
+  const notes = requiredString(item, "notes");
+
+  if (!id || !familySlug || !slug || !name || !code || size === null || variant === null || notes === null) {
+    return null;
+  }
+  if (!isOptionalString(item.mediaPath) || !isOptionalString(item.mediaFallbackPath) || !isOptionalString(item.imageLabel)) {
+    return null;
+  }
+
+  const configurationId = typeof item.configurationId === "string" && item.configurationId.trim()
+    ? item.configurationId
+    : `product:${id}`;
+  const lineId = typeof item.lineId === "string" && item.lineId.trim()
+    ? item.lineId
+    : createInquiryLineId(id, configurationId);
+  const sku = typeof item.sku === "string" && item.sku.trim() ? item.sku : code;
+
+  return {
+    lineId,
+    id,
+    familySlug,
+    slug,
+    name,
+    code,
+    configurationId,
+    sku,
+    size,
+    variant,
+    quantity: normalizeQuantity(item.quantity),
+    notes: notes.slice(0, 500),
+    unitPriceSar: normalizeSarAmount(item.unitPriceSar),
+    currency: "SAR",
+    ...(item.mediaPath ? { mediaPath: item.mediaPath as string } : {}),
+    ...(item.mediaFallbackPath ? { mediaFallbackPath: item.mediaFallbackPath as string } : {}),
+    ...(item.imageLabel ? { imageLabel: item.imageLabel as string } : {})
+  };
 }
 
 function normalizeItem(item: InquiryItem): InquiryItem {
   return {
     ...item,
-    quantity: Math.min(INQUIRY_MAX_QUANTITY, Math.max(1, Math.floor(item.quantity || 1))),
-    notes: item.notes.slice(0, 500)
+    lineId: createInquiryLineId(item.id, item.configurationId),
+    sku: item.sku.trim() || item.code,
+    quantity: normalizeQuantity(item.quantity),
+    notes: item.notes.slice(0, 500),
+    unitPriceSar: normalizeSarAmount(item.unitPriceSar),
+    currency: "SAR"
   };
-}
-
-function isSameInquiryProduct(a: InquiryItem, b: InquiryItem): boolean {
-  return a.familySlug === b.familySlug && a.slug === b.slug;
 }
 
 function storage(): Storage | null {
@@ -80,7 +128,10 @@ export function readInquiry(): InquiryItem[] {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(isInquiryItem).map(normalizeItem);
+    return parsed.flatMap((value) => {
+      const item = normalizeStoredItem(value);
+      return item ? [item] : [];
+    });
   } catch {
     currentStorage.removeItem(INQUIRY_STORAGE_KEY);
     return [];
@@ -94,9 +145,7 @@ export function getInquiryLineCount(items: readonly InquiryItem[] = readInquiry(
 export function addInquiryItem(item: InquiryItem): InquiryItem[] {
   const normalized = normalizeItem(item);
   const items = readInquiry();
-  const existingIndex = items.findIndex((candidate) =>
-    isSameInquiryProduct(candidate, normalized)
-  );
+  const existingIndex = items.findIndex((candidate) => candidate.lineId === normalized.lineId);
 
   if (existingIndex === -1) return writeInquiry([...items, normalized]);
 
@@ -114,12 +163,12 @@ export function addInquiryItem(item: InquiryItem): InquiryItem[] {
 }
 
 export function updateInquiryItem(
-  id: string,
+  lineId: string,
   patch: Partial<Pick<InquiryItem, "quantity" | "notes">>
 ): InquiryItem[] {
   return writeInquiry(
     readInquiry().map((item) =>
-      item.id === id
+      item.lineId === lineId
         ? normalizeItem({
             ...item,
             quantity: patch.quantity ?? item.quantity,
@@ -130,8 +179,8 @@ export function updateInquiryItem(
   );
 }
 
-export function removeInquiryItem(id: string): InquiryItem[] {
-  return writeInquiry(readInquiry().filter((item) => item.id !== id));
+export function removeInquiryItem(lineId: string): InquiryItem[] {
+  return writeInquiry(readInquiry().filter((item) => item.lineId !== lineId));
 }
 
 export function clearInquiry(): void {
