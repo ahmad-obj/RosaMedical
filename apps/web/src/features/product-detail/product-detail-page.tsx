@@ -11,7 +11,6 @@ import { ProductGallery } from "./product-gallery";
 import { ProductProcurementSummary } from "./product-procurement-summary";
 import { ProductSpecificationTable } from "./product-specification-table";
 import { ProductProcurementNote } from "./product-procurement-note";
-import { RelatedProductGrid } from "./related-product-grid";
 import { MobileInquiryBar } from "./mobile-inquiry-bar";
 import type { PublicLocale } from "@/features/localization/locales";
 import { FAMILY_NAMES_AR } from "@/features/localization/public-copy";
@@ -89,14 +88,6 @@ export async function ProductDetailPage({
           </Reveal>
           <Reveal direction="up" delay={0.08}>
             <ProductProcurementNote locale={locale} />
-          </Reveal>
-        </Container>
-      </Section>
-
-      <Section tone="paper">
-        <Container size="wide">
-          <Reveal direction="up">
-            <RelatedProductGrid family={family} products={data.related} locale={locale} />
           </Reveal>
         </Container>
       </Section>
