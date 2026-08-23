@@ -27,13 +27,12 @@ describe("client review round 2026-08-22", () => {
     expect(hero).not.toContain("slide.ctas.map");
   });
 
-  it("extends the four Comprehensive Plans supporting images to the wide page boundary and keeps a complete lead WebP", () => {
-    const redesign = source("src/styles/home-client-redesign.css");
+  it("aligns the Plastic Surgery lead and four supporting images to one 80rem rail and keeps a complete lead WebP", () => {
     const polish = source("src/styles/client-review-final-polish.css");
     const plasticSurgeryPath = resolve(process.cwd(), "public/media/editorial/home-specialties/plastic-surgery.webp");
 
-    expect(redesign).toMatch(/\.home-comprehensive__lead[\s\S]*?max-width:\s*70rem/);
-    expect(polish).toMatch(/\.home-comprehensive__specialties\s*\{[\s\S]*?width:\s*100%[\s\S]*?max-width:\s*80rem/);
+    expect(polish).toMatch(/\.home-comprehensive__lead,\s*\.home-comprehensive__specialties\s*\{[\s\S]*?width:\s*100%[\s\S]*?max-width:\s*80rem/);
+    expect(polish).toMatch(/@media \(min-width: 64\.001rem\)[\s\S]*?\.home-comprehensive__lead\s*\{[\s\S]*?grid-template-columns:\s*minmax\(16rem,\s*0\.95fr\)\s*minmax\(0,\s*1\.75fr\)/);
     expect(existsSync(plasticSurgeryPath)).toBe(true);
 
     const image = readFileSync(plasticSurgeryPath);
