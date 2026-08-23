@@ -36,6 +36,10 @@
   object-position: var(--hero-desktop-focal, 50% 50%);
 }
 
+.public-hero-carousel__mobile-composition {
+  display: none;
+}
+
 .public-hero-carousel__overlay {
   position: absolute;
   z-index: 1;
@@ -73,8 +77,7 @@
   text-shadow: 0 0.12rem 1.4rem rgb(0 0 0 / 0.34);
 }
 
-.public-hero-carousel .public-eyebrow,
-.public-hero-carousel .home-hero__eyebrow {
+.public-hero-carousel .public-eyebrow {
   margin: 0 0 0.7rem;
   color: rgb(255 255 255 / 0.88);
   font-size: 0.78rem;
@@ -83,8 +86,7 @@
   text-transform: uppercase;
 }
 
-.public-hero-carousel__title,
-.public-hero-carousel .home-hero__title {
+.public-hero-carousel__title {
   max-inline-size: 15ch;
   margin: 0 0 0.85rem;
   color: #fff;
@@ -96,8 +98,7 @@
   text-wrap: balance;
 }
 
-.public-hero-carousel__copy-text,
-.public-hero-carousel .home-hero__copy-text {
+.public-hero-carousel__copy-text {
   max-inline-size: 34rem;
   margin: 0;
   color: rgb(255 255 255 / 0.9);
@@ -176,6 +177,48 @@ html[dir="rtl"] .public-hero-carousel__title {
     object-position: var(--hero-mobile-focal, 50% 50%);
   }
 
+  .public-hero-carousel__slide[data-mobile-presentation="composed"] .public-hero-carousel__picture {
+    display: none;
+  }
+
+  .public-hero-carousel__mobile-composition {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    background: #10100f;
+  }
+
+  .public-hero-carousel__mobile-composition-bg,
+  .public-hero-carousel__mobile-composition-fg {
+    position: absolute;
+    display: block;
+    max-inline-size: none;
+  }
+
+  .public-hero-carousel__mobile-composition-bg {
+    inset: -8%;
+    inline-size: 116%;
+    block-size: 116%;
+    object-fit: cover;
+    object-position: 54% 48%;
+    filter: blur(18px) brightness(0.52);
+    transform: scale(1.1);
+  }
+
+  .public-hero-carousel__mobile-composition-fg {
+    inset-inline-start: 50%;
+    top: 25%;
+    inline-size: 150%;
+    block-size: auto;
+    transform: translateX(-50%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  }
+
+  html[dir="rtl"] .public-hero-carousel__mobile-composition-fg {
+    transform: translateX(50%);
+  }
+
   .public-hero-carousel__overlay,
   .public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__overlay {
     background:
@@ -194,8 +237,7 @@ html[dir="rtl"] .public-hero-carousel__title {
     padding-block: 0;
   }
 
-  .public-hero-carousel__title,
-  .public-hero-carousel .home-hero__title {
+  .public-hero-carousel__title {
     max-inline-size: 12ch;
     font-size: clamp(1.9rem, 8.7vw, 2.45rem);
     line-height: 1.05;
