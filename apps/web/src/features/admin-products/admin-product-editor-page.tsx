@@ -9,10 +9,12 @@ import {
   AdminStatusBadge,
   AdminTextareaField
 } from "@/features/admin-primitives";
+import { formatProductPriceSummary } from "@/features/pricing";
 import { ProductMediaPlaceholder } from "@/features/public-catalogue";
 import type { AdminProductEditorModel } from "./admin-product-model";
 import { AdminProductCompleteness } from "./admin-product-completeness";
 import { AdminProductOptions } from "./admin-product-options";
+import { AdminVariantPricing } from "./admin-variant-pricing";
 import { ProductImageUploadForm } from "./product-image-upload-form";
 import { activateProduct, saveProduct } from "./actions";
 import { DeleteProductButton } from "./delete-product-button";
@@ -26,6 +28,7 @@ export function AdminProductEditorPage({
   families?: readonly AdminFamilyRow[];
 }) {
   const { product } = model;
+  const priceLabel = formatProductPriceSummary(model.priceSummary, "en");
 
   return (
     <div className="admin-product-editor">
@@ -61,7 +64,7 @@ export function AdminProductEditorPage({
       />
 
       <AdminAlert tone="info" title="Live product editor">
-        Saved identity and copy changes are used by the public catalogue. Arabic fields fall back to English when left blank.
+        Saved identity, copy and SAR price changes are used by the public catalogue. Arabic fields fall back to English when left blank.
       </AdminAlert>
 
       <form action={saveProduct} className="admin-product-edit-form">
@@ -77,8 +80,40 @@ export function AdminProductEditorPage({
             <AdminTextareaField id={`admin-product-${product.id}-description-ar`} name="description_ar" label="Short description — Arabic" defaultValue={product.descriptionAr || product.description || ""} direction="rtl" rows={4} />
           </div>
         </AdminFormSection>
+
+        <AdminFormSection
+          title="Pricing"
+          description="Base pricing is optional. Variant pricing is managed per real SKU below and overrides this base only for that configuration."
+        >
+          <div className="admin-editor-grid">
+            <div className="admin-field-preview">
+              <label htmlFor={`admin-product-${product.id}-price`}>Base price — SAR</label>
+              <input
+                id={`admin-product-${product.id}-price`}
+                name="price_sar"
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]+(?:\\.[0-9]{1,2})?"
+                defaultValue={product.basePriceSar ?? ""}
+                placeholder="Price on request"
+                aria-describedby={`admin-product-${product.id}-price-hint`}
+              />
+              <p className="field__hint" id={`admin-product-${product.id}-price-hint`}>
+                Blank means Price on request. Current public price state: {priceLabel}.
+              </p>
+            </div>
+          </div>
+        </AdminFormSection>
+
         <div className="admin-card-actions"><Button type="submit">Save product</Button></div>
       </form>
+
+      <AdminVariantPricing
+        productId={product.id}
+        familySlug={product.familySlug}
+        productSlug={product.slug}
+        rows={model.variantPricing}
+      />
 
       <AdminProductOptions groups={model.optionGroups} />
 
@@ -126,7 +161,7 @@ export function AdminProductEditorPage({
       >
         <div className="admin-card-actions">
           <ButtonLink href={model.publicHref}>Open current product page</ButtonLink>
-          <ButtonLink href={model.publicFamilyHref} variant="secondary">Open current family page</ButtonLink>
+          <ButtonLink href={model.publicFamilyHref} variant="secondary">Open filtered product family</ButtonLink>
         </div>
       </AdminSection>
 
