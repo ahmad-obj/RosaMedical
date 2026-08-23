@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useRef, type ReactElement } from "react";
-import { LocaleLink, type PublicLocale } from "@/features/localization";
+import { getCatalogueDocument } from "@/features/catalogues";
+import type { PublicLocale } from "@/features/localization";
 import { publicMediaAlt } from "@/features/public-media";
-import { familyHref, type FamilyCardModel, type FamilySlug } from "@/features/public-catalogue";
+import type { FamilyCardModel, FamilySlug } from "@/features/public-catalogue";
 
 const HOME_FAMILY_COVER_BY_SLUG = {
   knives: { src: "/media/families/homepage-covers/knives-family-cover-full.svg", focalPoint: "50% 50%" },
@@ -44,9 +45,18 @@ export function HomeFamilyGallery({ families, locale = "en" }: { families: reado
       <ul ref={galleryRef} className="home-family-gallery" data-home-family-gallery aria-label={locale === "ar" ? "منتجات روزا" : "ROSA products"}>
         {orderedFamilies.map((family) => {
           const cover = HOME_FAMILY_COVER_BY_SLUG[family.slug];
+          const document = getCatalogueDocument(family.slug);
+          if (!document) return null;
+
           return (
             <li key={family.slug} className="home-family-gallery__panel" data-family-panel data-family={family.slug}>
-              <LocaleLink className="home-family-gallery__link" href={familyHref(family.slug)} aria-label={family.name}>
+              <a
+                className="home-family-gallery__link"
+                href={document.pdfPath}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={locale === "ar" ? `فتح كتالوج ${family.name}` : `Open ${family.name} catalogue`}
+              >
                 <div className="home-family-gallery__media home-family-gallery__media--catalogue-cover">
                   <Image
                     className="home-family-gallery__image"
@@ -59,7 +69,7 @@ export function HomeFamilyGallery({ families, locale = "en" }: { families: reado
                     style={{ objectFit: "cover", objectPosition: cover.focalPoint }}
                   />
                 </div>
-              </LocaleLink>
+              </a>
             </li>
           );
         })}
