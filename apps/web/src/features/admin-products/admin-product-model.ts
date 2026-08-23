@@ -5,6 +5,12 @@ import {
 } from "@/features/catalogue-registry";
 import { familyHref, productHref } from "@/features/public-catalogue";
 import {
+  effectiveConfigurationPrice,
+  summarizeProductPrice,
+  type ProductPriceSummary,
+  type SarAmount
+} from "@/features/pricing";
+import {
   adminCatalogueHref,
   adminProductHref
 } from "@/features/admin-management-routing/admin-management-hrefs";
@@ -20,6 +26,7 @@ export interface AdminProductRow {
   mediaLabel: string;
   mediaPath?: string;
   isActive: boolean;
+  priceSummary: ProductPriceSummary;
   publicHref: ReturnType<typeof productHref>;
   familyHref: ReturnType<typeof familyHref>;
   adminHref: ReturnType<typeof adminProductHref>;
@@ -34,9 +41,19 @@ export interface AdminProductCompletenessItem {
     | "options"
     | "catalogue"
     | "arabic"
-    | "media";
+    | "media"
+    | "pricing";
   label: string;
   state: "Present" | "Not supplied" | "Not registered";
+}
+
+export interface AdminVariantPricingRow {
+  id: string;
+  sku: string;
+  size: string;
+  variantType: string;
+  priceOverrideSar: SarAmount | null;
+  effectivePriceSar: SarAmount | null;
 }
 
 export interface AdminProductEditorModel {
@@ -46,6 +63,8 @@ export interface AdminProductEditorModel {
   publicHref: ReturnType<typeof productHref>;
   publicFamilyHref: ReturnType<typeof familyHref>;
   adminCatalogueHref: ReturnType<typeof adminCatalogueHref>;
+  priceSummary: ProductPriceSummary;
+  variantPricing: readonly AdminVariantPricingRow[];
   optionGroups: readonly {
     key: "sizes" | "variants" | "directions" | "primary";
     label: string;
@@ -88,6 +107,13 @@ function hasDocumentedOptions(product: CatalogueProductRecord): boolean {
   );
 }
 
+function hasNumericPricing(product: CatalogueProductRecord): boolean {
+  if (product.basePriceSar !== null && product.basePriceSar !== undefined) return true;
+  return (product.configurations ?? []).some(
+    (configuration) => configuration.priceOverrideSar !== null
+  );
+}
+
 function completenessFor(
   product: CatalogueProductRecord
 ): readonly AdminProductCompletenessItem[] {
@@ -115,8 +141,27 @@ function completenessFor(
       key: "media",
       label: "Primary product media",
       state: product.mediaPath ? "Present" : "Not registered"
+    },
+    {
+      key: "pricing",
+      label: "SAR pricing",
+      state: hasNumericPricing(product) ? "Present" : "Not supplied"
     }
   ];
+}
+
+function variantPricingFor(product: CatalogueProductRecord): readonly AdminVariantPricingRow[] {
+  return (product.configurations ?? []).map((configuration) => ({
+    id: configuration.id,
+    sku: configuration.sku,
+    size: configuration.size,
+    variantType: configuration.variantType,
+    priceOverrideSar: configuration.priceOverrideSar,
+    effectivePriceSar: effectiveConfigurationPrice(
+      product.basePriceSar,
+      configuration.priceOverrideSar
+    )
+  }));
 }
 
 export function getAdminProductRows(
@@ -137,6 +182,7 @@ export function getAdminProductRows(
       mediaLabel: product.mediaLabel,
       ...(product.mediaPath ? { mediaPath: product.mediaPath } : {}),
       isActive: product.isActive ?? true,
+      priceSummary: summarizeProductPrice(product),
       publicHref: productHref(product),
       familyHref: familyHref(product.familySlug),
       adminHref: adminProductHref(product)
@@ -157,6 +203,8 @@ export function getAdminProductEditor(
     publicHref: productHref(product),
     publicFamilyHref: familyHref(family.slug),
     adminCatalogueHref: adminCatalogueHref(family.slug),
+    priceSummary: summarizeProductPrice(product),
+    variantPricing: variantPricingFor(product),
     optionGroups: [
       { key: "sizes", label: "Sizes", values: product.sizes },
       { key: "variants", label: "Variants", values: product.variants },
