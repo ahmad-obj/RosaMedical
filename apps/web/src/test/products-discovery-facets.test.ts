@@ -19,7 +19,8 @@ const product = (
   optionSummary: [],
   imageLabel: id,
   searchTerms,
-  facetValues: values
+  facetValues: values,
+  priceSummary: { kind: "on-request" }
 });
 
 const PRODUCTS: readonly ProductsDiscoveryItem[] = [
