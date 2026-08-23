@@ -1,4 +1,5 @@
 import type { FamilySlug, ProductPreviewModel } from "@/features/public-catalogue";
+import type { ProductPriceSummary } from "@/features/pricing";
 
 export interface ProductsFacetValues {
   sizes: readonly string[];
@@ -10,6 +11,7 @@ export interface ProductsFacetValues {
 export interface ProductsDiscoveryItem extends ProductPreviewModel {
   searchTerms: readonly string[];
   facetValues: ProductsFacetValues;
+  priceSummary: ProductPriceSummary;
 }
 
 export type ProductsSort = "recommended" | "name-asc";
