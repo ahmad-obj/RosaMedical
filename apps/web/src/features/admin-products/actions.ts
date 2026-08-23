@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clearCatalogueProjectionCache } from "@/features/catalogue-live/catalogue-live.cache";
+import { validateSarInput, type SarAmount } from "@/features/pricing";
 import { requireAdminUser } from "@/lib/supabase/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -14,6 +15,25 @@ import {
 function formString(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
+}
+
+function formOptionalSar(formData: FormData, key: "price_sar" | "price_override_sar"): SarAmount | null {
+  const result = validateSarInput(formString(formData, key));
+  if (!result.ok) {
+    throw new Error(result.error);
+  }
+  return result.value;
+}
+
+function revalidateProductSurfaces(familySlug: string, productSlug: string) {
+  clearCatalogueProjectionCache();
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/search");
+  revalidatePath(`/products/${familySlug}`);
+  revalidatePath(`/products/${familySlug}/${productSlug}`);
+  revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${familySlug}/${productSlug}`);
 }
 
 export async function uploadProductMedia(formData: FormData) {
@@ -139,14 +159,7 @@ export async function uploadProductMedia(formData: FormData) {
     { repository, storage }
   );
 
-  clearCatalogueProjectionCache();
-  revalidatePath("/");
-  revalidatePath("/products");
-  revalidatePath("/search");
-  revalidatePath(`/products/${familySlug}`);
-  revalidatePath(`/products/${familySlug}/${productSlug}`);
-  revalidatePath("/admin/products");
-  revalidatePath(`/admin/products/${familySlug}/${productSlug}`);
+  revalidateProductSurfaces(familySlug, productSlug);
 }
 
 function slugify(value: string): string {
@@ -165,6 +178,7 @@ export async function createProduct(formData: FormData) {
   const descriptionAr = formString(formData, "description_ar");
   const nameAr = formString(formData, "name_ar");
   const requestedSlug = formString(formData, "slug");
+  const priceSar = formOptionalSar(formData, "price_sar");
 
   if (!familySlug || !nameEn || !itemCode) {
     throw new Error("Family, name, and item code are required.");
@@ -201,6 +215,7 @@ export async function createProduct(formData: FormData) {
       name_ar: nameAr || nameEn,
       description_en: descriptionEn || null,
       description_ar: descriptionAr || descriptionEn || null,
+      price: priceSar,
       is_active: false,
       slug,
       stock_status: "available",
@@ -272,14 +287,7 @@ export async function deleteProduct(formData: FormData) {
     throw new Error(`Deleting product failed: ${productError.message}`);
   }
 
-  clearCatalogueProjectionCache();
-  revalidatePath("/");
-  revalidatePath("/products");
-  revalidatePath("/search");
-  revalidatePath(`/products/${familySlug}`);
-  revalidatePath(`/products/${familySlug}/${productSlug}`);
-  revalidatePath("/admin/products");
-  revalidatePath(`/admin/products/${familySlug}/${productSlug}`);
+  revalidateProductSurfaces(familySlug, productSlug);
   redirect("/admin/products");
 }
 
@@ -304,14 +312,7 @@ export async function activateProduct(formData: FormData) {
     throw new Error(`Product activation failed: ${error.message}`);
   }
 
-  clearCatalogueProjectionCache();
-  revalidatePath("/");
-  revalidatePath("/products");
-  revalidatePath("/search");
-  revalidatePath(`/products/${familySlug}`);
-  revalidatePath(`/products/${familySlug}/${productSlug}`);
-  revalidatePath("/admin/products");
-  revalidatePath(`/admin/products/${familySlug}/${productSlug}`);
+  revalidateProductSurfaces(familySlug, productSlug);
 }
 
 export async function saveProduct(formData: FormData) {
@@ -323,6 +324,7 @@ export async function saveProduct(formData: FormData) {
   const descriptionEn = formString(formData, "description_en");
   const descriptionAr = formString(formData, "description_ar") || descriptionEn;
   const requestedSlug = formString(formData, "slug");
+  const priceSar = formOptionalSar(formData, "price_sar");
 
   if (!productId || !familySlug || !nameEn || !itemCode) {
     throw new Error("Family, English name, and item code are required.");
@@ -352,6 +354,7 @@ export async function saveProduct(formData: FormData) {
       name_ar: nameAr,
       description_en: descriptionEn || null,
       description_ar: descriptionAr || null,
+      price: priceSar,
       slug: dbSlug
     })
     .eq("id", productId);
@@ -363,11 +366,45 @@ export async function saveProduct(formData: FormData) {
     throw new Error(`Product update failed: ${error.message}`);
   }
 
-  clearCatalogueProjectionCache();
-  revalidatePath("/");
-  revalidatePath("/products");
-  revalidatePath("/search");
-  revalidatePath("/admin/products");
-  revalidatePath(`/products/${familySlug}`);
+  revalidateProductSurfaces(familySlug, bareSlug);
   redirect(`/admin/products/${familySlug}/${bareSlug}`);
+}
+
+export async function saveVariantPriceOverride(formData: FormData): Promise<void> {
+  const productId = formString(formData, "product_id");
+  const variantId = formString(formData, "variant_id");
+  const familySlug = formString(formData, "family_slug");
+  const productSlug = formString(formData, "product_slug");
+  const priceOverrideSar = formOptionalSar(formData, "price_override_sar");
+
+  if (!productId || !variantId || !familySlug || !productSlug) {
+    throw new Error("Missing product or variant identity.");
+  }
+
+  await requireAdminUser();
+  const admin = createAdminClient();
+  const { data: variant, error: lookupError } = await admin
+    .from("product_variants")
+    .select("id,product_id")
+    .eq("id", variantId)
+    .maybeSingle();
+
+  if (lookupError) {
+    throw new Error(`Variant lookup failed: ${lookupError.message}`);
+  }
+  if (!variant || variant.product_id !== productId) {
+    throw new Error("Variant does not belong to this product.");
+  }
+
+  const { error: updateError } = await admin
+    .from("product_variants")
+    .update({ price_override: priceOverrideSar })
+    .eq("id", variantId)
+    .eq("product_id", productId);
+
+  if (updateError) {
+    throw new Error(`Variant price update failed: ${updateError.message}`);
+  }
+
+  revalidateProductSurfaces(familySlug, productSlug);
 }
