@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import { notFound } from "next/navigation";
 import { Container, Section } from "@/components/layout";
 import { getProductCatalogueContext } from "@/features/catalogue-live";
-import type { InquiryItem } from "@/features/inquiry";
 import { Reveal } from "@/features/motion";
 import { ProcurementPanel } from "@/features/public-catalogue";
 import { createProductDetailData } from "./product-detail.data";
@@ -40,21 +39,6 @@ export async function ProductDetailPage({
       : {})
   } : data.product;
 
-  const inquiryItem: InquiryItem = {
-    id: product.id,
-    familySlug: product.familySlug,
-    slug: product.slug,
-    name: product.name,
-    code: product.code,
-    size: data.sizeValue,
-    variant: data.variantValue,
-    quantity: 1,
-    notes: "",
-    ...(product.mediaPath ? { mediaPath: product.mediaPath } : {}),
-    ...(product.mediaFallbackPath ? { mediaFallbackPath: product.mediaFallbackPath } : {}),
-    ...(product.mediaLabel ? { imageLabel: product.mediaLabel } : {})
-  };
-
   return (
     <div className="public-page public-page--product-detail">
       <Section tone="paper" spacing="compact" className="product-detail-intro">
@@ -70,10 +54,8 @@ export async function ProductDetailPage({
               <ProductProcurementSummary
                 family={family}
                 product={product}
-                sizeValue={data.sizeValue}
-                variantValue={data.variantValue}
                 catalogueReference={data.catalogueReference}
-                inquiryItem={inquiryItem}
+                configurationOptions={data.configurationOptions}
                 locale={locale}
               />
             </Reveal>
