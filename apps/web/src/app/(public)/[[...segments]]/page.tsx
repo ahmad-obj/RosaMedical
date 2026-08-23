@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getFamilyListingModel, getProductDetailModel } from "@/features/catalogue-registry";
 import { getProductCatalogueContext } from "@/features/catalogue-live";
@@ -137,6 +137,11 @@ export default async function Page({
 
   const kind = resolvePublicPageKind(key);
   if (kind === "not-found") notFound();
+  if (kind === "family") {
+    const familySlug = segments[1] ?? "";
+    const localePrefix = locale === "ar" ? "/ar" : "";
+    permanentRedirect(`${localePrefix}/products?family=${encodeURIComponent(familySlug)}`);
+  }
   if (kind === "product") {
     const products = await getProductCatalogueContext(
       segments[1] ?? "",
