@@ -1,9 +1,16 @@
 /* Final client-review geometry corrections. */
 
+.home-comprehensive__lead,
 .home-comprehensive__specialties {
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
+}
+
+@media (min-width: 64.001rem) {
+  .home-comprehensive__lead {
+    grid-template-columns: minmax(16rem, 0.95fr) minmax(0, 1.75fr);
+  }
 }
 
 @media (min-width: 50rem) {
