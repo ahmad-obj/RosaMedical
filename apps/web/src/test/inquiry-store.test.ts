@@ -4,6 +4,7 @@ import {
   INQUIRY_MAX_QUANTITY,
   addInquiryItem,
   clearInquiry,
+  createInquiryLineId,
   getInquiryLineCount,
   readInquiry,
   removeInquiryItem,
@@ -27,16 +28,22 @@ const memoryStorage: Storage = {
   }
 };
 
+const configurationId = "product:product_scalpel_handle_3";
 const item: InquiryItem = {
+  lineId: createInquiryLineId("product_scalpel_handle_3", configurationId),
   id: "product_scalpel_handle_3",
   familySlug: "knives",
   slug: "scalpel-handle-no-3",
   name: "Scalpel Handle No. 3",
   code: "01-0103",
+  configurationId,
+  sku: "01-0103",
   size: "No. 3",
   variant: "Standard",
   quantity: 1,
-  notes: ""
+  notes: "",
+  unitPriceSar: null,
+  currency: "SAR"
 };
 
 describe("inquiry store", () => {
@@ -50,38 +57,41 @@ describe("inquiry store", () => {
 
   afterEach(() => vi.unstubAllGlobals());
 
-  it("adds an immutable product snapshot", () => {
+  it("adds an immutable product/configuration snapshot", () => {
     expect(addInquiryItem(item)).toEqual([item]);
     expect(readInquiry()).toEqual([item]);
   });
 
-  it("merges the same snapshot by increasing quantity", () => {
+  it("merges the same line by increasing quantity", () => {
     addInquiryItem(item);
     const result = addInquiryItem({ ...item, quantity: 2 });
     expect(result).toHaveLength(1);
     expect(result[0]?.quantity).toBe(3);
   });
 
-  it("merges the same public product across static and live internal IDs", () => {
+  it("keeps different product identities separate even when the public route matches", () => {
     addInquiryItem(item);
-    const result = addInquiryItem({ ...item, id: "live-db-uuid", quantity: 2 });
-
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      id: item.id,
-      familySlug: "knives",
-      slug: "scalpel-handle-no-3",
-      quantity: 3
+    const otherId = "live-db-uuid";
+    const otherConfigurationId = `product:${otherId}`;
+    const result = addInquiryItem({
+      ...item,
+      id: otherId,
+      configurationId: otherConfigurationId,
+      lineId: createInquiryLineId(otherId, otherConfigurationId),
+      quantity: 2
     });
+
+    expect(result).toHaveLength(2);
   });
 
-  it("keeps different public routes separate even when the catalogue code matches", () => {
+  it("keeps different configurations of the same product separate", () => {
     addInquiryItem(item);
     const result = addInquiryItem({
       ...item,
-      id: "other-db-uuid",
-      slug: "round-straight",
-      code: item.code
+      configurationId: "variant-2",
+      lineId: createInquiryLineId(item.id, "variant-2"),
+      sku: "01-0104",
+      size: "No. 4"
     });
 
     expect(result).toHaveLength(2);
@@ -97,8 +107,8 @@ describe("inquiry store", () => {
 
   it("announces every persisted change to shell consumers", () => {
     addInquiryItem(item);
-    updateInquiryItem(item.id, { quantity: 2 });
-    removeInquiryItem(item.id);
+    updateInquiryItem(item.lineId, { quantity: 2 });
+    removeInquiryItem(item.lineId);
     clearInquiry();
 
     expect(window.dispatchEvent).toHaveBeenCalledTimes(4);
@@ -109,17 +119,17 @@ describe("inquiry store", () => {
 
   it("keeps quantities within supported bounds and persists notes", () => {
     addInquiryItem(item);
-    const result = updateInquiryItem(item.id, { quantity: 0, notes: "Sterile packing" });
+    const result = updateInquiryItem(item.lineId, { quantity: 0, notes: "Sterile packing" });
     expect(result[0]?.quantity).toBe(1);
     expect(result[0]?.notes).toBe("Sterile packing");
 
-    const bounded = updateInquiryItem(item.id, { quantity: INQUIRY_MAX_QUANTITY + 1 });
+    const bounded = updateInquiryItem(item.lineId, { quantity: INQUIRY_MAX_QUANTITY + 1 });
     expect(bounded[0]?.quantity).toBe(INQUIRY_MAX_QUANTITY);
   });
 
   it("removes and clears inquiry lines", () => {
     addInquiryItem(item);
-    expect(removeInquiryItem(item.id)).toEqual([]);
+    expect(removeInquiryItem(item.lineId)).toEqual([]);
     addInquiryItem(item);
     clearInquiry();
     expect(readInquiry()).toEqual([]);
