@@ -48,6 +48,21 @@ export function AdminProductCreateForm({
             label="URL slug"
             hint="Leave blank to generate automatically from the product name."
           />
+          <div className="admin-field-preview">
+            <label htmlFor="admin-new-product-price">Base price — SAR</label>
+            <input
+              id="admin-new-product-price"
+              name="price_sar"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]+(?:\\.[0-9]{1,2})?"
+              placeholder="e.g. 120.00"
+              aria-describedby="admin-new-product-price-hint"
+            />
+            <p className="field__hint" id="admin-new-product-price-hint">
+              Optional. Leave blank to show Price on request. Variant overrides can be added after creation.
+            </p>
+          </div>
           <AdminTextareaField
             id="admin-new-product-description-en"
             name="description_en"
