@@ -1,9 +1,6 @@
 import type { CatalogueProductRecord } from "@/features/catalogue-registry";
 import { CATALOGUE_FAMILIES } from "@/features/catalogue-registry/families";
-import {
-  getProductByPublicRoute,
-  getRelatedProductsFromCatalogue
-} from "@/features/catalogue-live";
+import { getProductByPublicRoute } from "@/features/catalogue-live";
 
 export type ProductSpecificationRow = readonly [label: string, value: string];
 
@@ -18,7 +15,6 @@ export function createProductDetailData(
   const product = getProductByPublicRoute(products, familySlug, productSlug);
   if (!family || !product) return null;
 
-  const related = getRelatedProductsFromCatalogue(products, product, 3);
   const catalogueReference = `${product.catalogueReference.family}${
     product.catalogueReference.page
       ? ` · Page ${product.catalogueReference.page}`
@@ -44,7 +40,6 @@ export function createProductDetailData(
   return {
     family,
     product,
-    related,
     catalogueReference,
     specifications,
     sizeValue: product.sizes[0] ?? product.primaryOption ?? "As listed",
