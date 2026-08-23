@@ -5,10 +5,16 @@ export { InquiryLineMedia } from "./inquiry-line-media";
 export { InquiryPage } from "./inquiry-page";
 export { QuotationPage } from "./quotation-page";
 export {
+  inquiryLineSubtotal,
+  summarizeInquiryPricing,
+  type InquiryPricingSummary
+} from "./inquiry-pricing";
+export {
   INQUIRY_STORAGE_KEY,
   INQUIRY_CHANGE_EVENT,
   addInquiryItem,
   clearInquiry,
+  createInquiryLineId,
   getInquiryLineCount,
   readInquiry,
   removeInquiryItem,
