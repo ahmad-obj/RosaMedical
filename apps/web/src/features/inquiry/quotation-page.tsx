@@ -6,6 +6,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Container, Section } from "@/components/layout";
 import { QuotationBlockedPage } from "@/features/quotation-preview";
 import { LocaleLink, getLocaleFromPathname } from "@/features/localization";
+import { formatSar } from "@/features/pricing";
+import { inquiryLineSubtotal, summarizeInquiryPricing } from "./inquiry-pricing";
 import { clearInquiry, readInquiry, type InquiryItem } from "./inquiry-store";
 
 type SubmissionState = "idle" | "submitting" | "success" | "error";
@@ -17,7 +19,8 @@ export function QuotationPage() {
   const [reference, setReference] = useState("");
   const successRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion() === true;
-  const ar = getLocaleFromPathname(usePathname()) === "ar";
+  const locale = getLocaleFromPathname(usePathname());
+  const ar = locale === "ar";
 
   useEffect(() => {
     const synchronize = () => setItems(readInquiry());
@@ -121,6 +124,7 @@ export function QuotationPage() {
   }
 
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+  const pricing = summarizeInquiryPricing(items);
 
   return (
     <Section tone="paper" className="quotation-page">
@@ -235,22 +239,40 @@ export function QuotationPage() {
             transition={{ duration: reduceMotion ? 0 : 0.34, delay: reduceMotion ? 0 : 0.06 }}
           >
             <p className="quotation-product-summary__eyebrow">{ar ? "المنتجات المحددة" : "Selected products"}</p>
-            <h2 id="quotation-products-title">{ar ? `${items.length} منتج` : `${items.length} ${items.length === 1 ? "product" : "products"}`}</h2>
+            <h2 id="quotation-products-title">{ar ? `${items.length} تهيئة` : `${items.length} selected ${items.length === 1 ? "configuration" : "configurations"}`}</h2>
             <ul>
-              {items.map((item) => (
-                <motion.li layout={!reduceMotion} key={item.id}>
-                  <div>
-                    <strong>{item.name}</strong>
-                    <span>{ar ? "الرمز" : "Code"} <bdi dir="ltr">{item.code}</bdi></span>
-                    {item.size ? <span>{ar ? "المقاس" : "Size"} <bdi dir="ltr">{item.size}</bdi></span> : null}
-                    {item.variant ? <span>{ar ? "الخيار" : "Variant"} {item.variant}</span> : null}
-                    <span>{ar ? "الكمية" : "Quantity"} {item.quantity}</span>
-                  </div>
-                  <LocaleLink href="/inquiry">{ar ? "تعديل" : "Edit"}</LocaleLink>
-                </motion.li>
-              ))}
+              {items.map((item) => {
+                const lineSubtotal = inquiryLineSubtotal(item);
+                return (
+                  <motion.li layout={!reduceMotion} key={item.lineId}>
+                    <div>
+                      <strong>{item.name}</strong>
+                      <span>{ar ? "الرمز" : "Code"} <bdi dir="ltr">{item.code}</bdi></span>
+                      <span>SKU <bdi dir="ltr">{item.sku}</bdi></span>
+                      {item.size ? <span>{ar ? "المقاس" : "Size"} <bdi dir="ltr">{item.size}</bdi></span> : null}
+                      {item.variant ? <span>{ar ? "الخيار" : "Variant"} {item.variant}</span> : null}
+                      <span>{ar ? "الكمية" : "Quantity"} {item.quantity}</span>
+                      <span>{ar ? "سعر الوحدة" : "Unit price"} {item.unitPriceSar ? formatSar(item.unitPriceSar, locale) : ar ? "السعر عند الطلب" : "Price on request"}</span>
+                      <span>{ar ? "إجمالي البند" : "Line subtotal"} {lineSubtotal ? formatSar(lineSubtotal, locale) : ar ? "السعر عند الطلب" : "Price on request"}</span>
+                    </div>
+                    <LocaleLink href="/inquiry">{ar ? "تعديل" : "Edit"}</LocaleLink>
+                  </motion.li>
+                );
+              })}
             </ul>
             <div className="quotation-product-summary__total"><span>{ar ? "الكمية الإجمالية" : "Total quantity"}</span><motion.output key={totalQuantity} className="conversion-value" aria-live="polite" initial={reduceMotion ? false : { opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>{totalQuantity}</motion.output></div>
+            {pricing.allPriced && pricing.totalSar ? (
+              <div className="quotation-product-summary__total"><span>{ar ? "الإجمالي التقديري" : "Estimated total"}</span><strong>{formatSar(pricing.totalSar, locale)}</strong></div>
+            ) : null}
+            {!pricing.allPriced && pricing.pricedSubtotalSar ? (
+              <div className="quotation-product-summary__total"><span>{ar ? "الإجمالي الفرعي للعناصر المسعرة" : "Priced items subtotal"}</span><strong>{formatSar(pricing.pricedSubtotalSar, locale)}</strong></div>
+            ) : null}
+            {pricing.unpricedLineCount > 0 ? (
+              <div className="quotation-product-summary__total"><span>{ar ? "السعر عند الطلب" : "Price on request"}</span><strong>{ar ? `${pricing.unpricedLineCount} بند · ${pricing.unpricedQuantity} وحدة` : `${pricing.unpricedLineCount} line(s) · ${pricing.unpricedQuantity} unit(s)`}</strong></div>
+            ) : null}
+            {!pricing.allPriced ? (
+              <div className="quotation-product-summary__total"><span>{ar ? "إجمالي عرض السعر الكامل" : "Complete quotation total"}</span><strong>{ar ? "قيد التسعير" : "Pending"}</strong></div>
+            ) : null}
             <LocaleLink className="text-link" href="/inquiry">{ar ? "العودة إلى الاستفسار ←" : "Return to inquiry →"}</LocaleLink>
           </motion.aside>
         </div>
