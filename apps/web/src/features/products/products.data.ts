@@ -4,6 +4,7 @@ import type { PublicLocale } from "@/features/localization/locales";
 import type { Route } from "next";
 import { FAMILY_NAMES_AR } from "@/features/localization/public-copy";
 import type { FamilyCardModel } from "@/features/public-catalogue";
+import { summarizeProductPrice } from "@/features/pricing";
 import type { ProductsDiscoveryItem } from "./products-discovery.types";
 import { deriveCodeGroup, uniqueFacetValues } from "./products-facets";
 
@@ -120,7 +121,8 @@ export function createProductsDiscoveryItems(
         directions: uniqueFacetValues(sourceProduct.directions),
         variants: uniqueFacetValues(sourceProduct.variants),
         codeGroups
-      }
+      },
+      priceSummary: summarizeProductPrice(sourceProduct)
     };
   });
 }
