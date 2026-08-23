@@ -3,28 +3,22 @@ import type {
   CatalogueFamilyRecord,
   CatalogueProductRecord
 } from "@/features/catalogue-registry";
-import type { InquiryItem } from "@/features/inquiry";
-import { StaticOptionField } from "./static-option-field";
-import { ProductInquiryControls } from "./product-inquiry-controls";
-import { ProductPriceState } from "./product-price-state";
 import type { PublicLocale } from "@/features/localization/locales";
 import { LocaleLink } from "@/features/localization";
+import { ProductConfigurationSelector } from "./product-configuration-selector";
+import type { ProductConfigurationOption } from "./product-detail.data";
 
 export function ProductProcurementSummary({
   family,
   product,
-  sizeValue,
-  variantValue,
   catalogueReference,
-  inquiryItem,
+  configurationOptions,
   locale = "en"
 }: {
   family: CatalogueFamilyRecord;
   product: CatalogueProductRecord;
-  sizeValue: string;
-  variantValue: string;
   catalogueReference: string;
-  inquiryItem: InquiryItem;
+  configurationOptions: readonly ProductConfigurationOption[];
   locale?: PublicLocale;
 }): ReactElement {
   const ar = locale === "ar";
@@ -37,16 +31,23 @@ export function ProductProcurementSummary({
       <strong className="product-procurement-summary__code">{ar ? "رمز المنتج" : "Product code"} <bdi dir="ltr">{product.code}</bdi></strong>
       {product.description ? <p className="product-procurement-summary__description">{product.description}</p> : null}
 
-      <div className="product-procurement-summary__options">
-        <StaticOptionField label={ar ? "المقاس" : "Size"} value={sizeValue} />
-        <StaticOptionField label={ar ? "الخيار" : "Variant"} value={variantValue} />
-      </div>
-
-      <ProductPriceState locale={locale} />
-      <ProductInquiryControls item={inquiryItem} />
+      <ProductConfigurationSelector
+        product={{
+          id: product.id,
+          familySlug: product.familySlug,
+          slug: product.slug,
+          name: product.name,
+          code: product.code,
+          ...(product.mediaPath ? { mediaPath: product.mediaPath } : {}),
+          ...(product.mediaFallbackPath ? { mediaFallbackPath: product.mediaFallbackPath } : {}),
+          ...(product.mediaLabel ? { imageLabel: product.mediaLabel } : {})
+        }}
+        options={configurationOptions}
+        locale={locale}
+      />
 
       <p className="product-controls-note" id={controlsNoteId}>
-        {ar ? "أضف هذه الأداة إلى استفسار عرض السعر ثم راجع الكميات والملاحظات." : "Add this instrument to your quotation inquiry, then review quantities and notes."}
+        {ar ? "اختر التهيئة المطلوبة وأضفها إلى استفسار عرض السعر ثم راجع الكميات والملاحظات." : "Choose the exact configuration and add it to your quotation inquiry, then review quantities and notes."}
       </p>
       <LocaleLink className="product-catalogue-reference" href="/catalogues">
         {ar ? "مرجع الكتالوج" : "Catalogue reference"}: <bdi dir="ltr">{catalogueReference}</bdi> <span aria-hidden="true">→</span>
