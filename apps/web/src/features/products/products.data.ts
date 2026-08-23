@@ -5,6 +5,7 @@ import type { Route } from "next";
 import { FAMILY_NAMES_AR } from "@/features/localization/public-copy";
 import type { FamilyCardModel } from "@/features/public-catalogue";
 import type { ProductsDiscoveryItem } from "./products-discovery.types";
+import { deriveCodeGroup, uniqueFacetValues } from "./products-facets";
 
 const families = selectFamilyCards();
 const familiesAr = families.map((family) => ({
@@ -91,6 +92,11 @@ export function createProductsDiscoveryItems(
     const localizedName = ar && sourceProduct.nameAr?.trim()
       ? sourceProduct.nameAr.trim()
       : preview.name;
+    const catalogueCodes = sourceProduct.catalogueCodes ?? [];
+    const codeGroups = uniqueFacetValues([
+      deriveCodeGroup(preview.code),
+      ...catalogueCodes.map((entry) => deriveCodeGroup(entry.code))
+    ]);
 
     return {
       ...preview,
@@ -104,8 +110,17 @@ export function createProductsDiscoveryItems(
         ...sourceProduct.sizes,
         ...sourceProduct.variants,
         ...sourceProduct.directions,
-        ...(sourceProduct.catalogueCodes ?? []).flatMap((entry) => [entry.code, entry.size])
-      ])
+        ...catalogueCodes.flatMap((entry) => [entry.code, entry.size])
+      ]),
+      facetValues: {
+        sizes: uniqueFacetValues([
+          ...sourceProduct.sizes,
+          ...catalogueCodes.map((entry) => entry.size)
+        ]),
+        directions: uniqueFacetValues(sourceProduct.directions),
+        variants: uniqueFacetValues(sourceProduct.variants),
+        codeGroups
+      }
     };
   });
 }
