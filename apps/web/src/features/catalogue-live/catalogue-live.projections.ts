@@ -36,7 +36,8 @@ export function projectionRowsToSnapshot(
       ...(row.description_ar !== undefined ? { description_ar: row.description_ar } : {}),
       is_active: row.is_active,
       slug: row.slug,
-      created_at: row.created_at
+      created_at: row.created_at,
+      price: row.price
     });
 
     variants.push(...(row.variants ?? []));
