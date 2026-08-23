@@ -143,7 +143,7 @@ export function PublicHeroCarousel({
 
   return (
     <section
-      className="public-hero public-hero-carousel home-hero home-hero-carousel"
+      className="public-hero public-hero-carousel"
       data-section={`${page}-hero`}
       data-public-hero-page={page}
       data-active-slide={slide.id}
@@ -172,7 +172,7 @@ export function PublicHeroCarousel({
       <AnimatePresence initial={false} mode="wait">
         <motion.div
           key={`${page}-${slide.id}`}
-          className="public-hero-carousel__slide home-hero-carousel__slide"
+          className="public-hero-carousel__slide"
           data-copy-side={slide.copySide}
           data-tone={slide.tone}
           aria-roledescription="slide"
@@ -184,7 +184,7 @@ export function PublicHeroCarousel({
           transition={{ duration: reducedMotion ? 0 : MOTION_DURATION.hero, ease: "linear" }}
         >
           <motion.div
-            className="public-hero-carousel__media home-hero-carousel__media"
+            className="public-hero-carousel__media"
             data-media-slot="public-hero-active"
             data-entry-motion="slide-settle"
             initial={reducedMotion ? false : {
@@ -198,7 +198,7 @@ export function PublicHeroCarousel({
             }}
             transition={{ duration: reducedMotion ? 0 : 1.12, ease: MOTION_EASING.standard }}
           >
-            <picture className="public-hero-carousel__picture home-hero-carousel__picture">
+            <picture className="public-hero-carousel__picture">
               <source media="(max-width: 40rem)" srcSet={slide.media.mobileSrc} type="image/webp" />
               <source srcSet={slide.media.desktopAvifSrc} type="image/avif" />
               <img
@@ -210,11 +210,11 @@ export function PublicHeroCarousel({
             </picture>
           </motion.div>
 
-          <span className="public-hero-carousel__overlay home-hero-carousel__overlay" aria-hidden="true" />
+          <span className="public-hero-carousel__overlay" aria-hidden="true" />
 
-          <div className="public-hero-carousel__content home-hero-carousel__content">
+          <div className="public-hero-carousel__content">
             <motion.div
-              className="public-hero-carousel__copy home-hero-carousel__copy"
+              className="public-hero-carousel__copy"
               data-entry-motion="rise"
               initial={reducedMotion ? false : { opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
@@ -225,16 +225,16 @@ export function PublicHeroCarousel({
                 ease: MOTION_EASING.emphasized
               }}
             >
-              <p className="public-eyebrow home-hero__eyebrow">{slide.eyebrow}</p>
-              <h1 className="public-hero-carousel__title home-hero__title" id={headingId}>{slide.title}</h1>
-              <p className="public-hero-carousel__copy-text home-hero__copy-text">{slide.copy}</p>
+              <p className="public-eyebrow">{slide.eyebrow}</p>
+              <h1 className="public-hero-carousel__title" id={headingId}>{slide.title}</h1>
+              <p className="public-hero-carousel__copy-text">{slide.copy}</p>
             </motion.div>
           </div>
         </motion.div>
       </AnimatePresence>
 
       <div
-        className="public-hero-carousel__dots home-hero-carousel__dots"
+        className="public-hero-carousel__dots"
         role="group"
         aria-label={locale === "ar" ? "شرائح الصفحة" : "Page hero slides"}
         onKeyDown={handleDotKeyDown}
@@ -244,7 +244,7 @@ export function PublicHeroCarousel({
             key={item.id}
             ref={(node) => { dotRefs.current[index] = node; }}
             type="button"
-            className="public-hero-carousel__dot home-hero-carousel__dot"
+            className="public-hero-carousel__dot"
             aria-label={locale === "ar" ? `الشريحة ${index + 1}` : `Go to slide ${index + 1}`}
             aria-current={index === activeIndex ? "true" : undefined}
             tabIndex={index === activeIndex ? 0 : -1}
