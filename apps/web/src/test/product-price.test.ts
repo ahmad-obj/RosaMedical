@@ -41,13 +41,14 @@ describe("product SAR price states", () => {
     }))).toEqual({ kind: "exact", amount: "120.00" });
   });
 
-  it("returns from pricing for ranges and marks partially unpriced options", () => {
+  it("returns from pricing for real price ranges and marks partially unpriced options", () => {
     expect(summarizeProductPrice(product({
       basePriceSar: "120.00",
       configurations: [
-        { id: "v1", sku: "A", size: "14 cm", variantType: "Straight", priceOverrideSar: "145.50" }
+        { id: "v1", sku: "A", size: "14 cm", variantType: "Straight", priceOverrideSar: null },
+        { id: "v2", sku: "B", size: "16 cm", variantType: "Curved", priceOverrideSar: "145.50" }
       ]
-    }))).toEqual({ kind: "from", amount: "145.50", hasUnpricedOptions: false });
+    }))).toEqual({ kind: "from", amount: "120.00", hasUnpricedOptions: false });
 
     expect(summarizeProductPrice(product({
       basePriceSar: null,
