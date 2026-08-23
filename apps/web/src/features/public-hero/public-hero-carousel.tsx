@@ -20,6 +20,7 @@ import {
   shouldHeroAutoplay
 } from "@/features/homepage/hero-carousel-state";
 import { getLocalizedPublicHeroSlides } from "./public-hero.data";
+import { getPublicHeroMobilePresentation } from "./public-hero-mobile";
 import type { PublicHeroPageKey } from "./public-hero.types";
 
 const DRAG_THRESHOLD_PX = 48;
@@ -32,9 +33,11 @@ function mobileHeroFocal(index: number, fallback: string): string {
 function preferredHeroSource(
   slide: ReturnType<typeof getLocalizedPublicHeroSlides>[number]
 ): string {
-  return window.matchMedia("(max-width: 40rem)").matches
-    ? slide.media.mobileSrc
-    : slide.media.desktopAvifSrc;
+  if (!window.matchMedia("(max-width: 40rem)").matches) {
+    return slide.media.desktopAvifSrc;
+  }
+
+  return getPublicHeroMobilePresentation(slide).src;
 }
 
 export function PublicHeroCarousel({
@@ -136,6 +139,7 @@ export function PublicHeroCarousel({
   };
 
   const slide = slides[activeIndex] ?? slides[0]!;
+  const mobilePresentation = getPublicHeroMobilePresentation(slide);
   const slideStyle = {
     "--hero-desktop-focal": slide.media.desktopFocalPoint,
     "--hero-mobile-focal": mobileHeroFocal(activeIndex, slide.media.mobileFocalPoint)
@@ -175,6 +179,7 @@ export function PublicHeroCarousel({
           className="public-hero-carousel__slide"
           data-copy-side={slide.copySide}
           data-tone={slide.tone}
+          data-mobile-presentation={mobilePresentation.kind}
           aria-roledescription="slide"
           aria-label={`${activeIndex + 1} of ${slides.length}`}
           style={slideStyle}
@@ -199,7 +204,7 @@ export function PublicHeroCarousel({
             transition={{ duration: reducedMotion ? 0 : 1.12, ease: MOTION_EASING.standard }}
           >
             <picture className="public-hero-carousel__picture">
-              <source media="(max-width: 40rem)" srcSet={slide.media.mobileSrc} type="image/webp" />
+              <source media="(max-width: 40rem)" srcSet={mobilePresentation.src} type="image/webp" />
               <source srcSet={slide.media.desktopAvifSrc} type="image/avif" />
               <img
                 src={slide.media.desktopSrc}
@@ -208,6 +213,22 @@ export function PublicHeroCarousel({
                 fetchPriority={activeIndex === 0 ? "high" : "auto"}
               />
             </picture>
+            {mobilePresentation.kind === "composed" ? (
+              <div className="public-hero-carousel__mobile-composition" data-mobile-hero-composition aria-hidden="true">
+                <img
+                  className="public-hero-carousel__mobile-composition-bg"
+                  src={mobilePresentation.src}
+                  alt=""
+                  decoding="async"
+                />
+                <img
+                  className="public-hero-carousel__mobile-composition-fg"
+                  src={mobilePresentation.src}
+                  alt=""
+                  decoding="async"
+                />
+              </div>
+            ) : null}
           </motion.div>
 
           <span className="public-hero-carousel__overlay" aria-hidden="true" />
