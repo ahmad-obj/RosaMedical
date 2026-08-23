@@ -1,4 +1,5 @@
 import type { FamilySlug } from "@/features/public-catalogue";
+import type { SarAmount } from "@/features/pricing/sar-money";
 
 export interface CatalogueReference {
   family: string;
@@ -16,6 +17,14 @@ export interface CatalogueFamilyRecord {
 export interface CatalogueProductCode {
   code: string;
   size: string;
+}
+
+export interface CatalogueProductConfiguration {
+  id: string;
+  sku: string;
+  size: string;
+  variantType: string;
+  priceOverrideSar: SarAmount | null;
 }
 
 export interface CatalogueProductRecord {
@@ -41,6 +50,8 @@ export interface CatalogueProductRecord {
   mediaSourceUrl?: string;
   mediaReviewNote?: string;
   isActive?: boolean;
+  basePriceSar?: SarAmount | null;
+  configurations?: readonly CatalogueProductConfiguration[];
 }
 
 export type CatalogueRouteResult =
