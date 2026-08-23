@@ -1,0 +1,58 @@
+/* Focused pricing controls for Product Admin. */
+
+.admin-variant-price-form {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 1fr) auto;
+  gap: 0.45rem 0.6rem;
+  align-items: center;
+  min-width: min(100%, 15rem);
+}
+
+.admin-variant-price-form input[name="price_override_sar"] {
+  min-width: 0;
+  min-height: 2.35rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: #fff;
+  color: var(--color-ink);
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-variant-price-form input[name="price_override_sar"]:focus-visible,
+.admin-field-preview input[name="price_sar"]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-rosa-red) 68%, transparent);
+  outline-offset: 2px;
+  border-color: var(--color-rosa-red);
+}
+
+.admin-variant-price-form .field__hint {
+  grid-column: 1 / -1;
+  margin: -0.1rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.admin-field-preview input[name="price_sar"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-data-table td:has(.admin-variant-price-form) {
+  min-width: 15rem;
+}
+
+@media (max-width: 48rem) {
+  .admin-variant-price-form {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .admin-variant-price-form .field__hint {
+    grid-column: auto;
+  }
+
+  .admin-variant-price-form button {
+    width: 100%;
+  }
+}
