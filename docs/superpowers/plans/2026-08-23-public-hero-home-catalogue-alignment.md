@@ -4,9 +4,9 @@
 
 **Goal:** Make all five main-page banners geometrically identical to Home, repair the third mobile hero asset, route Homepage catalogue covers directly to real PDFs, and align/enlarge the Plastic Surgery lead visual on the shared 80rem content rail.
 
-**Architecture:** `PublicHeroCarousel` becomes the only hero geometry source. Homepage cover navigation consumes `CATALOGUE_DOCUMENTS` instead of family routes. The Comprehensive Plans lead and supporting rows share one 80rem geometry contract.
+**Architecture:** `PublicHeroCarousel` becomes the only hero geometry source. Homepage cover navigation consumes `CATALOGUE_DOCUMENTS` instead of family routes. The Comprehensive Plans lead and supporting rows share one 80rem geometry contract, with the lead grid locked to a larger Plastic Surgery column.
 
-**Tech Stack:** Next.js, React, CSS, Motion React, Vitest, Playwright.
+**Tech Stack:** Next.js, React, CSS, Motion React, Vitest, Playwright, Python/Pillow for one deterministic image derivative.
 
 **Spec:** `docs/superpowers/specs/2026-08-23-products-pricing-navigation-polish-design.md`
 
@@ -18,6 +18,7 @@
 - Mobile slide 3 must be repaired, not hidden.
 - Homepage catalogue covers open existing PDFs; Product Detail routes are unaffected.
 - Comprehensive Plans images retain `object-fit`/focal handling with no distortion.
+- Final desktop Comprehensive lead grid is exactly `minmax(16rem, 0.95fr) minmax(0, 1.75fr)`.
 
 ---
 
@@ -26,9 +27,9 @@
 **Files:**
 - Create: `apps/web/src/test/public-hero-geometry-contract.test.ts`
 - Create/modify: `apps/web/tests/e2e/public-hero-geometry.spec.ts`
-- Modify later: `apps/web/src/styles/public-hero.css`
-- Modify later: `apps/web/src/styles/home-client-redesign.css`
-- Modify later: `apps/web/src/features/public-hero/public-hero-carousel.tsx`
+- Modify: `apps/web/src/styles/public-hero.css`
+- Modify: `apps/web/src/styles/home-client-redesign.css`
+- Modify: `apps/web/src/features/public-hero/public-hero-carousel.tsx`
 
 **Interfaces:**
 - Consumes: `PublicHeroCarousel({ page, locale, headingId })`.
@@ -36,34 +37,22 @@
 
 - [ ] **Step 1: Write static regression assertions**
 
-The test must assert:
-
 ```ts
-expect(publicHeroCss).toContain("min-height: clamp(23.5rem, 44vw, 31rem)")
-expect(publicHeroCss).toContain("height: min(57svh, 31rem)")
-expect(publicHeroCss).toContain("height: min(71svh, 35rem)")
-expect(homeCss).not.toMatch(/public-page--home[^}]*home-hero[^}]*height:/s)
+expect(publicHeroCss).toContain("min-height: clamp(23.5rem, 44vw, 31rem)");
+expect(publicHeroCss).toContain("height: min(57svh, 31rem)");
+expect(publicHeroCss).toContain("height: min(71svh, 35rem)");
+expect(homeCss).not.toMatch(/public-page--home[^}]*home-hero[^}]*height:/s);
 ```
 
-Also assert `PublicHeroCarousel` no longer needs legacy `home-hero` classes for sizing.
+Also assert `PublicHeroCarousel` does not rely on a Home-only selector for sizing.
 
 - [ ] **Step 2: Write browser geometry parity test**
-
-For each viewport and route:
 
 ```ts
 const routes = ["/", "/about", "/products", "/inquiry", "/contact"];
 ```
 
-Measure:
-
-```ts
-const box = await page.locator(".public-hero-carousel").boundingBox();
-```
-
-At one viewport, compare every non-Home route to Home within <= 1 CSS pixel for width/height.
-
-Use at least 390x844, 768x1024, 1366x768, 1920x1080.
+For 390x844, 768x1024, 1366x768 and 1920x1080, measure `.public-hero-carousel` bounding boxes. At each viewport every non-Home page must match Home width/height within 1 CSS pixel.
 
 - [ ] **Step 3: Run tests and verify RED**
 
@@ -72,21 +61,38 @@ pnpm --filter @rosa/web test -- src/test/public-hero-geometry-contract.test.ts
 pnpm --filter @rosa/web exec playwright test tests/e2e/public-hero-geometry.spec.ts
 ```
 
-Expected: current Home-only style coupling causes at least static/browser parity failure.
-
 - [ ] **Step 4: Move all hero sizing to `public-hero.css`**
 
-Keep exact canonical rules there, including short-height desktop and <=40rem phone behavior.
+Canonical rules remain:
 
-Remove only hero-sizing rules from `home-client-redesign.css`; retain unrelated Home styles.
+```css
+.public-hero-carousel {
+  min-height: clamp(23.5rem, 44vw, 31rem);
+  height: min(57svh, 31rem);
+}
 
-In `public-hero-carousel.tsx`, normalize class names to public hero classes. If compatibility classes are retained temporarily for unrelated descendant rules, they must not be required for sizing and a cleanup note/test must prove the public classes own geometry.
+@media (max-height: 800px) and (min-width: 64.001rem) {
+  .public-hero-carousel {
+    min-height: 22.5rem;
+    height: min(55svh, 27rem);
+  }
+}
 
-- [ ] **Step 5: Re-run focused tests**
+@media (max-width: 40rem) {
+  .public-hero-carousel {
+    min-height: 31rem;
+    height: min(71svh, 35rem);
+  }
+}
+```
 
-Expected: PASS.
+Remove only duplicate Home-scoped hero dimensions from `home-client-redesign.css`; keep unrelated Home styling.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Normalize carousel classes**
+
+Use public classes as the authoritative component classes. If a legacy `home-hero-*` class is temporarily retained because unrelated CSS still selects a descendant, remove the Home-specific geometry dependency in the same task and add a regression assertion proving public classes alone define dimensions.
+
+- [ ] **Step 6: Re-run focused tests and commit**
 
 ```bash
 git add apps/web/src/features/public-hero apps/web/src/styles/public-hero.css apps/web/src/styles/home-client-redesign.css apps/web/src/test/public-hero-geometry-contract.test.ts apps/web/tests/e2e/public-hero-geometry.spec.ts
@@ -95,69 +101,51 @@ git commit -m "fix(hero): unify main page banner geometry"
 
 ---
 
-### Task 2: Repair and validate third mobile hero asset
+### Task 2: Repair and validate the third mobile hero asset
 
 **Files:**
 - Replace: `apps/web/public/media/editorial/home-hero/client-v5/hero-03-mobile.webp`
 - Test: `apps/web/src/test/public-hero-mobile-assets.test.ts`
 - Test: `apps/web/tests/e2e/public-hero-mobile-media.spec.ts`
-- Inspect/source: `hero-03-desktop.avif`, `hero-03-desktop.webp`
+- Source: `apps/web/public/media/editorial/home-hero/client-v5/hero-03-desktop.webp`
 
 **Interfaces:**
-- Produces: structurally valid portrait/mobile WebP at the existing path; no component path change needed.
+- Produces a valid 900x1200 WebP at the existing mobile path.
 
 - [ ] **Step 1: Write RIFF/WebP integrity test for all four mobile assets**
 
-Pseudo-contract:
-
 ```ts
-const image = readFileSync(path)
-expect(image.subarray(0, 4).toString("ascii")).toBe("RIFF")
-expect(image.subarray(8, 12).toString("ascii")).toBe("WEBP")
-expect(image.readUInt32LE(4) + 8).toBe(image.length)
+const image = readFileSync(path);
+expect(image.subarray(0, 4).toString("ascii")).toBe("RIFF");
+expect(image.subarray(8, 12).toString("ascii")).toBe("WEBP");
+expect(image.readUInt32LE(4) + 8).toBe(image.length);
 ```
 
-The test loops `hero-01-mobile.webp` through `hero-04-mobile.webp`.
+Loop `hero-01-mobile.webp` through `hero-04-mobile.webp`.
 
-- [ ] **Step 2: Run test and prove current slide 3 fails**
+- [ ] **Step 2: Run and prove current slide 3 fails**
 
 ```bash
 pnpm --filter @rosa/web test -- src/test/public-hero-mobile-assets.test.ts
 ```
 
-Expected: FAIL on `hero-03-mobile.webp` declared-vs-actual length.
+- [ ] **Step 3: Generate the replacement deterministically**
 
-- [ ] **Step 3: Generate a replacement mobile derivative from a valid source**
+Preflight:
 
-Use a local image tool available in the repo/runtime to decode the valid desktop/master source and produce a portrait crop. Preserve subject/gloved-hand visibility. Keep file at the exact existing mobile path.
+```bash
+python3 -c "from PIL import Image, ImageOps; print('Pillow ready')"
+```
 
-Target:
+Generate from the valid desktop WebP using a focal-aware portrait crop centered at the existing mobile focal approximately 54% x / 48% y, target 900x1200, high-quality Lanczos resize and WebP quality 88.
 
-- portrait-oriented crop appropriate to <=40rem;
-- quality high enough for hero use;
-- reasonably compressed;
-- WebP integrity exact.
-
-Do not regenerate all desktop assets.
+The execution task must use a short reproducible Python/Pillow script saved temporarily under `/tmp` or `tools/` during generation, inspect the result, then keep only the generated asset unless the project decides the generator itself is useful long-term.
 
 - [ ] **Step 4: Add browser decode test**
 
-At 390px:
+At 390px navigate carousel to slide 3 and assert active image `naturalWidth > 0`, `naturalHeight > 0`, and the phone source resolves to `hero-03-mobile.webp`.
 
-```ts
-await page.goto("/products")
-// navigate carousel to slide 3
-const img = page.locator('.public-hero-carousel img')
-await expect.poll(() => img.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
-```
-
-Also assert the picture's active source/request uses `hero-03-mobile.webp` under the phone breakpoint.
-
-- [ ] **Step 5: Run asset + browser tests**
-
-Expected: PASS.
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Run asset/browser tests and commit**
 
 ```bash
 git add apps/web/public/media/editorial/home-hero/client-v5/hero-03-mobile.webp apps/web/src/test/public-hero-mobile-assets.test.ts apps/web/tests/e2e/public-hero-mobile-media.spec.ts
@@ -170,35 +158,22 @@ git commit -m "fix(hero): repair third mobile banner asset"
 
 **Files:**
 - Modify: `apps/web/src/features/homepage/sections/home-family-gallery.tsx`
-- Reuse: `apps/web/src/features/catalogues/*` export providing `CATALOGUE_DOCUMENTS`
-- Test: `apps/web/src/test/home-family-gallery.test.tsx` or create `home-family-catalogue-links.test.tsx`
+- Reuse: `CATALOGUE_DOCUMENTS` from `apps/web/src/features/catalogues/`
+- Test: create/update `apps/web/src/test/home-family-catalogue-links.test.tsx`
 - Browser: `apps/web/tests/e2e/home-catalogue-links.spec.ts`
 
 **Interfaces:**
-- Consumes: `CATALOGUE_DOCUMENTS` records `{ familySlug, pdfPath, ... }`.
-- Produces: `cataloguePdfByFamilySlug` mapping used by Home gallery.
+- Produces a `cataloguePdfByFamilySlug` mapping derived from `CATALOGUE_DOCUMENTS`.
 
 - [ ] **Step 1: Write failing component test**
 
-For each family slug, assert the rendered cover anchor uses that document's `pdfPath`, not `familyHref(slug)`.
+Every family cover href must equal its document `pdfPath`, not `familyHref(slug)`.
 
-Expected labels:
-
-```text
-Open Scissors catalogue
-Open Cutters catalogue
-...
-```
-
-- [ ] **Step 2: Run test and verify RED**
-
-Current component links to family pages.
+- [ ] **Step 2: Run RED**
 
 - [ ] **Step 3: Replace family-route dependency**
 
-Remove `familyHref` import from `home-family-gallery.tsx`.
-
-Create a deterministic mapping from `CATALOGUE_DOCUMENTS`, then render:
+Remove `familyHref` from `home-family-gallery.tsx`. Build mapping once from `CATALOGUE_DOCUMENTS`, then render:
 
 ```tsx
 <a
@@ -206,78 +181,71 @@ Create a deterministic mapping from `CATALOGUE_DOCUMENTS`, then render:
   href={document.pdfPath}
   target="_blank"
   rel="noreferrer"
-  aria-label={...}
+  aria-label={locale === "ar" ? `فتح كتالوج ${family.name}` : `Open ${family.name} catalogue`}
 >
 ```
 
-Do not change gallery ordering or visual treatment.
+Keep existing order, artwork, scrolling and hover behavior.
 
-- [ ] **Step 4: Browser link acceptance**
+- [ ] **Step 4: Browser verify all five links**
 
-Check all five anchors on Home resolve to the same PDF paths used by Products catalogue cards.
-
-- [ ] **Step 5: Run focused tests and commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add apps/web/src/features/homepage/sections/home-family-gallery.tsx apps/web/src/test apps/web/tests/e2e/home-catalogue-links.spec.ts
+git add apps/web/src/features/homepage/sections/home-family-gallery.tsx apps/web/src/test/home-family-catalogue-links.test.tsx apps/web/tests/e2e/home-catalogue-links.spec.ts
 git commit -m "feat(home): open catalogue PDFs from family covers"
 ```
 
 ---
 
-### Task 4: Align/enlarge Plastic Surgery lead to the 80rem rail
+### Task 4: Align and enlarge Plastic Surgery on the common 80rem rail
 
 **Files:**
 - Modify: `apps/web/src/styles/client-review-final-polish.css`
-- Possibly modify: `apps/web/src/styles/home-client-redesign.css` only if source rule must be normalized rather than overridden
+- Modify: `apps/web/src/styles/home-client-redesign.css` only to remove a conflicting old 70rem source rule if cleanup is cleaner than override
 - Test: `apps/web/src/test/client-review-round-2026-08-22.test.ts`
 - Browser: `apps/web/tests/e2e/home-comprehensive-alignment.spec.ts`
 
 **Interfaces:**
-- Produces: lead and supporting rows with same max visual rail.
+- Produces exact final geometry:
+
+```css
+.home-comprehensive__lead,
+.home-comprehensive__specialties {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 64.001rem) {
+  .home-comprehensive__lead {
+    grid-template-columns: minmax(16rem, 0.95fr) minmax(0, 1.75fr);
+  }
+}
+```
+
+Tablet keeps the existing two-column responsive intent but the same 80rem outer rail. <=40rem remains one column.
 
 - [ ] **Step 1: Write failing static geometry contract**
 
-Assert final-loaded CSS makes both:
-
-```css
-.home-comprehensive__lead
-.home-comprehensive__specialties
-```
-
-resolve to `width: 100%; max-width: 80rem; margin-inline: auto`.
-
-Also lock a larger lead media proportion at desktop, e.g. a grid near:
-
-```css
-grid-template-columns: minmax(16rem, 0.95fr) minmax(0, 1.75fr);
-```
-
-The exact ratio may be tuned visually but must be committed to one explicit final value, not multiple conflicting overrides.
+Assert both lead/supporting rows resolve to 80rem and the desktop lead ratio is the exact locked value above.
 
 - [ ] **Step 2: Add browser rail test**
 
-At 1366 and 1920 widths, compare the left x-coordinate of:
+At 1366 and 1920 compare `getBoundingClientRect().left/right` of `.home-comprehensive__lead` and `.home-comprehensive__specialties`; both outer bounds must match within 2px.
 
-- `.home-specialty--lead .home-clinical-media`
-- first `.home-comprehensive__specialties .home-clinical-media`
-
-Acceptance tolerance: <= 2px after accounting for intended grid gap/figure structure. If the first card itself does not share exact x because of a deliberate card grid, compare the containing lead/supporting row boundaries and assert they match; use screenshots for final visual sign-off.
+Also assert the lead image width is greater than its pre-change/reference threshold established by the test fixture/screenshot.
 
 - [ ] **Step 3: Implement one final-loaded geometry rule**
 
-Prefer consolidating into `client-review-final-polish.css` because it is intentionally the latest review override.
+Prefer `client-review-final-polish.css` as the final review override and delete conflicting obsolete 70rem declarations where safe.
 
-Mobile <=40rem remains single-column and full-width.
-
-- [ ] **Step 4: Run focused tests/screenshots**
-
-Expected: PASS and visibly aligned left boundary.
+- [ ] **Step 4: Run focused tests + screenshots**
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add apps/web/src/styles/client-review-final-polish.css apps/web/src/test/client-review-round-2026-08-22.test.ts apps/web/tests/e2e/home-comprehensive-alignment.spec.ts
+git add apps/web/src/styles/client-review-final-polish.css apps/web/src/styles/home-client-redesign.css apps/web/src/test/client-review-round-2026-08-22.test.ts apps/web/tests/e2e/home-comprehensive-alignment.spec.ts
 git commit -m "fix(home): align comprehensive plan visual rail"
 ```
 
@@ -291,6 +259,7 @@ git commit -m "fix(home): align comprehensive plan visual rail"
 pnpm --filter @rosa/web test -- \
   src/test/public-hero-geometry-contract.test.ts \
   src/test/public-hero-mobile-assets.test.ts \
+  src/test/home-family-catalogue-links.test.tsx \
   src/test/client-review-round-2026-08-22.test.ts
 ```
 
@@ -310,8 +279,6 @@ pnpm --filter @rosa/web exec playwright test \
 pnpm --filter @rosa/web typecheck
 ```
 
-- [ ] **Step 4: Review no unintended shell regression**
+- [ ] **Step 4: Confirm shared red Contact strip and black footer still render exactly once on each main page**
 
-Check shared red Contact strip and black footer still render once on each main page.
-
-- [ ] **Step 5: Record Gate A commit range before moving to Gate B**
+- [ ] **Step 5: Record Gate A commit range before Gate B**
