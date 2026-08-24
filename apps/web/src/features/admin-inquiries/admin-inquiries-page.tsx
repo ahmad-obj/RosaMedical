@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { AdminAlert, AdminPageHeader, AdminStatusBadge, AdminToolbar } from "@/features/admin-primitives";
 import type { QuoteRequest } from "@/lib/supabase/types";
+import { AdminInquiryPricing } from "./admin-inquiry-pricing";
 import { ADMIN_INQUIRY_WORKFLOW, getInquiryStatusTone, normalizeInquiryStatus, type AdminInquiryStatus } from "./admin-inquiry-workflow";
 
 export function AdminInquiriesPage() {
@@ -51,7 +52,7 @@ export function AdminInquiriesPage() {
 
   return (
     <div className="admin-operations-page admin-inquiries-page">
-      <AdminPageHeader eyebrow="Quotation inquiries" title="Manage quotation inquiries." description="Review customer requirements, update status, and keep private owner notes." />
+      <AdminPageHeader eyebrow="Quotation inquiries" title="Manage quotation inquiries." description="Review customer requirements, submitted product/configuration pricing, update status, and keep private owner notes." />
       <AdminToolbar label="Inquiry filters">
         <div className="admin-control-preview"><label htmlFor="inquiry-search">Search</label><input id="inquiry-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name or email" /></div>
         <div className="admin-control-preview"><label htmlFor="inquiry-status">Status</label><select id="inquiry-status" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All statuses</option>{ADMIN_INQUIRY_WORKFLOW.map((item) => <option key={item}>{item}</option>)}</select></div>
@@ -62,11 +63,24 @@ export function AdminInquiriesPage() {
       <div className="admin-queue-list">
         {records.map((record) => {
           const currentStatus = normalizeInquiryStatus(record.status);
+          const hasStructuredLines = Boolean(record.quote_request_items?.length);
           return (
             <article className="admin-queue-record" key={record.id}>
               <header><div><h2>{record.name}</h2><p>{record.email}{record.phone ? ` · ${record.phone}` : ""}</p></div><AdminStatusBadge tone={getInquiryStatusTone(currentStatus)}>{currentStatus}</AdminStatusBadge></header>
               <p className="admin-queue-record__date">Received {new Date(record.created_at).toLocaleString()}</p>
-              <div className="admin-queue-record__message">{record.message}</div>
+              {record.quote_request_items?.length ? (
+                <AdminInquiryPricing lines={record.quote_request_items} />
+              ) : (
+                <div className="admin-queue-record__message">
+                  <p>{record.message || "No structured product snapshot is available for this historical inquiry."}</p>
+                </div>
+              )}
+              {hasStructuredLines && record.message ? (
+                <details className="admin-inquiry-legacy-message">
+                  <summary>Readable submission snapshot</summary>
+                  <div className="admin-queue-record__message">{record.message}</div>
+                </details>
+              ) : null}
               <form action={(formData) => save(record, formData)} className="admin-queue-editor">
                 <div className="admin-field-preview"><label htmlFor={`inquiry-note-${record.id}`}>Private note</label><textarea id={`inquiry-note-${record.id}`} name="note" rows={3} defaultValue={record.notification || ""} /></div>
                 <div className="admin-field-preview"><label htmlFor={`inquiry-status-${record.id}`}>Status</label><select id={`inquiry-status-${record.id}`} name="status" defaultValue={currentStatus}>{ADMIN_INQUIRY_WORKFLOW.map((item) => <option key={item}>{item}</option>)}</select></div>
