@@ -62,6 +62,14 @@ describe("server-authoritative quotation pricing", () => {
     expect(resolveAuthoritativeQuoteLines([legacy], products, variants)[0]?.productId).toBe("product-1");
   });
 
+  it("rejects a valid product id paired with the wrong public route", () => {
+    expect(() => resolveAuthoritativeQuoteLines(
+      [item({ familySlug: "knives", slug: "different-product" })],
+      products,
+      variants
+    )).toThrow(/unavailable/i);
+  });
+
   it("preserves Price on request when authoritative pricing is null", () => {
     const productOnly = item({ id: "legacy-id", configurationId: "product:legacy-id", lineId: "legacy-id:product:legacy-id" });
     expect(resolveAuthoritativeQuoteLines([productOnly], [{ ...products[0]!, priceSar: null }], [])[0])
