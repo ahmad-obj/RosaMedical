@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createQuotationHashCandidates } from "@/features/catalogue-migration/legacy-inquiry-hash";
 import {
   createPrePricingQuotationHash,
   createQuotationHash,
@@ -70,7 +71,9 @@ describe("pricing-aware quotation payload", () => {
   it("keeps a reproducible pre-pricing route hash for historical duplicate lookup", () => {
     const result = normalizeQuotationPayload(rawPayload());
     if (!result.ok) throw new Error("Fixture normalization failed");
-    expect(createPrePricingQuotationHash(result.value)).toMatch(/^[a-f0-9]{64}$/);
-    expect(createPrePricingQuotationHash(result.value)).not.toBe(createQuotationHash(result.value));
+    const previous = createPrePricingQuotationHash(result.value);
+    expect(previous).toMatch(/^[a-f0-9]{64}$/);
+    expect(previous).not.toBe(createQuotationHash(result.value));
+    expect(createQuotationHashCandidates(result.value)).toContain(previous);
   });
 });
