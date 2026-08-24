@@ -77,8 +77,9 @@ export function resolveAuthoritativeQuoteLines(
   }
 
   return items.map((item, sortOrder): AuthoritativeQuoteLine => {
-    const product = productsById.get(item.id) ?? productsByRoute.get(`${item.familySlug}/${item.slug}`);
-    if (!product || !product.isActive) {
+    const requestedRoute = `${item.familySlug}/${item.slug}`;
+    const product = productsById.get(item.id) ?? productsByRoute.get(requestedRoute);
+    if (!product || !product.isActive || product.routeKey !== requestedRoute) {
       throw new AuthoritativeQuotationError("One or more selected products are unavailable.");
     }
 
