@@ -6,7 +6,8 @@ import {
   mapAuthoritativeProductRow,
   mapAuthoritativeVariantRow,
   quotationLinesForRpc,
-  resolveAuthoritativeQuoteLines
+  resolveAuthoritativeQuoteLines,
+  type AuthoritativeQuoteLine
 } from "@/features/inquiry/quotation-pricing-server";
 import {
   createQuotationHash,
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
       variantRows = data ?? [];
     }
 
-    let authoritativeLines;
+    let authoritativeLines: readonly AuthoritativeQuoteLine[];
     try {
       authoritativeLines = resolveAuthoritativeQuoteLines(
         payload.items,
