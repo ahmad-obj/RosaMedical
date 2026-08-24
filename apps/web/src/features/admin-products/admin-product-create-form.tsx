@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui";
 import { AdminField, AdminFormSection, AdminSelectField, AdminTextareaField } from "@/features/admin-primitives";
 import { getLiveAdminFamilyRows } from "@/features/admin-families";
+import { SAR_HTML_PATTERN } from "@/features/pricing";
 import { createProduct } from "./actions";
 
 type AdminFamilyRow = Awaited<ReturnType<typeof getLiveAdminFamilyRows>>[number];
@@ -55,7 +56,7 @@ export function AdminProductCreateForm({
               name="price_sar"
               type="text"
               inputMode="decimal"
-              pattern="[0-9]+(?:\\.[0-9]{1,2})?"
+              pattern={SAR_HTML_PATTERN}
               placeholder="e.g. 120.00"
               aria-describedby="admin-new-product-price-hint"
             />
