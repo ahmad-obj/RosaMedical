@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactElement } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement
+} from "react";
 import type { FamilyCardModel } from "@/features/public-catalogue";
 import type { PublicLocale } from "@/features/localization/locales";
 import { buildFacetModel } from "../products-facet-model";
@@ -8,10 +15,13 @@ import { filterProducts } from "../products-discovery.logic";
 import {
   DEFAULT_PRODUCTS_DISCOVERY_STATE,
   discoveryStateFromSearchParams,
-  discoveryStateToSearchParams,
+  discoveryStateToSearchParams
+} from "../products-discovery-state";
+import {
+  alignProductsVisibleCount,
   initialProductsVisibleCount,
   nextProductsVisibleCount
-} from "../products-discovery-state";
+} from "../products-result-reveal";
 import type {
   ProductsDiscoveryItem,
   ProductsDiscoveryState,
@@ -22,6 +32,21 @@ import type { ProductsFacetKey } from "../products-facets";
 import { ProductsFilterPanel } from "./products-filter-panel";
 import { ProductsResultCard } from "./products-result-card";
 import { ProductsResultsToolbar } from "./products-results-toolbar";
+
+const DEFAULT_GRID_COLUMNS = 4;
+
+function measuredGridColumns(list: HTMLUListElement): number {
+  const items = Array.from(list.children) as HTMLElement[];
+  if (items.length === 0) return DEFAULT_GRID_COLUMNS;
+
+  const firstTop = items[0]!.getBoundingClientRect().top;
+  let columns = 0;
+  for (const item of items) {
+    if (Math.abs(item.getBoundingClientRect().top - firstTop) >= 1) break;
+    columns += 1;
+  }
+  return Math.max(1, columns);
+}
 
 export function ProductsDiscoveryWorkspace({
   products,
@@ -35,28 +60,39 @@ export function ProductsDiscoveryWorkspace({
   const ar = locale === "ar";
   const [state, setState] = useState<ProductsDiscoveryState>(DEFAULT_PRODUCTS_DISCOVERY_STATE);
   const [hasHydratedUrl, setHasHydratedUrl] = useState(false);
-  const [batchSize, setBatchSize] = useState(12);
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [gridColumns, setGridColumns] = useState(DEFAULT_GRID_COLUMNS);
+  const gridColumnsRef = useRef(DEFAULT_GRID_COLUMNS);
+  const resultsRef = useRef<HTMLUListElement | null>(null);
+  const [visibleCount, setVisibleCount] = useState(() =>
+    initialProductsVisibleCount(DEFAULT_GRID_COLUMNS, "grid")
+  );
   const result = useMemo(() => filterProducts(products, state), [products, state]);
   const facets = useMemo(() => buildFacetModel(products, state), [products, state]);
   const visibleProducts = result.products.slice(0, visibleCount);
   const remaining = Math.max(0, result.total - visibleProducts.length);
+  const nextVisibleTarget = nextProductsVisibleCount(
+    visibleProducts.length,
+    result.total,
+    gridColumns,
+    state.view
+  );
+  const nextBatchCount = Math.max(0, nextVisibleTarget - visibleProducts.length);
 
   useEffect(() => {
     const readLocationState = () => {
       const next = discoveryStateFromSearchParams(new URLSearchParams(window.location.search));
       setState(next);
     };
-    const compact = window.matchMedia("(max-width: 63.99rem)").matches;
-    const initialCount = initialProductsVisibleCount(compact);
 
-    setBatchSize(initialCount);
-    setVisibleCount(initialCount);
     readLocationState();
     setHasHydratedUrl(true);
     window.addEventListener("popstate", readLocationState);
     return () => window.removeEventListener("popstate", readLocationState);
   }, []);
+
+  useEffect(() => {
+    gridColumnsRef.current = gridColumns;
+  }, [gridColumns]);
 
   useEffect(() => {
     if (!hasHydratedUrl) return;
@@ -67,18 +103,52 @@ export function ProductsDiscoveryWorkspace({
   }, [hasHydratedUrl, state]);
 
   useEffect(() => {
-    setVisibleCount(batchSize);
+    setVisibleCount(initialProductsVisibleCount(gridColumnsRef.current, state.view));
   }, [
-    batchSize,
     state.query,
     state.family,
     state.sizes,
     state.directions,
     state.variants,
     state.codeGroups,
-    state.sort,
     state.view
   ]);
+
+  useEffect(() => {
+    setVisibleCount((current) => {
+      const minimum = initialProductsVisibleCount(gridColumns, state.view);
+      return alignProductsVisibleCount(
+        Math.max(current, minimum),
+        result.total,
+        gridColumns,
+        state.view
+      );
+    });
+  }, [gridColumns, result.total, state.view]);
+
+  useLayoutEffect(() => {
+    if (state.view !== "grid") return;
+    const list = resultsRef.current;
+    if (!list) return;
+
+    const measure = () => {
+      const columns = measuredGridColumns(list);
+      setGridColumns((current) => current === columns ? current : columns);
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+
+    const observer = typeof ResizeObserver === "undefined"
+      ? null
+      : new ResizeObserver(measure);
+    observer?.observe(list);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [state.view, visibleProducts.length]);
 
   const setSort = (sort: ProductsSort) => setState((current) => ({ ...current, sort }));
   const setView = (view: ProductsView) => setState((current) => ({ ...current, view }));
@@ -167,7 +237,12 @@ export function ProductsDiscoveryWorkspace({
 
           {result.total > 0 ? (
             <>
-              <ul className={`products-results products-results--${state.view}`} data-products-results>
+              <ul
+                ref={resultsRef}
+                className={`products-results products-results--${state.view}`}
+                data-products-results
+                data-products-columns={state.view === "grid" ? gridColumns : 1}
+              >
                 {visibleProducts.map((product) => (
                   <li key={product.id}>
                     <ProductsResultCard product={product} view={state.view} locale={locale} />
@@ -180,10 +255,14 @@ export function ProductsDiscoveryWorkspace({
                   <button
                     type="button"
                     className="products-results-more__button"
-                    onClick={() => setVisibleCount((current) => nextProductsVisibleCount(current, result.total, batchSize))}
+                    onClick={() => setVisibleCount(nextVisibleTarget)}
                   >
                     <span>{ar ? "عرض المزيد من المنتجات" : "See more products"}</span>
-                    <small>{ar ? `${remaining} متبقي` : `${remaining} remaining`}</small>
+                    <small>
+                      {ar
+                        ? `${nextBatchCount} إضافية · ${remaining} متبقي`
+                        : `${nextBatchCount} more · ${remaining} remaining`}
+                    </small>
                   </button>
                 </div>
               ) : null}
