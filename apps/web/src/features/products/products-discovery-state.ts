@@ -59,11 +59,3 @@ export function discoveryStateToSearchParams(state: ProductsDiscoveryState): URL
   if (state.view !== "grid") params.set("view", state.view);
   return params;
 }
-
-export function initialProductsVisibleCount(compact: boolean): number {
-  return compact ? 8 : 12;
-}
-
-export function nextProductsVisibleCount(current: number, total: number, batch: number): number {
-  return Math.min(total, current + batch);
-}
