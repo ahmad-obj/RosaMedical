@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui";
 import { AdminDataTable, AdminSection, type AdminDataTableColumn } from "@/features/admin-primitives";
-import { formatSar } from "@/features/pricing";
+import { SAR_HTML_PATTERN, formatSar } from "@/features/pricing";
 import type { AdminVariantPricingRow } from "./admin-product-model";
 import { saveVariantPriceOverride } from "./actions";
 
@@ -36,7 +36,7 @@ export function AdminVariantPricing({
             name="price_override_sar"
             type="text"
             inputMode="decimal"
-            pattern="[0-9]+(?:\\.[0-9]{1,2})?"
+            pattern={SAR_HTML_PATTERN}
             defaultValue={row.priceOverrideSar ?? ""}
             placeholder="Inherit base"
             aria-describedby={`variant-price-${row.id}-hint`}
