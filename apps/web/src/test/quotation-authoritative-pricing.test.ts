@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { InquiryItem } from "@/features/inquiry/inquiry-store";
 import {
+  formatAuthoritativeQuotationMessage,
+  quotationLinesForRpc,
   resolveAuthoritativeQuoteLines,
   type AuthoritativePricingProduct,
   type AuthoritativePricingVariant
@@ -124,5 +126,37 @@ describe("server-authoritative quotation pricing", () => {
       products,
       [{ ...variants[0]!, productId: "different-product" }]
     )).toThrow(/configuration/i);
+  });
+
+  it("serializes only authoritative line values for the database RPC", () => {
+    const lines = resolveAuthoritativeQuoteLines([item()], products, variants);
+    expect(quotationLinesForRpc(lines)).toEqual([
+      {
+        productId: "product-1",
+        productVariantId: "variant-1",
+        productName: "Iris Scissors",
+        productCode: "04-0901",
+        sku: "04-0901-14",
+        size: "14 cm",
+        variantType: "Straight",
+        quantity: 2,
+        unitPriceSar: "120.00",
+        lineSubtotalSar: "240.00",
+        notes: "Sterile packing"
+      }
+    ]);
+  });
+
+  it("builds compatibility message from authoritative identity and pricing", () => {
+    const lines = resolveAuthoritativeQuoteLines([item()], products, variants);
+    const message = formatAuthoritativeQuotationMessage(
+      { company: "Test Company", country: "Test Country", notes: "General note" },
+      lines
+    );
+    expect(message).toContain("Iris Scissors");
+    expect(message).toContain("04-0901-14");
+    expect(message).toContain("Unit price: SAR 120.00");
+    expect(message).not.toContain("FORGED-CODE");
+    expect(message).not.toContain("0.01");
   });
 });
