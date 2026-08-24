@@ -1,6 +1,7 @@
 import { CATALOGUE_PRODUCTS } from "@/features/catalogue-registry";
 import {
   createLegacyQuotationHash,
+  createPrePricingQuotationHash,
   createQuotationHash,
   type QuotationPayload
 } from "@/features/inquiry/quotation-payload";
@@ -34,6 +35,7 @@ export function createQuotationHashCandidates(
   payload: QuotationPayload
 ): readonly string[] {
   const current = createQuotationHash(payload);
+  const prePricing = createPrePricingQuotationHash(payload);
   const legacy = createLegacyStaticQuotationHash(payload);
-  return [...new Set(legacy ? [current, legacy] : [current])];
+  return [...new Set([current, prePricing, ...(legacy ? [legacy] : [])])];
 }
