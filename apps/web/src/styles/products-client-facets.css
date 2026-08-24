@@ -1,8 +1,16 @@
-/* Contextual Products facets + progressive reveal. Loaded after products-client-redesign.css. */
+/* Compact contextual Products facets + complete-row progressive reveal. */
 
 @media (min-width: 64rem) {
   .products-discovery-layout {
     grid-template-columns: minmax(14.5rem, 17rem) minmax(0, 1fr);
+  }
+
+  .products-filter-sidebar {
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-inline-end: 0.3rem;
   }
 }
 
@@ -43,7 +51,8 @@
 }
 
 .products-filter-clear:focus-visible,
-.products-filter-expand:focus-visible {
+.products-filter-expand:focus-visible,
+.products-filter-accordion__trigger:focus-visible {
   outline: 2px solid var(--color-rosa-red);
   outline-offset: 3px;
 }
@@ -51,21 +60,106 @@
 .products-filter-group {
   min-width: 0;
   border: 0;
-  border-bottom: 1px solid var(--color-border);
   margin: 0;
-  padding: 0.9rem 0;
+  padding: 0.85rem 0 0.7rem;
+}
+
+.products-filter-group--family {
+  border-bottom: 1px solid var(--color-border);
 }
 
 .products-filter-group legend {
   width: 100%;
   border: 0;
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.4rem;
   padding: 0;
   color: var(--color-ink);
-  font-size: 0.73rem;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.055em;
   text-transform: uppercase;
+}
+
+.products-filter-advanced {
+  display: grid;
+}
+
+.products-filter-accordion {
+  min-width: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.products-filter-accordion__trigger {
+  width: 100%;
+  min-height: 2.8rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 0.75rem;
+  align-items: center;
+  gap: 0.55rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  padding: 0.62rem 0;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.products-filter-accordion__title {
+  min-width: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.products-filter-accordion__summary {
+  max-width: 8.75rem;
+  overflow: hidden;
+  color: var(--color-rosa-red);
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.products-filter-accordion__chevron {
+  inline-size: 0.46rem;
+  block-size: 0.46rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-0.08rem);
+  transform-origin: center;
+  transition: transform var(--motion-micro) var(--motion-ease);
+}
+
+.products-filter-accordion[data-expanded="true"] .products-filter-accordion__chevron {
+  transform: rotate(225deg) translate(-0.05rem, -0.05rem);
+}
+
+.products-filter-accordion[data-expanded="true"] .products-filter-accordion__trigger {
+  color: var(--color-rosa-red);
+}
+
+.products-filter-accordion__panel {
+  max-height: 19rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 0.15rem 0 0.8rem;
+  animation: products-filter-panel-in 180ms var(--motion-ease) both;
+}
+
+@keyframes products-filter-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .products-filter-options {
@@ -78,12 +172,16 @@
   grid-template-columns: 1rem minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.55rem;
-  min-height: 2.15rem;
+  min-height: 2.05rem;
   border: 0;
   color: var(--color-ink-soft);
-  font-size: 0.79rem;
+  font-size: 0.78rem;
   line-height: 1.25;
   cursor: pointer;
+}
+
+.products-filter-group--family .products-filter-option {
+  min-height: 1.95rem;
 }
 
 .products-filter-option input {
@@ -97,8 +195,8 @@
 
 .products-filter-control {
   position: relative;
-  inline-size: 1rem;
-  block-size: 1rem;
+  inline-size: 0.95rem;
+  block-size: 0.95rem;
   border: 1.5px solid color-mix(in srgb, var(--color-ink) 52%, var(--color-border));
   border-radius: 0.16rem;
   background: #fff;
@@ -120,7 +218,7 @@
 .products-filter-option input[type="checkbox"]:checked + .products-filter-control::after {
   content: "";
   position: absolute;
-  inset: 0.18rem 0.3rem 0.3rem 0.27rem;
+  inset: 0.16rem 0.28rem 0.29rem 0.25rem;
   border-right: 1.7px solid #fff;
   border-bottom: 1.7px solid #fff;
   transform: rotate(42deg);
@@ -129,7 +227,7 @@
 .products-filter-option input[type="radio"]:checked + .products-filter-control::after {
   content: "";
   position: absolute;
-  inset: 0.25rem;
+  inset: 0.24rem;
   border-radius: 50%;
   background: #fff;
 }
@@ -145,7 +243,7 @@
 }
 
 .products-filter-option:has(input:disabled) {
-  opacity: 0.45;
+  opacity: 0.42;
   cursor: not-allowed;
 }
 
@@ -163,7 +261,7 @@
 
 .products-filter-search {
   display: block;
-  margin: 0 0 0.45rem;
+  margin: 0.1rem 0 0.45rem;
 }
 
 .products-filter-search input {
@@ -197,21 +295,21 @@
 .products-results-more {
   display: grid;
   place-items: center;
-  padding-top: clamp(1.4rem, 3vw, 2.4rem);
+  padding-top: clamp(1.6rem, 3vw, 2.6rem);
 }
 
 .products-results-more__button {
-  min-width: min(100%, 15rem);
-  min-height: 3.15rem;
+  min-width: min(100%, 16.5rem);
+  min-height: 3.3rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
+  gap: 0.65rem;
   border: 1px solid var(--color-ink);
   border-radius: 0.2rem;
   background: var(--color-ink);
   color: #fff;
-  padding: 0.65rem 1.15rem;
+  padding: 0.7rem 1.2rem;
   font: inherit;
   font-size: 0.8rem;
   font-weight: 750;
@@ -234,7 +332,8 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .products-filter-option:not(:has(input:disabled)):hover {
+  .products-filter-option:not(:has(input:disabled)):hover,
+  .products-filter-accordion__trigger:hover {
     color: var(--color-rosa-red);
   }
 
@@ -259,17 +358,28 @@
     background: #fff;
     padding-top: 0.7rem;
   }
+
+  .products-filter-accordion__panel {
+    max-height: 17rem;
+  }
 }
 
 @media (max-width: 40rem) {
   .products-results-more__button {
     width: 100%;
+    flex-wrap: wrap;
+    row-gap: 0.2rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .products-filter-control,
+  .products-filter-accordion__chevron,
   .products-results-more__button {
     transition: none;
+  }
+
+  .products-filter-accordion__panel {
+    animation: none;
   }
 }
