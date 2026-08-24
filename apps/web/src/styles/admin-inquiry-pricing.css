@@ -1,0 +1,125 @@
+/* Structured quotation snapshots inside the owner inquiry queue. */
+
+.admin-inquiry-pricing {
+  display: grid;
+  gap: 0.9rem;
+  margin-block: 0.9rem;
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, #fff 96%, var(--color-paper));
+  padding: clamp(0.75rem, 1.4vw, 1rem);
+}
+
+.admin-inquiry-pricing__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.admin-inquiry-pricing table {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.admin-inquiry-pricing caption {
+  padding-bottom: 0.55rem;
+  color: var(--color-ink-soft);
+  text-align: start;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.admin-inquiry-pricing :is(th, td) {
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 74%, transparent);
+  padding: 0.62rem 0.55rem;
+  text-align: start;
+  vertical-align: top;
+}
+
+.admin-inquiry-pricing th {
+  color: var(--color-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.admin-inquiry-pricing td:nth-child(3),
+.admin-inquiry-pricing td:nth-child(4),
+.admin-inquiry-pricing td:nth-child(5),
+.admin-inquiry-pricing__summary dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-inquiry-pricing td:first-child,
+.admin-inquiry-pricing td:nth-child(2) {
+  display: table-cell;
+}
+
+.admin-inquiry-pricing td:first-child > *,
+.admin-inquiry-pricing td:nth-child(2) > * {
+  display: block;
+}
+
+.admin-inquiry-pricing td small {
+  max-width: 24rem;
+  margin-top: 0.25rem;
+  color: var(--color-ink-soft);
+  line-height: 1.4;
+}
+
+.admin-inquiry-pricing__summary {
+  display: grid;
+  gap: 0.35rem;
+  width: min(100%, 30rem);
+  margin: 0 0 0 auto;
+}
+
+.admin-inquiry-pricing__summary > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 74%, transparent);
+  padding-block: 0.4rem;
+}
+
+.admin-inquiry-pricing__summary dt {
+  color: var(--color-ink-soft);
+  font-size: 0.75rem;
+}
+
+.admin-inquiry-pricing__summary dd {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-align: end;
+}
+
+.admin-inquiry-legacy-message {
+  margin-block: 0.6rem 1rem;
+}
+
+.admin-inquiry-legacy-message summary {
+  width: fit-content;
+  color: var(--color-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+@media (max-width: 48rem) {
+  .admin-inquiry-pricing {
+    padding: 0.65rem;
+  }
+
+  .admin-inquiry-pricing__summary {
+    width: 100%;
+  }
+
+  .admin-inquiry-pricing__summary > div {
+    align-items: flex-start;
+  }
+}
