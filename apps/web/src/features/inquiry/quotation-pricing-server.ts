@@ -9,6 +9,7 @@ import type { InquiryItem } from "./inquiry-store";
 
 export interface AuthoritativePricingProduct {
   id: string;
+  routeKey?: string;
   name: string;
   code: string;
   priceSar: SarAmount | null;
@@ -66,25 +67,32 @@ export function resolveAuthoritativeQuoteLines(
   variants: readonly AuthoritativePricingVariant[]
 ): readonly AuthoritativeQuoteLine[] {
   const productsById = new Map(products.map((product) => [product.id, product] as const));
+  const productsByRoute = new Map(
+    products.flatMap((product) => product.routeKey ? [[product.routeKey, product] as const] : [])
+  );
   const variantsById = new Map(variants.map((variant) => [variant.id, variant] as const));
+  const variantCountByProduct = new Map<string, number>();
+  for (const variant of variants) {
+    variantCountByProduct.set(variant.productId, (variantCountByProduct.get(variant.productId) ?? 0) + 1);
+  }
 
   return items.map((item, sortOrder): AuthoritativeQuoteLine => {
-    const product = productsById.get(item.id);
+    const product = productsById.get(item.id) ?? productsByRoute.get(`${item.familySlug}/${item.slug}`);
     if (!product || !product.isActive) {
       throw new AuthoritativeQuotationError("One or more selected products are unavailable.");
     }
 
-    const productOnlyConfiguration = item.configurationId === `product:${product.id}`;
-    const variant = productOnlyConfiguration ? undefined : variantsById.get(item.configurationId);
+    const productOnlyConfiguration = item.configurationId.startsWith("product:");
+    if (productOnlyConfiguration && (variantCountByProduct.get(product.id) ?? 0) > 0) {
+      throw new AuthoritativeQuotationError("One or more selected product configurations are unavailable.");
+    }
 
+    const variant = productOnlyConfiguration ? undefined : variantsById.get(item.configurationId);
     if (!productOnlyConfiguration && (!variant || variant.productId !== product.id)) {
       throw new AuthoritativeQuotationError("One or more selected product configurations are unavailable.");
     }
 
-    const unitPriceSar = effectiveConfigurationPrice(
-      product.priceSar,
-      variant?.priceOverrideSar
-    );
+    const unitPriceSar = effectiveConfigurationPrice(product.priceSar, variant?.priceOverrideSar);
 
     return {
       sortOrder,
@@ -143,9 +151,10 @@ export function mapAuthoritativeProductRow(row: {
   item_code: string | null;
   price: string | number | null;
   is_active: boolean;
-}): AuthoritativePricingProduct {
+}, routeKey?: string): AuthoritativePricingProduct {
   return {
     id: row.id,
+    ...(routeKey ? { routeKey } : {}),
     name: row.name_en,
     code: row.item_code ?? "",
     priceSar: normalizeSarAmount(row.price),
