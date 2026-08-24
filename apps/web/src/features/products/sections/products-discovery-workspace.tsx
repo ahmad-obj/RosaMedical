@@ -62,6 +62,7 @@ export function ProductsDiscoveryWorkspace({
   const [hasHydratedUrl, setHasHydratedUrl] = useState(false);
   const [gridColumns, setGridColumns] = useState(DEFAULT_GRID_COLUMNS);
   const gridColumnsRef = useRef(DEFAULT_GRID_COLUMNS);
+  const hasMeasuredGridRef = useRef(false);
   const resultsRef = useRef<HTMLUListElement | null>(null);
   const [visibleCount, setVisibleCount] = useState(() =>
     initialProductsVisibleCount(DEFAULT_GRID_COLUMNS, "grid")
@@ -133,7 +134,14 @@ export function ProductsDiscoveryWorkspace({
 
     const measure = () => {
       const columns = measuredGridColumns(list);
+      const firstMeasurement = !hasMeasuredGridRef.current;
+      hasMeasuredGridRef.current = true;
+      gridColumnsRef.current = columns;
       setGridColumns((current) => current === columns ? current : columns);
+
+      if (firstMeasurement) {
+        setVisibleCount(initialProductsVisibleCount(columns, "grid"));
+      }
     };
 
     measure();
