@@ -1,5 +1,6 @@
 import {
   effectiveConfigurationPrice,
+  formatSar,
   multiplySar,
   normalizeSarAmount,
   type SarAmount
@@ -25,6 +26,20 @@ export interface AuthoritativePricingVariant {
 
 export interface AuthoritativeQuoteLine {
   sortOrder: number;
+  productId: string;
+  productVariantId: string | null;
+  productName: string;
+  productCode: string;
+  sku: string;
+  size: string;
+  variantType: string;
+  quantity: number;
+  unitPriceSar: SarAmount | null;
+  lineSubtotalSar: SarAmount | null;
+  notes: string;
+}
+
+export interface QuotationRpcItem {
   productId: string;
   productVariantId: string | null;
   productName: string;
@@ -86,6 +101,40 @@ export function resolveAuthoritativeQuoteLines(
       notes: item.notes
     };
   });
+}
+
+export function quotationLinesForRpc(
+  lines: readonly AuthoritativeQuoteLine[]
+): readonly QuotationRpcItem[] {
+  return lines.map(({ sortOrder: _sortOrder, ...line }) => line);
+}
+
+export function formatAuthoritativeQuotationMessage(
+  context: { company: string; country: string; notes: string },
+  lines: readonly AuthoritativeQuoteLine[]
+): string {
+  const productLines = lines.map((line, index) => [
+    `${index + 1}. ${line.productName}`,
+    `Code: ${line.productCode}`,
+    `SKU: ${line.sku || line.productCode}`,
+    `Size: ${line.size || "Not specified"}`,
+    `Variant: ${line.variantType || "Not specified"}`,
+    `Quantity: ${line.quantity}`,
+    `Unit price: ${line.unitPriceSar ? formatSar(line.unitPriceSar, "en") : "Price on request"}`,
+    `Line subtotal: ${line.lineSubtotalSar ? formatSar(line.lineSubtotalSar, "en") : "Price on request"}`,
+    line.notes ? `Line note: ${line.notes}` : null
+  ].filter((value): value is string => value !== null).join(" | "));
+
+  return [
+    "Quotation request",
+    context.company ? `Company: ${context.company}` : null,
+    context.country ? `Country: ${context.country}` : null,
+    "",
+    "Selected products:",
+    ...productLines,
+    context.notes ? "" : null,
+    context.notes ? `General notes: ${context.notes}` : null
+  ].filter((value): value is string => value !== null).join("\n");
 }
 
 export function mapAuthoritativeProductRow(row: {
