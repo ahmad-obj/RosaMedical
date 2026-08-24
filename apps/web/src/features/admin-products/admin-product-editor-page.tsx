@@ -9,7 +9,7 @@ import {
   AdminStatusBadge,
   AdminTextareaField
 } from "@/features/admin-primitives";
-import { formatProductPriceSummary } from "@/features/pricing";
+import { SAR_HTML_PATTERN, formatProductPriceSummary } from "@/features/pricing";
 import { ProductMediaPlaceholder } from "@/features/public-catalogue";
 import type { AdminProductEditorModel } from "./admin-product-model";
 import { AdminProductCompleteness } from "./admin-product-completeness";
@@ -93,7 +93,7 @@ export function AdminProductEditorPage({
                 name="price_sar"
                 type="text"
                 inputMode="decimal"
-                pattern="[0-9]+(?:\\.[0-9]{1,2})?"
+                pattern={SAR_HTML_PATTERN}
                 defaultValue={product.basePriceSar ?? ""}
                 placeholder="Price on request"
                 aria-describedby={`admin-product-${product.id}-price-hint`}
