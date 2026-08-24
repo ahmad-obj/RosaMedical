@@ -1,5 +1,6 @@
 export type SarAmount = string;
 
+export const SAR_HTML_PATTERN = "[0-9]+([.][0-9]{1,2})?";
 const SAR_INPUT_PATTERN = /^\d+(?:\.\d{1,2})?$/;
 
 function canonicalSar(value: string): SarAmount {
