@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import type { InquiryItem } from "./inquiry-store";
+import { normalizeSarAmount } from "@/features/pricing";
+import { createInquiryLineId, type InquiryItem } from "./inquiry-store";
 
 export interface QuotationPayload {
   name: string;
@@ -38,22 +39,29 @@ function normalizeItem(value: unknown): InquiryItem | null {
   const slug = text(item.slug, 200);
   const name = text(item.name, 200);
   const code = text(item.code, 100);
+  const configurationId = text(item.configurationId, 200) || (id ? `product:${id}` : "");
+  const sku = text(item.sku, 100) || code;
   const quantity = typeof item.quantity === "number" ? Math.floor(item.quantity) : 0;
 
-  if (!id || !familySlug || !slug || !name || !code || quantity < 1 || quantity > 10000) {
+  if (!id || !familySlug || !slug || !name || !code || !configurationId || quantity < 1 || quantity > 10000) {
     return null;
   }
 
   return {
+    lineId: createInquiryLineId(id, configurationId),
     id,
     familySlug,
     slug,
     name,
     code,
+    configurationId,
+    sku,
     size: text(item.size, 100),
     variant: text(item.variant, 100),
     quantity,
-    notes: text(item.notes, 500)
+    notes: text(item.notes, 500),
+    unitPriceSar: normalizeSarAmount(item.unitPriceSar),
+    currency: "SAR"
   };
 }
 
@@ -102,6 +110,7 @@ export function formatQuotationMessage(payload: QuotationPayload): string {
     const details = [
       `${index + 1}. ${item.name}`,
       `Code: ${item.code}`,
+      `SKU: ${item.sku || item.code}`,
       `Family: ${item.familySlug}`,
       `Size: ${item.size || "Not specified"}`,
       `Variant: ${item.variant || "Not specified"}`,
@@ -144,6 +153,23 @@ export function createQuotationHash(payload: QuotationPayload): string {
     items: payload.items.map((item) => ({
       familySlug: item.familySlug,
       slug: item.slug,
+      configurationId: item.configurationId,
+      quantity: item.quantity,
+      notes: item.notes
+    }))
+  });
+}
+
+/**
+ * Reproduces the immediately pre-pricing route-based hash so quotation rows
+ * created before configuration identity was introduced remain detectable.
+ */
+export function createPrePricingQuotationHash(payload: QuotationPayload): string {
+  return hashExactRequest({
+    ...normalizedHashEnvelope(payload),
+    items: payload.items.map((item) => ({
+      familySlug: item.familySlug,
+      slug: item.slug,
       name: item.name,
       code: item.code,
       size: item.size,
@@ -155,9 +181,8 @@ export function createQuotationHash(payload: QuotationPayload): string {
 }
 
 /**
- * Reproduces the pre-catalogue-cutover hash format, which included the
- * implementation-specific product id. Keep only while old quote rows may carry
- * that historical hash.
+ * Reproduces the older implementation-specific id hash. Keep while historical
+ * quote rows may carry that format.
  */
 export function createLegacyQuotationHash(payload: QuotationPayload): string {
   return hashExactRequest({
