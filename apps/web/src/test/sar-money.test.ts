@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  SAR_HTML_PATTERN,
   formatSar,
   halalasToSar,
   minSar,
@@ -25,6 +26,17 @@ describe("exact SAR money primitives", () => {
     expect(validateSarInput("abc")).toMatchObject({ ok: false });
     expect(validateSarInput("  ")).toEqual({ ok: true, value: null });
     expect(validateSarInput("0")).toEqual({ ok: true, value: "0.00" });
+  });
+
+  it("shares an HTML-safe decimal pattern with browser price fields", () => {
+    const browserPattern = new RegExp(`^(?:${SAR_HTML_PATTERN})$`);
+    expect(browserPattern.test("120")).toBe(true);
+    expect(browserPattern.test("120.5")).toBe(true);
+    expect(browserPattern.test("120.50")).toBe(true);
+    expect(browserPattern.test("0.00")).toBe(true);
+    expect(browserPattern.test("-1")).toBe(false);
+    expect(browserPattern.test("120.555")).toBe(false);
+    expect(browserPattern.test("12\\.50")).toBe(false);
   });
 
   it("performs arithmetic in integer halalas", () => {
