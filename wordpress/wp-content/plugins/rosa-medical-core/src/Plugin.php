@@ -22,5 +22,17 @@ final class Plugin
 
         add_action('admin_init', [BusinessSettings::class, 'register']);
         add_action('admin_menu', [BusinessSettings::class, 'registerPage']);
+        add_filter('template_include', [self::class, 'productTemplate']);
+    }
+
+    public static function productTemplate(string $template): string
+    {
+        if (! function_exists('is_product') || ! is_product()) {
+            return $template;
+        }
+
+        $rosa_template = dirname(ROSA_MEDICAL_CORE_FILE) . '/templates/product-detail-prototype.php';
+
+        return is_readable($rosa_template) ? $rosa_template : $template;
     }
 }
