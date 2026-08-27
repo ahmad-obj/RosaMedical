@@ -1,13 +1,35 @@
 # Rosa Medical WordPress migration workspace
 
-This directory contains only Rosa-owned WordPress migration/custom-code tooling. WordPress core, proprietary plugin/template archives, secrets, database state and uploads are not source-controlled here.
+This directory contains Rosa-owned WordPress migration/custom-code tooling. WordPress core, secrets, database state and generated uploads are not source-controlled here.
 
-## Gate 0 is free-first
+## Active foundation
 
-The default compatibility spike uses WordPress + Hello Elementor + Elementor Free + WooCommerce. The purchased MedicaShop kit is then imported and inspected.
+The authoritative baseline is now:
 
-Elementor Pro is **not** a default prerequisite for starting the spike. Set `ROSA_GATE0_MODE=pro` only when the free pass has identified a concrete Pro-only template/feature worth comparing. The MedicaShop marketplace listing itself says some templates/features require Elementor Pro, so the purpose of the comparison is to determine whether Rosa benefits enough to justify paying for Pro or whether Rosa-owned theme/plugin rendering should replace those parts.
+- WordPress
+- Hello Elementor
+- Elementor Free
+- WooCommerce
+- Rosa child theme
+- `rosa-medical-core`
 
-WPML is also not required for Gate 0. Representative RTL compatibility can be checked using an Arabic WordPress locale/test page. The final multilingual plugin decision is a later architecture/cost gate.
+MedicaShop, Elementor Pro, ElementsKit, Skyboot and WPML are **not** baseline dependencies and are not required to start the migration.
 
-See `docs/runbooks/wordpress-local.md`.
+The current architectural specification is:
+
+`docs/superpowers/specs/2026-08-27-rosa-wordpress-free-custom-foundation-design.md`
+
+Before full catalogue migration, run the disposable **Free Foundation Gate**. Its purpose is to prove WordPress/Elementor/WooCommerce plus Rosa-owned theme/plugin source can support editable marketing pages, shared dynamic product rendering, centralized business settings, responsive shell behavior and representative RTL behavior without paid dependencies.
+
+Start with:
+
+```bash
+cp wordpress/dev/.env.example wordpress/dev/.env
+bash wordpress/scripts/foundation-preflight.sh
+```
+
+See `docs/runbooks/wordpress-local.md` for the complete local workflow.
+
+## Safety boundary
+
+Hostinger, Cloudflare production, live Rosa databases and unrelated sites/domains are outside this local workspace. Do not access or modify them through these scripts.
