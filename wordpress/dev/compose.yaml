@@ -1,4 +1,4 @@
-name: rosa-medical-gate0
+name: rosa-medical-foundation
 
 services:
   db:
@@ -10,7 +10,7 @@ services:
       MARIADB_PASSWORD: ${ROSA_WP_DB_PASSWORD:-rosa-local-only}
       MARIADB_ROOT_PASSWORD: ${ROSA_WP_DB_ROOT_PASSWORD:-rosa-root-local-only}
     volumes:
-      - rosa_gate0_db:/var/lib/mysql
+      - rosa_foundation_db:/var/lib/mysql
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
@@ -32,7 +32,9 @@ services:
       WORDPRESS_DB_PASSWORD: ${ROSA_WP_DB_PASSWORD:-rosa-local-only}
       WORDPRESS_DEBUG: ${ROSA_WP_DEBUG:-1}
     volumes:
-      - rosa_gate0_wordpress:/var/www/html
+      - rosa_foundation_wordpress:/var/www/html
+      - ../wp-content/plugins/rosa-medical-core:/var/www/html/wp-content/plugins/rosa-medical-core
+      - ../wp-content/themes/rosa-medical-child:/var/www/html/wp-content/themes/rosa-medical-child
 
   wpcli:
     image: wordpress:cli
@@ -47,11 +49,13 @@ services:
       WORDPRESS_DB_USER: ${ROSA_WP_DB_USER:-rosa}
       WORDPRESS_DB_PASSWORD: ${ROSA_WP_DB_PASSWORD:-rosa-local-only}
     volumes:
-      - rosa_gate0_wordpress:/var/www/html
+      - rosa_foundation_wordpress:/var/www/html
+      - ../wp-content/plugins/rosa-medical-core:/var/www/html/wp-content/plugins/rosa-medical-core
+      - ../wp-content/themes/rosa-medical-child:/var/www/html/wp-content/themes/rosa-medical-child
     entrypoint: ["wp"]
 
 volumes:
-  rosa_gate0_db:
-    name: rosa_medical_gate0_db
-  rosa_gate0_wordpress:
-    name: rosa_medical_gate0_wordpress
+  rosa_foundation_db:
+    name: rosa_medical_foundation_db
+  rosa_foundation_wordpress:
+    name: rosa_medical_foundation_wordpress
