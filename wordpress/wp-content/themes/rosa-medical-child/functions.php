@@ -1,0 +1,42 @@
+<?php
+/**
+ * Rosa Medical child-theme setup.
+ */
+
+if (! defined('ABSPATH')) {
+    exit;
+}
+
+add_action('after_setup_theme', static function (): void {
+    register_nav_menus([
+        'primary' => __('Primary Navigation', 'rosa-medical'),
+    ]);
+});
+
+add_action('wp_enqueue_scripts', static function (): void {
+    $theme = wp_get_theme();
+    $version = (string) $theme->get('Version');
+
+    wp_enqueue_style(
+        'rosa-medical-tokens',
+        get_stylesheet_directory_uri() . '/assets/css/tokens.css',
+        [],
+        $version
+    );
+
+    wp_enqueue_style(
+        'rosa-medical-base',
+        get_stylesheet_directory_uri() . '/assets/css/base.css',
+        ['rosa-medical-tokens'],
+        $version
+    );
+});
+
+function rosa_theme_business_value(string $key, string $default = ''): string
+{
+    if (function_exists('rosa_business_value')) {
+        return rosa_business_value($key, $default);
+    }
+
+    return $default;
+}
