@@ -22,7 +22,11 @@ final class Plugin
 
         add_action('admin_init', [BusinessSettings::class, 'register']);
         add_action('admin_menu', [BusinessSettings::class, 'registerPage']);
-        add_filter('template_include', [self::class, 'productTemplate']);
+
+        // Elementor Free registers template_include at priority 11. Run later so
+        // Rosa's shared Product Detail prototype remains authoritative only for
+        // WooCommerce product requests while leaving all other templates alone.
+        add_filter('template_include', [self::class, 'productTemplate'], 100);
     }
 
     public static function productTemplate(string $template): string
