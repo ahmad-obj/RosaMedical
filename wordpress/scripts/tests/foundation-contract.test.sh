@@ -20,5 +20,7 @@ for token in elementor woocommerce rosa-medical-core rosa-medical-child; do
   grep -q "$token" "$REPORT" || fail "version report missing $token"
 done
 grep -q 'Foundation runtime report failed:' "$REPORT" || fail 'version report must fail explicitly when a component lookup fails'
+grep -q '^wordpress_version=' "$REPORT" || fail 'version report must resolve values before rendering output'
+grep -q '^elementor_version=' "$REPORT" || fail 'version report must resolve plugin versions before rendering output'
 
 printf 'PASS: free foundation compose/bootstrap contract\n'
