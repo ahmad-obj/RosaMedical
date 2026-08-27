@@ -1,4 +1,4 @@
-# Rosa Medical WordPress local / Gate 0 runbook
+# Rosa Medical WordPress local / Free Foundation Gate runbook
 
 ## Safety boundary
 
@@ -6,52 +6,60 @@ This environment is disposable and local. It must not connect to Hostinger, the 
 
 ## Prerequisites
 
-- Docker with Compose v2
-- purchased MedicaShop Template Kit ZIP stored outside the repository
-- Elementor Pro ZIP only if a later controlled Pro comparison is explicitly chosen
+- Docker
+- Docker Compose v2
 
-## Free-first pass
+No MedicaShop ZIP, Elementor Pro archive, WPML licence or other paid dependency is required.
+
+## Active architecture
+
+Use:
+
+- WordPress
+- Hello Elementor
+- Elementor Free
+- WooCommerce
+- Rosa child theme
+- `rosa-medical-core`
+
+The controlling specification is `docs/superpowers/specs/2026-08-27-rosa-wordpress-free-custom-foundation-design.md`.
+
+## Preflight
 
 ```bash
 cp wordpress/dev/.env.example wordpress/dev/.env
-export ROSA_GATE0_MODE=free
-export ROSA_MEDICASHOP_KIT_ZIP=/absolute/path/to/medicashop.zip
-bash wordpress/scripts/gate0-preflight.sh
-bash wordpress/scripts/gate0-bootstrap.sh
+bash wordpress/scripts/foundation-preflight.sh
 ```
 
-Open `http://localhost:8088`, import the MedicaShop kit using Elementor/Envato's supported import path, and record exactly which templates/widgets fail or are marked Pro-only.
+Expected:
 
-Do **not** install Elementor Pro merely because the kit advertises it. First classify the missing functionality:
-
-- irrelevant retail/demo page → discard;
-- Rosa can replace it with `rosa-medical-core`/child-theme rendering → custom replacement candidate;
-- materially improves safe client editing or required shared dynamic presentation → Pro comparison candidate.
-
-## Controlled Pro comparison
-
-Only after a concrete Pro candidate exists:
-
-```bash
-export ROSA_GATE0_MODE=pro
-export ROSA_MEDICASHOP_KIT_ZIP=/absolute/path/to/medicashop.zip
-export ROSA_ELEMENTOR_PRO_ZIP=/absolute/path/to/elementor-pro.zip
-bash wordpress/scripts/gate0-preflight.sh
-bash wordpress/scripts/gate0-bootstrap.sh
+```text
+Foundation preflight passed.
 ```
 
-Compare the exact same required Rosa templates/features. The comparison is evidence for a purchase decision; it is not itself authorization to buy anything.
+The next implementation task replaces the old MedicaShop bootstrap with `foundation-bootstrap.sh`, which will install only the free foundation and activate the Rosa-owned theme/plugin source.
 
-## Runtime report
+## Foundation-gate acceptance
 
-```bash
-bash wordpress/scripts/gate0-version-report.sh > /tmp/rosa-gate0-runtime.md
-```
+Before full catalogue migration, prove all of the following in the disposable local runtime:
+
+1. WordPress boots cleanly.
+2. Elementor Free can create, reopen, edit and save representative Home/About/Contact content.
+3. WooCommerce can represent one verified real Rosa variable product without invented combinations.
+4. One shared Rosa Product Detail prototype reads WooCommerce product/variation/SKU data dynamically.
+5. Centralized Rosa business/contact settings render in at least two separate surfaces.
+6. Representative desktop/tablet/mobile shell layouts remain structurally sound.
+7. Representative Arabic/RTL shell rendering does not structurally break.
+8. No fatal PHP errors occur.
+9. No console-breaking JavaScript errors occur.
+10. The environment resets safely.
 
 ## Reset
+
+The existing reset script is limited to the local Rosa Compose project:
 
 ```bash
 ROSA_GATE0_CONFIRM_RESET=yes bash wordpress/scripts/reset-local.sh
 ```
 
-The reset command targets only the Compose project/volumes named for Rosa Medical Gate 0.
+It must never target remote infrastructure.
