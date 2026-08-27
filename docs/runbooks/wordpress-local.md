@@ -24,20 +24,29 @@ Use:
 
 The controlling specification is `docs/superpowers/specs/2026-08-27-rosa-wordpress-free-custom-foundation-design.md`.
 
-## Preflight
+## Preflight and bootstrap
 
 ```bash
 cp wordpress/dev/.env.example wordpress/dev/.env
 bash wordpress/scripts/foundation-preflight.sh
+bash wordpress/scripts/foundation-bootstrap.sh
 ```
 
-Expected:
+Expected preflight output:
 
 ```text
 Foundation preflight passed.
 ```
 
-The next implementation task replaces the old MedicaShop bootstrap with `foundation-bootstrap.sh`, which will install only the free foundation and activate the Rosa-owned theme/plugin source.
+The bootstrap starts only the disposable Rosa WordPress/MariaDB environment, installs Hello Elementor, Elementor Free and WooCommerce, then activates the version-controlled `rosa-medical-child` theme and `rosa-medical-core` plugin.
+
+## Runtime report
+
+```bash
+bash wordpress/scripts/foundation-version-report.sh
+```
+
+This reports the actual WordPress, PHP, MariaDB, active theme, Elementor, WooCommerce and Rosa plugin versions used by the local gate.
 
 ## Foundation-gate acceptance
 
@@ -56,10 +65,12 @@ Before full catalogue migration, prove all of the following in the disposable lo
 
 ## Reset
 
-The existing reset script is limited to the local Rosa Compose project:
+The reset script is limited to the local Rosa Compose project:
 
 ```bash
-ROSA_GATE0_CONFIRM_RESET=yes bash wordpress/scripts/reset-local.sh
+ROSA_FOUNDATION_CONFIRM_RESET=yes bash wordpress/scripts/reset-local.sh
 ```
 
-It must never target remote infrastructure.
+The older `ROSA_GATE0_CONFIRM_RESET=yes` variable is accepted temporarily for compatibility with the superseded local script, but new usage should use `ROSA_FOUNDATION_CONFIRM_RESET`.
+
+The reset command must never target remote infrastructure.
