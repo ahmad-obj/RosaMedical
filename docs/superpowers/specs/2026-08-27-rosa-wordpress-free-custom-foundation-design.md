@@ -1,7 +1,7 @@
 # Rosa Medical — Free-First WordPress Custom Foundation Architecture
 
 Date: 2026-08-27
-Status: superseding architecture for user review
+Status: approved; authoritative replacement architecture
 Supersedes: MedicaShop/Elementor Pro as required presentation dependencies in `2026-08-27-rosa-wordpress-medicashop-migration-design.md`
 
 ## 1. Decision
