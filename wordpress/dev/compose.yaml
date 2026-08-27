@@ -1,0 +1,57 @@
+name: rosa-medical-gate0
+
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${ROSA_WP_DB_NAME:-rosa_gate0}
+      MARIADB_USER: ${ROSA_WP_DB_USER:-rosa}
+      MARIADB_PASSWORD: ${ROSA_WP_DB_PASSWORD:-rosa-local-only}
+      MARIADB_ROOT_PASSWORD: ${ROSA_WP_DB_ROOT_PASSWORD:-rosa-root-local-only}
+    volumes:
+      - rosa_gate0_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  wordpress:
+    image: wordpress:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${ROSA_WP_PORT:-8088}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${ROSA_WP_DB_NAME:-rosa_gate0}
+      WORDPRESS_DB_USER: ${ROSA_WP_DB_USER:-rosa}
+      WORDPRESS_DB_PASSWORD: ${ROSA_WP_DB_PASSWORD:-rosa-local-only}
+      WORDPRESS_DEBUG: ${ROSA_WP_DEBUG:-1}
+    volumes:
+      - rosa_gate0_wordpress:/var/www/html
+
+  wpcli:
+    image: wordpress:cli
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${ROSA_WP_DB_NAME:-rosa_gate0}
+      WORDPRESS_DB_USER: ${ROSA_WP_DB_USER:-rosa}
+      WORDPRESS_DB_PASSWORD: ${ROSA_WP_DB_PASSWORD:-rosa-local-only}
+    volumes:
+      - rosa_gate0_wordpress:/var/www/html
+    entrypoint: ["wp"]
+
+volumes:
+  rosa_gate0_db:
+    name: rosa_medical_gate0_db
+  rosa_gate0_wordpress:
+    name: rosa_medical_gate0_wordpress
