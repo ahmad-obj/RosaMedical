@@ -91,7 +91,8 @@ restore_business_settings() {
 trap restore_business_settings EXIT
 wp option update rosa_business_settings "{\"phone\":\"$verification_phone\"}" --format=json >/dev/null
 home_html="$(curl -fsS "$(wp option get home)")" || fail 'home page failed while verifying centralized business settings'
-phone_occurrences="$(( ( ${#home_html} - ${#home_html//$verification_phone/} ) / ${#verification_phone} ))"
+home_without_phone="${home_html//$verification_phone/}"
+phone_occurrences="$(( ( ${#home_html} - ${#home_without_phone} ) / ${#verification_phone} ))"
 restore_business_settings
 trap - EXIT
 [[ "$phone_occurrences" -ge 2 ]] || fail 'centralized phone setting did not render in two independent shell surfaces'
