@@ -53,6 +53,10 @@ fi
 
 wp plugin activate elementor >/dev/null
 wp plugin activate woocommerce >/dev/null
+# WooCommerce can default a newly created store to coming-soon mode. The
+# disposable Rosa foundation must expose public catalogue routes so shared
+# templates and acceptance checks execute through the normal WordPress loader.
+wp option update woocommerce_coming_soon no >/dev/null
 wp theme activate rosa-medical-child >/dev/null
 wp plugin activate rosa-medical-core >/dev/null
 wp rewrite structure '/%postname%/' --hard >/dev/null
