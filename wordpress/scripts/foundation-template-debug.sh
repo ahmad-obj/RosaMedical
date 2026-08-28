@@ -40,35 +40,72 @@ function rosa_debug_write(string $label, string $value): void
     );
 }
 
+function rosa_debug_callback_name($callback): string
+{
+    if (is_array($callback) && count($callback) === 2) {
+        $owner = is_object($callback[0]) ? get_class($callback[0]) : (string) $callback[0];
+        return $owner . '::' . (string) $callback[1];
+    }
+    if ($callback instanceof Closure) {
+        return 'Closure';
+    }
+    if (is_string($callback)) {
+        return $callback;
+    }
+    if (is_object($callback) && method_exists($callback, '__invoke')) {
+        return get_class($callback) . '::__invoke';
+    }
+    return gettype($callback);
+}
+
 add_action('template_redirect', static function (): void {
     rosa_debug_write('Redirect-IsProduct', function_exists('is_product') && is_product() ? 'yes' : 'no');
     rosa_debug_write('Redirect-IsSingularProduct', is_singular('product') ? 'yes' : 'no');
     rosa_debug_write('Redirect-QueriedId', (string) get_queried_object_id());
     rosa_debug_write('Redirect-PostType', (string) get_post_type(get_queried_object_id()));
     rosa_debug_write('Redirect-RosaHook', (string) has_filter('template_include', ['RosaMedical\\Core\\Plugin', 'productTemplate']));
-});
+
+    global $wp_filter;
+    $hook = $wp_filter['template_redirect'] ?? null;
+    if ($hook instanceof WP_Hook) {
+        foreach ($hook->callbacks as $priority => $callbacks) {
+            foreach ($callbacks as $callback) {
+                rosa_debug_write(
+                    'Redirect-Callback-P' . (string) $priority,
+                    rosa_debug_callback_name($callback['function'])
+                );
+            }
+        }
+    }
+}, -10000);
+
+foreach ([-9999, -2, -1, 0, 1, 5, 9, 10, 11, 20, 50, 99, 100, 101, 999] as $priority) {
+    add_action('template_redirect', static function () use ($priority): void {
+        rosa_debug_write('Redirect-Reached-P' . (string) $priority, 'yes');
+    }, $priority);
+}
 
 foreach ([12, 99, 101, 999] as $priority) {
     add_filter('template_include', static function (string $template) use ($priority): string {
-        rosa_debug_write('P' . $priority . '-Template', $template);
-        rosa_debug_write('P' . $priority . '-Basename', basename($template));
-        rosa_debug_write('P' . $priority . '-IsProduct', function_exists('is_product') && is_product() ? 'yes' : 'no');
-        rosa_debug_write('P' . $priority . '-Exists', is_file($template) ? 'yes' : 'no');
-        rosa_debug_write('P' . $priority . '-Readable', is_readable($template) ? 'yes' : 'no');
+        rosa_debug_write('Template-P' . $priority . '-Path', $template);
+        rosa_debug_write('Template-P' . $priority . '-Basename', basename($template));
+        rosa_debug_write('Template-P' . $priority . '-IsProduct', function_exists('is_product') && is_product() ? 'yes' : 'no');
+        rosa_debug_write('Template-P' . $priority . '-Exists', is_file($template) ? 'yes' : 'no');
+        rosa_debug_write('Template-P' . $priority . '-Readable', is_readable($template) ? 'yes' : 'no');
 
         if ($priority === 99 || $priority === 101) {
             $rosa_template = defined('ROSA_MEDICAL_CORE_FILE')
                 ? dirname(ROSA_MEDICAL_CORE_FILE) . '/templates/product-detail-prototype.php'
                 : '';
-            rosa_debug_write('P' . $priority . '-RosaReadable', $rosa_template !== '' && is_readable($rosa_template) ? 'yes' : 'no');
-            rosa_debug_write('P' . $priority . '-RosaPath', $rosa_template !== '' ? $rosa_template : 'missing');
+            rosa_debug_write('Template-P' . $priority . '-RosaReadable', $rosa_template !== '' && is_readable($rosa_template) ? 'yes' : 'no');
+            rosa_debug_write('Template-P' . $priority . '-RosaPath', $rosa_template !== '' ? $rosa_template : 'missing');
 
             if (class_exists('RosaMedical\\Core\\Plugin')) {
                 $direct = RosaMedical\Core\Plugin::productTemplate($template);
-                rosa_debug_write('P' . $priority . '-DirectResult', $direct);
-                rosa_debug_write('P' . $priority . '-DirectBasename', basename($direct));
+                rosa_debug_write('Template-P' . $priority . '-DirectResult', $direct);
+                rosa_debug_write('Template-P' . $priority . '-DirectBasename', basename($direct));
             } else {
-                rosa_debug_write('P' . $priority . '-DirectResult', 'class-missing');
+                rosa_debug_write('Template-P' . $priority . '-DirectResult', 'class-missing');
             }
         }
 
