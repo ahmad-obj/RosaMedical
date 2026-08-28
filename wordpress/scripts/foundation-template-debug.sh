@@ -58,20 +58,30 @@ function rosa_debug_callback_name($callback): string
     return gettype($callback);
 }
 
+add_filter('wp_using_themes', static function (bool $using): bool {
+    rosa_debug_write('WPUsingThemes-Observed', $using ? 'yes' : 'no');
+    return $using;
+}, PHP_INT_MAX);
+
 add_action('template_redirect', static function (): void {
     rosa_debug_write('Redirect-IsProduct', function_exists('is_product') && is_product() ? 'yes' : 'no');
     rosa_debug_write('Redirect-IsSingularProduct', is_singular('product') ? 'yes' : 'no');
     rosa_debug_write('Redirect-QueriedId', (string) get_queried_object_id());
     rosa_debug_write('Redirect-PostType', (string) get_post_type(get_queried_object_id()));
     rosa_debug_write('Redirect-RosaHook', (string) has_filter('template_include', ['RosaMedical\\Core\\Plugin', 'productTemplate']));
+    rosa_debug_write('Redirect-WPUseThemes-Constant', defined('WP_USE_THEMES') && WP_USE_THEMES ? 'yes' : 'no');
+    rosa_debug_write('Redirect-WPUsingThemes', wp_using_themes() ? 'yes' : 'no');
 
     global $wp_filter;
-    $hook = $wp_filter['template_redirect'] ?? null;
-    if ($hook instanceof WP_Hook) {
+    foreach (['template_redirect', 'wp_using_themes', 'template_include'] as $hook_name) {
+        $hook = $wp_filter[$hook_name] ?? null;
+        if (! $hook instanceof WP_Hook) {
+            continue;
+        }
         foreach ($hook->callbacks as $priority => $callbacks) {
             foreach ($callbacks as $callback) {
                 rosa_debug_write(
-                    'Redirect-Callback-P' . (string) $priority,
+                    $hook_name . '-Callback-P' . (string) $priority,
                     rosa_debug_callback_name($callback['function'])
                 );
             }
@@ -79,9 +89,10 @@ add_action('template_redirect', static function (): void {
     }
 }, -10000);
 
-foreach ([-9999, -2, -1, 0, 1, 5, 9, 10, 11, 20, 50, 99, 100, 101, 999] as $priority) {
+foreach ([-9999, -2, -1, 0, 1, 5, 9, 10, 11, 20, 50, 99, 100, 101, 999, 1001] as $priority) {
     add_action('template_redirect', static function () use ($priority): void {
         rosa_debug_write('Redirect-Reached-P' . (string) $priority, 'yes');
+        rosa_debug_write('Redirect-WPUsingThemes-P' . (string) $priority, wp_using_themes() ? 'yes' : 'no');
     }, $priority);
 }
 
@@ -112,6 +123,20 @@ foreach ([12, 99, 101, 999] as $priority) {
         return $template;
     }, $priority);
 }
+
+add_action('wp_before_include_template', static function (string $template): void {
+    rosa_debug_write('BeforeInclude-Template', $template);
+}, 10, 1);
+
+register_shutdown_function(static function (): void {
+    rosa_debug_write('Shutdown-WPUsingThemes', wp_using_themes() ? 'yes' : 'no');
+    rosa_debug_write('Shutdown-DidTemplateInclude', (string) did_filter('template_include'));
+    rosa_debug_write('Shutdown-DidBeforeInclude', (string) did_action('wp_before_include_template'));
+    rosa_debug_write(
+        'Shutdown-RosaHook',
+        (string) has_filter('template_include', ['RosaMedical\\Core\\Plugin', 'productTemplate'])
+    );
+});
 PHP
 
 product_id="$(wp post list --post_type=product --name='rosa-foundation-stevens-scissors-regular' --post_status=publish --field=ID --format=ids | awk '{print $1}')"
