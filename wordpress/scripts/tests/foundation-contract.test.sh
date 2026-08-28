@@ -16,6 +16,7 @@ grep -q 'user: "33:33"' "$COMPOSE" || fail 'wpcli must run as 33:33 to match Wor
 for token in hello-elementor elementor woocommerce rosa-medical-child rosa-medical-core; do
   grep -q "$token" "$BOOTSTRAP" || fail "bootstrap missing $token"
 done
+grep -Fq 'wp option update woocommerce_coming_soon no' "$BOOTSTRAP" || fail 'bootstrap must disable WooCommerce coming-soon mode for the local foundation runtime'
 for token in elementor woocommerce rosa-medical-core rosa-medical-child; do
   grep -q "$token" "$REPORT" || fail "version report missing $token"
 done
