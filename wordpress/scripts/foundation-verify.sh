@@ -85,16 +85,16 @@ lower_product_html="$(printf '%s' "$product_html" | tr '[:upper:]' '[:lower:]')"
 # Prove one centralized setting reaches two independent surfaces.
 original_business_settings="$(wp option get rosa_business_settings --format=json 2>/dev/null || printf '{}')"
 verification_phone='+966 55 000 1122'
-wp eval -- "$verification_phone" '
-$settings = get_option("rosa_business_settings", []);
-if (! is_array($settings)) { $settings = []; }
-$settings["phone"] = $args[0];
-update_option("rosa_business_settings", $settings);
-' >/dev/null
-home_html="$(curl -fsS "$(wp option get home)")"
-phone_occurrences="$(printf '%s' "$home_html" | grep -oF "$verification_phone" | wc -l | tr -d ' ')"
+restore_business_settings() {
+  wp option update rosa_business_settings "$original_business_settings" --format=json >/dev/null 2>&1 || true
+}
+trap restore_business_settings EXIT
+wp option update rosa_business_settings "{\"phone\":\"$verification_phone\"}" --format=json >/dev/null
+home_html="$(curl -fsS "$(wp option get home)")" || fail 'home page failed while verifying centralized business settings'
+phone_occurrences="$(( ( ${#home_html} - ${#home_html//$verification_phone/} ) / ${#verification_phone} ))"
+restore_business_settings
+trap - EXIT
 [[ "$phone_occurrences" -ge 2 ]] || fail 'centralized phone setting did not render in two independent shell surfaces'
-wp option update rosa_business_settings --format=json "$original_business_settings" >/dev/null
 
 original_locale="$(wp option get WPLANG 2>/dev/null || true)"
 restore_locale() {
