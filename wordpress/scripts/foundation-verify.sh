@@ -26,6 +26,8 @@ wp plugin is-active elementor >/dev/null || fail 'Elementor Free is not active'
 wp plugin is-active woocommerce >/dev/null || fail 'WooCommerce is not active'
 wp plugin is-active rosa-medical-core >/dev/null || fail 'rosa-medical-core is not active'
 [[ "$(wp theme list --status=active --field=name | head -n 1)" == 'rosa-medical-child' ]] || fail 'rosa-medical-child is not the active theme'
+woo_coming_soon="$(wp option get woocommerce_coming_soon 2>/dev/null || true)"
+[[ "$woo_coming_soon" != 'yes' ]] || fail 'WooCommerce coming-soon mode is active; rerun foundation-bootstrap.sh'
 
 ensure_page() {
   local title="$1"
