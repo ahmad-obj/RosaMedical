@@ -18,7 +18,7 @@ if (! $product instanceof WC_Product) {
     status_header(404);
     nocache_headers();
     get_header();
-    echo '<main class="rosa-product-detail"><p>' . esc_html__('Product unavailable.', 'rosa-medical') . '</p></main>';
+    echo '<div class="rosa-product-detail"><p>' . esc_html__('Product unavailable.', 'rosa-medical') . '</p></div>';
     get_footer();
     return;
 }
@@ -38,7 +38,7 @@ if ($product instanceof WC_Product_Variable) {
 
 get_header();
 ?>
-<main class="rosa-product-detail" id="main-content">
+<div class="rosa-product-detail" id="main-content">
     <article class="rosa-product-detail__inner">
         <?php if ($family_label !== '') : ?>
             <p class="rosa-product-detail__eyebrow"><?php echo esc_html($family_label); ?></p>
@@ -96,6 +96,6 @@ get_header();
             <?php esc_html_e('Contact Rosa Medical for procurement details.', 'rosa-medical'); ?>
         </p>
     </article>
-</main>
+</div>
 <?php
 get_footer();
