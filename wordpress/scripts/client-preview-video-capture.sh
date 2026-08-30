@@ -76,6 +76,7 @@ for (const selector of ['[data-preview-page-hero]','[data-preview-contact-layout
 await visit(process.env.ROSA_VIDEO_SHOP);
 await show('[data-preview-shop-grid]');
 
+await visit(process.env.ROSA_VIDEO_HOME);
 await page.locator('.rosa-preview-header__actions .rosa-preview-language').click();
 await page.waitForURL(/\/ar\/?$/);
 await page.waitForLoadState('networkidle');
