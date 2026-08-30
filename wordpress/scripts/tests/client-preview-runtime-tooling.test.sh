@@ -14,4 +14,16 @@ grep -Fq '2560,1440' "$CAPTURE" || fail '2560x1440 capture missing'
 grep -Fq '/ar/' "$CAPTURE" || fail 'Arabic capture routes missing'
 grep -Fq 'recordVideo' "$VIDEO" || fail 'Playwright video recording missing'
 grep -Fq 'client-preview-artifacts' "$CAPTURE" || fail 'ignored artifact directory missing from capture tooling'
+python3 - "$VIDEO" <<'PY'
+import sys
+text = open(sys.argv[1], encoding='utf-8').read()
+shop = text.index("await visit(process.env.ROSA_VIDEO_SHOP);")
+switch = text.index("await page.locator('.rosa-preview-header__actions .rosa-preview-language').click();")
+try:
+    home_again = text.index("await visit(process.env.ROSA_VIDEO_HOME);", shop + 1)
+except ValueError:
+    raise SystemExit('FAIL: video must return to English Home before demonstrating Home→Arabic language switching')
+if not (shop < home_again < switch):
+    raise SystemExit('FAIL: Home return must occur after Shop and before the Arabic language switch')
+PY
 printf 'PASS: client preview runtime tooling contract\n'
