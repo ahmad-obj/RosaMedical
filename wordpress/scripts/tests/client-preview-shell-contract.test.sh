@@ -16,6 +16,8 @@ grep -Fq 'rosa-preview-footer' "$THEME/footer.php" || fail 'preview footer missi
 grep -Fq 'rosa_theme_business_value' "$THEME/footer.php" || fail 'centralized business values missing'
 grep -Fq 'client-preview.css' "$THEME/functions.php" || fail 'preview stylesheet not enqueued'
 grep -Fq 'client-preview.js' "$THEME/functions.php" || fail 'preview JS not enqueued'
+grep -Fq 'is_product()' "$THEME/functions.php" || fail 'Product Detail must receive the shared client-preview shell assets'
+grep -Fq 'is_product()' "$THEME/header.php" || fail 'Product Detail must receive explicit preview language/direction shell state'
 ! grep -Eqi 'cart|checkout|payment|shipping|returns' "$THEME/header.php" || fail 'retail semantics leaked into header'
 grep -Fq '@media (prefers-reduced-motion: reduce)' "$CSS" || fail 'reduced-motion safeguard missing'
 grep -Fq ':focus-visible' "$CSS" || fail 'visible keyboard focus styles missing'
