@@ -4,72 +4,71 @@
 
 **Goal:** Convert the accepted free WordPress foundation into the approved Balanced Rosa visual foundation for the protected public shell, Products archive/product cards, Product Detail, responsive behavior, catalogue-PDF placement and accessibility contracts without implementing the later discovery, pricing-persistence, inquiry-persistence or catalogue-import subsystems.
 
-**Architecture:** `rosa-medical-child` owns production presentation: tokens, shared shell, WooCommerce archive rendering, product-card rendering, Product Detail composition, responsive CSS and presentation JavaScript. WooCommerce remains the structured product/variation source. `rosa-medical-core` supplies normalized product/configuration and catalogue-document presentation data, preserves the verified late Product Detail template-routing hook, and exposes explicit integration seams for later authoritative pricing and inquiry behavior instead of inventing simplified retail logic now.
+**Architecture:** `rosa-medical-child` owns production presentation: tokens, shared shell, WooCommerce archive rendering, product-card rendering, Product Detail composition, responsive CSS and presentation JavaScript. WooCommerce remains the structured catalogue source. `rosa-medical-core` supplies normalized product/configuration and family-document presentation data, preserves the verified priority-100 Product Detail routing repair, and exposes explicit integration seams for later authoritative pricing, inquiry, filters and row-aware reveal rather than creating temporary competing implementations.
 
-**Tech Stack:** WordPress 7.1 foundation runtime; PHP 8.3; MariaDB 11.4; Hello Elementor; Elementor Free 4.2.3; WooCommerce 11.0.1; Rosa PHP/CSS/vanilla JS; Docker Compose; WP-CLI; Bash/PHP contract tests; existing repo Playwright CLI for screenshot capture only.
+**Tech Stack:** WordPress 7.1 foundation runtime; PHP 8.3; MariaDB 11.4; Hello Elementor; Elementor Free 4.2.3; WooCommerce 11.0.1; Rosa PHP/CSS/vanilla JS; Docker Compose; WP-CLI; Bash/PHP contract tests; the repository's existing Playwright CLI for local screenshot capture only.
 
 **Spec:** `docs/superpowers/specs/2026-08-30-rosa-wordpress-phase-2a-balanced-visual-foundation-design.md`
 
-**Approval:** The user explicitly approved the Phase 2A specification on 2026-08-30 before this plan was written.
+**Approval:** User explicitly approved the Phase 2A design specification on 2026-08-30 before this plan was written.
 
 ## Global Constraints
 
-- Execute implementation in an isolated worktree/branch created from `docs/phase-2a-formal-design` after this plan commit; do not implement directly on `wordpress/medicashop-migration`.
-- Invoke `superpowers:using-git-worktrees` before Task 1. Recommended implementation branch: `wordpress/phase-2a-balanced-visual-foundation`.
+- Before Task 1, invoke `superpowers:using-git-worktrees` and create an isolated worktree/branch from the exact `docs/phase-2a-formal-design` HEAD containing this plan. Recommended branch: `wordpress/phase-2a-balanced-visual-foundation`.
+- Do not implement directly on `wordpress/medicashop-migration`.
 - Preserve the free-first stack: WordPress, Hello Elementor, Elementor Free, WooCommerce, WordPress Media Library, `rosa-medical-child`, `rosa-medical-core`.
 - Do not add MedicaShop, Elementor Pro, WPML as a prerequisite, ElementsKit, Skyboot or another paid/proprietary template dependency.
 - Do not touch Hostinger, production DNS, production databases, production Cloudflare configuration or unrelated sites.
 - Do not mass-import the catalogue in this phase.
-- Do not modify `apps/web/**` except to read it as migration evidence. The existing Next.js application is a reference, not an implementation target.
-- Preserve the canonical foundation fixture exactly: Scissors → Stevens Scissors — Regular; 10.5 cm; `04-0901` Straight/Sharp; `04-0911` Curved/Sharp; no invented combinations.
-- Preserve `RosaMedical\Core\Plugin::productTemplate` at `template_include` priority `100` or an equivalent later priority proven to remain after Elementor Free. Do not regress WooCommerce Coming Soon handling.
+- Do not modify `apps/web/**`; it is read-only migration evidence.
+- Preserve the canonical foundation fixture exactly: Scissors → Stevens Scissors — Regular; 10.5 cm; `04-0901` Straight/Sharp; `04-0911` Curved/Sharp; no invented configurations.
+- Preserve `RosaMedical\Core\Plugin::productTemplate` at `template_include` priority `100` unless an equivalent later priority is separately proven. Preserve the WooCommerce Coming Soon foundation protection.
 - Preserve exactly one page-level `<main>` landmark.
-- Do not introduce consumer cart, checkout, account, payment, shipping, rating, review, sale, stock-urgency or related-product UI.
-- Primary navigation is exactly Home, About Us, Products, Inquiry, Contact Us. Primary CTA copy defaults to `Request a quote`.
-- Products archive should generally produce four to five readable cards at 1366/1440 where minimum width permits; five at 1440 is a valid target, not a hard-coded global count.
-- Product images use contained media; never force long instruments through destructive `object-fit: cover` card crops.
-- Price is structurally supported but Phase 2A must not invent authoritative pricing persistence. Until the dedicated pricing subsystem supplies a state through the integration seam, the truthful default is `Price on request`.
-- Add-to-Inquiry is structurally supported but Phase 2A must not invent quote/inquiry persistence. Until the inquiry subsystem supplies capability through the integration seam, the control remains non-submitting/disabled.
-- Theme code owns presentation. Rosa business rules stay in `rosa-medical-core`.
-- Use logical CSS properties so the same DOM is RTL-safe.
-- Keep all strings translation-ready with the `rosa-medical` text domain.
-- Run targeted WordPress checks even though repository-wide pnpm verification currently has two pre-existing React lint failures in `products-discovery-workspace.tsx`; report those separately rather than attributing them to this work.
+- Do not introduce cart, checkout, account, payment, shipping, ratings/reviews, sale badges, stock urgency, wishlist or related-products UX.
+- Primary navigation is exactly Home, About Us, Products, Inquiry, Contact Us. Primary CTA defaults to `Request a quote`.
+- At 1366/1440, the archive should generally render four to five readable cards when real-content minimum width permits. Five at 1440 is a target, not a universal hard-coded count.
+- Product media uses contained presentation. Never crop long instruments merely to fill a card.
+- Phase 2A must not invent authoritative pricing persistence. Without a later pricing provider, the truthful state is `Price on request`.
+- Phase 2A must not invent inquiry/quotation persistence. Without a later inquiry provider, Add to Inquiry remains visibly present as the approved visual seam but non-submitting/disabled.
+- Theme code owns presentation; business semantics stay in `rosa-medical-core`.
+- Use logical CSS properties so the same DOM remains RTL-safe.
+- Keep strings translation-ready with text domain `rosa-medical`.
+- Repository-wide pnpm verification currently has two pre-existing React lint errors in `products-discovery-workspace.tsx`; targeted WordPress verification is authoritative for this phase, and unrelated failures must be reported separately.
 
-## Implementation File Map
+## File Responsibility Map
 
-### Existing files to modify
+### Existing files modified
 
-- `wordpress/wp-content/themes/rosa-medical-child/functions.php` — enqueue production Rosa CSS/fonts/JS and shared theme helpers only.
-- `wordpress/wp-content/themes/rosa-medical-child/header.php` — production header, skip link, primary nav and mobile drawer shell.
-- `wordpress/wp-content/themes/rosa-medical-child/footer.php` — production procurement footer using centralized business values.
-- `wordpress/wp-content/themes/rosa-medical-child/assets/css/tokens.css` — authoritative Phase 2A token contract.
-- `wordpress/wp-content/themes/rosa-medical-child/assets/css/base.css` — reset, typography, rails, focus, buttons and generic accessibility primitives.
-- `wordpress/wp-content/plugins/rosa-medical-core/rosa-medical-core.php` — require new catalogue presentation services.
-- `wordpress/wp-content/plugins/rosa-medical-core/src/Plugin.php` — preserve priority-100 routing while switching the preferred Product Detail view to the child-theme production template.
-- `wordpress/wp-content/plugins/rosa-medical-core/templates/product-detail-prototype.php` — remain as safe plugin fallback only; do not expand it into the production design.
-- `wordpress/scripts/foundation-product-verify.sh` — preserve the existing foundation assertions; only add checks if production-template routing changes require an equivalent marker.
-- `wordpress/scripts/tests/product-detail-structure.test.sh` — preserve one-main contract while recognizing the production child-theme detail template.
-- `wordpress/scripts/tests/product-template-hook.test.sh` — preserve priority `100` and fallback behavior.
+- `wordpress/wp-content/themes/rosa-medical-child/functions.php` — theme support, protected navigation include, CSS/JS enqueueing.
+- `wordpress/wp-content/themes/rosa-medical-child/header.php` — skip link, production header and drawer, single main landmark.
+- `wordpress/wp-content/themes/rosa-medical-child/footer.php` — procurement footer and centralized business values.
+- `wordpress/wp-content/themes/rosa-medical-child/assets/css/tokens.css` — canonical Phase 2A visual tokens.
+- `wordpress/wp-content/themes/rosa-medical-child/assets/css/base.css` — typography, rails, focus and shared primitives.
+- `wordpress/wp-content/plugins/rosa-medical-core/rosa-medical-core.php` — require new catalogue services.
+- `wordpress/wp-content/plugins/rosa-medical-core/src/Plugin.php` — preserve priority-100 routing while preferring the production child-theme Product Detail template.
+- `wordpress/scripts/tests/product-template-hook.test.sh` — protect routing priority/theme-preference/plugin-fallback contract.
+- `wordpress/scripts/tests/product-detail-structure.test.sh` — protect one-main structure for the production detail template.
+- `wordpress/scripts/foundation-product-verify.sh` — change only if the production marker requires an equivalent assertion; never weaken SKU/fixture parity.
 
 ### New child-theme files
 
-- `wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php` — exact protected public-navigation model and active-route helpers.
-- `wordpress/wp-content/themes/rosa-medical-child/assets/css/shell.css` — header, drawer, footer and shared closure styles.
-- `wordpress/wp-content/themes/rosa-medical-child/assets/css/catalogue.css` — archive workspace, filter integration slot, card grid/cards, result states and catalogue panels.
-- `wordpress/wp-content/themes/rosa-medical-child/assets/css/product-detail.css` — gallery, configuration decision block, price/inquiry presentation, PDF module and sticky mobile action geometry.
-- `wordpress/wp-content/themes/rosa-medical-child/assets/js/site-shell.js` — accessible mobile drawer behavior only.
-- `wordpress/wp-content/themes/rosa-medical-child/assets/js/product-detail.js` — client-side presentation synchronization for real configuration radio selection; no persistence.
-- `wordpress/wp-content/themes/rosa-medical-child/woocommerce/archive-product.php` — protected Rosa WooCommerce archive composition.
-- `wordpress/wp-content/themes/rosa-medical-child/template-parts/product-card.php` — reusable dense catalogue card.
-- `wordpress/wp-content/themes/rosa-medical-child/template-parts/catalogue-panel.php` — reusable family catalogue/reference module.
-- `wordpress/wp-content/themes/rosa-medical-child/template-parts/product-detail.php` — production Product Detail composition selected by the priority-100 plugin routing hook.
+- `wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php`
+- `wordpress/wp-content/themes/rosa-medical-child/assets/css/shell.css`
+- `wordpress/wp-content/themes/rosa-medical-child/assets/css/catalogue.css`
+- `wordpress/wp-content/themes/rosa-medical-child/assets/css/product-detail.css`
+- `wordpress/wp-content/themes/rosa-medical-child/assets/js/site-shell.js`
+- `wordpress/wp-content/themes/rosa-medical-child/assets/js/product-detail.js`
+- `wordpress/wp-content/themes/rosa-medical-child/woocommerce/archive-product.php`
+- `wordpress/wp-content/themes/rosa-medical-child/template-parts/product-card.php`
+- `wordpress/wp-content/themes/rosa-medical-child/template-parts/catalogue-panel.php`
+- `wordpress/wp-content/themes/rosa-medical-child/template-parts/product-detail.php`
 
 ### New `rosa-medical-core` files
 
-- `wordpress/wp-content/plugins/rosa-medical-core/src/Catalogue/ProductPresentation.php` — normalized product/card/detail/configuration data derived from WooCommerce without implementing future pricing persistence.
-- `wordpress/wp-content/plugins/rosa-medical-core/src/Catalogue/FamilyCatalogue.php` — validated family/category → Media Library PDF relationship reader.
+- `wordpress/wp-content/plugins/rosa-medical-core/src/Catalogue/ProductPresentation.php`
+- `wordpress/wp-content/plugins/rosa-medical-core/src/Catalogue/FamilyCatalogue.php`
 
-### New verification files
+### New verification/documentation files
 
 - `wordpress/scripts/tests/phase2a-theme-tokens.test.sh`
 - `wordpress/scripts/tests/phase2a-shell-contract.test.sh`
@@ -83,7 +82,7 @@
 
 ---
 
-### Task 1: Replace prototype visual tokens with the approved Rosa token foundation
+### Task 1: Establish the approved Rosa token and typography foundation
 
 **Files:**
 - Modify: `wordpress/wp-content/themes/rosa-medical-child/functions.php`
@@ -92,12 +91,12 @@
 - Create: `wordpress/scripts/tests/phase2a-theme-tokens.test.sh`
 
 **Interfaces:**
-- Consumes: approved Phase 2A token contract; Hello Elementor child-theme enqueueing.
-- Produces: CSS custom properties used by every later Phase 2A theme file and stable asset handles `rosa-medical-fonts`, `rosa-medical-tokens`, `rosa-medical-base`.
+- Consumes: approved Phase 2A visual contract.
+- Produces: stable CSS variables and asset handles `rosa-medical-fonts`, `rosa-medical-tokens`, `rosa-medical-base` used by all later tasks.
 
 - [ ] **Step 1: Write the failing token contract**
 
-Create `phase2a-theme-tokens.test.sh` with exact assertions for the Rosa source palette, rails, radii, motion and font roles:
+Create `phase2a-theme-tokens.test.sh`:
 
 ```bash
 #!/usr/bin/env bash
@@ -108,10 +107,10 @@ BASE="$ROOT_DIR/wordpress/wp-content/themes/rosa-medical-child/assets/css/base.c
 FUNCTIONS="$ROOT_DIR/wordpress/wp-content/themes/rosa-medical-child/functions.php"
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 
-grep -Fq -- '--color-rosa-red: #e00815' "$TOKENS" || fail 'Rosa red token missing'
-grep -Fq -- '--color-rosa-red-dark: #b9000b' "$TOKENS" || fail 'Rosa dark red token missing'
-grep -Fq -- '--color-ink: #191917' "$TOKENS" || fail 'ink token missing'
-grep -Fq -- '--color-warm-white: #f9f7f2' "$TOKENS" || fail 'warm white token missing'
+grep -Fq -- '--color-rosa-red: #e00815' "$TOKENS" || fail 'Rosa red missing'
+grep -Fq -- '--color-rosa-red-dark: #b9000b' "$TOKENS" || fail 'dark red missing'
+grep -Fq -- '--color-ink: #191917' "$TOKENS" || fail 'ink missing'
+grep -Fq -- '--color-warm-white: #f9f7f2' "$TOKENS" || fail 'warm white missing'
 grep -Fq -- '--container-reading: 46rem' "$TOKENS" || fail 'reading rail missing'
 grep -Fq -- '--container-standard: 72rem' "$TOKENS" || fail 'standard rail missing'
 grep -Fq -- '--container-wide: 80rem' "$TOKENS" || fail 'wide rail missing'
@@ -120,24 +119,22 @@ grep -Fq -- '--radius-control: 0.25rem' "$TOKENS" || fail 'control radius missin
 grep -Fq -- '--radius-surface: 0.125rem' "$TOKENS" || fail 'surface radius missing'
 grep -Fq -- '--motion-micro: 160ms' "$TOKENS" || fail 'micro motion missing'
 grep -Fq -- '--motion-component: 280ms' "$TOKENS" || fail 'component motion missing'
-grep -Fq 'font-family: var(--font-interface)' "$BASE" || fail 'body must consume interface font token'
-grep -Fq "rosa-medical-fonts" "$FUNCTIONS" || fail 'font stylesheet handle missing'
-printf 'PASS: Phase 2A Rosa token contract\n'
+grep -Fq 'font-family: var(--font-interface)' "$BASE" || fail 'interface font not consumed'
+grep -Fq 'rosa-medical-fonts' "$FUNCTIONS" || fail 'font stylesheet handle missing'
+printf 'PASS: Phase 2A token contract\n'
 ```
 
-- [ ] **Step 2: Run the token test and verify RED**
-
-Run:
+- [ ] **Step 2: Run RED**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-theme-tokens.test.sh
 ```
 
-Expected: FAIL because the current WordPress prototype uses `--rosa-*` prototype values, a 90rem generic shell, larger radii, system-only typography and blue focus.
+Expected: FAIL against the current generic WordPress prototype token layer.
 
-- [ ] **Step 3: Replace `tokens.css` with the approved semantic token layer**
+- [ ] **Step 3: Replace prototype tokens with approved values**
 
-Use the approved values directly, including this core structure:
+`tokens.css` must define at least:
 
 ```css
 :root {
@@ -208,9 +205,9 @@ Use the approved values directly, including this core structure:
 }
 ```
 
-- [ ] **Step 4: Update base primitives and font loading**
+- [ ] **Step 4: Load the approved free font families with safe fallbacks**
 
-In `functions.php`, enqueue the free Google Fonts CSS for Inter, Lora and Tajawal before Rosa tokens. Keep system fallbacks in CSS so a font-network failure never makes the site unusable:
+In `functions.php`, enqueue:
 
 ```php
 wp_enqueue_style(
@@ -221,20 +218,29 @@ wp_enqueue_style(
 );
 ```
 
-Update `base.css` so body uses `var(--font-interface)`, Arabic document direction uses `var(--font-arabic)`, headings opt into `var(--font-editorial)` only for approved display roles, and focus is `3px`/`3px` with ink on light surfaces and white on dark/red component contexts.
+Then enqueue tokens/base after it. `base.css` must use `var(--font-interface)` for body, `var(--font-arabic)` when document direction/language is Arabic, and `var(--font-editorial)` only for approved display roles. A font-network failure must degrade to the defined fallbacks.
 
-Also add reusable rail classes:
+Add these rails:
 
 ```css
-.rosa-rail { width: min(calc(100% - (2 * var(--page-gutter))), var(--container-standard)); margin-inline: auto; }
+.rosa-rail {
+  width: min(calc(100% - (2 * var(--page-gutter))), var(--container-standard));
+  margin-inline: auto;
+}
 .rosa-rail--wide { max-width: var(--container-wide); }
 .rosa-rail--archive { max-width: var(--container-archive); }
 .rosa-rail--reading { max-width: var(--container-reading); }
 ```
 
-- [ ] **Step 5: Run token, PHP and foundation theme checks**
+Focus contract:
 
-Run:
+```css
+:focus-visible { outline: 3px solid var(--color-ink); outline-offset: 3px; }
+.rosa-surface--dark :focus-visible,
+.rosa-action--brand:focus-visible { outline-color: var(--color-paper); }
+```
+
+- [ ] **Step 5: Run GREEN and syntax checks**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-theme-tokens.test.sh
@@ -242,9 +248,9 @@ bash wordpress/scripts/tests/foundation-theme-contract.test.sh
 php -l wordpress/wp-content/themes/rosa-medical-child/functions.php
 ```
 
-Expected: all PASS.
+Expected: PASS.
 
-- [ ] **Step 6: Commit Task 1**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add wordpress/wp-content/themes/rosa-medical-child/functions.php \
@@ -256,7 +262,7 @@ git commit -m "feat(wordpress): establish Rosa Phase 2A design tokens"
 
 ---
 
-### Task 2: Build the protected production header, mobile drawer and procurement footer
+### Task 2: Build the protected production header, accessible mobile drawer and procurement footer
 
 **Files:**
 - Create: `wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php`
@@ -268,41 +274,47 @@ git commit -m "feat(wordpress): establish Rosa Phase 2A design tokens"
 - Create: `wordpress/scripts/tests/phase2a-shell-contract.test.sh`
 
 **Interfaces:**
-- Consumes: `rosa_theme_business_value(string $key, string $default = ''): string`; WordPress route predicates; Task 1 tokens.
-- Produces: `rosa_theme_primary_navigation(): array`, `rosa_theme_nav_is_active(string $key): bool`, accessible drawer markup using `[data-rosa-menu-*]`, exact single `<main id="main">`, four-group footer.
+- Consumes: `rosa_theme_business_value(string $key, string $default = ''): string`; Task 1 tokens; WordPress/Woo route predicates.
+- Produces: `rosa_theme_primary_navigation(): array`, `rosa_theme_nav_is_active(string $key): bool`, `[data-rosa-menu-*]` drawer hooks, exact one `<main id="main">`.
 
-- [ ] **Step 1: Write a failing shell contract**
+- [ ] **Step 1: Write the failing shell contract**
 
-Assert the exact five destinations, skip link, drawer hooks, centralized settings and one-main ownership:
+The test must assert:
 
 ```bash
-grep -Fq "'Home'" wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php
-grep -Fq "'About Us'" wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php
-grep -Fq "'Products'" wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php
-grep -Fq "'Inquiry'" wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php
-grep -Fq "'Contact Us'" wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php
-grep -Fq 'href="#main"' wordpress/wp-content/themes/rosa-medical-child/header.php
-grep -Fq 'data-rosa-menu-trigger' wordpress/wp-content/themes/rosa-medical-child/header.php
-grep -Fq 'data-rosa-menu-drawer' wordpress/wp-content/themes/rosa-medical-child/header.php
-grep -Fq '<main id="main"' wordpress/wp-content/themes/rosa-medical-child/header.php
-! grep -Fq 'wp_nav_menu' wordpress/wp-content/themes/rosa-medical-child/header.php
-grep -Fq "rosa_theme_business_value('phone'" wordpress/wp-content/themes/rosa-medical-child/footer.php
-grep -Fq "rosa_theme_business_value('email'" wordpress/wp-content/themes/rosa-medical-child/footer.php
+NAV=wordpress/wp-content/themes/rosa-medical-child/inc/navigation.php
+HEADER=wordpress/wp-content/themes/rosa-medical-child/header.php
+FOOTER=wordpress/wp-content/themes/rosa-medical-child/footer.php
+JS=wordpress/wp-content/themes/rosa-medical-child/assets/js/site-shell.js
+
+grep -Fq "'Home'" "$NAV"
+grep -Fq "'About Us'" "$NAV"
+grep -Fq "'Products'" "$NAV"
+grep -Fq "'Inquiry'" "$NAV"
+grep -Fq "'Contact Us'" "$NAV"
+grep -Fq 'href="#main"' "$HEADER"
+grep -Fq 'data-rosa-menu-trigger' "$HEADER"
+grep -Fq 'data-rosa-menu-drawer' "$HEADER"
+grep -Fq 'data-rosa-menu-overlay' "$HEADER"
+grep -Fq '<main id="main"' "$HEADER"
+! grep -Fq 'wp_nav_menu' "$HEADER"
+grep -Fq "rosa_theme_business_value('phone'" "$FOOTER"
+grep -Fq "rosa_theme_business_value('email'" "$FOOTER"
+grep -Fq '.inert = true' "$JS"
+grep -Fq '.inert = false' "$JS"
 ```
 
-- [ ] **Step 2: Run shell contract and verify RED**
-
-Run:
+- [ ] **Step 2: Run RED**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-shell-contract.test.sh
 ```
 
-Expected: FAIL because the current shell is the foundation site-name/nav/phone prototype and has no production drawer or footer groups.
+Expected: FAIL because the current shell is the foundation prototype.
 
-- [ ] **Step 3: Implement protected navigation helpers**
+- [ ] **Step 3: Implement the protected navigation model**
 
-`inc/navigation.php` returns exactly these entries:
+`inc/navigation.php`:
 
 ```php
 function rosa_theme_primary_navigation(): array
@@ -317,77 +329,90 @@ function rosa_theme_primary_navigation(): array
 }
 ```
 
-`rosa_theme_nav_is_active()` must treat WooCommerce archive and single-product contexts as active `products`, without changing the five-item navigation.
+`rosa_theme_nav_is_active('products')` returns true for the Woo product archive, product-category/taxonomy contexts and single product. Other keys resolve against their protected routes. Do not let client menu editing alter this five-destination structural contract.
 
-- [ ] **Step 4: Implement header markup**
+- [ ] **Step 4: Add theme support and production header markup**
 
-Required structural order:
+In `functions.php`, require `inc/navigation.php` and register `custom-logo`, `title-tag`, WooCommerce support.
+
+`header.php` structural order:
 
 ```php
 <a class="rosa-skip-link" href="#main"><?php esc_html_e('Skip to content', 'rosa-medical'); ?></a>
 <header class="rosa-site-header" data-rosa-site-header>
   <div class="rosa-rail rosa-rail--wide rosa-site-header__inner">
-    <!-- ROSA brand -->
-    <!-- desktop nav -->
-    <!-- reserved language slot only when a real switcher exists -->
+    <!-- approved custom logo when configured, otherwise visible ROSA wordmark -->
+    <!-- protected five-item desktop nav -->
+    <!-- language slot only when a real locale switcher exists -->
     <!-- Request a quote -->
-    <!-- mobile menu trigger -->
+    <!-- menu trigger -->
   </div>
-  <!-- accessible overlay + drawer -->
+  <div class="rosa-menu-overlay" data-rosa-menu-overlay hidden></div>
+  <aside class="rosa-menu-drawer" data-rosa-menu-drawer hidden aria-label="<?php echo esc_attr__('Site menu', 'rosa-medical'); ?>">
+    <!-- close button, five nav links, optional real language control, quote CTA -->
+  </aside>
 </header>
 <main id="main" class="rosa-site-main">
 ```
 
-Use the current site name only as an accessible fallback; visible brand text must be `ROSA` unless an approved custom logo is available through WordPress custom-logo support. Add `add_theme_support('custom-logo')` and `add_theme_support('title-tag')` in `after_setup_theme`.
+Use `ROSA` as visible fallback branding, not the WordPress site name as a new public logo treatment.
 
-- [ ] **Step 5: Implement accessible drawer behavior in vanilla JS**
+- [ ] **Step 5: Implement drawer focus, Escape, scroll lock and inert background**
 
-`site-shell.js` must:
+`site-shell.js` must preserve and restore background interactivity:
 
 ```js
 const trigger = document.querySelector('[data-rosa-menu-trigger]');
 const drawer = document.querySelector('[data-rosa-menu-drawer]');
 const overlay = document.querySelector('[data-rosa-menu-overlay]');
+const main = document.querySelector('.rosa-site-main');
+const footer = document.querySelector('.rosa-site-footer');
+
+function setBackgroundInert(value) {
+  [main, footer].forEach((node) => {
+    if (node) node.inert = value;
+  });
+}
 
 function openMenu() {
   trigger?.setAttribute('aria-expanded', 'true');
   drawer?.removeAttribute('hidden');
   overlay?.removeAttribute('hidden');
   document.documentElement.classList.add('rosa-menu-open');
+  setBackgroundInert(true);
   drawer?.querySelector('a, button')?.focus();
 }
 
-function closeMenu() {
+function closeMenu({ restoreFocus = true } = {}) {
   trigger?.setAttribute('aria-expanded', 'false');
   drawer?.setAttribute('hidden', '');
   overlay?.setAttribute('hidden', '');
   document.documentElement.classList.remove('rosa-menu-open');
-  trigger?.focus();
+  setBackgroundInert(false);
+  if (restoreFocus) trigger?.focus();
 }
 ```
 
-Add Escape close, overlay close, close-button support and a Tab-key focus loop across drawer focusables. Do not add a JS framework.
+Add trigger/close/overlay handlers, Escape close, and a Tab/Shift+Tab focus loop over enabled drawer anchors/buttons/inputs. When a drawer navigation link is activated, close without forcing focus back to the trigger before navigation.
 
-- [ ] **Step 6: Implement the production footer**
+- [ ] **Step 6: Implement corporate procurement footer**
 
-Render four logical groups on desktop and one/two columns at smaller widths:
+Desktop groups:
 
-1. ROSA + procurement positioning + `Request a quote`.
+1. ROSA + concise procurement context + Request a quote.
 2. Products: Knives, Scissors, Punches, Chisels, Cutters, Catalogues.
 3. Company: About Us, Procurement support, Contact Us.
 4. Support: Inquiry, Search, Privacy Policy, Terms.
 
-Phone/email/address come only from `rosa_theme_business_value()`. Do not hard-code business data. Do not add retail/payment/shipping/newsletter content.
+Phone/email/address must come only from `rosa_theme_business_value()`. Do not add pharmacy services, newsletter, payment logos, shipping claims or fake certifications.
 
-- [ ] **Step 7: Add shell CSS and enqueue shell assets**
+- [ ] **Step 7: Add `shell.css` and enqueue assets**
 
-Use `--header-block`, bounded rails, sticky white header, subtle scrolled separation, a logical-inline-end drawer, near-black footer and 44–48px practical targets. Desktop nav collapses around the real-content fit threshold near 70rem.
+Use sticky white/paper header, subtle scrolled separation, near-black footer, logical-inline-end drawer, 44–48px practical targets and the 80rem wide rail. Collapse desktop nav around real-content fit near 70rem instead of truncating labels.
 
-Enqueue `shell.css` after `base.css` and `site-shell.js` in the footer with `defer` semantics via normal WordPress script enqueueing.
+Enqueue `shell.css` after `base.css` and `site-shell.js` in footer scope.
 
-- [ ] **Step 8: Run shell and foundation structure checks**
-
-Run:
+- [ ] **Step 8: Run GREEN and structure checks**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-shell-contract.test.sh
@@ -398,9 +423,9 @@ php -l wordpress/wp-content/themes/rosa-medical-child/footer.php
 node --check wordpress/wp-content/themes/rosa-medical-child/assets/js/site-shell.js
 ```
 
-Expected: PASS. `product-detail-structure.test.sh` must still confirm one theme-owned `<main>`.
+Expected: PASS; one theme-owned main remains.
 
-- [ ] **Step 9: Commit Task 2**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add wordpress/wp-content/themes/rosa-medical-child \
@@ -410,7 +435,7 @@ git commit -m "feat(wordpress): build Rosa production public shell"
 
 ---
 
-### Task 3: Add a normalized WooCommerce product presentation adapter without inventing future business logic
+### Task 3: Add the normalized WooCommerce product presentation adapter
 
 **Files:**
 - Create: `wordpress/wp-content/plugins/rosa-medical-core/src/Catalogue/ProductPresentation.php`
@@ -418,13 +443,13 @@ git commit -m "feat(wordpress): build Rosa production public shell"
 - Create: `wordpress/scripts/tests/phase2a-product-presentation.test.php`
 
 **Interfaces:**
-- Consumes: `WC_Product`, published `WC_Product_Variation` children, product categories, image attachment data.
-- Produces: `RosaMedical\Core\Catalogue\ProductPresentation::forProduct(WC_Product $product): array` with stable keys used by card/detail templates.
-- Produces integration filters: `rosa_medical_product_price_state` and `rosa_medical_inquiry_enabled`.
+- Consumes: `WC_Product`, published `WC_Product_Variation` children, Woo product categories and image attachment data.
+- Produces: `ProductPresentation::forProduct(WC_Product $product): array`.
+- Future integration seams: `rosa_medical_product_price_state`, `rosa_medical_inquiry_enabled`.
 
-- [ ] **Step 1: Write the failing pure helper contract**
+- [ ] **Step 1: Write the failing pure-helper contract**
 
-The test stubs only WordPress translation/filter functions and verifies normalization helpers that do not require a live database. The normalized price seam must default truthfully to Price on Request and inquiry capability must default false:
+Stub `__()`, `_n()` and `apply_filters()` and assert:
 
 ```php
 expectSame(
@@ -432,32 +457,28 @@ expectSame(
     ProductPresentation::defaultPriceState(),
     'Phase 2A must not invent numeric pricing'
 );
-expectSame(false, ProductPresentation::defaultInquiryEnabled(), 'inquiry persistence is not enabled in Phase 2A');
+expectSame(false, ProductPresentation::defaultInquiryEnabled(), 'inquiry persistence is not active in Phase 2A');
 expectSame(
     ['type' => 'single-sku', 'label' => '04-0901'],
     ProductPresentation::referenceSummary(['04-0901'], null),
-    'single exact configuration should expose its SKU'
+    'single configuration exposes exact SKU'
 );
 expectSame(
     ['type' => 'configuration-count', 'label' => '2 configurations'],
     ProductPresentation::referenceSummary(['04-0901', '04-0911'], null),
-    'multiple variations should not pretend one variation SKU identifies the product'
+    'multiple variations do not misuse one variation SKU as product identity'
 );
 ```
 
-- [ ] **Step 2: Run and verify RED**
-
-Run:
+- [ ] **Step 2: Run RED**
 
 ```bash
 php wordpress/scripts/tests/phase2a-product-presentation.test.php
 ```
 
-Expected: FAIL because `ProductPresentation` does not exist.
+Expected: FAIL because the class does not exist.
 
-- [ ] **Step 3: Implement stable normalization helpers**
-
-Define:
+- [ ] **Step 3: Implement stable helpers**
 
 ```php
 final class ProductPresentation
@@ -483,7 +504,10 @@ final class ProductPresentation
         }
         return [
             'type' => 'configuration-count',
-            'label' => sprintf(_n('%d configuration', '%d configurations', count($skus), 'rosa-medical'), count($skus)),
+            'label' => sprintf(
+                _n('%d configuration', '%d configurations', count($skus), 'rosa-medical'),
+                count($skus)
+            ),
         ];
     }
 }
@@ -491,7 +515,7 @@ final class ProductPresentation
 
 - [ ] **Step 4: Implement `forProduct()` against real WooCommerce data**
 
-Return a normalized array containing:
+Return this stable shape:
 
 ```php
 [
@@ -512,27 +536,33 @@ Return a normalized array containing:
 ]
 ```
 
-Only published real variations are projected. Attribute labels/term names must be resolved through WooCommerce/WordPress taxonomies; do not synthesize Cartesian combinations.
+Only published real variations are projected. Resolve taxonomy-backed attribute slugs to display names; never generate Size × Direction × Variant combinations.
 
-Resolve price through:
-
-```php
-$price = apply_filters('rosa_medical_product_price_state', self::defaultPriceState(), $product);
-```
-
-Resolve inquiry capability through:
+Price seam:
 
 ```php
-$inquiryEnabled = (bool) apply_filters('rosa_medical_inquiry_enabled', self::defaultInquiryEnabled(), $product);
+$price = apply_filters(
+    'rosa_medical_product_price_state',
+    self::defaultPriceState(),
+    $product
+);
 ```
 
-Do not read arbitrary Woo price fields here as authoritative Rosa pricing.
+Inquiry seam:
 
-- [ ] **Step 5: Require the new class and rerun tests**
+```php
+$inquiryEnabled = (bool) apply_filters(
+    'rosa_medical_inquiry_enabled',
+    self::defaultInquiryEnabled(),
+    $product
+);
+```
 
-Update `rosa-medical-core.php` to require the class before `Plugin.php`.
+Do not treat arbitrary standard Woo price fields as Rosa's authoritative source in this phase.
 
-Run:
+- [ ] **Step 5: Require class and run GREEN**
+
+Update `rosa-medical-core.php` to require `ProductPresentation.php` before `Plugin.php`.
 
 ```bash
 php wordpress/scripts/tests/phase2a-product-presentation.test.php
@@ -542,7 +572,7 @@ php -l wordpress/wp-content/plugins/rosa-medical-core/rosa-medical-core.php
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit Task 3**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add wordpress/wp-content/plugins/rosa-medical-core \
@@ -552,27 +582,23 @@ git commit -m "feat(wordpress): add Rosa product presentation adapter"
 
 ---
 
-### Task 4: Add the dynamic family catalogue-PDF relationship reader
+### Task 4: Add the authoritative family catalogue-PDF relationship reader
 
 **Files:**
 - Create: `wordpress/wp-content/plugins/rosa-medical-core/src/Catalogue/FamilyCatalogue.php`
 - Modify: `wordpress/wp-content/plugins/rosa-medical-core/rosa-medical-core.php`
-- Extend: `wordpress/scripts/tests/phase2a-product-presentation.test.php`
+- Modify: `wordpress/scripts/tests/phase2a-product-presentation.test.php`
 
 **Interfaces:**
-- Consumes: WooCommerce product category term; category meta `_rosa_catalogue_attachment_id`; WordPress Media Library attachment APIs.
-- Produces: `FamilyCatalogue::forTerm(WP_Term $term): ?array` and `FamilyCatalogue::forProduct(WC_Product $product): ?array`.
+- Consumes: product-category meta `_rosa_catalogue_attachment_id`; WordPress Media Library attachment APIs.
+- Produces: `FamilyCatalogue::fromAttachmentId(int $attachmentId): ?array`, `forTerm(WP_Term $term): ?array`, `forProduct(WC_Product $product): ?array`.
 
-- [ ] **Step 1: Add failing PDF relationship assertions**
+- [ ] **Step 1: Add failing PDF assertions**
 
-Stub the attachment APIs and assert the reader rejects non-PDF or missing URLs and accepts a valid PDF:
+Add stubs for `get_post_mime_type()`, `wp_get_attachment_url()` and `get_the_title()` and assert:
 
 ```php
-expectSame(
-    null,
-    FamilyCatalogue::fromAttachmentId(0),
-    'missing attachment must not create a broken catalogue link'
-);
+expectSame(null, FamilyCatalogue::fromAttachmentId(0), 'missing attachment returns null');
 
 $GLOBALS['rosa_test_attachment_mime'][42] = 'application/pdf';
 $GLOBALS['rosa_test_attachment_url'][42] = 'https://example.test/scissors.pdf';
@@ -585,13 +611,13 @@ expectSame(
         'title' => 'Scissors Catalogue',
     ],
     FamilyCatalogue::fromAttachmentId(42),
-    'valid PDF attachment must become the authoritative catalogue reference'
+    'valid PDF becomes authoritative document reference'
 );
 ```
 
-- [ ] **Step 2: Run and verify RED**
+Also assert a non-PDF MIME returns null.
 
-Run:
+- [ ] **Step 2: Run RED**
 
 ```bash
 php wordpress/scripts/tests/phase2a-product-presentation.test.php
@@ -599,38 +625,25 @@ php wordpress/scripts/tests/phase2a-product-presentation.test.php
 
 Expected: FAIL because `FamilyCatalogue` does not exist.
 
-- [ ] **Step 3: Implement the validated attachment reader**
-
-Use exactly one taxonomy-meta key:
+- [ ] **Step 3: Implement one metadata contract**
 
 ```php
 public const META_KEY = '_rosa_catalogue_attachment_id';
 ```
 
-`fromAttachmentId()` returns null unless:
+`fromAttachmentId()` returns null unless attachment ID is positive, MIME is exactly `application/pdf`, and URL is non-empty. `forTerm()` reads only `META_KEY`. `forProduct()` deterministically resolves the relevant product category and returns document data plus family name/slug; it must not hard-code PDF URLs.
 
-```php
-get_post_mime_type($attachmentId) === 'application/pdf'
-```
-
-and `wp_get_attachment_url()` returns a non-empty URL.
-
-`forTerm()` reads `get_term_meta($term->term_id, self::META_KEY, true)` and delegates to `fromAttachmentId()`.
-
-`forProduct()` resolves the product's first/primary `product_cat` term deterministically and returns the same normalized document array plus family name/slug.
-
-- [ ] **Step 4: Require class, run tests and PHP syntax**
-
-Run:
+- [ ] **Step 4: Require class and run GREEN**
 
 ```bash
 php wordpress/scripts/tests/phase2a-product-presentation.test.php
 php -l wordpress/wp-content/plugins/rosa-medical-core/src/Catalogue/FamilyCatalogue.php
+php -l wordpress/wp-content/plugins/rosa-medical-core/rosa-medical-core.php
 ```
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit Task 4**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add wordpress/wp-content/plugins/rosa-medical-core \
@@ -640,7 +653,7 @@ git commit -m "feat(wordpress): add family catalogue PDF presentation source"
 
 ---
 
-### Task 5: Replace the generic WooCommerce archive with the dense Rosa catalogue workspace and product-card system
+### Task 5: Build the dense Rosa WooCommerce archive and reusable product cards
 
 **Files:**
 - Create: `wordpress/wp-content/themes/rosa-medical-child/woocommerce/archive-product.php`
@@ -651,41 +664,52 @@ git commit -m "feat(wordpress): add family catalogue PDF presentation source"
 - Create: `wordpress/scripts/tests/phase2a-catalogue-contract.test.sh`
 
 **Interfaces:**
-- Consumes: WooCommerce main product loop; `ProductPresentation::forProduct()`; `FamilyCatalogue`; Task 1 tokens; future extension hooks `rosa_medical_archive_filters` and `rosa_medical_archive_reveal`.
-- Produces: protected `/products` archive composition and reusable `product-card.php`.
+- Consumes: WooCommerce main query; `ProductPresentation`; `FamilyCatalogue`.
+- Future visual integration seams: `rosa_medical_archive_filters`, `rosa_medical_archive_reveal`.
+- Produces: protected `/products` archive composition and dense card partial.
 
 - [ ] **Step 1: Write the failing archive/card contract**
 
-Assert the archive owns the required anatomy without shipping dead advanced filters:
-
 ```bash
+#!/usr/bin/env bash
+set -euo pipefail
 ARCHIVE=wordpress/wp-content/themes/rosa-medical-child/woocommerce/archive-product.php
 CARD=wordpress/wp-content/themes/rosa-medical-child/template-parts/product-card.php
 CSS=wordpress/wp-content/themes/rosa-medical-child/assets/css/catalogue.css
 
 grep -Fq 'rosa-products-search' "$ARCHIVE"
-grep -Fq "do_action('rosa_medical_archive_filters'" "$ARCHIVE"
+grep -Fq "has_action('rosa_medical_archive_filters')" "$ARCHIVE"
+grep -Fq "do_action('rosa_medical_archive_filters')" "$ARCHIVE"
 grep -Fq 'rosa-products-grid' "$ARCHIVE"
-grep -Fq "do_action('rosa_medical_archive_reveal'" "$ARCHIVE"
+grep -Fq "do_action('rosa_medical_archive_reveal')" "$ARCHIVE"
 grep -Fq 'ProductPresentation::forProduct' "$CARD"
 grep -Fq 'object-fit: contain' "$CSS"
 grep -Fq 'minmax(12rem, 1fr)' "$CSS"
 ! grep -Eqi 'add to cart|rating|stars|sale badge|shipping|checkout' "$CARD"
+printf 'PASS: Phase 2A catalogue source contract\n'
 ```
 
-- [ ] **Step 2: Run and verify RED**
-
-Run:
+- [ ] **Step 2: Run RED**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-catalogue-contract.test.sh
 ```
 
-Expected: FAIL because the archive/card production files do not exist.
+Expected: FAIL because production archive/card files do not exist.
 
-- [ ] **Step 3: Implement archive anatomy**
+- [ ] **Step 3: Implement archive anatomy and avoid an empty dead filter sidebar**
 
-`archive-product.php` must use the normal WooCommerce query but own Rosa composition:
+Use the Woo main loop, but own the presentation. Search action should resolve to the Woo product archive, with fallback to `/products/`:
+
+```php
+$productArchiveUrl = get_post_type_archive_link('product');
+if (! is_string($productArchiveUrl) || $productArchiveUrl === '') {
+    $productArchiveUrl = home_url('/products/');
+}
+$hasFilterProvider = has_action('rosa_medical_archive_filters');
+```
+
+Required composition:
 
 ```php
 get_header();
@@ -699,17 +723,19 @@ get_header();
 </section>
 <section class="rosa-products-workspace">
   <div class="rosa-rail rosa-rail--archive">
-    <form class="rosa-products-search" role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>">
+    <form class="rosa-products-search" role="search" method="get" action="<?php echo esc_url($productArchiveUrl); ?>">
       <label for="rosa-product-search"><?php esc_html_e('Search products by name, code, size or option', 'rosa-medical'); ?></label>
       <input id="rosa-product-search" name="s" type="search" value="<?php echo esc_attr(get_search_query()); ?>">
       <input type="hidden" name="post_type" value="product">
     </form>
-    <div class="rosa-products-layout">
-      <aside class="rosa-products-filters" aria-label="<?php echo esc_attr__('Product filters', 'rosa-medical'); ?>">
-        <?php do_action('rosa_medical_archive_filters'); ?>
-      </aside>
+    <div class="rosa-products-layout<?php echo $hasFilterProvider ? ' has-filters' : ''; ?>">
+      <?php if ($hasFilterProvider) : ?>
+        <aside class="rosa-products-filters" aria-label="<?php echo esc_attr__('Product filters', 'rosa-medical'); ?>">
+          <?php do_action('rosa_medical_archive_filters'); ?>
+        </aside>
+      <?php endif; ?>
       <div class="rosa-products-results">
-        <!-- contextual count + Woo loop rendered through product-card partial -->
+        <!-- result header + grid -->
       </div>
     </div>
   </div>
@@ -718,34 +744,37 @@ get_header();
 get_footer();
 ```
 
-If no filter provider is registered, hide the empty aside with `:empty` and let results consume full width. This deliberately avoids nonfunctional advanced filter controls in production while preserving the exact structural integration point required by the approved future discovery subsystem.
+Do **not** rely on CSS `:empty` for filter-sidebar suppression; template whitespace makes that brittle. No filter controls are faked before the later discovery subsystem registers the hook.
 
-- [ ] **Step 4: Implement the dense product card**
+- [ ] **Step 4: Render Woo products through the Rosa card partial**
 
-`product-card.php` obtains the current WooCommerce product and calls `ProductPresentation::forProduct()`.
-
-Required order:
+For each loop product, call `get_template_part('template-parts/product-card', null, ['product' => $product]);`. `product-card.php` calls `ProductPresentation::forProduct()` and renders exactly:
 
 ```text
-contained image
-family eyebrow
+contained product media
+family signal
 product title
-reference/configuration evidence
+truthful SKU/reference/configuration evidence
 price state
 View details
 ```
 
-For missing images render a neutral inline placeholder label/silhouette container. Do not substitute stock imagery.
+If image is missing, render a neutral Rosa placeholder. Do not substitute stock imagery.
 
-- [ ] **Step 5: Implement the grid CSS**
+- [ ] **Step 5: Implement the dense responsive grid**
 
-Desktop result grid:
+Core desktop rule:
 
 ```css
 .rosa-products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   gap: var(--card-gap);
+}
+
+.rosa-product-card__media {
+  aspect-ratio: 1;
+  background: var(--color-paper);
 }
 
 .rosa-product-card__media img {
@@ -755,23 +784,19 @@ Desktop result grid:
 }
 ```
 
-Use the 90rem archive rail and a 14.5–17rem sidebar when the sidebar provider exists. At narrow widths hide/collapse the permanent aside and let a later filter provider supply the mobile disclosure through the same hook. At `max-width:40rem`, allow a tested compact two-column mode with a smaller grid minimum around 9rem; provide a one-column fallback class when real content fails readability.
+When `.has-filters` exists at desktop content-fit widths, use a 14.5–17rem sidebar and results remainder. At narrow widths, the later filter provider supplies its compact disclosure; Phase 2A does not render a dead trigger. At `max-width:40rem`, permit a tested compact two-column minimum around 9rem, with a one-column/list fallback when real titles/SKUs fail readability. The 90rem archive rail prevents uncontrolled extra columns on 1920/2560.
 
-Do not let 1920/2560 automatically add unbounded columns because the rail caps at 90rem.
+- [ ] **Step 6: Add truthful empty/PDF/reveal seams**
 
-- [ ] **Step 6: Add truthful empty/result states and catalogue slot**
+- Replace generic empty-shop text with Rosa no-results copy and a reset/back-to-products path.
+- Render `catalogue-panel.php` only when `FamilyCatalogue` returns a valid PDF.
+- Keep `do_action('rosa_medical_archive_reveal')` after results. If no provider exists, it renders nothing; do not fake See More behavior in Phase 2A.
 
-Replace generic WooCommerce empty-shop text with Rosa copy and a reset/back-to-products path. Render family catalogue panel only when `FamilyCatalogue` returns a valid document. If no PDF exists, render no broken link.
+- [ ] **Step 7: Enqueue catalogue CSS only on Woo archive/product-taxonomy/product-search contexts**
 
-Keep `do_action('rosa_medical_archive_reveal')` after the grid. No fake See More control is rendered until the discovery subsystem provides it.
+Use route predicates in `functions.php`; do not load catalogue CSS on every editorial page.
 
-- [ ] **Step 7: Enqueue `catalogue.css` only on product archive/search/product taxonomy contexts**
-
-Use WordPress/WooCommerce route predicates in `functions.php`; do not load every catalogue stylesheet on all editorial pages.
-
-- [ ] **Step 8: Run archive tests and syntax checks**
-
-Run:
+- [ ] **Step 8: Run GREEN and PHP syntax checks**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-catalogue-contract.test.sh
@@ -782,7 +807,7 @@ php -l wordpress/wp-content/themes/rosa-medical-child/template-parts/catalogue-p
 
 Expected: PASS.
 
-- [ ] **Step 9: Commit Task 5**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add wordpress/wp-content/themes/rosa-medical-child \
@@ -805,19 +830,17 @@ git commit -m "feat(wordpress): build dense Rosa product archive"
 - Create: `wordpress/scripts/tests/phase2a-product-detail-contract.test.sh`
 
 **Interfaces:**
-- Consumes: `ProductPresentation::forProduct()`, `FamilyCatalogue::forProduct()`, Task 1 tokens, plugin priority-100 template selection.
-- Produces: theme-owned production Product Detail template with real configuration radios, selected summary, price slot, non-submitting inquiry presentation, responsive gallery and PDF module.
+- Consumes: `ProductPresentation::forProduct()`, `FamilyCatalogue::forProduct()`, Task 1 tokens, priority-100 Product Detail routing.
+- Produces: child-theme production detail template with real configuration controls, selected summary, price seam, non-submitting inquiry seam, PDF module and safe mobile action geometry.
 
-- [ ] **Step 1: Write failing routing and Product Detail contracts**
-
-Assert:
+- [ ] **Step 1: Write failing routing/detail contracts**
 
 ```bash
 PLUGIN=wordpress/wp-content/plugins/rosa-medical-core/src/Plugin.php
 DETAIL=wordpress/wp-content/themes/rosa-medical-child/template-parts/product-detail.php
 
 grep -Fq "add_filter('template_include', [self::class, 'productTemplate'], 100)" "$PLUGIN"
-grep -Fq "template-parts/product-detail.php" "$PLUGIN"
+grep -Fq 'template-parts/product-detail.php' "$PLUGIN"
 ! grep -Eq '<main([[:space:]>])' "$DETAIL"
 grep -Fq 'data-rosa-product-detail' "$DETAIL"
 grep -Fq 'data-rosa-configuration' "$DETAIL"
@@ -827,9 +850,7 @@ grep -Fq 'data-rosa-inquiry-action' "$DETAIL"
 ! grep -Eqi 'related products|add to cart|shipping|rating|wishlist|checkout' "$DETAIL"
 ```
 
-- [ ] **Step 2: Run and verify RED**
-
-Run:
+- [ ] **Step 2: Run RED while preserving existing foundation contracts**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-product-detail-contract.test.sh
@@ -837,11 +858,11 @@ bash wordpress/scripts/tests/product-template-hook.test.sh
 bash wordpress/scripts/tests/product-detail-structure.test.sh
 ```
 
-Expected: new Phase 2A contract FAIL; existing foundation contracts remain green until routing changes are made.
+Expected: new Phase 2A contract FAIL; existing foundation contracts PASS before routing change.
 
-- [ ] **Step 3: Change Product Detail routing without losing the verified hook repair**
+- [ ] **Step 3: Prefer the child-theme production template without weakening priority 100**
 
-Keep priority `100`. In `Plugin::productTemplate()` prefer the child-theme production file:
+In `Plugin::productTemplate()`:
 
 ```php
 $themeTemplate = trailingslashit(get_stylesheet_directory()) . 'template-parts/product-detail.php';
@@ -853,67 +874,77 @@ $fallback = dirname(ROSA_MEDICAL_CORE_FILE) . '/templates/product-detail-prototy
 return is_readable($fallback) ? $fallback : $template;
 ```
 
-This keeps routing authority late in `rosa-medical-core` while moving final presentation into the child theme. Update the hook tests to require priority `100`, production-theme preference and plugin fallback.
+Keep the existing filter registration at priority `100`. Update `product-template-hook.test.sh` so it requires priority 100, theme-template preference and plugin fallback. Do not change Coming Soon behavior.
 
-- [ ] **Step 4: Implement Product Detail anatomy**
+- [ ] **Step 4: Implement the production Product Detail anatomy**
 
-`product-detail.php` must:
+At file start:
 
 ```php
 $product = wc_get_product(get_the_ID());
-$view = $product instanceof WC_Product ? ProductPresentation::forProduct($product) : null;
-$catalogue = $product instanceof WC_Product ? FamilyCatalogue::forProduct($product) : null;
+$view = $product instanceof WC_Product
+    ? \RosaMedical\Core\Catalogue\ProductPresentation::forProduct($product)
+    : null;
+$catalogue = $product instanceof WC_Product
+    ? \RosaMedical\Core\Catalogue\FamilyCatalogue::forProduct($product)
+    : null;
 get_header();
 ```
 
-Then render, without another `<main>`:
+If `$view` is null, render a Rosa unavailable state inside the existing theme main, then footer.
+
+Otherwise render:
 
 ```text
-breadcrumb/family
-media + summary split
+breadcrumb/family context
+media + summary region
 family + full h1 + concise description
 Select configuration
-selected SKU/attributes summary
-Effective price / Price on request
+selected SKU/Size/Direction/Variant summary
+effective price / Price on request
 quantity
 Add to Inquiry presentation
-catalogue PDF module when valid
+family catalogue PDF when valid
 specifications/procurement context
 focused inquiry closure
 ```
 
-Single-configuration products show a configuration summary without a redundant radio group. Multiple configurations render semantic radios and only the real variations returned by the presenter.
+Single-configuration products display one explicit configuration summary without a redundant selector. Multi-configuration products use semantic radio rows for the exact real variations only.
 
-- [ ] **Step 5: Keep Phase 2A pricing and inquiry seams truthful**
+- [ ] **Step 5: Keep pricing and inquiry truthful**
 
-Render the normalized price state returned by the presenter. With no pricing provider registered, the fixture displays `Price on request`.
+Render `$view['price']`. Without a pricing provider, this is `Price on request`.
 
-Render Add to Inquiry as a disabled/non-submitting button when `inquiry_enabled === false`:
+Render inquiry action as disabled/non-submitting until the future provider enables it:
 
 ```php
 <button
-    class="rosa-product-detail__inquiry-button"
-    type="button"
-    data-rosa-inquiry-action
-    <?php disabled(! $view['inquiry_enabled']); ?>
+  type="button"
+  class="rosa-product-detail__inquiry-button"
+  data-rosa-inquiry-action
+  <?php disabled(! $view['inquiry_enabled']); ?>
 >
-    <?php esc_html_e('Add to Inquiry', 'rosa-medical'); ?>
+  <?php esc_html_e('Add to Inquiry', 'rosa-medical'); ?>
 </button>
 ```
 
-This is an explicit scope boundary, not a fake shopping action. The later inquiry subsystem enables the existing integration seam rather than replacing this visual structure.
+If no valid configuration exists, action remains unavailable and the page shows a clear procurement-contact state. Do not redirect to Woo checkout.
 
-- [ ] **Step 6: Implement configuration presentation JS**
+- [ ] **Step 6: Implement presentation-only configuration synchronization**
 
-`product-detail.js` handles only display synchronization:
+`product-detail.js`:
 
 ```js
 const root = document.querySelector('[data-rosa-product-detail]');
+
 if (root) {
   root.addEventListener('change', (event) => {
     const input = event.target.closest('[data-rosa-configuration]');
     if (!input) return;
-    root.querySelector('[data-rosa-selected-sku]').textContent = input.dataset.sku || '';
+
+    const sku = root.querySelector('[data-rosa-selected-sku]');
+    if (sku) sku.textContent = input.dataset.sku || '';
+
     root.querySelectorAll('[data-rosa-selected-attribute]').forEach((node) => {
       const key = node.dataset.rosaSelectedAttribute;
       node.textContent = key ? (input.dataset[key] || '') : '';
@@ -922,13 +953,13 @@ if (root) {
 }
 ```
 
-Do not store inquiry items, mutate WooCommerce variations or calculate prices in JS.
+No inquiry persistence, Woo mutation or price arithmetic belongs in this JS.
 
-- [ ] **Step 7: Implement Product Detail CSS and mobile sticky geometry**
+- [ ] **Step 7: Implement desktop split and safe mobile sticky geometry**
 
-Desktop uses approximately `1.1fr / 0.9fr` only when the summary can remain near 28rem. Otherwise stack.
+Desktop uses approximately `1.1fr / 0.9fr` only when summary retains ~28rem. Otherwise stack. Media is contained and capped on large screens.
 
-Mobile sticky action styling must reserve space:
+Mobile sticky action is permitted only when a valid configuration exists and must reserve document space:
 
 ```css
 .rosa-product-detail[data-sticky-action="true"] {
@@ -943,11 +974,9 @@ Mobile sticky action styling must reserve space:
 }
 ```
 
-Only show the sticky region after a valid configuration is resolved; do not create a second state model. Ensure it cannot cover title, configuration controls, notices or footer.
+Quantity stays in the main decision block. Do not create a second action state machine.
 
-- [ ] **Step 8: Run Product Detail tests, syntax and JS checks**
-
-Run:
+- [ ] **Step 8: Run GREEN and syntax checks**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-product-detail-contract.test.sh
@@ -960,7 +989,7 @@ node --check wordpress/wp-content/themes/rosa-medical-child/assets/js/product-de
 
 Expected: PASS.
 
-- [ ] **Step 9: Commit Task 6**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add wordpress/wp-content/plugins/rosa-medical-core/src/Plugin.php \
@@ -973,7 +1002,7 @@ git commit -m "feat(wordpress): build Rosa production product detail"
 
 ---
 
-### Task 7: Complete responsive, RTL and accessibility behavior across shell, archive and Product Detail
+### Task 7: Harden responsive, RTL and accessibility behavior
 
 **Files:**
 - Modify: `wordpress/wp-content/themes/rosa-medical-child/assets/css/base.css`
@@ -984,53 +1013,59 @@ git commit -m "feat(wordpress): build Rosa production product detail"
 - Create: `docs/runbooks/wordpress-phase2a-visual-acceptance.md`
 
 **Interfaces:**
-- Consumes: all completed Phase 2A structures.
-- Produces: normative breakpoint transformations, short-height behavior, reduced-motion/RTL/zoom requirements and manual acceptance procedure.
+- Consumes: Tasks 1–6.
+- Produces: approved breakpoint transformations, short-height behavior, RTL-safe geometry, reduced-motion and manual acceptance protocol.
 
-- [ ] **Step 1: Add a source contract for logical properties and reduced motion**
+- [ ] **Step 1: Extend source contracts so missing responsive safeguards fail**
 
-Extend Phase 2A shell/catalogue/detail tests to require:
+Require:
 
 ```bash
 grep -Fq 'margin-inline' wordpress/wp-content/themes/rosa-medical-child/assets/css/base.css
 grep -Fq 'inset-inline' wordpress/wp-content/themes/rosa-medical-child/assets/css/shell.css
 grep -Fq '@media (prefers-reduced-motion: reduce)' wordpress/wp-content/themes/rosa-medical-child/assets/css/base.css
 grep -Fq '@media (max-height: 800px)' wordpress/wp-content/themes/rosa-medical-child/assets/css/product-detail.css
+grep -Fq 'env(safe-area-inset-bottom)' wordpress/wp-content/themes/rosa-medical-child/assets/css/product-detail.css
 ```
 
-- [ ] **Step 2: Run contracts and verify the newly added assertions RED where behavior is missing**
+- [ ] **Step 2: Run the Phase 2A source tests and verify RED only for newly missing safeguards**
 
-Run all Phase 2A source tests. Expected: at least the newly required short-height/logical-property assertions fail until the CSS is completed.
+```bash
+bash wordpress/scripts/tests/phase2a-theme-tokens.test.sh
+bash wordpress/scripts/tests/phase2a-shell-contract.test.sh
+bash wordpress/scripts/tests/phase2a-catalogue-contract.test.sh
+bash wordpress/scripts/tests/phase2a-product-detail-contract.test.sh
+```
 
-- [ ] **Step 3: Implement the responsive matrix directly from the approved spec**
+Expected: newly introduced assertions fail until this task completes; previously completed task contracts remain green.
 
-Required modes:
+- [ ] **Step 3: Implement the exact responsive modes from the approved spec**
 
-- `390/430`: logo + menu header; quote action in drawer; one/two card columns based on readability; stacked Product Detail; bounded gallery; one-column footer; sticky action safe-area reserved.
-- `768`: drawer navigation; no permanent filter sidebar; two/three cards; stacked Product Detail; footer may become two columns.
-- `1024`: drawer allowed; no permanent sidebar unless three readable cards remain; three/four cards; split Product Detail only when summary keeps ~28rem; explicit 1024×768 short-height tuning.
-- `1366`: full nav; 14.5–17rem sidebar when provider exists; four/five cards; two-column Product Detail; 1366×768 tuning.
-- `1440`: five cards is a valid target with readable real content.
-- `1920/2560`: no unbounded extra columns; 80–90rem functional rails stay centered.
+- 390/430: logo + menu header; quote CTA inside drawer; one/two card columns based on real-content readability; stacked Product Detail; bounded gallery; one-column footer; safe-area sticky action.
+- 768: drawer navigation; no permanent filter sidebar; two/three cards; stacked detail; footer may be two columns.
+- 1024: drawer is acceptable; permanent sidebar only if three readable card columns remain; otherwise three/four cards without it; detail splits only when summary retains ~28rem; test 1024×768.
+- 1366: full nav; provider-backed 14.5–17rem sidebar; four/five cards; two-column detail; test 1366×768.
+- 1440: five-card archive is a valid target when real cards remain readable.
+- 1920/2560: 80–90rem functional rail remains bounded; no automatic extra columns or type scaling.
 
-Use media/container queries based on content fit rather than framework defaults.
+Use content-fit media/container queries rather than arbitrary framework defaults.
 
-- [ ] **Step 4: Implement RTL-safe geometry**
+- [ ] **Step 4: Make geometry RTL-safe**
 
-No duplicated RTL templates. Use logical properties for drawer direction, card separators, padding, gallery/thumb rail, sticky action and footer groups. Any directional arrow icon must mirror through `[dir="rtl"]` only when direction carries meaning.
+Use logical padding/margins/insets for drawer, product cards, filter slot, gallery/thumbnails, sticky action and footer. Mirror directional icons only when direction carries meaning. Do not duplicate templates for RTL.
 
-- [ ] **Step 5: Implement focus/touch/reduced-motion safeguards**
+- [ ] **Step 5: Enforce focus, target-size and reduced-motion behavior**
 
-- practical target size >=44px; core controls around 48px;
-- visible focus on every nav/menu/card/configuration/PDF action;
-- selected radio/configuration state not color-only;
+- practical targets >=44px; core controls approximately 48px;
+- keyboard-visible focus on nav/menu/card/configuration/PDF/action controls;
+- selected configuration not communicated by color alone;
 - no hover-only information;
-- motion removed under `prefers-reduced-motion`;
-- sticky action never covers focused elements.
+- reduced motion removes non-essential transitions/transforms;
+- sticky action never obscures a focused element.
 
-- [ ] **Step 6: Write the exact manual visual acceptance runbook**
+- [ ] **Step 6: Write the visual acceptance runbook**
 
-`wordpress-phase2a-visual-acceptance.md` must prescribe checks at:
+The runbook must require Products + Stevens Product Detail at:
 
 ```text
 390×844
@@ -1043,22 +1078,19 @@ No duplicated RTL templates. Use logical properties for drawer direction, card s
 2560×1440
 ```
 
-For each width, inspect `/products/` and the Stevens Product Detail. Also require:
+It must also require:
 
-- desktop + mobile menu keyboard path;
-- Escape and focus return;
-- 200% browser zoom/reflow;
+- mobile drawer keyboard traversal, Escape, focus return and inert background;
+- 200% zoom/reflow;
 - text-spacing override;
 - `prefers-reduced-motion`;
-- representative `dir="rtl"` shell/detail rendering;
+- representative `dir="rtl"` shell/archive/detail rendering;
 - no horizontal overflow;
 - no sticky overlap;
-- contained instrument imagery;
-- readable card title/reference at the chosen column count.
+- contained product imagery;
+- readable title/reference at the actual chosen card count.
 
-- [ ] **Step 7: Run all source checks**
-
-Run:
+- [ ] **Step 7: Run GREEN**
 
 ```bash
 bash wordpress/scripts/tests/phase2a-theme-tokens.test.sh
@@ -1071,7 +1103,7 @@ node --check wordpress/wp-content/themes/rosa-medical-child/assets/js/product-de
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit Task 7**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add wordpress/wp-content/themes/rosa-medical-child/assets \
@@ -1087,15 +1119,16 @@ git commit -m "refactor(wordpress): harden Rosa responsive visual foundation"
 **Files:**
 - Create: `wordpress/scripts/phase2a-runtime-verify.sh`
 - Create: `wordpress/scripts/phase2a-responsive-capture.sh`
-- Modify only if required by equivalent production marker: `wordpress/scripts/foundation-product-verify.sh`
+- Modify only if required: `wordpress/scripts/foundation-product-verify.sh`
+- Modify only if required: root `.gitignore` or `wordpress/.gitignore`
 
 **Interfaces:**
-- Consumes: existing disposable foundation runtime, `foundation-bootstrap.sh`, `foundation-seed.sh`, all Phase 2A source/runtime structures.
-- Produces: one command for Phase 2A runtime acceptance and one repeatable screenshot matrix under a local ignored output directory.
+- Consumes: disposable local foundation runtime, foundation seed/verifier, all Phase 2A source.
+- Produces: repeatable targeted acceptance and ignored local screenshots.
 
-- [ ] **Step 1: Write `phase2a-runtime-verify.sh` as a fail-fast aggregator**
+- [ ] **Step 1: Implement a fail-fast `phase2a-runtime-verify.sh`**
 
-It must run source contracts first:
+It must run:
 
 ```bash
 bash wordpress/scripts/tests/foundation-preflight.test.sh
@@ -1111,39 +1144,37 @@ bash wordpress/scripts/tests/phase2a-catalogue-contract.test.sh
 bash wordpress/scripts/tests/phase2a-product-detail-contract.test.sh
 ```
 
-Then verify PHP/shell/JS syntax for all changed files.
+Then lint every PHP file under `wordpress/wp-content`, `bash -n` every shell script under `wordpress/scripts`, and `node --check` both Phase 2A JS files.
 
-Then require the running disposable runtime and execute:
+Then require the local runtime and run:
 
 ```bash
 bash wordpress/scripts/foundation-seed.sh
 bash wordpress/scripts/foundation-product-verify.sh
 ```
 
-Finally `curl -fsS` Home, `/products/`, and the Stevens Product Detail URL and assert:
+Resolve the seeded product URL via WP-CLI rather than hard-coding an ID, then `curl -fsS` Home, `/products/` and that Product Detail. Assert:
 
-- exactly one `<main` occurrence;
-- ROSA shell markers present;
-- no `woocommerce-coming-soon` interception marker;
-- Product Detail includes `04-0901` and `04-0911`;
-- Product Detail includes `Price on request` when no pricing provider is registered;
-- no `Add to cart`, `Related products`, rating or shipping strings in Rosa-owned Product Detail markup.
+- each page has exactly one `<main` occurrence;
+- Rosa shell marker is present;
+- no Woo Coming Soon interception page;
+- detail contains `04-0901`, `04-0911`, Straight and Curved;
+- detail contains `Price on request` without a pricing provider;
+- Rosa-owned detail output contains no Add to cart, Related products, rating, wishlist, shipping or checkout language.
 
-- [ ] **Step 2: Run runtime verifier before completion and fix only Phase 2A-caused failures**
-
-Run:
+- [ ] **Step 2: Run runtime verifier; debug systematically if it fails**
 
 ```bash
 bash wordpress/scripts/phase2a-runtime-verify.sh
 ```
 
-Expected: PASS after Tasks 1–7. If a failure occurs, invoke `superpowers:systematic-debugging` before changing implementation.
+Expected: PASS. Any unexpected failure requires `superpowers:systematic-debugging` before code changes.
 
-- [ ] **Step 3: Implement deterministic screenshot capture**
+- [ ] **Step 3: Implement screenshot capture**
 
-`phase2a-responsive-capture.sh` creates an ignored local directory such as `wordpress/.phase2a-artifacts/` and captures `/products/` and the discovered Stevens Product Detail URL at all eight viewport sizes.
+`phase2a-responsive-capture.sh` must create `wordpress/.phase2a-artifacts/`, discover the current Stevens product URL via WP-CLI, and capture Products + Product Detail at all eight approved sizes.
 
-Use the already-installed workspace Playwright CLI without modifying `apps/web/**`. Example command shape:
+Use the existing workspace Playwright CLI without editing `apps/web/**`, e.g.:
 
 ```bash
 pnpm --filter @rosa/web exec playwright screenshot \
@@ -1152,137 +1183,146 @@ pnpm --filter @rosa/web exec playwright screenshot \
   "wordpress/.phase2a-artifacts/products-1440x900.png"
 ```
 
-The script repeats this for both routes and every approved viewport. Add `wordpress/.phase2a-artifacts/` to the appropriate local ignore file if it is not already ignored; never commit screenshots by default.
+Repeat for Product Detail and all specified dimensions.
 
-- [ ] **Step 4: Run screenshot capture and perform the runbook review**
+- [ ] **Step 4: Ensure generated screenshots are ignored, without staging unrelated files**
 
-Run:
+Check:
+
+```bash
+git check-ignore -q wordpress/.phase2a-artifacts/ || true
+git diff -- .gitignore wordpress/.gitignore
+```
+
+If no ignore rule exists, add exactly:
+
+```gitignore
+wordpress/.phase2a-artifacts/
+```
+
+to the appropriate tracked ignore file. Stage only the ignore file that actually changed.
+
+- [ ] **Step 5: Capture and manually review every image using the runbook**
 
 ```bash
 bash wordpress/scripts/phase2a-responsive-capture.sh
 ```
 
-Review every capture according to `docs/runbooks/wordpress-phase2a-visual-acceptance.md`. Record specific pass/fail notes rather than “looks good.”
+Record concrete pass/fail notes for each required width. Do not write only “looks good.” Revalidate drawer keyboard/focus, browser console, representative Elementor editorial-page shell rendering, RTL, 200% zoom and reduced motion before reusing any manual foundation attestation.
 
-- [ ] **Step 5: Rerun the final foundation verifier with the previously accepted manual foundation attestations only if those checks are genuinely revalidated**
+- [ ] **Step 6: Commit verification tooling**
 
-Do not blindly reuse environment variables. Re-run representative browser/editor checks affected by changed shell CSS before attesting.
-
-Expected final automated result remains compatible with:
-
-```text
-PASS: automated foundation runtime + Elementor editability + responsive shell + browser-console acceptance confirmed
-```
-
-- [ ] **Step 6: Commit Task 8**
+Always stage:
 
 ```bash
 git add wordpress/scripts/phase2a-runtime-verify.sh \
-  wordpress/scripts/phase2a-responsive-capture.sh \
-  wordpress/scripts/foundation-product-verify.sh \
-  .gitignore wordpress/.gitignore 2>/dev/null || true
+  wordpress/scripts/phase2a-responsive-capture.sh
+```
+
+If `foundation-product-verify.sh` changed, stage it explicitly:
+
+```bash
+git add wordpress/scripts/foundation-product-verify.sh
+```
+
+If an ignore file changed, stage that exact file only. Then:
+
+```bash
 git commit -m "test(wordpress): add Phase 2A runtime visual verification"
 ```
 
-Stage only ignore files that actually changed; do not use the command above to accidentally stage unrelated files.
-
 ---
 
-### Task 9: Run final verification, independent review and record Phase 2A completion evidence
+### Task 9: Run fresh final verification, independent review and record completion evidence
 
 **Files:**
 - Create: `docs/superpowers/completions/2026-08-30-wordpress-phase-2a-balanced-visual-foundation.md`
-- Modify only if coordination requires a factual append-only entry: `README.md`
+- Modify only if coordination requires an append-only factual entry: `README.md`
 
 **Interfaces:**
-- Consumes: all Task 1–8 commits and verification evidence.
-- Produces: reviewable completion record; no production deployment.
+- Consumes: Tasks 1–8 and their evidence.
+- Produces: reviewable completion record. Does not integrate or deploy.
 
-- [ ] **Step 1: Run the full Phase 2A targeted verification from a clean worktree**
-
-Run:
+- [ ] **Step 1: Run final targeted verification from a clean worktree**
 
 ```bash
 bash wordpress/scripts/phase2a-runtime-verify.sh
 bash wordpress/scripts/phase2a-responsive-capture.sh
+find wordpress/wp-content -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+find wordpress/scripts -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
 git status --short
 ```
 
-Also run every PHP file in `wordpress/wp-content` through `php -l` and every shell script under `wordpress/scripts` through `bash -n`.
+Expected: all Phase 2A/foundation checks PASS and no generated screenshots are tracked.
 
-Expected: all Phase 2A and foundation checks PASS. The worktree contains no unintended generated artifacts.
-
-- [ ] **Step 2: Check forbidden dependencies and consumer-commerce leakage**
-
-Run repository-scoped searches over changed WordPress source:
+- [ ] **Step 2: Check forbidden-dependency and retail leakage**
 
 ```bash
-grep -RniE 'medicashop|elementor[ -]?pro|elementskit|skyboot|wpml' wordpress/wp-content wordpress/scripts || true
+grep -RniE 'medicashop|elementor[ -]?pro|elementskit|skyboot|wpml' \
+  wordpress/wp-content wordpress/scripts || true
+
 grep -RniE 'add to cart|checkout|my account|shipping|rating|wishlist|sale badge|related products' \
   wordpress/wp-content/themes/rosa-medical-child \
   wordpress/wp-content/plugins/rosa-medical-core || true
 ```
 
-Any match must be either a deliberate negative test/comment or removed before completion.
+Every match must be a deliberate negative assertion/comment or be removed before completion.
 
-- [ ] **Step 3: Review the final diff against the approved specification**
+- [ ] **Step 3: Map final evidence to all 20 approved spec acceptance criteria**
 
-Explicitly map final evidence to all 20 acceptance criteria in the spec. Confirm especially:
+Explicitly verify:
 
-- 4–5-card desktop density where readable;
-- no destructive image crop;
-- exact configuration/SKU prominence;
-- truthful Price-on-Request default;
-- inquiry control non-submitting until its subsystem exists;
-- dynamic PDF relationship support;
-- one-main landmark;
-- priority-100 template repair preserved;
-- no Coming Soon regression;
-- 390/430/768/1024/1366/1440/1920/2560 visual evidence;
-- 1024×768 and 1366×768 short-height evidence;
-- no Hostinger/production activity.
+- recognizably Rosa, not recolored Woo/pharmacy;
+- free-first architecture intact;
+- protected shared shell/archive/card/detail;
+- exact five-item nav;
+- approved token/type/rail/geometry system;
+- four/five-card standard-desktop density where readable;
+- contained instrument imagery;
+- SKU/configuration prominence;
+- real variations only;
+- truthful Price-on-Request default and no invented price persistence;
+- non-submitting inquiry seam and no invented quote persistence;
+- dynamic family PDF relationship;
+- safe mobile detail action;
+- bounded 1920/2560 rails;
+- full 390/430/768/1024/1366/1440/1920/2560 evidence;
+- one main landmark;
+- keyboard/focus/touch/reduced-motion/zoom/RTL evidence;
+- priority-100, Coming Soon and fixture repairs protected;
+- no unverified claims promoted;
+- no Hostinger/production work.
 
-- [ ] **Step 4: Request independent code/spec review**
+- [ ] **Step 4: Request independent review**
 
-Invoke `superpowers:requesting-code-review`. Reviewer must inspect:
+Invoke `superpowers:requesting-code-review`. Reviewer must inspect approved-spec compliance, theme/plugin boundaries, drawer/accessibility behavior, Product Detail routing priority/fallback, exact Stevens fixture, retail leakage, pricing/inquiry scope honesty, diff cleanliness and verification quality.
 
-- approved spec compliance;
-- theme/plugin responsibility boundary;
-- accessibility/drawer/focus behavior;
-- Product Detail routing priority/fallback;
-- exact fixture preservation;
-- no dead retail controls;
-- no invented pricing/inquiry persistence;
-- diff cleanliness and tests.
+Fix accepted findings. Any bug or unexpected test failure discovered during review requires `superpowers:systematic-debugging` before repair.
 
-Resolve review findings before claiming completion.
+- [ ] **Step 5: Verify again before claiming completion**
 
-- [ ] **Step 5: Use verification-before-completion before writing the completion record**
+Invoke `superpowers:verification-before-completion`. Rerun every command whose evidence became stale after review fixes.
 
-Invoke `superpowers:verification-before-completion` and rerun any command whose evidence became stale after review fixes.
+- [ ] **Step 6: Write the completion record with exact evidence**
 
-- [ ] **Step 6: Write the completion record**
-
-The completion record must include:
+Include:
 
 ```text
-branch + exact HEAD
-spec path
-plan path
+implementation branch and exact HEAD
+approved spec path
+implementation plan path
 files added/modified
 foundation checks
 Phase 2A source tests
-runtime verification result
-screenshot matrix review result
-manual keyboard/focus/zoom/RTL result
+runtime verifier result
+screenshot matrix result with per-width notes
+keyboard/focus/inert/zoom/reduced-motion/RTL result
 Stevens fixture proof
-known unrelated repository-wide lint blocker
-independent review findings/resolution
+known unrelated repository-wide React lint blocker
+independent-review findings and resolutions
 explicit statement that Hostinger/production/catalogue mass import were untouched
-remaining future phases: discovery, pricing persistence, inquiry persistence, full catalogue import, multilingual/client-role/security/deployment work
+future work still open: discovery, pricing persistence/sync, inquiry persistence, full catalogue import, multilingual, client-role hardening, security/performance and deployment
 ```
-
-Do not claim those future subsystems are complete.
 
 - [ ] **Step 7: Commit the completion record**
 
@@ -1291,9 +1331,11 @@ git add docs/superpowers/completions/2026-08-30-wordpress-phase-2a-balanced-visu
 git commit -m "docs: record WordPress Phase 2A visual foundation"
 ```
 
+If `README.md` genuinely needs a coordination entry, make it append-only, verify the diff, and commit it separately so the completion record remains reviewable.
+
 - [ ] **Step 8: Stop before integration**
 
-Do not merge into `wordpress/medicashop-migration`, open a PR, rebase, touch Hostinger or begin the next migration subsystem unless the user explicitly authorizes the next action.
+Do not merge into `wordpress/medicashop-migration`, open a PR, rebase, touch Hostinger or start the next migration subsystem without explicit user authorization.
 
 ---
 
@@ -1301,20 +1343,34 @@ Do not merge into `wordpress/medicashop-migration`, open a PR, rebase, touch Hos
 
 ### Spec coverage
 
-- Design tokens/typography/rails/geometry/motion: Task 1.
-- Header/nav/mobile drawer/footer/centralized business values: Task 2.
-- Exact real configuration projection and truthful reference semantics: Task 3.
+- Tokens, fonts, rails, geometry, motion: Task 1.
+- Header, five-item nav, inert accessible drawer, footer, centralized business values: Task 2.
+- Real configuration projection and truthful card/detail reference semantics: Task 3.
 - Dynamic Media Library family PDF relationship: Task 4.
-- Filter-ready Products archive, dense 4–5 card target, card hierarchy, missing-image/no-results states: Task 5.
-- Production Product Detail, configuration selection, SKU/attributes, Price-on-Request default, inquiry presentation, sticky mobile geometry: Task 6.
-- Full responsive matrix, short-height, accessibility, reduced motion, RTL, zoom/reflow procedure: Task 7.
-- Real public rendering, foundation-regression protection and deterministic screenshots: Task 8.
-- Independent review, fresh verification, exact completion evidence and stop-before-integration gate: Task 9.
+- Filter-ready Products archive, dense card system, missing-image/no-results/PDF/reveal seams: Task 5.
+- Production Product Detail, exact configuration selection, SKU/attributes, truthful price/inquiry seams and safe sticky geometry: Task 6.
+- Full responsive matrix, short-height, RTL, focus, target size, reduced motion, zoom/reflow: Task 7.
+- Real anonymous/public runtime checks, foundation regression protection and deterministic screenshots: Task 8.
+- Fresh verification, independent review, completion evidence and stop-before-integration gate: Task 9.
+
+### Placeholder/ambiguity review
+
+- No `TBD`, `TODO`, “implement later,” or generic “add error handling” steps remain.
+- Empty filter-sidebar handling is explicit through `has_action('rosa_medical_archive_filters')`; the plan does not rely on brittle `:empty` behavior.
+- Search action targets the WooCommerce product archive with a `/products/` fallback.
+- Drawer background inertness is explicit in code and in the shell contract.
+- Screenshot staging is explicit and does not use broad `git add ... || true` commands.
+- The Product Detail plugin fallback remains explicit while priority `100` is preserved.
 
 ### Intentional non-implementation boundaries
 
-This plan intentionally does not implement advanced contextual filter/search semantics, complete-row reveal behavior, authoritative Rosa pricing persistence/synchronization, inquiry/quotation persistence, full catalogue import, multilingual routing/content, client-role hardening or deployment. It gives those future subsystems stable visual and integration seams without creating temporary competing implementations.
+This plan intentionally does **not** implement advanced contextual filter/search semantics, complete-row reveal behavior, authoritative Rosa pricing persistence/synchronization, inquiry/quotation persistence, full catalogue import, multilingual routing/content, client-role hardening or deployment. It gives those future subsystems stable visual and integration seams without creating temporary competing implementations.
 
-### Type/interface consistency
+### Interface consistency
 
-The theme consumes one normalized `ProductPresentation::forProduct()` structure. Future pricing integrates through `rosa_medical_product_price_state`; future inquiry capability integrates through `rosa_medical_inquiry_enabled`; future filters and row-aware reveal integrate through `rosa_medical_archive_filters` and `rosa_medical_archive_reveal`. Family PDF rendering consumes only `FamilyCatalogue` output. No later task renames these interfaces.
+- Product templates consume `ProductPresentation::forProduct()`.
+- Future pricing integrates through `rosa_medical_product_price_state`.
+- Future inquiry capability integrates through `rosa_medical_inquiry_enabled`.
+- Future discovery/reveal integrates through `rosa_medical_archive_filters` and `rosa_medical_archive_reveal`.
+- Family documents consume `FamilyCatalogue` only.
+- No later task renames these interfaces.
