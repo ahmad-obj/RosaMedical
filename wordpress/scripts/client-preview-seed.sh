@@ -4,6 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 COMPOSE_FILE="$ROOT_DIR/wordpress/dev/compose.yaml"
 ENV_FILE="$ROOT_DIR/wordpress/dev/.env"
+REFERENCE_MEDIA_ROOT="${ROSA_PREVIEW_MEDIA_ROOT:-/rosa-reference-media}"
 compose=(docker compose -f "$COMPOSE_FILE")
 if [[ -f "$ENV_FILE" ]]; then compose+=(--env-file "$ENV_FILE"); fi
 wp(){ "${compose[@]}" run --rm wpcli "$@"; }
@@ -29,13 +30,17 @@ wp eval '
 '
 
 import_media(){
-  local key="$1" rel="$2" src="$ROOT_DIR/$rel"
-  [[ -f "$src" ]] || fail "missing Rosa-owned media source: $rel"
+  local key="$1" rel="$2" host_src="$ROOT_DIR/$rel" relative_media container_src
+  [[ -f "$host_src" ]] || fail "missing Rosa-owned media source: $rel"
+  relative_media="${rel#apps/web/public/media/}"
+  [[ "$relative_media" != "$rel" ]] || fail "media source is outside approved Rosa media root: $rel"
+  container_src="$REFERENCE_MEDIA_ROOT/$relative_media"
   local existing
   existing="$(wp post list --post_type=attachment --meta_key=_rosa_preview_source_path --meta_value="$rel" --field=ID --format=ids | awk '{print $1}')"
   local id="$existing"
   if [[ -z "$id" ]]; then
-    id="$(wp media import "$src" --porcelain)"
+    id="$(wp media import "$container_src" --porcelain)"
+    [[ -n "$id" ]] || fail "WordPress did not import Rosa media source: $rel"
     wp post meta update "$id" _rosa_preview_source_path "$rel" >/dev/null
   fi
   printf '%s=%s\n' "$key" "$id"

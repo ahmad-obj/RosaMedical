@@ -53,6 +53,7 @@ services:
       - rosa_foundation_wordpress:/var/www/html
       - ../wp-content/plugins/rosa-medical-core:/var/www/html/wp-content/plugins/rosa-medical-core
       - ../wp-content/themes/rosa-medical-child:/var/www/html/wp-content/themes/rosa-medical-child
+      - ../../apps/web/public/media:/rosa-reference-media:ro
     entrypoint: ["wp"]
 
 volumes:
