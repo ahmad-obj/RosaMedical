@@ -1,11 +1,12 @@
 <?php
-/**
- * Site header.
- */
-
-if (! defined('ABSPATH')) {
-    exit;
-}
+/** Client-preview public header. */
+if (! defined('ABSPATH')) { exit; }
+$previewLocale = function_exists('rosa_preview_locale') ? rosa_preview_locale() : 'en';
+$navItems = function_exists('rosa_preview_nav_items') ? rosa_preview_nav_items($previewLocale) : [];
+$pairUrl = function_exists('rosa_preview_pair_url') ? rosa_preview_pair_url() : home_url('/');
+$email = rosa_theme_business_value('email');
+$phone = rosa_theme_business_value('phone');
+$logoId = function_exists('rosa_preview_media_id') ? rosa_preview_media_id('logo') : 0;
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -13,28 +14,45 @@ if (! defined('ABSPATH')) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
 </head>
-<body <?php body_class(); ?>>
+<body <?php body_class(); ?> data-rosa-preview-shell>
 <?php wp_body_open(); ?>
-<header class="rosa-site-header">
-    <div class="rosa-shell rosa-site-header__inner">
-        <a class="rosa-site-brand" href="<?php echo esc_url(home_url('/')); ?>">
-            <?php echo esc_html(get_bloginfo('name')); ?>
-        </a>
-        <nav class="rosa-site-nav" aria-label="<?php echo esc_attr__('Primary navigation', 'rosa-medical'); ?>">
-            <?php
-            wp_nav_menu([
-                'theme_location' => 'primary',
-                'container'      => false,
-                'fallback_cb'    => false,
-            ]);
-            ?>
-        </nav>
-        <?php $phone = rosa_theme_business_value('phone'); ?>
-        <?php if ($phone !== '') : ?>
-            <a class="rosa-site-contact" href="<?php echo esc_url('tel:' . preg_replace('/[^0-9+]/', '', $phone)); ?>">
-                <?php echo esc_html($phone); ?>
-            </a>
-        <?php endif; ?>
+<div class="rosa-preview-announcement">
+    <div class="rosa-preview-rail rosa-preview-announcement__inner">
+        <span><?php echo esc_html($previewLocale === 'ar' ? 'دعم الكتالوج وطلبات عروض الأسعار' : 'Catalogue and quotation support'); ?></span>
+        <div class="rosa-preview-announcement__contacts">
+            <?php if ($email !== '') : ?><a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a><?php endif; ?>
+            <?php if ($phone !== '') : ?><a href="tel:<?php echo esc_attr((string) preg_replace('/[^0-9+]/', '', $phone)); ?>"><?php echo esc_html($phone); ?></a><?php endif; ?>
+        </div>
     </div>
+</div>
+<header class="rosa-preview-header">
+    <div class="rosa-preview-rail rosa-preview-header__inner">
+        <a class="rosa-preview-brand" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/' : '/')); ?>" aria-label="ROSA">
+            <?php if ($logoId > 0) : ?>
+                <?php echo wp_get_attachment_image($logoId, 'full', false, ['class' => 'rosa-preview-brand__image', 'alt' => 'ROSA']); ?>
+            <?php else : ?><span class="rosa-preview-brand__fallback">ROSA</span><?php endif; ?>
+        </a>
+        <nav class="rosa-preview-nav" aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'التنقل الرئيسي' : 'Primary navigation'); ?>">
+            <?php foreach ($navItems as $item) : ?>
+                <a href="<?php echo esc_url($item['url']); ?>"><?php echo esc_html($item['label']); ?></a>
+            <?php endforeach; ?>
+        </nav>
+        <div class="rosa-preview-header__actions">
+            <a class="rosa-preview-language" href="<?php echo esc_url($pairUrl); ?>" hreflang="<?php echo esc_attr($previewLocale === 'ar' ? 'en' : 'ar'); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'EN' : 'العربية'); ?></a>
+            <a class="rosa-preview-button rosa-preview-button--accent" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/contact/#inquiry' : '/contact/#inquiry')); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'الاستفسار' : 'Inquiry'); ?></a>
+        </div>
+        <button class="rosa-preview-menu-trigger" type="button" aria-expanded="false" aria-controls="rosa-preview-menu" data-rosa-preview-menu-trigger>
+            <span><?php echo esc_html($previewLocale === 'ar' ? 'القائمة' : 'Menu'); ?></span>
+        </button>
+    </div>
+    <div class="rosa-preview-menu-overlay" hidden data-rosa-preview-menu-overlay></div>
+    <aside class="rosa-preview-menu" id="rosa-preview-menu" hidden data-rosa-preview-menu-drawer aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'قائمة الجوال' : 'Mobile menu'); ?>">
+        <button type="button" class="rosa-preview-menu__close" data-rosa-preview-menu-close><?php echo esc_html($previewLocale === 'ar' ? 'إغلاق' : 'Close'); ?></button>
+        <nav>
+            <?php foreach ($navItems as $item) : ?><a href="<?php echo esc_url($item['url']); ?>"><?php echo esc_html($item['label']); ?></a><?php endforeach; ?>
+        </nav>
+        <a class="rosa-preview-language" href="<?php echo esc_url($pairUrl); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'EN' : 'العربية'); ?></a>
+        <a class="rosa-preview-button rosa-preview-button--accent" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/contact/#inquiry' : '/contact/#inquiry')); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'الاستفسار' : 'Inquiry'); ?></a>
+    </aside>
 </header>
 <main id="main" class="rosa-site-main">
