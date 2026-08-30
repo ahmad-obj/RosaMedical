@@ -1,14 +1,23 @@
 <?php
 /** Client-preview public header. */
 if (! defined('ABSPATH')) { exit; }
-$previewLocale = function_exists('rosa_preview_locale') ? rosa_preview_locale() : 'en';
+$previewPostId = (function_exists('is_shop') && is_shop()) ? (int) get_option('woocommerce_shop_page_id', 0) : get_the_ID();
+$rawPreviewLocale = (string) get_post_meta($previewPostId, ROSA_PREVIEW_LOCALE_META, true);
+$isPreviewPage = in_array($rawPreviewLocale, ['en', 'ar'], true) || (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag()));
+$previewLocale = $rawPreviewLocale === 'ar' ? 'ar' : 'en';
 $navItems = function_exists('rosa_preview_nav_items') ? rosa_preview_nav_items($previewLocale) : [];
 $pairUrl = function_exists('rosa_preview_pair_url') ? rosa_preview_pair_url() : home_url('/');
 $email = rosa_theme_business_value('email');
 $phone = rosa_theme_business_value('phone');
 $logoId = function_exists('rosa_preview_media_id') ? rosa_preview_media_id('logo') : 0;
 ?><!doctype html>
+<?php if ($isPreviewPage && $previewLocale === 'ar') : ?>
+<html lang="ar" dir="rtl">
+<?php elseif ($isPreviewPage) : ?>
+<html lang="en-US" dir="ltr">
+<?php else : ?>
 <html <?php language_attributes(); ?>>
+<?php endif; ?>
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">

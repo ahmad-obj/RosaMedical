@@ -1,0 +1,19 @@
+html[dir="rtl"] body[data-rosa-preview-shell] {
+  font-family: Tajawal, "Noto Sans Arabic", sans-serif;
+  text-align: start;
+}
+html[dir="rtl"] .rosa-preview-eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+html[dir="rtl"] .rosa-preview-menu {
+  inset-inline-end: 0;
+}
+html[dir="rtl"] .rosa-preview-product__family {
+  letter-spacing: 0;
+  text-transform: none;
+}
+html[dir="rtl"] .rosa-preview-contact__details span {
+  letter-spacing: 0;
+  text-transform: none;
+}
