@@ -14,6 +14,7 @@ grep -Fq '2560,1440' "$CAPTURE" || fail '2560x1440 capture missing'
 grep -Fq '/ar/' "$CAPTURE" || fail 'Arabic capture routes missing'
 grep -Fq 'recordVideo' "$VIDEO" || fail 'Playwright video recording missing'
 grep -Fq 'client-preview-artifacts' "$CAPTURE" || fail 'ignored artifact directory missing from capture tooling'
+! grep -Eq 'printf .*\| grep -' "$RUNTIME" || fail 'runtime verifier uses grep -q pipelines that are unsafe under pipefail; use here-strings'
 python3 - "$VIDEO" <<'PY'
 import sys
 text = open(sys.argv[1], encoding='utf-8').read()
