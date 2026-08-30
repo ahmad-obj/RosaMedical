@@ -27,4 +27,13 @@ except ValueError:
 if not (shop < home_again < switch):
     raise SystemExit('FAIL: Home return must occur after Shop and before the Arabic language switch')
 PY
+
+# Verify assert_single_main correctly counts <main> tags in strict mode
+env -i PATH="$PATH" bash -euo pipefail -c '
+fail(){ printf "mock fail: %s\n" "$1" >&2; exit 1; }
+'"$(sed -n '/^assert_single_main(){/,/^}/p' "$RUNTIME")"'
+assert_single_main "Valid single main" "<!DOCTYPE html><html><body><main id=\"main\" class=\"rosa-site-main\"><p>content</p></main></body></html>"
+' || fail 'assert_single_main failed to recognize single <main> tag'
+
 printf 'PASS: client preview runtime tooling contract\n'
+
