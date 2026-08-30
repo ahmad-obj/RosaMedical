@@ -86,7 +86,7 @@ p=P(); p.feed(sys.stdin.read()); print(" ".join(" ".join(p.parts).split()))'
 
 assert_single_main(){
   local label="$1" html="$2" count
-  count="$(printf '%s' "$html" | python3 -c 'import re,sys; print(len(re.findall(r"<main(?:\\s|>)", sys.stdin.read(), flags=re.I)))')"
+  count="$(printf '%s' "$html" | python3 -c 'import re,sys; print(len(re.findall(r"<main(?:\s|>)", sys.stdin.read(), flags=re.I)))')"
   [[ "$count" == '1' ]] || fail "$label expected exactly one <main>, found $count"
 }
 
