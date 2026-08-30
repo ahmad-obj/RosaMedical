@@ -39,7 +39,10 @@ wp eval '
 '
 
 import_media(){
-  local key="$1" rel="$2" host_src="$ROOT_DIR/$rel" relative_media container_src
+  local key="$1"
+  local rel="$2"
+  local host_src="$ROOT_DIR/$rel"
+  local relative_media container_src
   [[ -f "$host_src" ]] || fail "missing Rosa-owned media source: $rel"
   relative_media="${rel#apps/web/public/media/}"
   [[ "$relative_media" != "$rel" ]] || fail "media source is outside approved Rosa media root: $rel"
