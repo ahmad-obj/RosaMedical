@@ -14,4 +14,5 @@ grep -Fq 'rosa_preview_price_label' "$CARD" || fail 'truthful price-on-request l
 grep -Fq 'View details' "$CARD" || fail 'detail action missing'
 ! grep -Eqi 'add to cart|rating|wishlist|shipping|checkout|sale!' "$CARD" || fail 'consumer-retail Shop leakage'
 grep -Fq 'object-fit: contain' "$CSS" || fail 'contained product imagery missing'
+grep -Fq 'min-block-size: 44px' "$CSS" || fail 'minimum interactive target safeguard missing'
 printf 'PASS: client preview Shop contract\n'
