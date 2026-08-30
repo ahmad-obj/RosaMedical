@@ -57,6 +57,20 @@ add_action('wp_enqueue_scripts', static function (): void {
         $version,
         true
     );
+
+    $isProductSearch = is_search() && get_query_var('post_type') === 'product';
+    $isCatalogue = (function_exists('is_shop') && is_shop())
+        || (function_exists('is_product_taxonomy') && is_product_taxonomy())
+        || $isProductSearch;
+
+    if ($isCatalogue) {
+        wp_enqueue_style(
+            'rosa-medical-catalogue',
+            get_stylesheet_directory_uri() . '/assets/css/catalogue.css',
+            ['rosa-medical-shell'],
+            $version
+        );
+    }
 });
 
 function rosa_theme_business_value(string $key, string $default = ''): string
