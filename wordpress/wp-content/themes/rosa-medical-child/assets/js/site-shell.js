@@ -8,7 +8,7 @@
 
   if (!(trigger instanceof HTMLElement) || !(drawer instanceof HTMLElement) || !(overlay instanceof HTMLElement)) return;
 
-  const focusables = () => Array.from(drawer.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+  const focusables = () => Array.from(drawer.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
     .filter((node) => node instanceof HTMLElement && !node.hasAttribute('hidden'));
 
   const setBackgroundInert = (value) => {

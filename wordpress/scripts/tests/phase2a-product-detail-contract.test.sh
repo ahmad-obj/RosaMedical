@@ -15,6 +15,8 @@ grep -Fq 'data-rosa-selected-sku' "$DETAIL" || fail 'selected sku marker missing
 grep -Fq 'data-rosa-price-state' "$DETAIL" || fail 'price state marker missing'
 grep -Fq 'data-rosa-inquiry-action' "$DETAIL" || fail 'inquiry marker missing'
 grep -Fq 'object-fit: contain' "$CSS" || fail 'contained detail media missing'
+grep -Fq '@media (max-height: 800px)' "$CSS" || fail 'short-height detail safeguard missing'
+grep -Fq 'env(safe-area-inset-bottom)' "$CSS" || fail 'mobile safe area missing'
 grep -Fq 'rosaAttributes' "$JS" || fail 'configuration JS attributes missing'
 ! grep -Eqi 'related products|add to cart|shipping|rating|wishlist|checkout' "$DETAIL" || fail 'retail detail leakage'
 printf 'PASS: Phase 2A product detail contract\n'
