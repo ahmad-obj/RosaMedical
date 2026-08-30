@@ -63,15 +63,19 @@ media_lines="$(
   import_media about_international 'apps/web/public/media/editorial/about-international-buyers.webp'
   import_media procurement_support 'apps/web/public/media/editorial/procurement-support.jpg'
 )"
-ROSA_PREVIEW_MEDIA_LINES="$media_lines" wp eval '
-  $map = [];
-  foreach (preg_split("/\R/", (string)getenv("ROSA_PREVIEW_MEDIA_LINES")) as $line) {
-    if ($line === "" || strpos($line, "=") === false) continue;
-    [$key, $value] = explode("=", $line, 2);
-    $map[$key] = (int)$value;
+media_lines_b64="$(printf '%s' "$media_lines" | base64 | tr -d '\n')"
+wp eval "
+  \$decoded = base64_decode('${media_lines_b64}', true);
+  if (! is_string(\$decoded)) WP_CLI::error('Could not decode Rosa preview media map.');
+  \$map = [];
+  foreach (preg_split('/\\R/', \$decoded) as \$line) {
+    if (\$line === '' || strpos(\$line, '=') === false) continue;
+    [\$key, \$value] = explode('=', \$line, 2);
+    \$map[\$key] = (int) \$value;
   }
-  update_option("rosa_preview_media", $map);
-'
+  if (! isset(\$map['logo'], \$map['hero'])) WP_CLI::error('Rosa preview media map is incomplete.');
+  update_option('rosa_preview_media', \$map);
+"
 
 wp eval '
   function rosa_preview_seed_page(string $path, string $title, string $template, string $locale, int $parent = 0): int {
