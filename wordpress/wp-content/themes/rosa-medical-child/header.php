@@ -1,9 +1,16 @@
 <?php
 /** Client-preview public header. */
 if (! defined('ABSPATH')) { exit; }
-$previewPostId = (function_exists('is_shop') && is_shop()) ? (int) get_option('woocommerce_shop_page_id', 0) : get_the_ID();
+$isWooShop = function_exists('is_shop') && is_shop();
+$isWooCatalogue = function_exists('is_shop') && (
+    is_shop()
+    || is_product_category()
+    || is_product_tag()
+    || (function_exists('is_product') && is_product())
+);
+$previewPostId = $isWooShop ? (int) get_option('woocommerce_shop_page_id', 0) : get_the_ID();
 $rawPreviewLocale = (string) get_post_meta($previewPostId, ROSA_PREVIEW_LOCALE_META, true);
-$isPreviewPage = in_array($rawPreviewLocale, ['en', 'ar'], true) || (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag()));
+$isPreviewPage = in_array($rawPreviewLocale, ['en', 'ar'], true) || $isWooCatalogue;
 $previewLocale = $rawPreviewLocale === 'ar' ? 'ar' : 'en';
 $navItems = function_exists('rosa_preview_nav_items') ? rosa_preview_nav_items($previewLocale) : [];
 $pairUrl = function_exists('rosa_preview_pair_url') ? rosa_preview_pair_url() : home_url('/');

@@ -44,8 +44,13 @@ add_action('wp_enqueue_scripts', static function (): void {
         'page-templates/client-preview-shop.php',
     ];
     $isPreviewPage = is_page() && (in_array((string) get_page_template_slug(), $previewTemplates, true) || rosa_preview_locale() === 'ar');
-    $isPreviewShop = function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag());
-    if ($isPreviewPage || $isPreviewShop) {
+    $isPreviewCatalogue = function_exists('is_shop') && (
+        is_shop()
+        || is_product_category()
+        || is_product_tag()
+        || (function_exists('is_product') && is_product())
+    );
+    if ($isPreviewPage || $isPreviewCatalogue) {
         wp_enqueue_style('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/css/client-preview.css', ['rosa-medical-base'], $version);
         if (rosa_preview_locale() === 'ar' && file_exists(get_stylesheet_directory() . '/assets/css/client-preview-rtl.css')) {
             wp_enqueue_style('rosa-client-preview-rtl', get_stylesheet_directory_uri() . '/assets/css/client-preview-rtl.css', ['rosa-client-preview'], $version);
