@@ -3,7 +3,7 @@ if (! defined('ABSPATH')) { exit; }
 $locale = (string) ($args['locale'] ?? rosa_preview_locale());
 $product = $args['product'] ?? null;
 $family = $args['family'] ?? null;
-$detailLabel = $locale === 'ar' ? 'عرض التفاصيل' : 'View details';
+$detailLabel = rosa_preview_copy('view_details', $locale);
 if ($product instanceof WC_Product) {
     $imageId = $product->get_image_id();
     $name = $product->get_name();
