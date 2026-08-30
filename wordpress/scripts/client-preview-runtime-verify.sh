@@ -102,10 +102,10 @@ assert_preview_page(){
   fi
   [[ "$html" != *'preview.themeforest.net'* && "$html" != *'fullkit.moxcreative.com'* ]] || fail "$label references ThemeForest/demo URLs"
   text="$(printf '%s' "$html" | visible_text)"
-  if printf '%s' "$text" | grep -Eqi 'Medicashop|MoxCreative|Add to cart|Checkout|My Account|ratings?|wishlist|shipping|returns?|secure payment|newsletter'; then
+  if grep -Eqi 'Medicashop|MoxCreative|Add to cart|Checkout|My Account|ratings?|wishlist|shipping|returns?|secure payment|newsletter' <<<"$text"; then
     fail "$label contains unsupported retail/demo language"
   fi
-  if printf '%s' "$text" | grep -Eqi 'Coming Soon'; then
+  if grep -Eqi 'Coming Soon' <<<"$text"; then
     fail "$label is intercepted by WooCommerce Coming Soon"
   fi
 }
@@ -124,15 +124,15 @@ home_html="$(curl -fsSL "$home_url")"
 contact_text="$(printf '%s' "$contact_html" | visible_text)"
 home_text="$(printf '%s' "$home_html" | visible_text)"
 for value in "$phone" "$email" "$address"; do
-  printf '%s' "$contact_text" | grep -Fq -- "$value" || fail "English Contact does not render verified business value: $value"
-  printf '%s' "$home_text" | grep -Fq -- "$value" || fail "Home/footer does not render verified business value: $value"
+  grep -Fq -- "$value" <<<"$contact_text" || fail "English Contact does not render verified business value: $value"
+  grep -Fq -- "$value" <<<"$home_text" || fail "Home/footer does not render verified business value: $value"
 done
 
 product_html="$(curl -fsSL "$product_url")" || fail "Stevens Product Detail did not return HTTP success: $product_url"
 assert_single_main 'Stevens Product Detail' "$product_html"
 product_text="$(printf '%s' "$product_html" | visible_text)"
 for value in 'Stevens Scissors' '04-0901' '04-0911' 'Straight' 'Curved'; do
-  printf '%s' "$product_text" | grep -Fq -- "$value" || fail "Stevens Product Detail missing: $value"
+  grep -Fq -- "$value" <<<"$product_text" || fail "Stevens Product Detail missing: $value"
 done
 
 printf 'PASS: Rosa client preview source, runtime, bilingual routes and Stevens foundation regression\n'
