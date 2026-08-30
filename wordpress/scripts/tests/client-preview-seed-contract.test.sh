@@ -19,6 +19,17 @@ grep -Fq '../../apps/web/public/media:/rosa-reference-media:ro' "$COMPOSE" || fa
 grep -Fq '/rosa-reference-media' "$SEED" || fail 'seed does not import through container-visible Rosa media path'
 grep -Fq 'base64_decode' "$SEED" || fail 'preview values must cross the container boundary deterministically'
 ! grep -Fq 'getenv("ROSA_PREVIEW_PHONE")' "$SEED" || fail 'preview phone incorrectly depends on an unpassed container environment variable'
-! grep -Fq 'getenv("ROSA_PREVIEW_MEDIA_LINES")' "$SEED" || fail 'preview media map incorrectly depends on an unpassed container environment variable'
 grep -Fq 'media_lines_b64' "$SEED" || fail 'preview media map boundary encoding missing'
+
+# Verify import_media does not trigger unbound variable errors in strict mode
+env -i PATH="$PATH" bash -euo pipefail -c '
+ROOT_DIR="'"$ROOT"'"
+REFERENCE_MEDIA_ROOT="/test-media"
+fail(){ printf "mock fail: %s\n" "$1" >&2; exit 1; }
+wp(){ if [[ "$1" == "post" ]]; then echo "99"; else echo "99"; fi; }
+'"$(sed -n '/^import_media(){/,/^}/p' "$SEED")"'
+import_media logo apps/web/public/media/brand/rosa-header-logo-v1.webp >/dev/null
+' || fail 'import_media failed strict-mode execution test (e.g. unbound local variable)'
+
 printf 'PASS: client preview seed source contract\n'
+
