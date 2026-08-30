@@ -17,4 +17,6 @@ grep -Fq 'client-preview-shop.php' "$SEED" || fail 'Arabic shop template assignm
 grep -Fq 'rosa_business_settings' "$SEED" || fail 'business settings guard missing'
 grep -Fq '../../apps/web/public/media:/rosa-reference-media:ro' "$COMPOSE" || fail 'WP-CLI Rosa media bind mount missing'
 grep -Fq '/rosa-reference-media' "$SEED" || fail 'seed does not import through container-visible Rosa media path'
+grep -Fq 'base64_decode' "$SEED" || fail 'preview business overrides must cross the container boundary deterministically'
+! grep -Fq 'getenv("ROSA_PREVIEW_PHONE")' "$SEED" || fail 'preview phone incorrectly depends on an unpassed container environment variable'
 printf 'PASS: client preview seed source contract\n'
