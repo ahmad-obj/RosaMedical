@@ -1,0 +1,75 @@
+.rosa-skip-link {
+  position: fixed;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 1000;
+  transform: translateY(-160%);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  text-decoration: none;
+}
+.rosa-skip-link:focus { transform: translateY(0); }
+
+.rosa-site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 100;
+  min-block-size: var(--header-block);
+  border-block-end: 1px solid var(--color-border);
+  background: rgb(255 255 255 / 0.97);
+  backdrop-filter: blur(12px);
+}
+.rosa-site-header__inner {
+  min-block-size: var(--header-block);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+.rosa-site-brand { display: inline-flex; align-items: center; text-decoration: none; }
+.rosa-site-brand__wordmark { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.16em; }
+.rosa-site-nav { margin-inline-start: auto; }
+.rosa-site-nav__list { display: flex; align-items: center; gap: var(--space-5); margin: 0; padding: 0; list-style: none; }
+.rosa-site-nav__link { position: relative; display: inline-flex; min-block-size: 44px; align-items: center; text-decoration: none; font-size: 0.94rem; font-weight: 600; }
+.rosa-site-nav__link.is-active::after { content: ''; position: absolute; inset-inline: 0; inset-block-end: 0.35rem; block-size: 2px; background: var(--color-rosa-red); }
+.rosa-site-header__actions { display: flex; align-items: center; gap: var(--space-3); }
+.rosa-menu-trigger { display: none; min-block-size: 44px; min-inline-size: 44px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-paper); font: inherit; font-weight: 600; }
+
+.rosa-menu-overlay { position: fixed; inset: 0; z-index: 190; background: rgb(25 25 23 / 0.42); }
+.rosa-menu-drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 200;
+  inline-size: min(26rem, 90vw);
+  padding: var(--space-5);
+  overflow-y: auto;
+  background: var(--color-paper);
+  box-shadow: var(--shadow-lifted);
+}
+.rosa-menu-drawer__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.rosa-menu-drawer__close { min-block-size: 44px; padding-inline: var(--space-3); border: 1px solid var(--color-border); background: var(--color-paper); border-radius: var(--radius-control); }
+.rosa-menu-drawer__nav { margin: var(--space-6) 0; padding: 0; list-style: none; }
+.rosa-menu-drawer__nav a { display: flex; align-items: center; min-block-size: 48px; border-block-end: 1px solid var(--color-border); text-decoration: none; font-weight: 600; }
+.rosa-menu-drawer__quote { inline-size: 100%; }
+.rosa-menu-open { overflow: hidden; }
+
+.rosa-site-footer { margin-block-start: var(--section-block); padding-block: var(--section-block-compact) var(--space-5); background: var(--color-ink); color: var(--color-paper); }
+.rosa-site-footer__grid { display: grid; grid-template-columns: minmax(16rem, 1.5fr) repeat(3, minmax(10rem, 1fr)); gap: var(--space-6); }
+.rosa-site-footer h2 { margin-block-start: 0; color: var(--color-paper); font-family: var(--font-interface); font-size: 0.95rem; letter-spacing: 0.04em; }
+.rosa-site-footer ul { margin: 0; padding: 0; list-style: none; }
+.rosa-site-footer li + li { margin-block-start: var(--space-2); }
+.rosa-site-footer a { text-decoration-color: rgb(255 255 255 / 0.35); text-underline-offset: 0.2em; }
+.rosa-site-footer__bottom { margin-block-start: var(--space-6); padding-block-start: var(--space-4); border-block-start: 1px solid rgb(255 255 255 / 0.18); }
+
+@media (max-width: 70rem) {
+  .rosa-site-nav, .rosa-site-header__quote { display: none; }
+  .rosa-site-header__actions { margin-inline-start: auto; }
+  .rosa-menu-trigger { display: inline-flex; align-items: center; justify-content: center; }
+  .rosa-site-footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 40rem) {
+  .rosa-site-header { min-block-size: 4.25rem; }
+  .rosa-site-header__inner { min-block-size: 4.25rem; }
+  .rosa-site-footer__grid { grid-template-columns: 1fr; gap: var(--space-5); }
+}
