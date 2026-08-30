@@ -1,37 +1,83 @@
 :root {
-  --rosa-red: #e00815;
-  --rosa-red-strong: #b90a14;
-  --rosa-ink: #111214;
-  --rosa-ink-soft: #2c2e33;
-  --rosa-white: #ffffff;
-  --rosa-surface: #f7f7f8;
-  --rosa-surface-strong: #eceef1;
-  --rosa-text: #18191c;
-  --rosa-muted: #686c74;
-  --rosa-border: #d9dce1;
-  --rosa-focus: #0b66d4;
-  --rosa-success: #137a45;
-  --rosa-error: #b42318;
-  --rosa-shell: 90rem;
-  --rosa-gutter: clamp(1rem, 2.5vw, 2.5rem);
-  --rosa-radius-sm: 0.375rem;
-  --rosa-radius-md: 0.75rem;
-  --rosa-space-1: 0.25rem;
-  --rosa-space-2: 0.5rem;
-  --rosa-space-3: 0.75rem;
-  --rosa-space-4: 1rem;
-  --rosa-space-6: 1.5rem;
-  --rosa-space-8: 2rem;
-  --rosa-space-12: 3rem;
-  --rosa-space-16: 4rem;
-  --rosa-motion-fast: 140ms;
-  --rosa-motion-standard: 220ms;
-  --rosa-ease: cubic-bezier(0.2, 0, 0, 1);
+  --color-rosa-red: #e00815;
+  --color-rosa-red-dark: #b9000b;
+  --color-ink: #191917;
+  --color-ink-soft: #2d2d2a;
+  --color-warm-white: #f9f7f2;
+  --color-paper: #ffffff;
+  --color-mist: #f1f1ee;
+  --color-steel: #646b70;
+  --color-border: #d7d7d1;
+  --color-success: #1f6b45;
+  --color-success-surface: #e9f5ed;
+  --color-warning: #9a5b00;
+  --color-warning-surface: #fff5df;
+  --color-danger-surface: #fff0f1;
+
+  --font-interface: "Inter", Arial, sans-serif;
+  --font-editorial: "Lora", Georgia, serif;
+  --font-arabic: "Tajawal", "GE SS Two", "GE SS Text", Tahoma, Arial, sans-serif;
+
+  --container-reading: 46rem;
+  --container-standard: 72rem;
+  --container-wide: 80rem;
+  --container-archive: 90rem;
+  --page-gutter: clamp(1.1rem, 3.25vw, 4rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  --header-block: clamp(4.25rem, 6.2vh, 4.75rem);
+  --section-block: clamp(3.25rem, 6.2vw, 5.75rem);
+  --section-block-compact: clamp(2.5rem, 4.5vw, 4.25rem);
+  --intro-block: clamp(2.5rem, 5vw, 4.75rem);
+  --card-gap: clamp(1rem, 2vw, 1.5rem);
+  --control-block: 3rem;
+
+  --radius-control: 0.25rem;
+  --radius-surface: 0.125rem;
+  --shadow-lifted: 0 1.25rem 3.5rem rgb(25 25 23 / 0.08);
+
+  --motion-micro: 160ms;
+  --motion-component: 280ms;
+  --motion-section: 580ms;
+  --motion-hero: 960ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Foundation compatibility aliases retained while the prototype layer is retired. */
+  --rosa-red: var(--color-rosa-red);
+  --rosa-red-strong: var(--color-rosa-red-dark);
+  --rosa-ink: var(--color-ink);
+  --rosa-ink-soft: var(--color-ink-soft);
+  --rosa-white: var(--color-paper);
+  --rosa-surface: var(--color-warm-white);
+  --rosa-surface-strong: var(--color-mist);
+  --rosa-text: var(--color-ink);
+  --rosa-muted: var(--color-steel);
+  --rosa-border: var(--color-border);
+  --rosa-success: var(--color-success);
+  --rosa-shell: var(--container-archive);
+  --rosa-gutter: var(--page-gutter);
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --page-gutter: clamp(1rem, 4.8vw, 1.35rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --rosa-motion-fast: 0ms;
-    --rosa-motion-standard: 0ms;
+    --motion-micro: 0ms;
+    --motion-component: 0ms;
+    --motion-section: 0ms;
+    --motion-hero: 0ms;
   }
 }
