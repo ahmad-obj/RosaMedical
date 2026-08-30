@@ -7,7 +7,13 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+require_once __DIR__ . '/inc/client-preview.php';
+require_once __DIR__ . '/inc/client-preview-navigation.php';
+
 add_action('after_setup_theme', static function (): void {
+    add_theme_support('title-tag');
+    add_theme_support('custom-logo');
+
     register_nav_menus([
         'primary' => __('Primary Navigation', 'rosa-medical'),
     ]);
