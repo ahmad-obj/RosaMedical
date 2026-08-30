@@ -15,6 +15,7 @@ if (! defined('ABSPATH')) {
 define('ROSA_MEDICAL_CORE_FILE', __FILE__);
 
 require_once __DIR__ . '/src/Settings/BusinessSettings.php';
+require_once __DIR__ . '/src/Catalogue/ProductPresentation.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 use RosaMedical\Core\Plugin;
