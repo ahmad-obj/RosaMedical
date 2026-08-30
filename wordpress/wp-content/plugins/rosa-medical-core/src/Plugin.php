@@ -22,10 +22,6 @@ final class Plugin
 
         add_action('admin_init', [BusinessSettings::class, 'register']);
         add_action('admin_menu', [BusinessSettings::class, 'registerPage']);
-
-        // Elementor Free registers template_include at priority 11. Run later so
-        // Rosa's shared Product Detail prototype remains authoritative only for
-        // WooCommerce product requests while leaving all other templates alone.
         add_filter('template_include', [self::class, 'productTemplate'], 100);
     }
 
@@ -35,8 +31,12 @@ final class Plugin
             return $template;
         }
 
-        $rosa_template = dirname(ROSA_MEDICAL_CORE_FILE) . '/templates/product-detail-prototype.php';
+        $themeTemplate = trailingslashit(get_stylesheet_directory()) . 'template-parts/product-detail.php';
+        if (is_readable($themeTemplate)) {
+            return $themeTemplate;
+        }
 
-        return is_readable($rosa_template) ? $rosa_template : $template;
+        $fallback = dirname(ROSA_MEDICAL_CORE_FILE) . '/templates/product-detail-prototype.php';
+        return is_readable($fallback) ? $fallback : $template;
     }
 }
