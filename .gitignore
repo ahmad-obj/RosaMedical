@@ -21,3 +21,4 @@ local-data/
 .open-next/
 .next/
 .wrangler/
+wordpress/.client-preview-artifacts/
