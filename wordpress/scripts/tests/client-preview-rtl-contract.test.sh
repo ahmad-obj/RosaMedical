@@ -11,4 +11,6 @@ grep -Fq 'padding-inline' "$THEME/assets/css/client-preview.css" || fail 'logica
 grep -Fq 'inset-inline' "$THEME/assets/css/client-preview.css" || fail 'logical inset usage missing'
 grep -Fq 'font-family' "$RTL" || fail 'Arabic typography missing'
 grep -Fq 'rosa_preview_pair_url' "$THEME/header.php" || fail 'paired language switch missing'
+grep -Fq "\$shopPath = \$locale === 'ar' ? '/ar/shop/' : '/shop/';" "$THEME/footer.php" || fail 'Arabic footer product links must target the paired Arabic Shop'
+grep -Fq 'home_url($shopPath)' "$THEME/footer.php" || fail 'footer family links do not use localized Shop path'
 printf 'PASS: client preview RTL source contract\n'
