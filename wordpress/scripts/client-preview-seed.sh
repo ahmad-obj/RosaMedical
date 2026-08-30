@@ -11,14 +11,23 @@ wp(){ "${compose[@]}" run --rm wpcli "$@"; }
 fail(){ printf 'Client preview seed failed: %s\n' "$1" >&2; exit 1; }
 
 if [[ -n "${ROSA_PREVIEW_PHONE:-}" || -n "${ROSA_PREVIEW_EMAIL:-}" || -n "${ROSA_PREVIEW_ADDRESS:-}" ]]; then
-  ROSA_PREVIEW_PHONE="${ROSA_PREVIEW_PHONE:-}" ROSA_PREVIEW_EMAIL="${ROSA_PREVIEW_EMAIL:-}" ROSA_PREVIEW_ADDRESS="${ROSA_PREVIEW_ADDRESS:-}" wp eval '
-    $settings = get_option("rosa_business_settings", []);
-    if (!is_array($settings)) $settings = [];
-    foreach (["phone" => getenv("ROSA_PREVIEW_PHONE"), "email" => getenv("ROSA_PREVIEW_EMAIL"), "address" => getenv("ROSA_PREVIEW_ADDRESS")] as $key => $value) {
-      if (is_string($value) && $value !== "") $settings[$key] = $value;
+  phone_b64="$(printf '%s' "${ROSA_PREVIEW_PHONE:-}" | base64 | tr -d '\n')"
+  email_b64="$(printf '%s' "${ROSA_PREVIEW_EMAIL:-}" | base64 | tr -d '\n')"
+  address_b64="$(printf '%s' "${ROSA_PREVIEW_ADDRESS:-}" | base64 | tr -d '\n')"
+  wp eval "
+    \$settings = get_option('rosa_business_settings', []);
+    if (! is_array(\$settings)) \$settings = [];
+    \$input = [
+      'phone' => base64_decode('${phone_b64}', true),
+      'email' => base64_decode('${email_b64}', true),
+      'address' => base64_decode('${address_b64}', true),
+    ];
+    foreach (\$input as \$key => \$value) {
+      if (! is_string(\$value) || \$value === '') continue;
+      \$settings[\$key] = \$key === 'email' ? sanitize_email(\$value) : sanitize_text_field(\$value);
     }
-    update_option("rosa_business_settings", $settings);
-  '
+    update_option('rosa_business_settings', \$settings);
+  "
 fi
 wp eval '
   $settings = get_option("rosa_business_settings", []);
