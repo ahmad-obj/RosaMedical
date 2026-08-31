@@ -64,6 +64,12 @@ async function show(selector) {
   }
 }
 
+await page.setContent(`<!doctype html><html lang="en"><head><meta charset="utf-8"><style>
+  html,body{height:100%;margin:0}body{display:grid;place-items:center;background:#f5f6f7;color:#202124;font-family:Arial,sans-serif}
+  main{text-align:center}.mark{color:#f5221f;font-size:18px;font-weight:800;letter-spacing:.18em}.title{margin:14px 0 8px;font-size:54px;font-weight:700}.subtitle{color:#6b7075;font-size:20px}
+</style></head><body><main><div class="mark">ROSA MEDICAL</div><div class="title">Client preview</div><div class="subtitle">Catalogue and quotation support</div></main></body></html>`);
+await beat(1400);
+
 await visit(process.env.ROSA_VIDEO_HOME);
 for (const selector of ['[data-preview-hero]','[data-preview-who-we-are]','[data-preview-featured-products]','[data-preview-feature-banner]','[data-preview-contact-cta]']) await show(selector);
 
@@ -111,4 +117,5 @@ ROSA_VIDEO_OUTPUT="$output" \
   pnpm --filter @rosa/web exec node "$TEMP_SCRIPT"
 
 [[ -s "$output" ]] || fail "video artifact was not created: $output"
+node "$SCRIPT_DIR/client-preview-video-review.mjs" "$output" "$ARTIFACT_DIR/review-frames"
 printf 'PASS: client preview walkthrough video created at %s\n' "$output"

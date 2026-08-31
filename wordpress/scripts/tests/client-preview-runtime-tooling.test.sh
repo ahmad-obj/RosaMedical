@@ -5,11 +5,13 @@ RUNTIME="$ROOT/wordpress/scripts/client-preview-runtime-verify.sh"
 CAPTURE="$ROOT/wordpress/scripts/client-preview-responsive-capture.sh"
 VIDEO="$ROOT/wordpress/scripts/client-preview-video-capture.sh"
 CAPTURE_HELPER="$ROOT/wordpress/scripts/client-preview-capture.mjs"
+VIDEO_REVIEW="$ROOT/wordpress/scripts/client-preview-video-review.mjs"
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 [[ -f "$RUNTIME" ]] || fail 'client preview runtime verifier missing'
 [[ -f "$CAPTURE" ]] || fail 'client preview responsive capture missing'
 [[ -f "$VIDEO" ]] || fail 'client preview video capture missing'
 [[ -f "$CAPTURE_HELPER" ]] || fail 'client preview media-settling helper missing'
+[[ -f "$VIDEO_REVIEW" ]] || fail 'client preview video review helper missing'
 grep -Fq 'client-preview-seed.sh' "$RUNTIME" || fail 'runtime verifier does not seed client preview'
 grep -Fq '390,844' "$CAPTURE" || fail '390x844 capture missing'
 grep -Fq '2560,1440' "$CAPTURE" || fail '2560x1440 capture missing'
@@ -19,6 +21,7 @@ grep -Fq 'client-preview-artifacts' "$CAPTURE" || fail 'ignored artifact directo
 grep -Fq 'settlePageMedia' "$CAPTURE_HELPER" || fail 'capture helper does not settle below-fold media'
 grep -Fq 'client-preview-capture.test.mjs' "$RUNTIME" || fail 'runtime verification omits capture behavior regression'
 grep -Fq 'client-preview-accessibility.test.mjs' "$RUNTIME" || fail 'runtime verification omits browser accessibility acceptance'
+grep -Fq 'client-preview-video-review.mjs' "$VIDEO" || fail 'video capture does not inspect the generated recording'
 ! grep -Eq 'printf .*\| grep -' "$RUNTIME" || fail 'runtime verifier uses grep -q pipelines that are unsafe under pipefail; use here-strings'
 python3 - "$VIDEO" <<'PY'
 import sys
