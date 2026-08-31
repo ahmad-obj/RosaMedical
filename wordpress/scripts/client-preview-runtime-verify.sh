@@ -37,6 +37,7 @@ run php wordpress/scripts/tests/client-preview-content.test.php
 while IFS= read -r -d '' file; do php -l "$file" >/dev/null || fail "PHP syntax error: $file"; done < <(find wordpress/wp-content -type f -name '*.php' -print0)
 while IFS= read -r -d '' file; do bash -n "$file" || fail "shell syntax error: $file"; done < <(find wordpress/scripts -type f -name '*.sh' -print0)
 run node --check "$THEME/assets/js/client-preview.js"
+run node wordpress/scripts/tests/client-preview-capture.test.mjs
 
 run bash "$SCRIPT_DIR/foundation-bootstrap.sh"
 run bash "$SCRIPT_DIR/client-preview-seed.sh"

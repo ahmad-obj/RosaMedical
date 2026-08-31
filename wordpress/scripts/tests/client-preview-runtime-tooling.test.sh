@@ -4,16 +4,20 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 RUNTIME="$ROOT/wordpress/scripts/client-preview-runtime-verify.sh"
 CAPTURE="$ROOT/wordpress/scripts/client-preview-responsive-capture.sh"
 VIDEO="$ROOT/wordpress/scripts/client-preview-video-capture.sh"
+CAPTURE_HELPER="$ROOT/wordpress/scripts/client-preview-capture.mjs"
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 [[ -f "$RUNTIME" ]] || fail 'client preview runtime verifier missing'
 [[ -f "$CAPTURE" ]] || fail 'client preview responsive capture missing'
 [[ -f "$VIDEO" ]] || fail 'client preview video capture missing'
+[[ -f "$CAPTURE_HELPER" ]] || fail 'client preview media-settling helper missing'
 grep -Fq 'client-preview-seed.sh' "$RUNTIME" || fail 'runtime verifier does not seed client preview'
 grep -Fq '390,844' "$CAPTURE" || fail '390x844 capture missing'
 grep -Fq '2560,1440' "$CAPTURE" || fail '2560x1440 capture missing'
 grep -Fq '/ar/' "$CAPTURE" || fail 'Arabic capture routes missing'
 grep -Fq 'recordVideo' "$VIDEO" || fail 'Playwright video recording missing'
 grep -Fq 'client-preview-artifacts' "$CAPTURE" || fail 'ignored artifact directory missing from capture tooling'
+grep -Fq 'settlePageMedia' "$CAPTURE_HELPER" || fail 'capture helper does not settle below-fold media'
+grep -Fq 'client-preview-capture.test.mjs' "$RUNTIME" || fail 'runtime verification omits capture behavior regression'
 ! grep -Eq 'printf .*\| grep -' "$RUNTIME" || fail 'runtime verifier uses grep -q pipelines that are unsafe under pipefail; use here-strings'
 python3 - "$VIDEO" <<'PY'
 import sys
@@ -36,4 +40,3 @@ assert_single_main "Valid single main" "<!DOCTYPE html><html><body><main id=\"ma
 ' || fail 'assert_single_main failed to recognize single <main> tag'
 
 printf 'PASS: client preview runtime tooling contract\n'
-

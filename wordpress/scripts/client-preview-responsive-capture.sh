@@ -6,6 +6,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 COMPOSE_FILE="$ROOT_DIR/wordpress/dev/compose.yaml"
 ENV_FILE="$ROOT_DIR/wordpress/dev/.env"
 ARTIFACT_DIR="$ROOT_DIR/wordpress/.client-preview-artifacts/screenshots"
+CAPTURE_HELPER="$SCRIPT_DIR/client-preview-capture.mjs"
 compose=(docker compose -f "$COMPOSE_FILE")
 if [[ -f "$ENV_FILE" ]]; then compose+=(--env-file "$ENV_FILE"); fi
 wp(){ "${compose[@]}" run --rm wpcli "$@"; }
@@ -14,6 +15,7 @@ page_url(){ local path="$1"; wp eval "\$p=get_page_by_path('${path}',OBJECT,'pag
 
 cd "$ROOT_DIR"
 command -v pnpm >/dev/null 2>&1 || fail 'pnpm is required for Playwright capture'
+[[ -f "$CAPTURE_HELPER" ]] || fail 'Playwright capture helper is missing'
 mkdir -p "$ARTIFACT_DIR"
 
 home_url="$(wp option get home)"
@@ -48,12 +50,9 @@ for entry in "${pages[@]}"; do
     dimensions="${viewport/,/x}"
     output="$ARTIFACT_DIR/${name}-${dimensions}.png"
     printf 'Capturing %-12s %s -> %s\n' "$name" "$viewport" "$output"
-    pnpm --filter @rosa/web exec playwright screenshot \
-      --browser=chromium \
-      --viewport-size="$viewport" \
-      --full-page \
-      --wait-for-timeout=500 \
-      "$url" "$output" >/dev/null
+    width="${viewport%%,*}"
+    height="${viewport##*,}"
+    node "$CAPTURE_HELPER" "$url" "$output" "$width" "$height"
     [[ -s "$output" ]] || fail "capture was not created: $output"
     count=$((count + 1))
   done
