@@ -18,6 +18,7 @@ grep -Fq 'recordVideo' "$VIDEO" || fail 'Playwright video recording missing'
 grep -Fq 'client-preview-artifacts' "$CAPTURE" || fail 'ignored artifact directory missing from capture tooling'
 grep -Fq 'settlePageMedia' "$CAPTURE_HELPER" || fail 'capture helper does not settle below-fold media'
 grep -Fq 'client-preview-capture.test.mjs' "$RUNTIME" || fail 'runtime verification omits capture behavior regression'
+grep -Fq 'client-preview-accessibility.test.mjs' "$RUNTIME" || fail 'runtime verification omits browser accessibility acceptance'
 ! grep -Eq 'printf .*\| grep -' "$RUNTIME" || fail 'runtime verifier uses grep -q pipelines that are unsafe under pipefail; use here-strings'
 python3 - "$VIDEO" <<'PY'
 import sys

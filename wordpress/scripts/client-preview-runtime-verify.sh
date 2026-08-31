@@ -144,4 +144,6 @@ for value in 'Stevens Scissors' '04-0901' '04-0911' 'Straight' 'Curved'; do
   grep -Fq -- "$value" <<<"$product_text" || fail "Stevens Product Detail missing: $value"
 done
 
+run node wordpress/scripts/tests/client-preview-accessibility.test.mjs "$home_url"
+
 printf 'PASS: Rosa client preview source, runtime, bilingual routes and Stevens foundation regression\n'
