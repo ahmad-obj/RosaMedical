@@ -13,6 +13,7 @@ final class BusinessSettings
         'phone',
         'email',
         'address',
+        'address_ar',
         'whatsapp',
         'primary_cta_label',
     ];
@@ -80,6 +81,7 @@ final class BusinessSettings
             'phone' => __('Phone', 'rosa-medical'),
             'email' => __('Email', 'rosa-medical'),
             'address' => __('Address', 'rosa-medical'),
+            'address_ar' => __('Arabic address', 'rosa-medical'),
             'whatsapp' => __('WhatsApp', 'rosa-medical'),
             'primary_cta_label' => __('Primary CTA label', 'rosa-medical'),
         ];

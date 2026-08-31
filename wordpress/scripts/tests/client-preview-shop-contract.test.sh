@@ -10,6 +10,8 @@ fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 grep -Fq 'data-preview-shop-hero' "$ARCHIVE" || fail 'Shop hero missing'
 grep -Fq 'data-preview-shop-grid' "$ARCHIVE" || fail 'Shop grid missing'
 grep -Fq 'data-preview-shop-grid' "$ARSHOP" || fail 'Arabic Shop grid missing'
+grep -Fq 'rosa-preview-shop-search' "$ARSHOP" || fail 'Arabic Shop search role missing'
+grep -Fq "rosa_preview_family_label" "$CARD" || fail 'product family labels are not localized'
 grep -Fq 'rosa_preview_price_label' "$CARD" || fail 'truthful price-on-request label missing'
 grep -Fq "rosa_preview_copy('view_details'" "$CARD" || fail 'localized detail action missing'
 ! grep -Eqi 'add to cart|rating|wishlist|shipping|checkout|sale!' "$CARD" || fail 'consumer-retail Shop leakage'

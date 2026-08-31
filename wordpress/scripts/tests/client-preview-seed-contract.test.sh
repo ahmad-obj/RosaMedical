@@ -15,6 +15,7 @@ grep -Fq 'client-preview-about.php' "$SEED" || fail 'about template assignment m
 grep -Fq 'client-preview-contact.php' "$SEED" || fail 'contact template assignment missing'
 grep -Fq 'client-preview-shop.php' "$SEED" || fail 'Arabic shop template assignment missing'
 grep -Fq 'rosa_business_settings' "$SEED" || fail 'business settings guard missing'
+grep -Fq 'ROSA_PREVIEW_ADDRESS_AR' "$SEED" || fail 'Arabic business address does not cross the seed boundary'
 grep -Fq '../../apps/web/public/media:/rosa-reference-media:ro' "$COMPOSE" || fail 'WP-CLI Rosa media bind mount missing'
 grep -Fq '/rosa-reference-media' "$SEED" || fail 'seed does not import through container-visible Rosa media path'
 grep -Fq 'base64_decode' "$SEED" || fail 'preview values must cross the container boundary deterministically'
@@ -32,4 +33,3 @@ import_media logo apps/web/public/media/brand/rosa-header-logo-v1.webp >/dev/nul
 ' || fail 'import_media failed strict-mode execution test (e.g. unbound local variable)'
 
 printf 'PASS: client preview seed source contract\n'
-

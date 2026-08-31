@@ -66,9 +66,11 @@ product_url="$(wp post url "$product_id")"
 phone="$(wp eval '$settings=get_option("rosa_business_settings",[]); echo is_array($settings)?trim((string)($settings["phone"]??"")):"";')"
 email="$(wp eval '$settings=get_option("rosa_business_settings",[]); echo is_array($settings)?trim((string)($settings["email"]??"")):"";')"
 address="$(wp eval '$settings=get_option("rosa_business_settings",[]); echo is_array($settings)?trim((string)($settings["address"]??"")):"";')"
+address_ar="$(wp eval '$settings=get_option("rosa_business_settings",[]); echo is_array($settings)?trim((string)($settings["address_ar"]??"")):"";')"
 [[ -n "$phone" ]] || fail 'verified Rosa phone is empty'
 [[ -n "$email" ]] || fail 'verified Rosa email is empty'
 [[ -n "$address" ]] || fail 'verified Rosa address is empty'
+[[ -n "$address_ar" ]] || fail 'verified Rosa Arabic address is empty'
 
 visible_text(){
   python3 -c 'import sys
@@ -122,12 +124,18 @@ assert_preview_page 'Arabic Shop' "$ar_shop_url" ar
 
 contact_html="$(curl -fsSL "$contact_url")"
 home_html="$(curl -fsSL "$home_url")"
+ar_contact_html="$(curl -fsSL "$ar_contact_url")"
+ar_shop_html="$(curl -fsSL "$ar_shop_url")"
 contact_text="$(printf '%s' "$contact_html" | visible_text)"
 home_text="$(printf '%s' "$home_html" | visible_text)"
+ar_contact_text="$(printf '%s' "$ar_contact_html" | visible_text)"
+ar_shop_text="$(printf '%s' "$ar_shop_html" | visible_text)"
 for value in "$phone" "$email" "$address"; do
   grep -Fq -- "$value" <<<"$contact_text" || fail "English Contact does not render verified business value: $value"
   grep -Fq -- "$value" <<<"$home_text" || fail "Home/footer does not render verified business value: $value"
 done
+grep -Fq -- "$address_ar" <<<"$ar_contact_text" || fail 'Arabic Contact does not render the centralized Arabic address'
+grep -Fq -- 'البحث في المنتجات' <<<"$ar_shop_text" || fail 'Arabic Shop search is missing'
 
 product_html="$(curl -fsSL "$product_url")" || fail "Stevens Product Detail did not return HTTP success: $product_url"
 assert_single_main 'Stevens Product Detail' "$product_html"

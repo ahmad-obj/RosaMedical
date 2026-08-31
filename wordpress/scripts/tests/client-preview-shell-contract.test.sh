@@ -14,6 +14,8 @@ grep -Fq 'Inquiry' "$THEME/header.php" || fail 'retail action role not replaced 
 grep -Fq 'data-rosa-preview-menu-trigger' "$THEME/header.php" || fail 'mobile menu trigger missing'
 grep -Fq 'rosa-preview-footer' "$THEME/footer.php" || fail 'preview footer missing'
 grep -Fq 'rosa_theme_business_value' "$THEME/footer.php" || fail 'centralized business values missing'
+grep -Fq 'rosa_preview_family_label' "$THEME/footer.php" || fail 'footer family labels are not localized'
+grep -Fq 'dir="ltr"' "$THEME/header.php" || fail 'header contact values lack LTR isolation'
 grep -Fq 'client-preview.css' "$THEME/functions.php" || fail 'preview stylesheet not enqueued'
 grep -Fq 'client-preview.js' "$THEME/functions.php" || fail 'preview JS not enqueued'
 grep -Fq 'is_product()' "$THEME/functions.php" || fail 'Product Detail must receive the shared client-preview shell assets'

@@ -10,10 +10,11 @@ if [[ -f "$ENV_FILE" ]]; then compose+=(--env-file "$ENV_FILE"); fi
 wp(){ "${compose[@]}" run --rm wpcli "$@"; }
 fail(){ printf 'Client preview seed failed: %s\n' "$1" >&2; exit 1; }
 
-if [[ -n "${ROSA_PREVIEW_PHONE:-}" || -n "${ROSA_PREVIEW_EMAIL:-}" || -n "${ROSA_PREVIEW_ADDRESS:-}" ]]; then
+if [[ -n "${ROSA_PREVIEW_PHONE:-}" || -n "${ROSA_PREVIEW_EMAIL:-}" || -n "${ROSA_PREVIEW_ADDRESS:-}" || -n "${ROSA_PREVIEW_ADDRESS_AR:-}" ]]; then
   phone_b64="$(printf '%s' "${ROSA_PREVIEW_PHONE:-}" | base64 | tr -d '\n')"
   email_b64="$(printf '%s' "${ROSA_PREVIEW_EMAIL:-}" | base64 | tr -d '\n')"
   address_b64="$(printf '%s' "${ROSA_PREVIEW_ADDRESS:-}" | base64 | tr -d '\n')"
+  address_ar_b64="$(printf '%s' "${ROSA_PREVIEW_ADDRESS_AR:-}" | base64 | tr -d '\n')"
   wp eval "
     \$settings = get_option('rosa_business_settings', []);
     if (! is_array(\$settings)) \$settings = [];
@@ -21,6 +22,7 @@ if [[ -n "${ROSA_PREVIEW_PHONE:-}" || -n "${ROSA_PREVIEW_EMAIL:-}" || -n "${ROSA
       'phone' => base64_decode('${phone_b64}', true),
       'email' => base64_decode('${email_b64}', true),
       'address' => base64_decode('${address_b64}', true),
+      'address_ar' => base64_decode('${address_ar_b64}', true),
     ];
     foreach (\$input as \$key => \$value) {
       if (! is_string(\$value) || \$value === '') continue;

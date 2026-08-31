@@ -56,3 +56,27 @@ function rosa_preview_copy(string $key, ?string $locale = null): string {
     return $copy[$locale][$key] ?? '';
 }
 function rosa_preview_price_label(?string $locale = null): string { return rosa_preview_copy('price_request', $locale); }
+function rosa_preview_business_value(string $key, ?string $locale = null): string {
+    $locale = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
+    if ($key === 'address' && $locale === 'ar') {
+        $localized = rosa_theme_business_value('address_ar');
+        if ($localized !== '') {
+            return $localized;
+        }
+    }
+    return rosa_theme_business_value($key);
+}
+function rosa_preview_family_label(string $label, ?string $locale = null): string {
+    $locale = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
+    if ($locale !== 'ar') {
+        return $label;
+    }
+    $labels = [
+        'Knives' => 'السكاكين',
+        'Scissors' => 'المقصات',
+        'Punches' => 'المثاقب',
+        'Chisels' => 'الأزاميل',
+        'Cutters' => 'القواطع',
+    ];
+    return $labels[$label] ?? $label;
+}
