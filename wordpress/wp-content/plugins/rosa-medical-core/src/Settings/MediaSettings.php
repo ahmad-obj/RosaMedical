@@ -58,16 +58,13 @@ final class MediaSettings
         if (! function_exists('register_setting')) {
             return;
         }
-        foreach (['rosa_media', 'rosa_content_home', 'rosa_content_about', 'rosa_content_site'] as $group) {
-            register_setting(
-                $group,
-                self::OPTION_NAME,
-                [
-                    'type' => 'array',
-                    'sanitize_callback' => [self::class, 'mergeSanitize'],
-                    'default' => [],
-                ]
-            );
-        }
+        register_setting(
+            'rosa_media',
+            self::OPTION_NAME,
+            [
+                'type' => 'array',
+                'sanitize_callback' => [self::class, 'mergeSanitize'],
+            ]
+        );
     }
 }
