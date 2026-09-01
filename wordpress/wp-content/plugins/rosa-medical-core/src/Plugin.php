@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace RosaMedical\Core;
 
+use RosaMedical\Core\Admin\RosaAdmin;
 use RosaMedical\Core\Settings\BusinessSettings;
+use RosaMedical\Core\Settings\ContentSettings;
 
 final class Plugin
 {
@@ -21,7 +23,9 @@ final class Plugin
         });
 
         add_action('admin_init', [BusinessSettings::class, 'register']);
-        add_action('admin_menu', [BusinessSettings::class, 'registerPage']);
+        add_action('admin_init', [ContentSettings::class, 'register']);
+        add_action('admin_menu', [RosaAdmin::class, 'register']);
+        add_action('admin_enqueue_scripts', [RosaAdmin::class, 'enqueue']);
 
         // Elementor Free registers template_include at priority 11. Run later so
         // Rosa's shared Product Detail prototype remains authoritative only for
