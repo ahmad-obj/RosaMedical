@@ -138,6 +138,8 @@ try {
   for (const width of [431, 639, 767]) {
     const page = await loadHome(width, 932);
     await assertSharedHome(page, width);
+    assert.equal(await columnCount(page.locator('.rosa-preview-products--featured .rosa-preview-product')), 2, `${width} featured grid must retain two mobile columns`);
+    assert.equal(await columnCount(page.locator('.rosa-preview-products--latest .rosa-preview-product')), 2, `${width} latest grid must retain two mobile columns`);
     await assertNoVerticalCollisions(page, width);
     await page.close();
   }

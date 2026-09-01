@@ -389,10 +389,6 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-footer__grid { height: auto; min-height: 649px; }
 }
 
-@media (min-width: 40rem) and (max-width: 47.9375rem) {
-  .rosa-preview-products--featured, .rosa-preview-products--latest { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
 @media (min-width: 48rem) and (max-width: 50rem) {
   .rosa-preview-featured { height: 830px; }
   .rosa-preview-latest { height: 1430px; }
