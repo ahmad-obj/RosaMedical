@@ -30,6 +30,7 @@ source_tests=(
   wordpress/scripts/tests/client-preview-shop-contract.test.sh
   wordpress/scripts/tests/client-preview-rtl-contract.test.sh
   wordpress/scripts/tests/client-preview-runtime-tooling.test.sh
+  wordpress/scripts/tests/hostinger-migration-tooling.test.sh
 )
 for test_file in "${source_tests[@]}"; do run bash "$test_file"; done
 run php wordpress/scripts/tests/client-preview-content.test.php
