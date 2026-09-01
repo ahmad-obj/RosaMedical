@@ -17,6 +17,12 @@ $pairUrl = function_exists('rosa_preview_pair_url') ? rosa_preview_pair_url($pre
 $email = rosa_theme_business_value('email');
 $phone = rosa_theme_business_value('phone');
 $logoId = function_exists('rosa_preview_media_id') ? rosa_preview_media_id('logo') : 0;
+$announcement = rosa_preview_content(
+    'site',
+    'announcement_text',
+    $previewLocale,
+    $previewLocale === 'ar' ? 'دعم الكتالوج وطلبات عروض الأسعار' : 'Catalogue and quotation support'
+);
 ?><!doctype html>
 <?php if ($isPreviewPage && $previewLocale === 'ar') : ?>
 <html lang="ar" dir="rtl">
@@ -34,7 +40,7 @@ $logoId = function_exists('rosa_preview_media_id') ? rosa_preview_media_id('logo
 <?php wp_body_open(); ?>
 <div class="rosa-preview-announcement">
     <div class="rosa-preview-rail rosa-preview-announcement__inner">
-        <span><?php echo esc_html($previewLocale === 'ar' ? 'دعم الكتالوج وطلبات عروض الأسعار' : 'Catalogue and quotation support'); ?></span>
+        <span><?php echo esc_html($announcement); ?></span>
         <div class="rosa-preview-announcement__contacts">
             <?php if ($email !== '') : ?><a href="mailto:<?php echo esc_attr($email); ?>"><bdi dir="ltr"><?php echo esc_html($email); ?></bdi></a><?php endif; ?>
             <?php if ($phone !== '') : ?><a href="tel:<?php echo esc_attr((string) preg_replace('/[^0-9+]/', '', $phone)); ?>"><bdi dir="ltr"><?php echo esc_html($phone); ?></bdi></a><?php endif; ?>
