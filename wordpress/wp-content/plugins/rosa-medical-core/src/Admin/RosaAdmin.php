@@ -47,13 +47,13 @@ final class RosaAdmin
         $version = defined('ROSA_MEDICAL_VERSION') ? ROSA_MEDICAL_VERSION : '0.1.0';
         wp_enqueue_style(
             'rosa-content-admin',
-            plugins_url('../../assets/admin/rosa-content-admin.css', __FILE__),
+            plugins_url('assets/admin/rosa-content-admin.css', ROSA_MEDICAL_CORE_FILE),
             [],
             $version
         );
         wp_enqueue_script(
             'rosa-content-admin',
-            plugins_url('../../assets/admin/rosa-content-admin.js', __FILE__),
+            plugins_url('assets/admin/rosa-content-admin.js', ROSA_MEDICAL_CORE_FILE),
             [],
             $version,
             true
