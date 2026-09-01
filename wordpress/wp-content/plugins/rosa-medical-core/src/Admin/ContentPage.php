@@ -79,6 +79,7 @@ final class ContentPage
                         <?php endforeach; ?>
                     </section>
                 <?php endforeach; ?>
+                <?php MediaField::renderSection($section); ?>
                 <?php submit_button(); ?>
             </form>
         </div>
