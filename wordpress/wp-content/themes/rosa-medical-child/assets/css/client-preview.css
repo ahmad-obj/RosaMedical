@@ -172,7 +172,7 @@ body[data-rosa-preview-shell] .rosa-preview-menu-trigger { display: none; width:
 
 /* Pre-footer and footer */
 .rosa-preview-prefooter { height: 166px; background: linear-gradient(135deg, #f4f5f6, #e9eaec); }
-.rosa-preview-prefooter__layout { position: relative; height: 100%; display: grid; grid-template-columns: 30% 53% 17%; align-items: center; gap: 1.25rem; }
+.rosa-preview-prefooter__layout { position: relative; height: 100%; display: grid; grid-template-columns: minmax(0, 30fr) minmax(0, 53fr) minmax(0, 17fr); align-items: center; gap: 1.25rem; }
 .rosa-preview-prefooter h2 { margin: 0 0 .25rem; font-size: 24.88px; font-weight: 600; line-height: 1.3; }
 .rosa-preview-prefooter p { margin: 0; font-size: .8125rem; }
 .rosa-preview-prefooter__actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: .6rem; }
@@ -180,7 +180,7 @@ body[data-rosa-preview-shell] .rosa-preview-menu-trigger { display: none; width:
 .rosa-preview-prefooter__media, .rosa-preview-prefooter__media .rosa-preview-media-slot { height: 166px; }
 .rosa-preview-footer { height: 431px; padding-block: 48px 0; background: #fff; color: var(--preview-muted); }
 .rosa-preview-footer__grid { height: 280px; display: grid; grid-template-columns: 1.3fr .8fr .8fr 1.1fr; gap: 3rem; }
-.rosa-preview-footer__column { display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; }
+.rosa-preview-footer__column { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; }
 .rosa-preview-footer__brand { color: var(--preview-ink); font-size: 1.75rem; font-weight: 800; letter-spacing: .08em; }
 .rosa-preview-footer__column h2 { margin: .2rem 0 .85rem; font-size: 1rem; }
 .rosa-preview-footer__column p { margin: 0 0 .5rem; font-size: .8125rem; }
@@ -227,7 +227,7 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-brand__image { max-height: 38px; }
   .rosa-preview-nav { display: none; }
   .rosa-preview-header__actions { justify-self: end; }
-  .rosa-preview-header-action { width: 40px; height: 40px; min-block-size: 40px; }
+  .rosa-preview-header-action { width: 44px; height: 44px; min-block-size: 44px; }
   .rosa-preview-hero { height: 623px; }
   .rosa-preview-hero h1 { font-size: 42.72px; }
   .rosa-preview-who { height: 565px; padding-block: 64px 20px; }
@@ -258,12 +258,13 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-evidence { height: 565px; }
   .rosa-preview-evidence__cards article { min-height: 180px; padding: 1.4rem; }
   .rosa-preview-prefooter { height: 252px; }
-  .rosa-preview-prefooter__layout { grid-template-columns: 35% 65%; }
+  .rosa-preview-prefooter__layout { grid-template-columns: minmax(0, 30fr) minmax(0, 46fr) minmax(0, 24fr); }
   .rosa-preview-prefooter__actions { grid-template-columns: 1fr 1fr; }
   .rosa-preview-prefooter__actions .rosa-preview-button { grid-column: 1 / -1; }
-  .rosa-preview-prefooter__media { display: none; }
+  .rosa-preview-prefooter__media, .rosa-preview-prefooter__media .rosa-preview-media-slot { display: block; height: 100%; }
   .rosa-preview-footer { height: 650px; }
-  .rosa-preview-footer__grid { height: 500px; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .rosa-preview-footer__grid { height: 500px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 1.75rem; }
+  .rosa-preview-footer__about { grid-column: 1 / -1; }
   .rosa-preview-footer__bottom { height: 102px; }
 }
 
@@ -376,6 +377,20 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-prefooter { height: 519px; }
   .rosa-preview-footer { height: 773px; }
   .rosa-preview-footer__grid { height: 649px; }
+}
+
+@media (min-width: 26.9375rem) and (max-width: 47.9375rem) {
+  .rosa-preview-featured, .rosa-preview-latest, .rosa-preview-promos, .rosa-preview-why, .rosa-preview-evidence, .rosa-preview-prefooter, .rosa-preview-footer { height: auto; }
+  .rosa-preview-featured, .rosa-preview-latest, .rosa-preview-promos, .rosa-preview-why, .rosa-preview-evidence { min-height: 0; }
+  .rosa-preview-proof { height: auto; min-height: 130px; }
+  .rosa-preview-promos__grid { height: auto; grid-template-rows: 345px 245px 245px 278px; }
+  .rosa-preview-evidence__content { height: auto; padding-block: 64px; }
+  .rosa-preview-prefooter__layout { min-height: 519px; }
+  .rosa-preview-footer__grid { height: auto; min-height: 649px; }
+}
+
+@media (min-width: 40rem) and (max-width: 47.9375rem) {
+  .rosa-preview-products--featured, .rosa-preview-products--latest { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (min-width: 48rem) and (max-width: 50rem) {

@@ -77,6 +77,14 @@ async function assertSharedHome(page, width) {
   assert.deepEqual(visibleBrokenImages, [], `${width}px Home contains visibly broken images`);
 }
 
+async function assertNoVerticalCollisions(page, width) {
+  const boxes = await page.locator('[data-home-section],.rosa-preview-prefooter,[data-rosa-preview-footer]').evaluateAll((elements) => elements.map((element) => {
+    const bounds = element.getBoundingClientRect();
+    return { top: bounds.top + scrollY, bottom: bounds.bottom + scrollY };
+  }));
+  for (let index = 1; index < boxes.length; index += 1) assert.ok(boxes[index].top >= boxes[index - 1].bottom - 1, `${width}px vertical sections overlap at index ${index}`);
+}
+
 try {
   {
     const page = await loadHome(1440, 900);
@@ -105,11 +113,14 @@ try {
     await assertSharedHome(page, 1024);
     assert.equal(await page.locator('.rosa-preview-nav').isVisible(), false, '1024 desktop navigation must be hidden');
     assert.equal(await page.locator('[data-rosa-preview-menu-trigger]').isVisible(), true, '1024 menu trigger must be visible');
+    for (const action of await page.locator('.rosa-preview-header__actions a').all()) near((await action.boundingBox()).height, 44, 46, '1024 header action height');
     near((await box(page, '.rosa-preview-announcement')).height + (await box(page, '.rosa-preview-header')).height, 101, 109, '1024 total header height');
     assert.equal(await columnCount(page.locator('.rosa-preview-products--latest .rosa-preview-product')), 4, '1024 latest grid must have four columns');
     const promoColumns = await page.locator('.rosa-preview-promos__grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').map(Number.parseFloat));
     assert.equal(promoColumns.length, 2, '1024 promo mosaic must retain two columns');
     near(promoColumns[0] / (promoColumns[0] + promoColumns[1]), 0.28, 0.32, '1024 promo primary column ratio');
+    assert.equal(await page.locator('.rosa-preview-prefooter__media').isVisible(), true, '1024 pre-footer media must remain visible');
+    assert.equal(await columnCount(page.locator('.rosa-preview-footer__grid > .rosa-preview-footer__column')), 1, '1024 footer must retain the target brand row');
     await page.close();
   }
 
@@ -119,6 +130,15 @@ try {
     assert.equal(await page.locator('[data-rosa-preview-menu-trigger]').isVisible(), true, '768 menu trigger must be visible');
     assert.equal(await columnCount(page.locator('.rosa-preview-products--latest .rosa-preview-product')), 4, '768 latest grid must have four columns');
     assert.equal(await columnCount(page.locator('.rosa-preview-featured__layout > *')), 1, '768 featured products and benefits must stack');
+    assert.equal(await page.locator('.rosa-preview-prefooter__media').isVisible(), true, '768 pre-footer media must remain visible');
+    assert.equal(await columnCount(page.locator('.rosa-preview-footer__grid > .rosa-preview-footer__column')), 1, '768 footer must retain the target brand row');
+    await page.close();
+  }
+
+  for (const width of [431, 639, 767]) {
+    const page = await loadHome(width, 932);
+    await assertSharedHome(page, width);
+    await assertNoVerticalCollisions(page, width);
     await page.close();
   }
 
