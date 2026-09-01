@@ -79,9 +79,15 @@ final class ContentPage
                         <?php endforeach; ?>
                     </section>
                 <?php endforeach; ?>
-                <?php MediaField::renderSection($section); ?>
-                <?php submit_button(); ?>
+                <?php submit_button(__('Save content', 'rosa-medical')); ?>
             </form>
+            <?php if (MediaField::fieldsForSection($section) !== []) : ?>
+                <form method="post" action="options.php" class="rosa-content-admin__media-form">
+                    <?php settings_fields('rosa_media'); ?>
+                    <?php MediaField::renderSection($section); ?>
+                    <?php submit_button(__('Save media', 'rosa-medical')); ?>
+                </form>
+            <?php endif; ?>
         </div>
         <?php
     }
