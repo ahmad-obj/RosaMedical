@@ -18,6 +18,7 @@ define('ROSA_MEDICAL_VERSION', '0.1.0');
 require_once __DIR__ . '/src/Settings/BusinessSettings.php';
 require_once __DIR__ . '/src/Settings/ContentSchema.php';
 require_once __DIR__ . '/src/Settings/ContentSettings.php';
+require_once __DIR__ . '/src/Settings/MediaSettings.php';
 require_once __DIR__ . '/src/Admin/ContentPage.php';
 require_once __DIR__ . '/src/Admin/RosaAdmin.php';
 require_once __DIR__ . '/src/Plugin.php';
