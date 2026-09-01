@@ -50,7 +50,7 @@ $logoId = function_exists('rosa_preview_media_id') ? rosa_preview_media_id('logo
         <a class="rosa-preview-brand" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/' : '/')); ?>" aria-label="ROSA">
             <?php if ($logoId > 0) : ?>
                 <?php echo wp_get_attachment_image($logoId, 'full', false, ['class' => 'rosa-preview-brand__image', 'alt' => 'ROSA']); ?>
-            <?php else : ?><span class="rosa-preview-brand__fallback">ROSA</span><?php endif; ?>
+            <?php endif; ?><span class="rosa-preview-brand__wordmark">ROSA<small>MEDICAL</small></span>
         </a>
         <nav class="rosa-preview-nav" aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'التنقل الرئيسي' : 'Primary navigation'); ?>">
             <?php foreach ($navItems as $item) : ?>
@@ -68,7 +68,6 @@ $logoId = function_exists('rosa_preview_media_id') ? rosa_preview_media_id('logo
         <nav>
             <?php foreach ($navItems as $item) : ?><a href="<?php echo esc_url($item['url']); ?>"><?php echo esc_html($item['label']); ?></a><?php endforeach; ?>
         </nav>
-        <div class="rosa-preview-menu__actions"><a class="rosa-preview-language" href="<?php echo esc_url($pairUrl); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'EN' : 'العربية'); ?></a><a class="rosa-preview-button rosa-preview-button--accent" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/contact/#inquiry' : '/contact/#inquiry')); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'الاستفسار' : 'Inquiry'); ?></a></div>
     </aside>
 </header>
 <main id="main" class="rosa-site-main">

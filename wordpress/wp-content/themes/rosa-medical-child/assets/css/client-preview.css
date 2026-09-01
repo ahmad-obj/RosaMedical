@@ -44,14 +44,15 @@ body[data-rosa-preview-shell] h1, body[data-rosa-preview-shell] h2, body[data-ro
 .rosa-preview-header { position: relative; z-index: 80; height: 76px; background: #fff; box-shadow: var(--preview-shadow); }
 .rosa-preview-header__inner { height: 76px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 2rem; }
 .rosa-preview-brand { display: inline-flex; align-items: center; text-decoration: none; }
-.rosa-preview-brand__image { display: block; width: auto; max-width: 134px; max-height: 44px; }
-.rosa-preview-brand__fallback { color: var(--preview-ink); font-size: 1.5rem; font-weight: 800; letter-spacing: .08em; }
+.rosa-preview-brand__image { display: block; width: 40px; height: 40px; object-fit: contain; }
+.rosa-preview-brand__wordmark { display: inline-flex; flex-direction: column; margin-inline-start: .45rem; color: var(--preview-ink); font-size: 1.15rem; font-weight: 800; letter-spacing: .08em; line-height: 1; }
+.rosa-preview-brand__wordmark small { margin-block-start: .18rem; color: var(--preview-muted); font-size: .47rem; font-weight: 700; letter-spacing: .17em; }
 .rosa-preview-nav { display: flex; align-items: center; justify-content: flex-end; gap: clamp(1.2rem, 2vw, 2.35rem); }
 .rosa-preview-nav a, .rosa-preview-language { min-block-size: 44px; display: inline-flex; align-items: center; color: var(--preview-ink); font-size: .875rem; font-weight: 600; text-decoration: none; }
 .rosa-preview-header__actions { display: flex; align-items: center; gap: .375rem; }
 .rosa-preview-header-action { width: 44px; height: 44px; justify-content: center; border-radius: 50%; background: var(--preview-soft); padding: 0; }
 .rosa-preview-header-action--inquiry { display: inline-flex; align-items: center; color: var(--preview-ink); font-weight: 800; text-decoration: none; }
-.rosa-preview-menu-trigger { display: none; width: 44px; height: 44px; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--preview-ink); padding: 0; }
+body[data-rosa-preview-shell] .rosa-preview-menu-trigger { display: none; width: 44px; height: 44px; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--preview-ink); padding: 0; }
 .rosa-preview-menu-trigger__icon, .rosa-preview-menu-trigger__icon::before, .rosa-preview-menu-trigger__icon::after { width: 20px; height: 2px; display: block; background: currentColor; content: ""; }
 .rosa-preview-menu-trigger__icon { position: relative; }
 .rosa-preview-menu-trigger__icon::before { position: absolute; inset-block-start: -6px; }
@@ -61,9 +62,6 @@ body[data-rosa-preview-shell] h1, body[data-rosa-preview-shell] h2, body[data-ro
 .rosa-preview-menu nav { display: grid; }
 .rosa-preview-menu nav a { min-block-size: 41px; display: flex; align-items: center; padding-inline: max(1.25rem, calc((100vw - min(calc(100vw - 2 * clamp(1.25rem, 4vw, 3rem)), 80rem)) / 2)); border-block-end: 1px solid var(--preview-border); color: var(--preview-ink); font-size: .875rem; text-decoration: none; }
 .rosa-preview-menu nav a:first-child { background: var(--preview-accent); color: #fff; }
-.rosa-preview-menu__actions { min-height: 48px; display: flex; align-items: center; justify-content: flex-end; gap: .75rem; padding-inline: max(1.25rem, calc((100vw - min(calc(100vw - 2 * clamp(1.25rem, 4vw, 3rem)), 80rem)) / 2)); }
-.rosa-preview-menu__actions .rosa-preview-language { min-block-size: 44px; }
-.rosa-preview-menu__actions .rosa-preview-button { min-block-size: 44px; padding-block: .4rem; }
 .rosa-preview-menu__close { position: fixed; inset-block-start: 52px; inset-inline-start: max(1.25rem, calc((100vw - min(calc(100vw - 2 * clamp(1.25rem, 4vw, 3rem)), 80rem)) / 2)); width: 44px; height: 44px; z-index: 115; border: 0; background: #fff; color: var(--preview-ink); font-size: 1.8rem; }
 .rosa-preview-menu-overlay { inset-block: 105px 0; background: rgb(0 0 0 / .25); z-index: 100; }
 .rosa-preview-menu-open { overflow: hidden; }
@@ -224,7 +222,7 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-announcement__inner { height: 43px; }
   .rosa-preview-header { height: 62px; }
   .rosa-preview-header__inner { height: 62px; grid-template-columns: 44px 1fr auto; gap: 1rem; }
-  .rosa-preview-menu-trigger { display: inline-flex; }
+  body[data-rosa-preview-shell] .rosa-preview-menu-trigger { display: inline-flex; }
   .rosa-preview-brand { justify-self: center; }
   .rosa-preview-brand__image { max-height: 38px; }
   .rosa-preview-nav { display: none; }
@@ -351,7 +349,8 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-prefooter__media { display: block; height: 188px; margin-block-start: auto; }
   .rosa-preview-prefooter__media .rosa-preview-media-slot { height: 188px; }
   .rosa-preview-footer { height: 779px; padding-block-start: 40px; }
-  .rosa-preview-footer__grid { height: 655px; grid-template-columns: 1fr; gap: 1.3rem; }
+  .rosa-preview-footer__grid { height: 655px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem 1.5rem; }
+  .rosa-preview-footer__about, .rosa-preview-footer__column:nth-child(4) { grid-column: 1 / -1; }
   .rosa-preview-footer__column { gap: .15rem; }
   .rosa-preview-footer__column h2 { margin-block-end: .25rem; }
   .rosa-preview-footer__column a { min-block-size: 44px; }
@@ -360,6 +359,23 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-contact-form label:nth-of-type(3), .rosa-preview-contact-form label:nth-of-type(4), .rosa-preview-contact-form .rosa-preview-button { grid-column: auto; }
   .rosa-preview-shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rosa-preview-shop-search > div { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 64.0625rem) {
+  .rosa-preview-who__visual { position: absolute; inset-inline-end: 0; width: 52%; }
+}
+
+@media (min-width: 25.0625rem) and (max-width: 47.9375rem) {
+  .rosa-preview-featured { height: 1085px; }
+  .rosa-preview-latest { height: 2048px; }
+  .rosa-preview-promos { height: 1277px; }
+  .rosa-preview-promos__grid { height: 1181px; }
+  .rosa-preview-why { height: 1025px; }
+  .rosa-preview-proof { height: 130px; }
+  .rosa-preview-evidence { height: 496px; }
+  .rosa-preview-prefooter { height: 519px; }
+  .rosa-preview-footer { height: 773px; }
+  .rosa-preview-footer__grid { height: 649px; }
 }
 
 @media (min-width: 48rem) and (max-width: 50rem) {

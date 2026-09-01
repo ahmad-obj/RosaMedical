@@ -57,6 +57,7 @@ async function loadHome(width, height) {
 
 async function assertSharedHome(page, width) {
   assert.equal(await page.locator('main').count(), 1, `${width}px Home must have exactly one main landmark`);
+  assert.match((await page.locator('.rosa-preview-brand').innerText()).trim(), /ROSA/i, `${width}px header must visibly name Rosa`);
   assert.deepEqual(
     await page.locator('[data-home-section]').evaluateAll((elements) => elements.map((element) => element.dataset.homeSection)),
     expectedSections,
@@ -134,6 +135,8 @@ try {
     near(drawer.x, 0, 1, '390 open menu inline start');
     near(drawer.width, 389, 391, '390 open menu width');
     near(drawer.y, headerBottom - 1, headerBottom + 2, '390 open menu top');
+    near(drawer.height, 195, 220, '390 open menu height');
+    assert.equal(await page.locator('[data-rosa-preview-menu-drawer] nav a').count(), 5, '390 open menu must retain the target five-row density');
     await page.close();
   }
 
