@@ -145,5 +145,6 @@ for value in 'Stevens Scissors' '04-0901' '04-0911' 'Straight' 'Curved'; do
 done
 
 run node wordpress/scripts/tests/client-preview-accessibility.test.mjs "$home_url"
+run node wordpress/scripts/tests/client-preview-home-fidelity.test.mjs "$home_url"
 
 printf 'PASS: Rosa client preview source, runtime, bilingual routes and Stevens foundation regression\n'
