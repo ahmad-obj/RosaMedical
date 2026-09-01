@@ -12,5 +12,6 @@ for label in Homepage About Contact Shop 'Site & CTA' Business; do grep -Fq "$la
 grep -Fq 'manage_options' "$PLUGIN/src/Admin/RosaAdmin.php" || fail 'manage_options capability missing'
 grep -Fq 'settings_fields' "$PLUGIN/src/Admin/ContentPage.php" || fail 'Settings API form missing'
 grep -Fq 'wp_enqueue_media' "$PLUGIN/src/Admin/RosaAdmin.php" || fail 'media library not enqueued'
-grep -Fq 'data-lang-panel="ar"' "$PLUGIN/src/Admin/ContentPage.php" || fail 'Arabic panel missing'
+grep -Fq 'data-lang-panel=' "$PLUGIN/src/Admin/ContentPage.php" || fail 'language panels missing'
+grep -Fq "'ar' => 'العربية'" "$PLUGIN/src/Admin/ContentPage.php" || fail 'Arabic panel missing'
 echo 'PASS: Rosa admin contract'
