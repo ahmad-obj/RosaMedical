@@ -20,6 +20,7 @@ require_once __DIR__ . '/src/Settings/ContentSchema.php';
 require_once __DIR__ . '/src/Settings/ContentSettings.php';
 require_once __DIR__ . '/src/Settings/MediaSettings.php';
 require_once __DIR__ . '/src/Admin/ContentPage.php';
+require_once __DIR__ . '/src/Admin/MediaField.php';
 require_once __DIR__ . '/src/Admin/RosaAdmin.php';
 require_once __DIR__ . '/src/Plugin.php';
 
