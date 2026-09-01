@@ -40,7 +40,30 @@ try {
   );
   assert.equal(await page.evaluate(() => window.scrollY), 0, 'capture must restore the page to the top');
 
-  process.stdout.write('PASS: client preview capture settles below-fold media\n');
+  await page.route('https://capture.test/missing.svg', (route) => route.abort());
+  await page.setContent(`
+    <!doctype html>
+    <html><body>
+      <img src="https://capture.test/missing.svg" alt="Hidden duplicate" style="visibility:hidden;width:200px;height:100px">
+      <span style="display:none"><img src="https://capture.test/missing.svg" alt="Hidden ancestor duplicate"></span>
+    </body></html>
+  `);
+  await assert.doesNotReject(
+    settlePageMedia(page, { scrollDelayMs: 1 }),
+    'non-rendered third-party duplicate images must not invalidate a visual capture',
+  );
+
+  await page.setContent(`
+    <!doctype html>
+    <html><body><img src="https://capture.test/missing.svg" alt="Visible broken image" style="width:200px;height:100px"></body></html>
+  `);
+  await assert.rejects(
+    settlePageMedia(page, { scrollDelayMs: 1 }),
+    /Images failed to load:.*missing\.svg/,
+    'a visibly rendered broken image must still fail capture',
+  );
+
+  process.stdout.write('PASS: client preview capture settles media and rejects visible broken images\n');
 } finally {
   await browser.close();
 }

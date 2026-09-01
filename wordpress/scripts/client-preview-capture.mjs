@@ -33,7 +33,13 @@ export async function settlePageMedia(page, { scrollDelayMs = 75 } = {}) {
   });
 
   const failedImages = await page.locator('img').evaluateAll((images) => images
-    .filter((image) => image.naturalWidth === 0)
+    .filter((image) => {
+      const bounds = image.getBoundingClientRect();
+      const isRendered = typeof image.checkVisibility === 'function'
+        ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+        : getComputedStyle(image).visibility !== 'hidden';
+      return image.naturalWidth === 0 && isRendered && bounds.width > 0 && bounds.height > 0;
+    })
     .map((image) => image.currentSrc || image.src || image.alt || '(unknown image)'));
   if (failedImages.length > 0) {
     throw new Error(`Images failed to load: ${failedImages.join(', ')}`);
