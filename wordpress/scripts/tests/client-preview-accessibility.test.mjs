@@ -96,6 +96,10 @@ try {
   const overlay = page.locator('[data-rosa-preview-menu-overlay]');
   const closeButton = page.locator('[data-rosa-preview-menu-close]');
   await drawer.waitFor({ state: 'visible' });
+  const openDrawerBox = await drawer.boundingBox();
+  const mobileHeaderBottom = await page.locator('.rosa-preview-header').evaluate((element) => element.getBoundingClientRect().bottom);
+  assert.ok(openDrawerBox && openDrawerBox.x <= 1 && openDrawerBox.width >= 389, 'mobile dropdown is not full viewport width');
+  assert.ok(Math.abs(openDrawerBox.y - mobileHeaderBottom) <= 2, 'mobile dropdown does not begin immediately below the header');
   assert.equal(await closeButton.evaluate((element) => document.activeElement === element), true, 'drawer did not receive initial focus');
   for (const selector of ['.rosa-preview-announcement', '.rosa-preview-header__inner', '.rosa-site-main', '[data-rosa-preview-footer]']) {
     assert.equal(await page.locator(selector).evaluate((element) => element.inert), true, `${selector} was not inert while drawer was open`);
@@ -115,7 +119,9 @@ try {
   assert.equal(await page.locator('html').evaluate((element) => element.classList.contains('rosa-preview-menu-open')), false, 'Escape did not remove scroll lock');
 
   await trigger.click();
-  await overlay.click({ position: { x: 5, y: 5 } });
+  const reopenedDrawerBox = await drawer.boundingBox();
+  assert.ok(reopenedDrawerBox, 'reopened drawer has no box');
+  await overlay.click({ position: { x: 5, y: reopenedDrawerBox.height + 5 } });
   await drawer.waitFor({ state: 'hidden' });
   assert.equal(await trigger.evaluate((element) => document.activeElement === element), true, 'overlay close did not restore focus');
   await trigger.click();

@@ -1,0 +1,5 @@
+<?php
+if (! defined('ABSPATH')) { exit; }
+$locale = (string) ($args['locale'] ?? rosa_preview_locale());
+?>
+<section class="rosa-preview-feature" data-home-section="feature"><?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'home-feature-01', 'label' => 'Rosa catalogue support media']); ?><div class="rosa-preview-rail rosa-preview-feature__content"><p class="rosa-preview-eyebrow rosa-preview-eyebrow--light"><?php echo esc_html($locale === 'ar' ? 'دعم التوريد' : 'Procurement support'); ?></p><h2><?php echo esc_html($locale === 'ar' ? 'من مرجع الكتالوج إلى طلب عرض سعر واضح.' : 'From catalogue reference to a clear quotation request.'); ?></h2><p><?php echo esc_html($locale === 'ar' ? 'استكشف الأدوات حسب الفئة وشارك المراجع المطلوبة مع فريق روزا.' : 'Browse instruments by family and share the exact references your procurement team needs.'); ?></p><a class="rosa-preview-button rosa-preview-button--light" href="<?php echo esc_url(home_url($locale === 'ar' ? '/ar/contact/' : '/contact/')); ?>"><?php echo esc_html(rosa_preview_copy('contact_us', $locale)); ?></a></div></section>

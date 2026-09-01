@@ -90,7 +90,7 @@ try {
     near((await box(page, '.rosa-preview-hero__copy')).width, 680, 740, '1440 hero copy width');
     assert.equal(await columnCount(page.locator('.rosa-preview-products--featured .rosa-preview-product')), 4, '1440 featured grid must have four columns');
     assert.equal(await columnCount(page.locator('.rosa-preview-products--latest .rosa-preview-product')), 5, '1440 latest grid must have five columns');
-    const promoColumns = await page.locator('.rosa-preview-promos__grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').map(Number));
+    const promoColumns = await page.locator('.rosa-preview-promos__grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').map(Number.parseFloat));
     assert.equal(promoColumns.length, 2, '1440 promo mosaic must have two primary columns');
     near(promoColumns[0] / (promoColumns[0] + promoColumns[1]), 0.28, 0.32, '1440 promo primary column ratio');
     assert.equal(await page.locator('.rosa-preview-evidence__cards > *').count(), 3, '1440 evidence band must have three cards');
@@ -106,7 +106,7 @@ try {
     assert.equal(await page.locator('[data-rosa-preview-menu-trigger]').isVisible(), true, '1024 menu trigger must be visible');
     near((await box(page, '.rosa-preview-announcement')).height + (await box(page, '.rosa-preview-header')).height, 101, 109, '1024 total header height');
     assert.equal(await columnCount(page.locator('.rosa-preview-products--latest .rosa-preview-product')), 4, '1024 latest grid must have four columns');
-    const promoColumns = await page.locator('.rosa-preview-promos__grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').map(Number));
+    const promoColumns = await page.locator('.rosa-preview-promos__grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').map(Number.parseFloat));
     assert.equal(promoColumns.length, 2, '1024 promo mosaic must retain two columns');
     near(promoColumns[0] / (promoColumns[0] + promoColumns[1]), 0.28, 0.32, '1024 promo primary column ratio');
     await page.close();

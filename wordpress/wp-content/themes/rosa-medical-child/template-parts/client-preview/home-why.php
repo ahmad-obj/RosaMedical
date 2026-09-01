@@ -1,0 +1,6 @@
+<?php
+if (! defined('ABSPATH')) { exit; }
+$locale = (string) ($args['locale'] ?? rosa_preview_locale());
+$items = $locale === 'ar' ? [['مراجع واضحة', 'استخدم أسماء الفئات ومراجع المنتجات.'], ['تكوينات دقيقة', 'راجع الخيارات الفعلية لكل أداة.'], ['تواصل مباشر', 'شارك متطلباتك لطلب عرض سعر.']] : [['Clear references', 'Work with family names and product references.'], ['Exact configurations', 'Review the real options available for each instrument.'], ['Direct support', 'Share requirements for quotation support.']];
+?>
+<section class="rosa-preview-why" data-home-section="why"><div class="rosa-preview-rail rosa-preview-why__layout"><div class="rosa-preview-why__intro"><p class="rosa-preview-eyebrow">ROSA</p><h2><?php echo esc_html(rosa_preview_copy('why_title', $locale)); ?></h2><?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'home-why-01', 'label' => 'Rosa instrument procurement']); ?></div><div class="rosa-preview-why__cards"><?php foreach ($items as $index => [$title, $body]) : ?><article><span><?php echo esc_html((string) ($index + 1)); ?></span><div><h3><?php echo esc_html($title); ?></h3><p><?php echo esc_html($body); ?></p></div></article><?php endforeach; ?></div></div></section>
