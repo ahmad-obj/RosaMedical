@@ -47,7 +47,7 @@ final class ContentPage
             <form method="post" action="options.php">
                 <?php settings_fields('rosa_content_' . $section); ?>
                 <?php foreach (['en' => 'English', 'ar' => 'العربية'] as $locale => $localeLabel) : ?>
-                    <section class="rosa-content-admin__language" data-lang-panel="<?php echo esc_attr($locale); ?>"<?php echo $locale === 'ar' ? ' dir="rtl"' : ''; ?><?php echo $locale === 'ar' ? ' hidden' : ''; ?>>
+                    <section class="rosa-content-admin__language" data-lang-panel="<?php echo esc_attr($locale); ?>"<?php echo $locale === 'ar' ? ' dir="rtl"' : ''; ?>>
                         <h2><?php echo esc_html($localeLabel); ?></h2>
                         <?php foreach ($definition['groups'] as $groupTitle => $keys) : ?>
                             <div class="rosa-content-admin__group">
