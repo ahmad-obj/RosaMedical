@@ -71,7 +71,6 @@ final class ContentSettings
                 [
                     'type' => 'array',
                     'sanitize_callback' => static fn(mixed $input): array => self::sanitizeSection($section, $input),
-                    'default' => [],
                 ]
             );
         }
