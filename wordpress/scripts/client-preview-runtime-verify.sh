@@ -30,14 +30,19 @@ source_tests=(
   wordpress/scripts/tests/client-preview-shop-contract.test.sh
   wordpress/scripts/tests/client-preview-rtl-contract.test.sh
   wordpress/scripts/tests/client-preview-runtime-tooling.test.sh
+  wordpress/scripts/tests/client-preview-admin-contract.test.sh
   wordpress/scripts/tests/hostinger-migration-tooling.test.sh
 )
 for test_file in "${source_tests[@]}"; do run bash "$test_file"; done
+run php wordpress/scripts/tests/business-settings.test.php
+run php wordpress/scripts/tests/content-settings.test.php
+run php wordpress/scripts/tests/media-settings.test.php
 run php wordpress/scripts/tests/client-preview-content.test.php
 
 while IFS= read -r -d '' file; do php -l "$file" >/dev/null || fail "PHP syntax error: $file"; done < <(find wordpress/wp-content -type f -name '*.php' -print0)
 while IFS= read -r -d '' file; do bash -n "$file" || fail "shell syntax error: $file"; done < <(find wordpress/scripts -type f -name '*.sh' -print0)
 run node --check "$THEME/assets/js/client-preview.js"
+run node --check "$ROOT_DIR/wordpress/wp-content/plugins/rosa-medical-core/assets/admin/rosa-content-admin.js"
 run node wordpress/scripts/tests/client-preview-capture.test.mjs
 
 run bash "$SCRIPT_DIR/foundation-bootstrap.sh"
@@ -145,7 +150,9 @@ for value in 'Stevens Scissors' '04-0901' '04-0911' 'Straight' 'Curved'; do
   grep -Fq -- "$value" <<<"$product_text" || fail "Stevens Product Detail missing: $value"
 done
 
+run bash wordpress/scripts/tests/client-preview-content-zero-drift.test.sh
+run bash wordpress/scripts/tests/client-preview-content-mutation.test.sh
 run node wordpress/scripts/tests/client-preview-accessibility.test.mjs "$home_url"
 run node wordpress/scripts/tests/client-preview-home-fidelity.test.mjs "$home_url"
 
-printf 'PASS: Rosa client preview source, runtime, bilingual routes and Stevens foundation regression\n'
+printf 'PASS: Rosa client preview source, runtime, bilingual routes, editable content and Stevens foundation regression\n'
