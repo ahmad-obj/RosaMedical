@@ -8,6 +8,7 @@
       panels.forEach((panel) => { panel.hidden = panel.dataset.langPanel !== lang; });
     };
     buttons.forEach((button) => button.addEventListener('click', () => activate(button.dataset.lang || 'en')));
+    activate('en');
   }
 
   document.querySelectorAll('[data-rosa-media-field]').forEach((field) => {
