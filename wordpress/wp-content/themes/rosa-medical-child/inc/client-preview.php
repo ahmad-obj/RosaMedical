@@ -55,7 +55,16 @@ function rosa_preview_copy(string $key, ?string $locale = null): string {
     ];
     return $copy[$locale][$key] ?? '';
 }
-function rosa_preview_price_label(?string $locale = null): string { return rosa_preview_copy('price_request', $locale); }
+function rosa_preview_content(string $section, string $key, ?string $locale = null, string $legacyDefault = ''): string {
+    $resolved = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
+    return function_exists('rosa_content_value')
+        ? rosa_content_value($section, $key, $resolved, $legacyDefault)
+        : $legacyDefault;
+}
+function rosa_preview_price_label(?string $locale = null): string {
+    $resolved = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
+    return rosa_preview_content('site', 'price_request', $resolved, rosa_preview_copy('price_request', $resolved));
+}
 function rosa_preview_business_value(string $key, ?string $locale = null): string {
     $locale = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
     if ($key === 'address' && $locale === 'ar') {
