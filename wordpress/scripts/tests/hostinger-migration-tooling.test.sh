@@ -38,6 +38,8 @@ done
 grep -Fq 'preflight-report.txt' "$PREFLIGHT" || fail 'preflight report artifact missing'
 grep -Fq 'wp db export -' "$PREFLIGHT" || fail 'preflight must inspect an exported SQL stream without mutating serialized data'
 grep -Fq 'get_attached_file' "$PREFLIGHT" || fail 'preflight must verify attachment files'
+grep -Fq 'source provenance metadata is allowed' "$PREFLIGHT" || fail 'preflight must explicitly allow imported-media provenance metadata after attachment/runtime checks'
+! grep -Fq "block 'database contains apps/web/public/media references'" "$PREFLIGHT" || fail 'preflight incorrectly blocks expected imported-media source provenance metadata'
 
 for token in \
   'rosa-medical-wordpress-files.tar.gz' \
