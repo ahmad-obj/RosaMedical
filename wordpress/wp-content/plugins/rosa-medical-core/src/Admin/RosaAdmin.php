@@ -22,7 +22,14 @@ final class RosaAdmin
             56
         );
 
-        self::addContentSubmenu('Homepage', 'rosa-medical-home', 'home');
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Rosa Medical — Homepage', 'rosa-medical'),
+            __('Homepage', 'rosa-medical'),
+            'manage_options',
+            self::ROOT_SLUG,
+            static fn(): mixed => ContentPage::render('home')
+        );
         self::addContentSubmenu('About', 'rosa-medical-about', 'about');
         self::addContentSubmenu('Contact', 'rosa-medical-contact', 'contact');
         self::addContentSubmenu('Shop', 'rosa-medical-shop', 'shop');
