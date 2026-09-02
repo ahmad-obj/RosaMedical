@@ -61,6 +61,24 @@ function rosa_preview_content(string $section, string $key, ?string $locale = nu
         ? rosa_content_value($section, $key, $resolved, $legacyDefault)
         : $legacyDefault;
 }
+function rosa_preview_section_value(array $args, string $section, string $key, string $locale, string $fallback): string {
+    $content = isset($args['content']) && is_array($args['content']) ? $args['content'] : [];
+    if (array_key_exists($key, $content) && is_scalar($content[$key])) {
+        return (string) $content[$key];
+    }
+    return rosa_preview_content($section, $key, $locale, $fallback);
+}
+function rosa_preview_section_media_id(array $args, string $settingKey, string $legacySlot): int {
+    $media = isset($args['media']) && is_array($args['media']) ? $args['media'] : [];
+    $value = $media[$settingKey] ?? null;
+    if (is_array($value) && isset($value['id'])) {
+        return max(0, (int) $value['id']);
+    }
+    if (is_scalar($value)) {
+        return max(0, (int) $value);
+    }
+    return rosa_preview_media_id($legacySlot);
+}
 function rosa_preview_price_label(?string $locale = null): string {
     $resolved = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
     return rosa_preview_content('site', 'price_request', $resolved, rosa_preview_copy('price_request', $resolved));
