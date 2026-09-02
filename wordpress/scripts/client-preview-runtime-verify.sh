@@ -14,6 +14,9 @@ run(){ printf '==> %s\n' "$*"; "$@"; }
 
 cd "$ROOT_DIR"
 
+run php wordpress/scripts/tests/elementor-authoring-integration.test.php
+run php wordpress/scripts/tests/elementor-authoring-seed-contract.test.php
+
 source_tests=(
   wordpress/scripts/tests/foundation-preflight.test.sh
   wordpress/scripts/tests/foundation-contract.test.sh
@@ -31,6 +34,7 @@ source_tests=(
   wordpress/scripts/tests/client-preview-rtl-contract.test.sh
   wordpress/scripts/tests/client-preview-runtime-tooling.test.sh
   wordpress/scripts/tests/client-preview-admin-contract.test.sh
+  wordpress/scripts/tests/elementor-authoring-theme-contract.test.sh
   wordpress/scripts/tests/hostinger-migration-tooling.test.sh
 )
 for test_file in "${source_tests[@]}"; do run bash "$test_file"; done
@@ -43,12 +47,16 @@ while IFS= read -r -d '' file; do php -l "$file" >/dev/null || fail "PHP syntax 
 while IFS= read -r -d '' file; do bash -n "$file" || fail "shell syntax error: $file"; done < <(find wordpress/scripts -type f -name '*.sh' -print0)
 run node --check "$THEME/assets/js/client-preview.js"
 run node --check "$ROOT_DIR/wordpress/wp-content/plugins/rosa-medical-core/assets/admin/rosa-content-admin.js"
+run node --check wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs
 run node wordpress/scripts/tests/client-preview-capture.test.mjs
 
 run bash "$SCRIPT_DIR/foundation-bootstrap.sh"
 run bash "$SCRIPT_DIR/client-preview-seed.sh"
 run bash "$SCRIPT_DIR/foundation-seed.sh"
 run bash "$SCRIPT_DIR/foundation-product-verify.sh"
+run bash "$SCRIPT_DIR/elementor-authoring-seed.sh"
+run bash wordpress/scripts/tests/elementor-authoring-runtime.test.sh
+run bash wordpress/scripts/tests/elementor-authoring-editor-links.test.sh
 
 page_url(){
   local path="$1"
@@ -152,7 +160,9 @@ done
 
 run bash wordpress/scripts/tests/client-preview-content-zero-drift.test.sh
 run bash wordpress/scripts/tests/client-preview-content-mutation.test.sh
+run bash wordpress/scripts/tests/elementor-authoring-mutation.test.sh
 run node wordpress/scripts/tests/client-preview-accessibility.test.mjs "$home_url"
 run node wordpress/scripts/tests/client-preview-home-fidelity.test.mjs "$home_url"
+run node wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs "$home_url"
 
-printf 'PASS: Rosa client preview source, runtime, bilingual routes, editable content and Stevens foundation regression\n'
+printf 'PASS: Rosa client preview source, runtime, Elementor authoring, bilingual routes, editable content and Stevens foundation regression\n'
