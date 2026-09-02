@@ -10,6 +10,7 @@ grep -Fq 'home-hero-surgical-instruments.jpg' "$SEED" || fail 'Rosa hero import 
 grep -Fq '_rosa_preview_locale' "$SEED" || fail 'locale metadata missing'
 grep -Fq '_rosa_preview_pair_id' "$SEED" || fail 'page-pair metadata missing'
 grep -Fq 'rosa_preview_media' "$SEED" || fail 'preview media option missing'
+grep -Fq "get_option('rosa_preview_media', [])" "$SEED" || fail 'seed must merge existing editor media instead of replacing it'
 grep -Fq 'client-preview-home.php' "$SEED" || fail 'home template assignment missing'
 grep -Fq 'client-preview-about.php' "$SEED" || fail 'about template assignment missing'
 grep -Fq 'client-preview-contact.php' "$SEED" || fail 'contact template assignment missing'
