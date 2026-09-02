@@ -7,6 +7,27 @@
     padding: 0;
 }
 
+/* Elementor must be layout-neutral around Rosa-owned sections. The current
+ * Elementor container defaults add a 20px gap and allow widgets to flex-shrink;
+ * once a Rosa mobile section becomes content-height (`height:auto`), that can
+ * make the widget wrapper shorter than the rendered section and allow the next
+ * widget to overlap it. Scope the reset to Rosa authoring pages only. */
+.rosa-elementor-authoring > .elementor > .e-con.e-parent,
 .rosa-elementor-authoring .rosa-elementor-root {
+    --gap: 0px;
+    --row-gap: 0px;
+    --column-gap: 0px;
     gap: 0;
+    padding: 0;
+}
+
+.rosa-elementor-authoring > .elementor > .e-con.e-parent > .elementor-widget,
+.rosa-elementor-authoring .rosa-elementor-root > .elementor-widget {
+    --flex-shrink: 0;
+    flex-shrink: 0;
+}
+
+.rosa-elementor-authoring > .elementor > .e-con.e-parent > .elementor-widget > .elementor-widget-container,
+.rosa-elementor-authoring .rosa-elementor-root > .elementor-widget > .elementor-widget-container {
+    height: auto;
 }
