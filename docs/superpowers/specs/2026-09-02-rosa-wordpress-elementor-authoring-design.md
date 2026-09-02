@@ -1,7 +1,7 @@
 # Rosa WordPress Elementor Authoring Design
 
 Date: 2026-09-02
-Status: Approved design, pending implementation plan
+Status: Approved design
 Branch: `wordpress/client-content-controls`
 
 ## Purpose
@@ -174,9 +174,9 @@ After successful cutover, `Rosa Medical → Homepage`, `About`, and `Contact` be
 
 ## Contact-page behavior
 
-Making Contact an Elementor document must not transfer inquiry processing into arbitrary Elementor behavior. The Contact form section is an Elementor widget whose rendering/submission contract remains code-owned and server-validated. Do not introduce Elementor Pro Forms or an unrelated form plugin.
+Making Contact an Elementor document must not create or move inquiry-processing logic into Elementor. The Contact section remains a Rosa widget that renders the current code-owned contact UI: contact details, form-like fields, and the existing `mailto:` action when an email address is available.
 
-This phase preserves the current inquiry behavior; the future B2B quotation subsystem remains separate.
+This phase does **not** add a server-side contact submission endpoint, Elementor Pro Forms, or a third-party form plugin. Server-side validation/persistence belongs to the future B2B inquiry/quotation subsystem. The only requirement here is that Elementor authoring preserves the current Contact-page behavior and shared Business values.
 
 ## Default visual fidelity
 
