@@ -4,10 +4,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 COMPOSE_FILE="$ROOT_DIR/wordpress/dev/compose.yaml"
 ENV_FILE="$ROOT_DIR/wordpress/dev/.env"
+THEME="$ROOT_DIR/wordpress/wp-content/themes/rosa-medical-child"
 compose=(docker compose -f "$COMPOSE_FILE")
 if [[ -f "$ENV_FILE" ]]; then compose+=(--env-file "$ENV_FILE"); fi
 wp(){ "${compose[@]}" run --rm wpcli "$@"; }
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
+
+# Content controls must not add a second public stylesheet. The one image rule
+# belongs in the existing preview stylesheet so the default document head stays
+# aligned with the approved preview implementation.
+grep -Fq '.rosa-preview-media-slot__image' "$THEME/assets/css/client-preview.css" || fail 'media image rule must live in existing client-preview.css'
+if grep -Fq 'rosa-client-preview-media' "$THEME/functions.php"; then
+  fail 'content controls must not enqueue a second public media stylesheet'
+fi
+[[ ! -f "$THEME/assets/css/client-preview-media.css" ]] || fail 'standalone public media stylesheet must not exist'
 
 "${compose[@]}" up -d db wordpress >/dev/null
 home_url="$(wp option get home)"
