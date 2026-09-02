@@ -52,7 +52,22 @@ add_action('wp_enqueue_scripts', static function (): void {
     );
     if ($isPreviewPage || $isPreviewCatalogue) {
         wp_enqueue_style('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/css/client-preview.css', ['rosa-medical-base'], $version);
-        wp_enqueue_style('rosa-client-preview-media', get_stylesheet_directory_uri() . '/assets/css/client-preview-media.css', ['rosa-client-preview'], $version);
+
+        $media = get_option(ROSA_PREVIEW_MEDIA_OPTION, []);
+        $editableMediaKeys = [
+            'home-hero-01', 'home-who-01', 'home-feature-01',
+            'home-promo-01', 'home-promo-02', 'home-promo-03', 'home-promo-04',
+            'home-why-01', 'home-evidence-01', 'prefooter-person-01',
+        ];
+        $hasEditableMedia = is_array($media) && array_reduce(
+            $editableMediaKeys,
+            static fn(bool $found, string $key): bool => $found || (isset($media[$key]) && (int) $media[$key] > 0),
+            false
+        );
+        if ($hasEditableMedia) {
+            wp_enqueue_style('rosa-client-preview-media', get_stylesheet_directory_uri() . '/assets/css/client-preview-media.css', ['rosa-client-preview'], $version);
+        }
+
         if (rosa_preview_locale() === 'ar' && file_exists(get_stylesheet_directory() . '/assets/css/client-preview-rtl.css')) {
             wp_enqueue_style('rosa-client-preview-rtl', get_stylesheet_directory_uri() . '/assets/css/client-preview-rtl.css', ['rosa-client-preview'], $version);
         }
