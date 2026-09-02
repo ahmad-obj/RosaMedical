@@ -48,12 +48,19 @@ final class ElementorPageSeeder
         if (! is_object($document)) {
             return ['status' => 'document_missing', 'post_id' => $postId];
         }
+        if (! method_exists($document, 'set_is_built_with_elementor')) {
+            return ['status' => 'unsupported_document', 'post_id' => $postId];
+        }
 
         $saved = $document->save(['elements' => $elements]);
         if (! $saved) {
             return ['status' => 'save_failed', 'post_id' => $postId];
         }
 
+        // Elementor's Document::save() persists elements but does not turn an
+        // existing WordPress page into an Elementor page. Core does this as a
+        // separate operation when entering/saving through the editor.
+        $document->set_is_built_with_elementor(true);
         update_post_meta($postId, '_wp_page_template', self::TEMPLATE);
 
         $normalizedHash = self::currentHash($postId);
