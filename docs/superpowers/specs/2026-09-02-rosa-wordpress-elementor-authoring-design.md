@@ -31,6 +31,8 @@ The phase must preserve the currently verified MedicaShop-faithful public design
 
 Elementor Free owns the authored content documents for Home, About, Contact, and their Arabic equivalents. The client may edit page-level text, images, buttons, normal section content, and add ordinary marketing content inside these documents.
 
+The migrated core Rosa sections use Rosa-specific Elementor widgets. The client may also add normal Elementor Free content for new marketing material where appropriate; that additional content is intentionally less protected than the verified core sections.
+
 ### Rosa shared-settings-owned
 
 The existing Rosa admin remains authoritative for global/shared values that should not be duplicated across six documents:
@@ -44,6 +46,8 @@ The existing Rosa admin remains authoritative for global/shared values that shou
 - WhatsApp
 - intentionally shared/global CTA data
 - `Shop` interface copy
+
+When an Elementor section needs one of these shared values, its Rosa widget renders the current shared setting dynamically. Those values are not copied into Elementor controls as independent editable duplicates.
 
 ### WooCommerce-owned
 
@@ -79,6 +83,23 @@ Representative widgets include:
 
 Widget boundaries should follow current page-section boundaries. Do not create one giant page widget or dozens of tiny single-field widgets.
 
+## Theme-shell boundary
+
+Elementor owns only the **page body content area** for the six target pages.
+
+The Rosa child theme continues to render:
+
+- `<html>` language/direction attributes
+- announcement/header/navigation
+- opening/closing main page shell
+- footer
+- shared scripts/styles
+- language switch behavior
+
+The Elementor page document is rendered inside that protected shell through normal WordPress page content (`the_content()` / Elementor's document renderer). Do not use Elementor Canvas or another template mode that removes the Rosa header/footer shell.
+
+This boundary ensures the client receives real Elementor page authoring without transferring global navigation/footer/responsive/RTL ownership into Elementor.
+
 ## Why this architecture
 
 A generic Elementor rebuild offers maximum freedom but creates unnecessary risk to measured widths, spacing, mobile behavior, semantics, and RTL. Keeping only the structured Rosa admin is safer but does not provide the agreed Elementor authoring autonomy. Rosa-specific section widgets provide real Elementor editing while retaining the verified implementation where design stability matters.
@@ -95,12 +116,12 @@ For each target page:
 
 1. Capture the existing rendered page at acceptance viewports.
 2. Seed an Elementor document with the same section order/current content.
-3. Render and verify the Elementor version without destructively replacing client data.
-4. Switch that page to Elementor only after its migrated version passes the required gates.
+3. Verify the Elementor document through WordPress/Elementor preview before making it the public renderer.
+4. Switch that page to the Elementor body renderer only after its migrated version passes the required gates.
 
 ### After cutover
 
-Normal WordPress page content/Elementor documents render Home/About/Contact and Arabic equivalents. The legacy PHP renderer may remain temporarily as rollback/reference code, but it must not remain as a second client-facing editing path.
+Normal WordPress page content/Elementor documents render the body of Home/About/Contact and Arabic equivalents inside the Rosa theme shell. The legacy PHP renderer may remain temporarily as rollback/reference code, but it must not remain as a second client-facing editing path.
 
 ## Elementor integration boundary
 
@@ -147,7 +168,7 @@ Migration rules:
 3. Preserve the options during the migration period.
 4. Do not create continuous two-way synchronization between Elementor and structured page settings.
 
-After successful cutover, `Rosa Medical → Homepage`, `About`, and `Contact` must no longer act as competing editors. Preferred end state: turn them into direct **Edit with Elementor** shortcuts or remove them from the Rosa content menu, based on whichever produces the cleaner admin UX after implementation review.
+After successful cutover, `Rosa Medical → Homepage`, `About`, and `Contact` become direct **Edit with Elementor** shortcuts for their English pages rather than content-setting forms. Arabic editing remains reachable from the paired page/language flow and standard Pages screen. This preserves a convenient Rosa admin entry point while eliminating the duplicate editor.
 
 `Site & CTA`, `Business`, and `Shop` remain normal Rosa admin controls.
 
@@ -167,8 +188,8 @@ Byte-for-byte HTML identity is not required because Elementor changes document m
 
 The intended flow is:
 
-1. Pages → target page, or a Rosa Medical shortcut.
-2. Click **Edit with Elementor**.
+1. Pages → target page, or Rosa Medical → Homepage/About/Contact shortcut.
+2. Click/open **Edit with Elementor**.
 3. Select a clearly named Rosa section.
 4. Change text/image/content.
 5. Update.
@@ -232,8 +253,8 @@ The phase is complete only when:
 1. All six target pages are genuine Elementor Free documents.
 2. English and Arabic page edits persist through Elementor.
 3. Elementor media edits persist and render correctly.
-4. Shared Business and Site/CTA data continue to work.
-5. Old structured Home/About/Contact screens are no longer competing content editors.
+4. Shared Business and Site/CTA data continue to work dynamically without duplicated Elementor copies.
+5. Rosa Medical Homepage/About/Contact entries are Elementor shortcuts rather than competing content editors.
 6. Shop and WooCommerce product behavior are unchanged.
 7. Locale pairing and RTL behavior are unchanged.
 8. Untouched migrated pages pass responsive, accessibility, RTL, console, and Homepage geometry gates.
