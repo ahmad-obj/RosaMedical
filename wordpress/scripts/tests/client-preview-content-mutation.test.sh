@@ -11,9 +11,14 @@ fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 
 "${compose[@]}" up -d db wordpress >/dev/null
 home_url="$(wp option get home)"
-original_b64="$(wp eval '$value=get_option("rosa_home_content",null); echo base64_encode(wp_json_encode(["exists"=>$value!==null,"value"=>$value], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));')"
+original_b64="$(wp eval '
+$names=["rosa_home_content","rosa_preview_media"];
+$state=[];
+foreach($names as $name){$value=get_option($name,null);$state[$name]=["exists"=>$value!==null,"value"=>$value];}
+echo base64_encode(wp_json_encode($state, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+')"
 restore(){
-  wp eval "\$entry=json_decode(base64_decode('${original_b64}'),true); if(!empty(\$entry['exists'])) update_option('rosa_home_content',\$entry['value']); else delete_option('rosa_home_content');" >/dev/null || true
+  wp eval "\$state=json_decode(base64_decode('${original_b64}'),true); foreach(\$state as \$name=>\$entry){ if(!empty(\$entry['exists'])) update_option(\$name,\$entry['value']); else delete_option(\$name); }" >/dev/null || true
 }
 trap restore EXIT
 
@@ -35,6 +40,9 @@ $option=get_option("rosa_home_content",[]); if(!is_array($option)) $option=[];
 if(!isset($option["ar"])||!is_array($option["ar"])) $option["ar"]=[];
 $option["ar"]["hero_title"]="عنوان اختبار روزا";
 update_option("rosa_home_content",$option);
+$media=get_option("rosa_preview_media",[]); if(!is_array($media)) $media=[];
+$media["home-hero-01"]=777;
+update_option("rosa_preview_media",$media);
 ' >/dev/null
 ar_html="$(curl -fsSL "${home_url%/}/ar/")" || fail 'Arabic Home fetch failed after Arabic mutation'
 grep -Fq 'عنوان اختبار روزا' <<<"$ar_html" || fail 'Arabic Home did not render saved hero title'
@@ -43,5 +51,7 @@ grep -Fq '<html lang="ar" dir="rtl">' <<<"$ar_html" || fail 'Arabic mutation bro
 bash "$ROOT_DIR/wordpress/scripts/client-preview-seed.sh" >/dev/null
 after_seed="$(wp eval '$option=get_option("rosa_home_content",[]); echo is_array($option)?(string)($option["en"]["hero_title"]??""):"";')"
 [[ "$after_seed" == 'Rosa mutation test title' ]] || fail 'client-preview seed overwrote saved Homepage content'
+media_after_seed="$(wp eval '$media=get_option("rosa_preview_media",[]); echo is_array($media)?(string)($media["home-hero-01"]??""):"";')"
+[[ "$media_after_seed" == '777' ]] || fail 'client-preview seed overwrote an editor-selected Homepage media slot'
 
-printf 'PASS: Rosa content edits render independently and survive reseeding\n'
+printf 'PASS: Rosa content/media edits render independently and survive reseeding\n'
