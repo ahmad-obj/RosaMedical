@@ -1,0 +1,12 @@
+.rosa-elementor-authoring,
+.rosa-elementor-authoring > .elementor,
+.rosa-elementor-authoring .rosa-elementor-root {
+    inline-size: 100%;
+    max-inline-size: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rosa-elementor-authoring .rosa-elementor-root {
+    gap: 0;
+}
