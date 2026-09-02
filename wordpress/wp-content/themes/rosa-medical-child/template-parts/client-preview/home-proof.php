@@ -1,7 +1,8 @@
 <?php
 if (! defined('ABSPATH')) { exit; }
-$locale = (string) ($args['locale'] ?? rosa_preview_locale());
-$c = static fn(string $key, string $en, string $ar): string => rosa_preview_content('home', $key, $locale, $locale === 'ar' ? $ar : $en);
+$sectionArgs = isset($args) && is_array($args) ? $args : [];
+$locale = (string) ($sectionArgs['locale'] ?? rosa_preview_locale());
+$c = static fn(string $key, string $en, string $ar): string => rosa_preview_section_value($sectionArgs, 'home', $key, $locale, $locale === 'ar' ? $ar : $en);
 $labels = [
     $c('proof_1', 'Knives', 'السكاكين'),
     $c('proof_2', 'Scissors', 'المقصات'),
