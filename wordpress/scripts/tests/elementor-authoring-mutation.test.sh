@@ -77,6 +77,8 @@ if (! \$arDoc->save(['elements' => \$ar])) WP_CLI::error('Could not save Arabic 
 echo \$media;
 ")"
 [[ "$media_id" =~ ^[0-9]+$ ]] || fail 'Media mutation did not return an attachment ID'
+media_url="$(wp eval "echo (string) wp_get_attachment_url(${media_id});")"
+[[ -n "$media_url" ]] || fail 'Could not resolve selected attachment URL'
 
 home_html="$(curl -fsSL "$BASE_URL/")"
 ar_html="$(curl -fsSL "$BASE_URL/ar/")"
@@ -84,7 +86,7 @@ grep -Fq 'TEST ELEMENTOR HERO' <<<"$home_html" || fail 'English Elementor text e
 ! grep -Fq 'AR TEST ELEMENTOR HERO' <<<"$home_html" || fail 'Arabic Elementor edit leaked into English Home'
 grep -Fq 'AR TEST ELEMENTOR HERO' <<<"$ar_html" || fail 'Arabic Elementor text edit did not render'
 grep -Fq 'lang="ar" dir="rtl"' <<<"$ar_html" || fail 'Arabic Home lost RTL document attributes'
-grep -Fq "wp-image-${media_id}" <<<"$home_html" || fail 'Elementor media control edit did not render selected attachment'
+grep -Fq "$media_url" <<<"$home_html" || fail 'Elementor media control edit did not render selected attachment URL'
 for section in hero who featured feature latest promos why proof evidence; do
   grep -Fq "data-home-section=\"${section}\"" <<<"$home_html" || fail "Home section disappeared after Elementor edit: ${section}"
 done
@@ -101,7 +103,7 @@ home_html="$(curl -fsSL "$BASE_URL/")"
 ar_html="$(curl -fsSL "$BASE_URL/ar/")"
 grep -Fq 'TEST ELEMENTOR HERO' <<<"$home_html" || fail 'routine seed erased English Elementor edit'
 grep -Fq 'AR TEST ELEMENTOR HERO' <<<"$ar_html" || fail 'routine seed erased Arabic Elementor edit'
-grep -Fq "wp-image-${media_id}" <<<"$home_html" || fail 'routine seed erased Elementor media edit'
+grep -Fq "$media_url" <<<"$home_html" || fail 'routine seed erased Elementor media edit'
 
 restore
 trap - EXIT
