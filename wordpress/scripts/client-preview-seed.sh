@@ -72,7 +72,8 @@ media_lines_b64="$(printf '%s' "$media_lines" | base64 | tr -d '\n')"
 wp eval "
   \$decoded = base64_decode('${media_lines_b64}', true);
   if (! is_string(\$decoded)) WP_CLI::error('Could not decode Rosa preview media map.');
-  \$map = [];
+  \$existing_map = get_option('rosa_preview_media', []);
+  \$map = is_array(\$existing_map) ? \$existing_map : [];
   foreach (preg_split('/\\R/', \$decoded) as \$line) {
     if (\$line === '' || strpos(\$line, '=') === false) continue;
     [\$key, \$value] = explode('=', \$line, 2);
