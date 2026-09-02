@@ -24,6 +24,8 @@ require_once __DIR__ . '/src/Admin/MediaField.php';
 require_once __DIR__ . '/src/Admin/RosaAdmin.php';
 require_once __DIR__ . '/src/Elementor/WidgetRegistry.php';
 require_once __DIR__ . '/src/Elementor/ElementorIntegration.php';
+require_once __DIR__ . '/src/Elementor/ElementorSeedData.php';
+require_once __DIR__ . '/src/Elementor/ElementorPageSeeder.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 use RosaMedical\Core\Plugin;
