@@ -30,8 +30,25 @@ final class RosaAdmin
             self::ROOT_SLUG,
             static fn(): mixed => ElementorShortcutPage::render('home', 'Homepage')
         );
-        self::addElementorSubmenu('About', 'rosa-medical-about', 'about');
-        self::addElementorSubmenu('Contact', 'rosa-medical-contact', 'contact');
+
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Rosa Medical — About', 'rosa-medical'),
+            __('About', 'rosa-medical'),
+            'manage_options',
+            'rosa-medical-about',
+            static fn(): mixed => ElementorShortcutPage::render('about', 'About')
+        );
+
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Rosa Medical — Contact', 'rosa-medical'),
+            __('Contact', 'rosa-medical'),
+            'manage_options',
+            'rosa-medical-contact',
+            static fn(): mixed => ElementorShortcutPage::render('contact', 'Contact')
+        );
+
         self::addContentSubmenu('Shop', 'rosa-medical-shop', 'shop');
         self::addContentSubmenu('Site & CTA', 'rosa-medical-site', 'site');
 
@@ -64,18 +81,6 @@ final class RosaAdmin
             [],
             $version,
             true
-        );
-    }
-
-    private static function addElementorSubmenu(string $label, string $slug, string $path): void
-    {
-        add_submenu_page(
-            self::ROOT_SLUG,
-            sprintf(__('Rosa Medical — %s', 'rosa-medical'), $label),
-            __($label, 'rosa-medical'),
-            'manage_options',
-            $slug,
-            static fn(): mixed => ElementorShortcutPage::render($path, $label)
         );
     }
 
