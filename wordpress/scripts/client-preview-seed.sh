@@ -92,7 +92,10 @@ wp eval '
     ]);
     if (is_wp_error($id)) WP_CLI::error($id->get_error_message());
     wp_update_post(["ID" => $id, "post_status" => "publish", "post_title" => $title, "post_parent" => $parent]);
-    update_post_meta($id, "_wp_page_template", $template);
+    $currentTemplate = (string) get_post_meta($id, "_wp_page_template", true);
+    $elementorVersion = (string) get_post_meta($id, "_rosa_elementor_authoring_version", true);
+    $isMigratedElementor = $elementorVersion !== "" && $currentTemplate === "page-templates/rosa-elementor-authoring.php";
+    if (! $isMigratedElementor) update_post_meta($id, "_wp_page_template", $template);
     update_post_meta($id, "_rosa_preview_locale", $locale);
     return (int)$id;
   }
