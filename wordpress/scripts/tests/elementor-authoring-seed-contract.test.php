@@ -63,6 +63,18 @@ namespace {
         /** @var array<int,array<string,mixed>> */
         public array $elements = [];
         public bool $saveSucceeds = true;
+        public bool $builtWithElementor = false;
+
+        public function set_is_built_with_elementor(bool $built): self
+        {
+            $this->builtWithElementor = $built;
+            return $this;
+        }
+
+        public function is_built_with_elementor(): bool
+        {
+            return $this->builtWithElementor;
+        }
 
         public function save(array $payload): bool
         {
@@ -174,14 +186,17 @@ namespace {
 
     $GLOBALS['rosa_can_edit'] = false;
     $forbiddenResult = ElementorPageSeeder::seedPage(44, 'home', 'en');
-    if (($forbiddenResult['status'] ?? '') !== 'forbidden' || $documents->documents[44]->elements !== []) {
-        fail_test('Seeder must not write when edit_post capability is missing');
+    if (($forbiddenResult['status'] ?? '') !== 'forbidden' || $documents->documents[44]->elements !== [] || $documents->documents[44]->builtWithElementor) {
+        fail_test('Seeder must not write or mark Elementor mode when edit_post capability is missing');
     }
 
     $GLOBALS['rosa_can_edit'] = true;
     $seeded = ElementorPageSeeder::seedPage(44, 'home', 'en');
     if (($seeded['status'] ?? '') !== 'seeded') {
         fail_test('Never-migrated page was not seeded');
+    }
+    if (! $documents->documents[44]->is_built_with_elementor()) {
+        fail_test('Seeder saved Elementor data but did not mark page as built with Elementor');
     }
     if (($GLOBALS['rosa_meta'][44]['_wp_page_template'] ?? '') !== 'page-templates/rosa-elementor-authoring.php') {
         fail_test('Seeder did not assign the protected Rosa Elementor page template');
@@ -202,8 +217,8 @@ namespace {
         fail_test('Normal reseed must preserve client-edited Elementor content');
     }
     $forced = ElementorPageSeeder::seedPage(44, 'home', 'en', true);
-    if (($forced['status'] ?? '') !== 'seeded_forced' || ($documents->documents[44]->elements[0]['elements'][0]['settings']['hero_title'] ?? '') !== 'EN TEST HERO') {
-        fail_test('Force reseed did not intentionally restore Rosa migration source');
+    if (($forced['status'] ?? '') !== 'seeded_forced' || ($documents->documents[44]->elements[0]['elements'][0]['settings']['hero_title'] ?? '') !== 'EN TEST HERO' || ! $documents->documents[44]->is_built_with_elementor()) {
+        fail_test('Force reseed did not intentionally restore Rosa migration source and Elementor built state');
     }
 
     fwrite(STDOUT, "PASS: Elementor seed data and idempotent migration contract\n");
