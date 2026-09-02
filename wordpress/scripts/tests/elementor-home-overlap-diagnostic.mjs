@@ -7,86 +7,133 @@ const baseUrl = process.argv[2] || 'http://localhost:8088/';
 const browser = await chromium.launch({ headless: true });
 
 try {
-  for (const width of [430, 431, 432]) {
-    const page = await browser.newPage({ viewport: { width, height: 932 } });
-    await page.goto(baseUrl, { waitUntil: 'load' });
-    await settlePageMedia(page, { scrollDelayMs: 10 });
+  const page = await browser.newPage({ viewport: { width: 431, height: 932 } });
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await settlePageMedia(page, { scrollDelayMs: 10 });
 
-    const shell = await page.evaluate(() => {
-      const authoring = document.querySelector('.rosa-elementor-authoring');
-      const directRoot = document.querySelector('.rosa-elementor-authoring > .elementor > .e-con.e-parent');
-      const seededRoot = document.querySelector('.rosa-elementor-root');
-      const latest = document.querySelector('[data-home-section="latest"]');
-      const latestWidget = latest?.closest('.elementor-widget');
-      const latestWidgetContainer = latest?.closest('.elementor-widget-container');
-      const stylesheetLinks = [...document.querySelectorAll('link[rel="stylesheet"]')]
-        .map((link) => link.href)
-        .filter((href) => href.includes('elementor-authoring.css'));
-      const chain = [];
-      let node = latest;
-      for (let depth = 0; node && depth < 7; depth += 1, node = node.parentElement) {
-        chain.push({
-          tag: node.tagName,
-          id: node.id || '',
-          className: typeof node.className === 'string' ? node.className : '',
-          dataId: node.getAttribute?.('data-id') || '',
-          dataElementorType: node.getAttribute?.('data-elementor-type') || '',
+  const diagnostic = await page.evaluate(() => {
+    const latest = document.querySelector('[data-home-section="latest"]');
+    const widget = latest?.closest('.elementor-widget');
+    const widgetContainer = latest?.closest('.elementor-widget-container');
+    const root = widget?.parentElement;
+    if (!latest || !widget || !widgetContainer || !root) {
+      return { error: 'Latest section/widget/root could not be resolved.' };
+    }
+
+    const pick = (element) => {
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      const vars = [
+        '--height',
+        '--min-height',
+        '--flex-basis',
+        '--flex-grow',
+        '--flex-shrink',
+        '--align-self',
+        '--container-widget-height',
+        '--container-widget-align-self',
+        '--container-widget-width',
+        '--container-widget-flex-grow',
+        '--flex-wrap',
+        '--flex-wrap-mobile',
+      ];
+      return {
+        className: element.className,
+        box: {
+          top: Math.round(box.top + scrollY),
+          bottom: Math.round(box.bottom + scrollY),
+          width: Math.round(box.width),
+          height: Math.round(box.height),
+        },
+        computed: {
+          display: style.display,
+          position: style.position,
+          height: style.height,
+          minHeight: style.minHeight,
+          maxHeight: style.maxHeight,
+          flex: style.flex,
+          flexBasis: style.flexBasis,
+          flexGrow: style.flexGrow,
+          flexShrink: style.flexShrink,
+          alignSelf: style.alignSelf,
+          overflow: style.overflow,
+          boxSizing: style.boxSizing,
+          contain: style.contain,
+          flexDirection: style.flexDirection,
+          flexWrap: style.flexWrap,
+          alignItems: style.alignItems,
+          alignContent: style.alignContent,
+          gap: style.gap,
+        },
+        variables: Object.fromEntries(vars.map((name) => [name, style.getPropertyValue(name).trim()])),
+        inlineStyle: element.getAttribute('style') || '',
+      };
+    };
+
+    const relevantText = /height|flex|align|overflow|contain|position/i;
+    const matchedRules = [];
+
+    const visitRules = (rules, href, context = []) => {
+      for (const rule of rules) {
+        if (rule instanceof CSSMediaRule) {
+          if (matchMedia(rule.conditionText).matches) {
+            visitRules(rule.cssRules, href, [...context, `@media ${rule.conditionText}`]);
+          }
+          continue;
+        }
+        if (rule instanceof CSSSupportsRule) {
+          let active = true;
+          try { active = CSS.supports(rule.conditionText); } catch { active = true; }
+          if (active) visitRules(rule.cssRules, href, [...context, `@supports ${rule.conditionText}`]);
+          continue;
+        }
+        if (!(rule instanceof CSSStyleRule) || !relevantText.test(rule.cssText)) continue;
+
+        let widgetMatches = false;
+        let containerMatches = false;
+        let rootMatches = false;
+        try { widgetMatches = widget.matches(rule.selectorText); } catch {}
+        try { containerMatches = widgetContainer.matches(rule.selectorText); } catch {}
+        try { rootMatches = root.matches(rule.selectorText); } catch {}
+        if (!widgetMatches && !containerMatches && !rootMatches) continue;
+
+        matchedRules.push({
+          target: [widgetMatches && 'widget', containerMatches && 'widget-container', rootMatches && 'root'].filter(Boolean).join(', '),
+          href,
+          context,
+          selector: rule.selectorText,
+          cssText: rule.style.cssText,
         });
       }
-      const directRootStyle = directRoot ? getComputedStyle(directRoot) : null;
-      const widgetStyle = latestWidget ? getComputedStyle(latestWidget) : null;
-      const widgetContainerStyle = latestWidgetContainer ? getComputedStyle(latestWidgetContainer) : null;
-      return {
-        authoringCount: document.querySelectorAll('.rosa-elementor-authoring').length,
-        elementorCount: document.querySelectorAll('.rosa-elementor-authoring > .elementor').length,
-        directRootCount: document.querySelectorAll('.rosa-elementor-authoring > .elementor > .e-con.e-parent').length,
-        seededRootCount: document.querySelectorAll('.rosa-elementor-root').length,
-        stylesheetLinks,
-        directRootClass: directRoot?.className || null,
-        directRootDisplay: directRootStyle?.display || null,
-        directRootGap: directRootStyle?.gap || null,
-        directRootRowGap: directRootStyle?.rowGap || null,
-        directRootColumnGap: directRootStyle?.columnGap || null,
-        latestWidgetFlexShrink: widgetStyle?.flexShrink || null,
-        latestWidgetContainerCssHeight: widgetContainerStyle?.height || null,
-        chain,
-      };
-    });
+    };
 
-    const rows = await page.locator('[data-home-section]').evaluateAll((sections) => sections.map((section) => {
-      const box = section.getBoundingClientRect();
-      const widget = section.closest('.elementor-widget');
-      const widgetContainer = section.closest('.elementor-widget-container');
-      const root = section.closest('.rosa-elementor-root');
-      const widgetBox = widget?.getBoundingClientRect();
-      const containerBox = widgetContainer?.getBoundingClientRect();
-      const widgetStyle = widget ? getComputedStyle(widget) : null;
-      const sectionStyle = getComputedStyle(section);
-      return {
-        section: section.getAttribute('data-home-section'),
-        sectionTop: Math.round(box.top + scrollY),
-        sectionBottom: Math.round(box.bottom + scrollY),
-        sectionHeight: Math.round(box.height),
-        sectionCssHeight: sectionStyle.height,
-        sectionOverflow: sectionStyle.overflow,
-        widgetTop: widgetBox ? Math.round(widgetBox.top + scrollY) : null,
-        widgetBottom: widgetBox ? Math.round(widgetBox.bottom + scrollY) : null,
-        widgetHeight: widgetBox ? Math.round(widgetBox.height) : null,
-        widgetDisplay: widgetStyle?.display ?? null,
-        widgetPosition: widgetStyle?.position ?? null,
-        widgetFlexShrink: widgetStyle?.flexShrink ?? null,
-        widgetContainerHeight: containerBox ? Math.round(containerBox.height) : null,
-        rootDisplay: root ? getComputedStyle(root).display : null,
-        rootFlexDirection: root ? getComputedStyle(root).flexDirection : null,
-      };
-    }));
+    for (const sheet of document.styleSheets) {
+      let rules;
+      try { rules = sheet.cssRules; } catch { continue; }
+      visitRules(rules, sheet.href || '<inline>');
+    }
 
-    console.log(`\n=== ${width}px SHELL ===`);
-    console.dir(shell, { depth: null });
-    console.log(`\n=== ${width}px SECTIONS ===`);
-    console.table(rows);
-    await page.close();
-  }
+    const sectionBox = latest.getBoundingClientRect();
+    const widgetBox = widget.getBoundingClientRect();
+    const containerBox = widgetContainer.getBoundingClientRect();
+
+    return {
+      overlap: {
+        sectionHeight: Math.round(sectionBox.height),
+        widgetHeight: Math.round(widgetBox.height),
+        widgetContainerHeight: Math.round(containerBox.height),
+        overflowAmount: Math.round(sectionBox.bottom - widgetBox.bottom),
+      },
+      root: pick(root),
+      widget: pick(widget),
+      widgetContainer: pick(widgetContainer),
+      section: pick(latest),
+      matchedRules,
+    };
+  });
+
+  console.dir(diagnostic, { depth: null, maxArrayLength: null });
+  await page.close();
 } finally {
   await browser.close();
 }
