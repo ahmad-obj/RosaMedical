@@ -22,6 +22,7 @@ add_action('after_setup_theme', static function (): void {
 add_action('wp_enqueue_scripts', static function (): void {
     $theme = wp_get_theme();
     $version = (string) $theme->get('Version');
+    $pageTemplate = is_page() ? (string) get_page_template_slug() : '';
 
     wp_enqueue_style(
         'rosa-medical-tokens',
@@ -42,8 +43,9 @@ add_action('wp_enqueue_scripts', static function (): void {
         'page-templates/client-preview-about.php',
         'page-templates/client-preview-contact.php',
         'page-templates/client-preview-shop.php',
+        'page-templates/rosa-elementor-authoring.php',
     ];
-    $isPreviewPage = is_page() && (in_array((string) get_page_template_slug(), $previewTemplates, true) || rosa_preview_locale() === 'ar');
+    $isPreviewPage = is_page() && (in_array($pageTemplate, $previewTemplates, true) || rosa_preview_locale() === 'ar');
     $isPreviewCatalogue = function_exists('is_shop') && (
         is_shop()
         || is_product_category()
@@ -66,6 +68,15 @@ add_action('wp_enqueue_scripts', static function (): void {
         );
         if ($hasEditableMedia) {
             wp_enqueue_style('rosa-client-preview-media', get_stylesheet_directory_uri() . '/assets/css/client-preview-media.css', ['rosa-client-preview'], $version);
+        }
+
+        if ($pageTemplate === 'page-templates/rosa-elementor-authoring.php') {
+            wp_enqueue_style(
+                'rosa-elementor-authoring',
+                get_stylesheet_directory_uri() . '/assets/css/elementor-authoring.css',
+                ['rosa-client-preview'],
+                $version
+            );
         }
 
         if (rosa_preview_locale() === 'ar' && file_exists(get_stylesheet_directory() . '/assets/css/client-preview-rtl.css')) {
