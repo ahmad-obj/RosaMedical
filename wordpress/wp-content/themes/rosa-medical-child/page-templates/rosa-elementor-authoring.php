@@ -9,5 +9,7 @@ while (have_posts()) {
     the_content();
     echo '</div>';
 }
+echo '<div data-preview-contact-cta>';
 get_template_part('template-parts/client-preview/cta-banner', null, ['locale' => $locale]);
+echo '</div>';
 get_footer();
