@@ -16,6 +16,7 @@ cd "$ROOT_DIR"
 
 run php wordpress/scripts/tests/elementor-authoring-integration.test.php
 run php wordpress/scripts/tests/elementor-authoring-seed-contract.test.php
+run php wordpress/scripts/tests/elementor-authoring-root-class-migration.test.php
 
 source_tests=(
   wordpress/scripts/tests/foundation-preflight.test.sh
