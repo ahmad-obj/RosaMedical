@@ -8,7 +8,7 @@ final class ElementorPageSeeder
 {
     public const VERSION_META = '_rosa_elementor_authoring_version';
     public const HASH_META = '_rosa_elementor_seed_hash';
-    public const VERSION = '1';
+    public const VERSION = '2';
     public const TEMPLATE = 'page-templates/rosa-elementor-authoring.php';
 
     public static function state(int $postId): string
@@ -34,6 +34,7 @@ final class ElementorPageSeeder
             return ['status' => 'forbidden', 'post_id' => $postId];
         }
 
+        $locale = $locale === 'ar' ? 'ar' : 'en';
         $elements = ElementorSeedData::build($pageType, $locale);
         if ($elements === []) {
             return ['status' => 'invalid_page_type', 'post_id' => $postId];
@@ -41,6 +42,13 @@ final class ElementorPageSeeder
 
         $state = self::state($postId);
         if (! $force && $state !== 'never_migrated') {
+            $version = function_exists('get_post_meta') ? (string) get_post_meta($postId, self::VERSION_META, true) : '';
+            if ($version === '1') {
+                $migrationStatus = self::migrateV1RootClass($postId, $pageType, $locale, $state);
+                if ($migrationStatus !== 'ok') {
+                    return ['status' => $migrationStatus, 'post_id' => $postId];
+                }
+            }
             return ['status' => 'skipped', 'post_id' => $postId];
         }
 
@@ -75,6 +83,75 @@ final class ElementorPageSeeder
             'status' => $force ? 'seeded_forced' : 'seeded',
             'post_id' => $postId,
         ];
+    }
+
+    private static function migrateV1RootClass(int $postId, string $pageType, string $locale, string $priorState): string
+    {
+        $document = self::document($postId);
+        if (! is_object($document) || ! method_exists($document, 'get_elements_data')) {
+            return 'document_missing';
+        }
+
+        $elements = $document->get_elements_data();
+        if (! is_array($elements)) {
+            return 'reload_failed';
+        }
+
+        $rootId = ElementorSeedData::deterministicId($pageType . '-' . $locale . '-root');
+        $found = false;
+        $changed = false;
+
+        foreach ($elements as &$element) {
+            if (! is_array($element)
+                || (string) ($element['id'] ?? '') !== $rootId
+                || (string) ($element['elType'] ?? '') !== 'container') {
+                continue;
+            }
+
+            $found = true;
+            $settings = is_array($element['settings'] ?? null) ? $element['settings'] : [];
+            $current = is_scalar($settings['css_classes'] ?? null) ? trim((string) $settings['css_classes']) : '';
+            $legacy = is_scalar($settings['_css_classes'] ?? null) ? trim((string) $settings['_css_classes']) : '';
+            $tokens = preg_split('/\s+/', trim($current . ' ' . $legacy)) ?: [];
+            $tokens = array_values(array_unique(array_filter($tokens, static fn(string $token): bool => $token !== '')));
+            if (! in_array('rosa-elementor-root', $tokens, true)) {
+                $tokens[] = 'rosa-elementor-root';
+            }
+            $migrated = implode(' ', $tokens);
+
+            if ($current !== $migrated || array_key_exists('_css_classes', $settings)) {
+                $settings['css_classes'] = $migrated;
+                unset($settings['_css_classes']);
+                $element['settings'] = $settings;
+                $changed = true;
+            }
+            break;
+        }
+        unset($element);
+
+        if (! $found) {
+            return 'root_missing';
+        }
+
+        if ($changed && ! $document->save(['elements' => $elements])) {
+            return 'save_failed';
+        }
+
+        update_post_meta($postId, self::VERSION_META, self::VERSION);
+
+        // Only move the seed baseline when the v1 document was untouched.
+        // If the client had already edited the document, preserve the old seed
+        // hash so state() continues to report migrated_edited after this
+        // surgical root-setting repair.
+        if ($priorState === 'migrated_untouched') {
+            $normalizedHash = self::currentHash($postId);
+            if ($normalizedHash === '') {
+                return 'reload_failed';
+            }
+            update_post_meta($postId, self::HASH_META, $normalizedHash);
+        }
+
+        return 'ok';
     }
 
     private static function document(int $postId): object|false
