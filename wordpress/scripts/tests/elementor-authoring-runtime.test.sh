@@ -47,8 +47,8 @@ foreach ($targets as [$path, $locale]) {
     if ((string) get_post_meta($id, "_wp_page_template", true) !== "page-templates/rosa-elementor-authoring.php") {
         WP_CLI::error("Protected Elementor template missing for {$path}");
     }
-    if ((string) get_post_meta($id, "_rosa_elementor_authoring_version", true) !== "1") {
-        WP_CLI::error("Rosa Elementor migration version missing for {$path}");
+    if ((string) get_post_meta($id, "_rosa_elementor_authoring_version", true) !== "2") {
+        WP_CLI::error("Rosa Elementor migration version 2 missing for {$path}");
     }
     if (! class_exists("\\Elementor\\Plugin")) WP_CLI::error("Elementor is inactive");
     $document = \Elementor\Plugin::$instance->documents->get($id, false);
