@@ -11,7 +11,7 @@ try {
   await page.goto(baseUrl, { waitUntil: 'load' });
   await settlePageMedia(page, { scrollDelayMs: 10 });
 
-  const diagnostic = await page.evaluate(() => {
+  const diagnostic = await page.evaluate(async () => {
     const latest = document.querySelector('[data-home-section="latest"]');
     const widget = latest?.closest('.elementor-widget');
     const widgetContainer = latest?.closest('.elementor-widget-container');
@@ -70,6 +70,25 @@ try {
       };
     };
 
+    const measureOverlap = () => {
+      const sectionBox = latest.getBoundingClientRect();
+      const widgetBox = widget.getBoundingClientRect();
+      const containerBox = widgetContainer.getBoundingClientRect();
+      const nextWidget = widget.nextElementSibling;
+      const nextBox = nextWidget?.getBoundingClientRect();
+      return {
+        sectionHeight: Math.round(sectionBox.height),
+        widgetHeight: Math.round(widgetBox.height),
+        widgetContainerHeight: Math.round(containerBox.height),
+        overflowAmount: Math.round(sectionBox.bottom - widgetBox.bottom),
+        nextWidgetGap: nextBox ? Math.round(nextBox.top - sectionBox.bottom) : null,
+        rootHeight: Math.round(root.getBoundingClientRect().height),
+        rootFlexWrap: getComputedStyle(root).flexWrap,
+        rootFlexWrapVar: getComputedStyle(root).getPropertyValue('--flex-wrap').trim(),
+        rootFlexWrapMobileVar: getComputedStyle(root).getPropertyValue('--flex-wrap-mobile').trim(),
+      };
+    };
+
     const relevantText = /height|flex|align|overflow|contain|position/i;
     const matchedRules = [];
 
@@ -113,21 +132,33 @@ try {
       visitRules(rules, sheet.href || '<inline>');
     }
 
-    const sectionBox = latest.getBoundingClientRect();
-    const widgetBox = widget.getBoundingClientRect();
-    const containerBox = widgetContainer.getBoundingClientRect();
+    const baseline = measureOverlap();
+    const rootBefore = pick(root);
+    const widgetBefore = pick(widget);
+    const widgetContainerBefore = pick(widgetContainer);
+    const sectionBefore = pick(latest);
+
+    // Hypothesis probe only: Elementor's <=767px default changes this vertical
+    // authoring container to flex-wrap:wrap. Rosa's authoring root is a single
+    // column stack, so force nowrap in-memory and remeasure without touching CSS.
+    root.style.setProperty('--flex-wrap-mobile', 'nowrap');
+    root.style.setProperty('--flex-wrap', 'nowrap');
+    root.style.flexWrap = 'nowrap';
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const noWrapProbe = measureOverlap();
+
+    root.style.removeProperty('--flex-wrap-mobile');
+    root.style.removeProperty('--flex-wrap');
+    root.style.removeProperty('flex-wrap');
 
     return {
-      overlap: {
-        sectionHeight: Math.round(sectionBox.height),
-        widgetHeight: Math.round(widgetBox.height),
-        widgetContainerHeight: Math.round(containerBox.height),
-        overflowAmount: Math.round(sectionBox.bottom - widgetBox.bottom),
-      },
-      root: pick(root),
-      widget: pick(widget),
-      widgetContainer: pick(widgetContainer),
-      section: pick(latest),
+      baseline,
+      noWrapProbe,
+      root: rootBefore,
+      widget: widgetBefore,
+      widgetContainer: widgetContainerBefore,
+      section: sectionBefore,
       matchedRules,
     };
   });
