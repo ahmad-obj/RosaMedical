@@ -49,7 +49,7 @@ final class ElementorSeedData
             'elType' => 'container',
             'isInner' => false,
             'settings' => [
-                '_css_classes' => 'rosa-elementor-root',
+                'css_classes' => 'rosa-elementor-root',
                 'content_width' => 'full',
                 'gap' => ['unit' => 'px', 'size' => 0, 'sizes' => []],
                 'padding' => [
