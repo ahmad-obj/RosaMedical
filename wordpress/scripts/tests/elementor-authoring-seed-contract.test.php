@@ -201,8 +201,8 @@ namespace {
     if (($GLOBALS['rosa_meta'][44]['_wp_page_template'] ?? '') !== 'page-templates/rosa-elementor-authoring.php') {
         fail_test('Seeder did not assign the protected Rosa Elementor page template');
     }
-    if (($GLOBALS['rosa_meta'][44]['_rosa_elementor_authoring_version'] ?? '') !== '1') {
-        fail_test('Seeder did not store authoring version 1');
+    if (($GLOBALS['rosa_meta'][44]['_rosa_elementor_authoring_version'] ?? '') !== '2') {
+        fail_test('Seeder did not store authoring version 2');
     }
     if (ElementorPageSeeder::state(44) !== 'migrated_untouched') {
         fail_test('Freshly seeded page must be migrated_untouched');
