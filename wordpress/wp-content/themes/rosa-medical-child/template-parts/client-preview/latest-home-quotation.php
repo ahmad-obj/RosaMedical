@@ -9,8 +9,8 @@ $quoteUrl = home_url($locale === 'ar' ? '/ar/request-quotation/' : '/request-quo
     <div class="container container--wide">
         <div class="quotation-cta__surface">
             <div class="procurement-panel procurement-panel--dark procurement-panel--premium-cta">
-                <div class="procurement-panel__copy-wrap">
-                    <p class="procurement-panel__eyebrow"><?php echo esc_html($c('quotation_eyebrow')); ?></p>
+                <div class="procurement-panel__content">
+                    <p class="public-eyebrow"><?php echo esc_html($c('quotation_eyebrow')); ?></p>
                     <h2 class="procurement-panel__title"><?php echo esc_html($c('quotation_title')); ?></h2>
                     <p class="procurement-panel__copy"><?php echo esc_html($c('quotation_body')); ?></p>
                 </div>
