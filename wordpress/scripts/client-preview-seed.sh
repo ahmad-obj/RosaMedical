@@ -79,6 +79,13 @@ media_lines="$(
   import_media home-specialty-spine 'apps/web/public/media/editorial/home-specialties/spine.webp'
   import_media home-securing-confidence 'apps/web/public/media/editorial/home-specialties/securing-confidence.webp'
 
+  # Technical catalogue PDFs used by the latest Home family gallery.
+  import_media catalogue-pdf-scissors 'apps/web/public/media/catalogues/pdf/rosa-scissors-catalogue.pdf'
+  import_media catalogue-pdf-cutters 'apps/web/public/media/catalogues/pdf/rosa-cutters-catalogue.pdf'
+  import_media catalogue-pdf-punches 'apps/web/public/media/catalogues/pdf/rosa-punches-catalogue.pdf'
+  import_media catalogue-pdf-chisels 'apps/web/public/media/catalogues/pdf/rosa-chisels-catalogue.pdf'
+  import_media catalogue-pdf-knives 'apps/web/public/media/catalogues/pdf/rosa-knives-catalogue.pdf'
+
   # Legacy preview assets remain imported for rollback templates and existing content.
   import_media hero 'apps/web/public/media/editorial/home-hero-surgical-instruments.jpg'
   import_media about_procurement 'apps/web/public/media/editorial/about-procurement.jpg'
@@ -106,6 +113,8 @@ wp eval "
     'home-specialty-plastic-surgery', 'home-specialty-orthopedics',
     'home-specialty-maxillofacial', 'home-specialty-orthodontics',
     'home-specialty-spine', 'home-securing-confidence',
+    'catalogue-pdf-scissors', 'catalogue-pdf-cutters', 'catalogue-pdf-punches',
+    'catalogue-pdf-chisels', 'catalogue-pdf-knives',
   ];
   foreach (\$required as \$key) {
     if (! isset(\$map[\$key]) || (int) \$map[\$key] <= 0) {
