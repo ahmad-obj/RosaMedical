@@ -73,6 +73,7 @@ async function assertAbout(page, path, desktop) {
     '[data-preview-about-cards]',
     '[data-preview-feature-banner]',
     '[data-preview-why-us]',
+    '[data-preview-family-strip]',
     '[data-preview-proof-role]',
   ];
   for (const selector of selectors) assert.equal(await page.locator(selector).count(), 1, `${path} missing/duplicated About section ${selector}`);
@@ -107,7 +108,7 @@ try {
     }
   }
 
-  process.stdout.write('PASS: Elementor About/Contact topology, responsive geometry and RTL contracts\n');
+  process.stdout.write('PASS: Elementor About/Contact finished-template topology, responsive geometry and RTL contracts\n');
 } finally {
   await browser.close();
 }
