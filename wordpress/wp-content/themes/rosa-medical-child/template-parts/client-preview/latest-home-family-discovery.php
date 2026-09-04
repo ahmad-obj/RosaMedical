@@ -7,7 +7,7 @@ $base = trailingslashit(get_stylesheet_directory_uri()) . 'assets/media/homepage
 $families = [
     ['slug' => 'scissors', 'name' => $locale === 'ar' ? 'المقصات' : 'Scissors', 'cover' => 'scissors-family-cover-full.svg', 'pdf' => 'catalogue-pdf-scissors'],
     ['slug' => 'cutters', 'name' => $locale === 'ar' ? 'القواطع' : 'Cutters', 'cover' => 'cutters-family-cover-full.svg', 'pdf' => 'catalogue-pdf-cutters'],
-    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover-full.svg', 'pdf' => 'catalogue-pdf-punches'],
+    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover.webp', 'pdf' => 'catalogue-pdf-punches'],
     ['slug' => 'chisels', 'name' => $locale === 'ar' ? 'الأزاميل' : 'Chisels', 'cover' => 'chisels-family-cover-full.svg', 'pdf' => 'catalogue-pdf-chisels'],
     ['slug' => 'knives', 'name' => $locale === 'ar' ? 'السكاكين' : 'Knives', 'cover' => 'knives-family-cover-full.svg', 'pdf' => 'catalogue-pdf-knives'],
 ];
