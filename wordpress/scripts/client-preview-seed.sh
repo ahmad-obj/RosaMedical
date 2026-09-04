@@ -62,6 +62,24 @@ import_media(){
 
 media_lines="$(
   import_media logo 'apps/web/public/media/brand/rosa-header-logo-v1.webp'
+
+  # Latest Rosa Homepage parity media.
+  import_media home-hero-01-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-01-desktop.webp'
+  import_media home-hero-01-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-01-mobile.webp'
+  import_media home-hero-02-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-02-desktop.webp'
+  import_media home-hero-02-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-02-mobile.webp'
+  import_media home-hero-03-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-03-desktop.webp'
+  import_media home-hero-03-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-03-mobile.webp'
+  import_media home-hero-04-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-04-desktop.webp'
+  import_media home-hero-04-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-04-mobile.webp'
+  import_media home-specialty-plastic-surgery 'apps/web/public/media/editorial/home-specialties/plastic-surgery.webp'
+  import_media home-specialty-orthopedics 'apps/web/public/media/editorial/home-specialties/orthopedics.webp'
+  import_media home-specialty-maxillofacial 'apps/web/public/media/editorial/home-specialties/maxillofacial.webp'
+  import_media home-specialty-orthodontics 'apps/web/public/media/editorial/home-specialties/orthodontics.webp'
+  import_media home-specialty-spine 'apps/web/public/media/editorial/home-specialties/spine.webp'
+  import_media home-securing-confidence 'apps/web/public/media/editorial/home-specialties/securing-confidence.webp'
+
+  # Legacy preview assets remain imported for rollback templates and existing content.
   import_media hero 'apps/web/public/media/editorial/home-hero-surgical-instruments.jpg'
   import_media about_procurement 'apps/web/public/media/editorial/about-procurement.jpg'
   import_media about_hospitals 'apps/web/public/media/editorial/about-hospitals.jpg'
@@ -79,7 +97,21 @@ wp eval "
     [\$key, \$value] = explode('=', \$line, 2);
     \$map[\$key] = (int) \$value;
   }
-  if (! isset(\$map['logo'], \$map['hero'])) WP_CLI::error('Rosa preview media map is incomplete.');
+  \$required = [
+    'logo',
+    'home-hero-01-desktop', 'home-hero-01-mobile',
+    'home-hero-02-desktop', 'home-hero-02-mobile',
+    'home-hero-03-desktop', 'home-hero-03-mobile',
+    'home-hero-04-desktop', 'home-hero-04-mobile',
+    'home-specialty-plastic-surgery', 'home-specialty-orthopedics',
+    'home-specialty-maxillofacial', 'home-specialty-orthodontics',
+    'home-specialty-spine', 'home-securing-confidence',
+  ];
+  foreach (\$required as \$key) {
+    if (! isset(\$map[\$key]) || (int) \$map[\$key] <= 0) {
+      WP_CLI::error('Rosa latest Homepage media map is incomplete at ' . \$key . '.');
+    }
+  }
   update_option('rosa_preview_media', \$map);
 "
 
