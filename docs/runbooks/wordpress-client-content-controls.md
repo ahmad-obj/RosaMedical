@@ -2,172 +2,218 @@
 
 ## Purpose
 
-Rosa uses a split WordPress authoring model that gives the client useful editing control without moving protected site structure or catalogue truth into Elementor.
+Rosa uses a split WordPress authoring model so the finished public template remains visually stable while normal page content can be edited in Elementor Free.
 
-- **Elementor Free** owns the body content of Home, About, Contact, and their Arabic equivalents.
-- **Rosa Medical admin settings** own shared/global site copy, Shop interface copy, and business/contact data.
-- **WooCommerce** owns product/catalogue data.
-- **Theme/plugin code** owns the header, footer, navigation, RTL foundations, responsive system, Shop/product templates, search/filter logic, quotation logic, and other protected behavior.
+The visual target for this conversion is the finished MedicaShop-derived Rosa template preserved at:
 
-The Homepage is now governed by the **latest Rosa custom frontend**, not the earlier MedicaShop-derived preview. Its protected seven-section Elementor topology reproduces the current Rosa design while keeping the content and page-specific media editable.
+```text
+wordpress/client-preview-medicashop-recreation
+d0726eed34b4fc14267570853ade8b74df49ae9e
+```
+
+This conversion is not a redesign. The Elementor-authored pages must preserve that template's rendered DOM classes, section order, responsive behavior, RTL behavior, product-grid density, shared CTA, header and footer. The later seven-section custom-frontend Homepage is not the visual authority for this WordPress conversion.
+
+## Ownership model
+
+- **Elementor Free** owns the body content/media of EN/AR Home, About and Contact.
+- **WooCommerce** owns products, product media, categories/families, SKUs, variations, descriptions and future pricing.
+- **Rosa Site & CTA settings** own shared navigation/footer/CTA copy.
+- **Rosa Business settings** own phone, email, address, Arabic address and WhatsApp.
+- **Theme/plugin code** owns the header, footer, shared pre-footer CTA placement, responsive/RTL CSS, page shell, Shop/product templates, routes and protected behavior.
+
+Do not duplicate WooCommerce product records or centralized business values inside Elementor JSON.
 
 ## Where to edit
 
 | Need | WordPress location | Source of truth |
 | --- | --- | --- |
-| English Homepage body | Rosa Medical → Homepage, or Pages → Home → Edit with Elementor | Elementor document |
+| English Homepage body | Pages → Home → Edit with Elementor | Elementor document |
 | Arabic Homepage body | Pages → الرئيسية → Edit with Elementor | Elementor document |
-| English About body | Rosa Medical → About, or Pages → About us → Edit with Elementor | Elementor document |
+| English About body | Pages → About us → Edit with Elementor | Elementor document |
 | Arabic About body | Pages → من نحن → Edit with Elementor | Elementor document |
-| English Contact body/labels | Rosa Medical → Contact, or Pages → Contact us → Edit with Elementor | Elementor document |
+| English Contact body/labels | Pages → Contact us → Edit with Elementor | Elementor document |
 | Arabic Contact body/labels | Pages → اتصل بنا → Edit with Elementor | Elementor document |
-| Shop headings/search copy | Rosa Medical → Shop | `rosa_shop_content` |
-| Header/footer/navigation/shared CTA labels | Rosa Medical → Site & CTA | `rosa_site_content` |
-| Shared logo/pre-footer media | Rosa Medical → Site & CTA → Media | `rosa_preview_media` |
-| Phone/email/address/Arabic address/WhatsApp | Rosa Medical → Business | `rosa_business_settings` |
-| Product names/descriptions/SKUs/variations/product images | WooCommerce → Products | WooCommerce product data |
-| Layout/CSS/responsive behavior/protected routes/business logic | Repository deployment | theme/plugin source |
+| Shared header/footer/CTA copy | Rosa Medical → Site & CTA | `rosa_site_content` |
+| Business contact values | Rosa Medical → Business | `rosa_business_settings` |
+| Shop interface copy | Rosa Medical → Shop | `rosa_shop_content` |
+| Product/catalogue truth | WooCommerce → Products | WooCommerce |
+| Layout/breakpoints/shell behavior | Repository deployment | child theme/core plugin |
 
-## Latest Homepage Elementor model
+## Homepage Elementor model
 
-English Home and Arabic Home each contain exactly these protected Rosa widgets in this order:
+English Home and Arabic Home each contain exactly these protected widgets in this order:
 
-1. **Rosa Home — Hero Carousel**
-2. **Rosa Home — Product Range**
-3. **Rosa Home — Comprehensive Plans**
-4. **Rosa Home — Securing Confidence**
-5. **Rosa Home — Direct Support**
-6. **Rosa Home — Client Success**
-7. **Rosa Home — Quotation CTA**
+1. **Rosa Home — Hero** (`rosa-home-hero`)
+2. **Rosa Home — Who We Are** (`rosa-home-who`)
+3. **Rosa Home — Featured Products** (`rosa-home-featured`)
+4. **Rosa Home — Feature Banner** (`rosa-home-feature-banner`)
+5. **Rosa Home — Latest Products** (`rosa-home-latest`)
+6. **Rosa Home — Promotions** (`rosa-home-promotions`)
+7. **Rosa Home — Why Rosa** (`rosa-home-why`)
+8. **Rosa Home — Catalogue Strip** (`rosa-home-proof`)
+9. **Rosa Home — Workflow** (`rosa-home-evidence`)
 
-The rendered structure deliberately mirrors the pinned latest Rosa custom frontend. The hero keeps four slides, desktop/mobile media, source focal points, 4.75-second autoplay, keyboard dots, pointer swipe/drag behavior, focus/visibility pauses and reduced-motion handling. The product-range gallery keeps the latest family order: Scissors, Cutters, Punches, Chisels, Knives.
+These widgets render the same `rosa-preview-*` markup used by the finished PHP template. Elementor exposes copy and approved page media; it does not expose the protected grid system, breakpoints, product records, business destinations or shell.
 
-Elementor controls expose copy and approved page-specific media only. Core DOM classes, layout, breakpoints, motion semantics, PDF links, business URLs and responsive rules remain code-owned so normal editing cannot accidentally redesign the page.
+### WooCommerce sections
 
-## Shared data remains dynamic
+`Rosa Home — Featured Products` and `Rosa Home — Latest Products` render live WooCommerce queries through the existing product-grid partial. Their headings/support copy are Elementor-editable, but product IDs/SKUs/cards are not serialized into the Elementor document.
 
-Do not copy shared values into Elementor widgets. The following remain global settings and update everywhere they are used:
+## About and Contact Elementor models
 
-- phone;
-- email;
-- English address;
-- Arabic address;
-- WhatsApp;
-- header/navigation/footer copy;
-- shared pre-footer CTA copy;
-- Shop interface copy.
+About remains seven widgets:
 
-For example, the Homepage Direct Support widget exposes only its labels/headline. Its WhatsApp and email destinations are resolved from Rosa Business settings at render time.
+1. page hero;
+2. who we are;
+3. statistics;
+4. information cards;
+5. feature banner;
+6. why Rosa;
+7. proof/family strip.
 
-The Contact page continues to use the existing contact-details/form-like UI with a `mailto:` action. This work does **not** add a server-side Contact backend or Elementor Pro.
+Contact remains three widgets:
 
-## Legacy structured options
+1. page hero;
+2. contact layout;
+3. map.
 
-These options remain preserved:
+The Contact form-like UI remains presentation/mailto only. No server-side submission backend and no Elementor Pro are introduced.
 
-- `rosa_home_content`
-- `rosa_about_content`
-- `rosa_contact_content`
+## Shared pre-footer CTA
 
-They are migration/rollback inputs, not second live page-body editors. There is no two-way synchronization with Elementor.
+The finished template renders one shared pre-footer CTA after the page body on Home, About and Contact. It is code/settings-owned, not an Elementor widget.
 
-The Homepage structured defaults now reflect the latest Rosa Home content model so a fresh migration produces the correct seven-widget document. Once the Elementor document exists, client edits live in Elementor and normal seeds do not overwrite them.
-
-## Homepage media
-
-The normal client preview seed idempotently imports the Rosa-owned source assets needed by the latest Home:
-
-- four desktop hero images;
-- four mobile hero images;
-- Plastic Surgery, Orthopedics, Maxillofacial, Orthodontics and Spine editorial images;
-- Securing Confidence image;
-- five technical catalogue PDFs.
-
-The exact five Homepage catalogue-cover files are copied byte-for-byte from the repository's read-only Rosa reference-media mount into the deterministic public uploads directory `wp-content/uploads/rosa-reference/homepage-covers/`. This preserves the four source SVG covers and the exact Punches WebP without requiring WordPress SVG Media Library support. The seed verifies the copied files by SHA-256 before continuing.
-
-Page-specific hero/editorial images are copied into Elementor media controls during a safe Home migration and can then be changed in Elementor. The five family cover files and family PDF destinations remain code/data-owned rather than editable layout controls. Old preview media keys and attachments remain preserved for rollback compatibility.
-
-## Initial migration and normal reseeding
-
-The Elementor migration is explicit and is not invoked by the routine Rosa preview seed.
-
-```bash
-bash wordpress/scripts/elementor-authoring-seed.sh
-```
-
-For About/Contact, the existing authoring-version lifecycle remains unchanged. Home adds a separate latest-parity marker:
+The authoring template therefore renders:
 
 ```text
-_rosa_elementor_home_parity_version = 1
+Elementor body
+→ shared Site/CTA pre-footer
+→ Rosa footer
 ```
 
-Safe Home behavior is:
+Changing `rosa_site_content` CTA fields must update this band without rewriting the Elementor document.
 
-```text
-never migrated                       -> seeded + Home parity 1
-old Home, exact stored seed baseline -> migrated_home_parity
-old Home, client edited              -> home_parity_manual_required (hard stop, no overwrite)
-already latest Home parity           -> skipped
-```
+## Protected authoring shell
 
-`home_parity_manual_required` means the existing Elementor Home has edits that cannot safely be mapped automatically onto the new structural topology. Review them explicitly. Do **not** use `--force` as a routine way around this protection.
-
-The ordinary content/media seed remains safe after migration:
-
-```bash
-bash wordpress/scripts/client-preview-seed.sh
-```
-
-It must not revert an Elementor page template or erase Elementor edits.
-
-### Force reset
-
-Only when an intentional destructive reset has been explicitly approved:
-
-```bash
-bash wordpress/scripts/elementor-authoring-seed.sh --force
-```
-
-`--force` rebuilds all six Elementor documents from Rosa migration sources and therefore destroys later Elementor edits. It is not part of normal latest-Home migration or verification.
-
-## Protected page shell
-
-The six authoring documents use:
+All six marketing documents use:
 
 ```text
 page-templates/rosa-elementor-authoring.php
 ```
 
-Elementor renders only the page body. The Rosa child theme still owns and renders:
+The theme still owns:
 
 - `<html lang>` and `dir`;
 - announcement/header/navigation/mobile drawer;
-- public language switch;
-- one `<main>` shell;
+- exactly one main public shell;
+- shared CTA;
 - footer;
-- protected Rosa styles/scripts.
+- preview/RTL/client JavaScript and CSS.
 
-About, Contact and pre-parity Home continue to receive the existing shared pre-footer CTA from the protected template. A Home carrying `_rosa_elementor_home_parity_version = 1` does **not** receive that extra legacy CTA because its source-matched seven-section body already ends with the latest Rosa quotation CTA. This prevents a duplicate band from appearing after the exact Home composition.
+`elementor-authoring.css` keeps Elementor layout-neutral around Rosa sections: full width, zero root gap/padding, no mobile flex wrapping and no wrapper height ownership. Do not weaken those safeguards.
 
 Do not switch these pages to Elementor Canvas or Elementor Header/Footer modes.
 
-## Latest Homepage design layer
+## Finished-template styles and behavior
 
-The current Home-specific parity layers are:
+The effective visual system comes from the original Rosa preview layers:
 
 ```text
-wordpress/wp-content/themes/rosa-medical-child/assets/css/latest-rosa-home.css
-wordpress/wp-content/themes/rosa-medical-child/assets/css/latest-rosa-home-fidelity.css
-wordpress/wp-content/themes/rosa-medical-child/assets/js/latest-rosa-home.js
+wordpress/wp-content/themes/rosa-medical-child/assets/css/tokens.css
+wordpress/wp-content/themes/rosa-medical-child/assets/css/base.css
+wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview.css
+wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview-media.css   # only when editable slot media exists
+wordpress/wp-content/themes/rosa-medical-child/assets/css/elementor-authoring.css
+wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview-rtl.css     # Arabic
+wordpress/wp-content/themes/rosa-medical-child/assets/js/client-preview.js
 ```
 
-They load only after the safe Home parity marker exists on EN Home or the paired AR Home. `latest-rosa-home.css` ports the source Home visual system. `latest-rosa-home-fidelity.css` is the final-loaded source-cascade correction layer for the catalogue-cover rail and related late overrides. Both load after legacy preview/RTL/Elementor wrapper CSS so obsolete MedicaShop geometry cannot become the effective Homepage layout.
+The `latest-rosa-home*` layer belongs to the superseded custom-frontend experiment and is not part of the approved runtime target.
 
-The generic Elementor wrapper safeguard remains in `elementor-authoring.css`: zero root gap/padding, full width and non-wrapping vertical flow. Do not remove or weaken that fix.
+## Home media
+
+The active finished-template Home slots are:
+
+```text
+home-hero-01
+home-who-01
+home-feature-01
+home-promo-01
+home-promo-02
+home-promo-03
+home-promo-04
+home-why-01
+home-evidence-01
+prefooter-person-01
+```
+
+Old/superseded stored media keys are tolerated so existing data is not destructively removed, but they are not used to define the finished Home visual topology.
+
+The normal preview seed merges media state rather than replacing it and does not invoke Elementor migration.
+
+## Content options and rollback data
+
+These structured options remain preserved:
+
+```text
+rosa_home_content
+rosa_about_content
+rosa_contact_content
+rosa_site_content
+rosa_shop_content
+rosa_preview_media
+```
+
+For migrated pages, Elementor is the live page-body editor. Structured Home/About/Contact options are seed/rollback inputs rather than a second live body editor.
+
+When current settings are saved, already-stored fields from superseded schemas are preserved rather than destructively erased. New unknown submitted fields are still rejected.
+
+## Safe migration
+
+Run the explicit Elementor authoring migration with:
+
+```bash
+bash wordpress/scripts/elementor-authoring-seed.sh
+```
+
+The general authoring schema remains version `2`. Home has an independent target-parity marker:
+
+```text
+_rosa_elementor_home_parity_version = 2
+```
+
+Safe Home behavior:
+
+```text
+never migrated                         -> seeded + Home parity 2
+parity 1 + exact stored seed baseline -> migrated_home_parity + parity 2
+parity 1 + client edits                -> home_parity_manual_required, no write
+already parity 2                       -> skipped
+```
+
+Do not use `--force` to bypass `home_parity_manual_required`. That status exists specifically to protect edited Elementor documents.
+
+Routine preview seeding remains separate:
+
+```bash
+bash wordpress/scripts/client-preview-seed.sh
+```
+
+It must not change an Elementor page back to the legacy PHP template and must not erase Elementor edits.
+
+### Intentional force reset
+
+Only after explicit approval for a destructive reset:
+
+```bash
+bash wordpress/scripts/elementor-authoring-seed.sh --force
+```
+
+This rebuilds the six Elementor documents from seed sources and destroys later Elementor body edits.
 
 ## Rollback
 
-Rollback remains non-destructive. If a migrated page must temporarily return to its older PHP renderer, change only that page template:
+A page can temporarily return to its original PHP renderer by changing only its page template:
 
 ```text
 Home    -> page-templates/client-preview-home.php
@@ -175,34 +221,31 @@ About   -> page-templates/client-preview-about.php
 Contact -> page-templates/client-preview-contact.php
 ```
 
-Do **not** delete:
-
-- `_elementor_data`
-- `_rosa_elementor_authoring_version`
-- `_rosa_elementor_seed_hash`
-- `_rosa_elementor_home_parity_version`
-- `rosa_home_content`
-- `rosa_about_content`
-- `rosa_contact_content`
-- Rosa media options/attachments.
+Do not delete Elementor data, migration hashes, parity metadata, structured options or media attachments as part of rollback.
 
 ## Verification
 
-Latest Home source/model contracts:
+Focused source/authoring contracts:
 
 ```bash
-bash wordpress/scripts/tests/latest-rosa-home-reference-contract.test.sh
-php wordpress/scripts/tests/latest-rosa-home-elementor-contract.test.php
-php wordpress/scripts/tests/elementor-home-parity-migration.test.php
+bash wordpress/scripts/tests/medicashop-elementor-reference-contract.test.sh
+php wordpress/scripts/tests/content-settings.test.php
+php wordpress/scripts/tests/media-settings.test.php
+php wordpress/scripts/tests/elementor-authoring-integration.test.php
+php wordpress/scripts/tests/medicashop-elementor-home-contract.test.php
 php wordpress/scripts/tests/elementor-authoring-seed-contract.test.php
+php wordpress/scripts/tests/elementor-home-parity-migration.test.php
+bash wordpress/scripts/tests/elementor-authoring-theme-contract.test.sh
 ```
 
-Runtime/editor contracts after migration:
+Runtime/editor contracts:
 
 ```bash
 bash wordpress/scripts/elementor-authoring-seed.sh
 bash wordpress/scripts/tests/elementor-authoring-runtime.test.sh
 bash wordpress/scripts/tests/elementor-authoring-editor-links.test.sh
+bash wordpress/scripts/tests/client-preview-content-zero-drift.test.sh
+bash wordpress/scripts/tests/client-preview-content-mutation.test.sh
 bash wordpress/scripts/tests/elementor-authoring-mutation.test.sh
 ```
 
@@ -210,9 +253,11 @@ Browser acceptance:
 
 ```bash
 node wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localhost:8088/
-node wordpress/scripts/tests/latest-rosa-home-parity.test.mjs http://localhost:8088/
+node wordpress/scripts/tests/medicashop-elementor-home-fidelity.test.mjs http://localhost:8088/
 node wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs http://localhost:8088/
 ```
+
+The Home fidelity gate retains the measured finished-template thresholds rather than weakening them for Elementor: target header/rail/hero dimensions, 4/5-column desktop product grids, tablet density, two-column mobile product grids, promo geometry, shared CTA/footer placement and mobile drawer geometry.
 
 Full verification:
 
@@ -220,46 +265,54 @@ Full verification:
 bash wordpress/scripts/client-preview-runtime-verify.sh
 ```
 
-The old `client-preview-home-fidelity.test.mjs` is no longer the Home visual acceptance gate because it encodes the obsolete MedicaShop geometry. Do not weaken the replacement Rosa parity assertions to make a regression pass.
+Expected final line only when every preceding gate passes:
 
-## Side-by-side screenshot acceptance
-
-Capture matched live-reference and local WordPress screenshots at 1440, 1280, 1024, 768, 431, 390 and 360 pixels for both EN and AR:
-
-```bash
-node wordpress/scripts/latest-rosa-home-parity-capture.mjs \
-  https://rosamedical.org/ \
-  http://localhost:8088/ \
-  artifacts/latest-rosa-home-parity
+```text
+PASS: Rosa WordPress runtime matches the finished template with Elementor authoring, bilingual routes, editable content and catalogue regressions intact
 ```
 
-The command uses reduced motion and produces paired **full-page and hero** PNGs for the live reference and local WordPress build. Review them side-by-side. Reject material drift in hero proportions/crop, five-family strip, typography hierarchy, spacing, clinical media crop, confidence split, black Direct Support band, assurance cards, quotation CTA or RTL composition.
+## Side-by-side visual capture
 
-If the live production page differs materially from the pinned custom frontend snapshot, document that discrepancy and treat the live production page as the final visual acceptance authority before changing the WordPress parity implementation.
+After the full verifier passes, capture the deployed finished template and local Elementor implementation at matched EN/AR viewports:
+
+```bash
+node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
+  https://rosamedical.org/ \
+  http://localhost:8088/
+```
+
+Output:
+
+```text
+artifacts/medicashop-elementor-parity/reference/
+artifacts/medicashop-elementor-parity/local/
+```
+
+The utility captures 1440×900, 1280×800, 1024×768, 768×1024, 431×932, 390×844 and 360×800 for EN and AR, with reduced motion. It writes full-page captures, Home hero captures when the target marker exists, and page metrics.
+
+Automated tests are not sufficient for final visual acceptance. Compare matched screenshots and reject material differences in section topology, shell dimensions, hero crop/height, product-grid density, promotional mosaic, typography, shared CTA, footer, responsive stacking, mobile drawer and RTL.
 
 ## Manual Elementor acceptance
 
-Before calling the latest Homepage parity phase complete:
+Before production readiness:
 
-1. EN Home: edit **Rosa Home — Product Range → Heading**, Update, verify frontend, restore.
-2. AR Home: edit the same field, Update, verify RTL frontend, restore.
-3. EN Home Hero Carousel: replace one slide image, verify desktop/mobile output, restore.
-4. EN Home Securing Confidence: edit text and image, verify, restore.
-5. Run `client-preview-seed.sh` and normal `elementor-authoring-seed.sh`; confirm edits are never silently reset.
-6. Confirm About and Contact still open their Elementor documents.
-7. Confirm Rosa Medical → Shop, Site & CTA, and Business still open their protected structured settings.
+1. edit an EN Home text field and verify the frontend;
+2. edit an AR Home text field and verify RTL output;
+3. replace one Home image and verify the frontend;
+4. run routine preview and Elementor seeds and confirm those edits remain;
+5. verify About and Contact still open/edit independently;
+6. verify Featured/Latest cards still follow WooCommerce rather than Elementor data;
+7. verify Site/CTA and Business edits still update their centralized surfaces.
 
-## What not to do
+Restore temporary test edits afterward.
 
-- Do not use Elementor Pro.
-- Do not rebuild the Rosa header/footer in Elementor.
-- Do not make Shop/product templates ordinary Elementor pages.
-- Do not move WooCommerce product/catalogue truth into Elementor.
-- Do not expose protected CSS classes, breakpoints, business destinations, route logic or quotation behavior as client controls.
-- Do not use `--force` to bypass `home_parity_manual_required` without explicit intentional reset approval.
-- Do not delete migration metadata or rollback options during normal operation.
-- Do not replace production database/uploads when deploying code.
+## Production boundary
 
-## Production/deployment boundary
+No Hostinger or production deployment is authorized by this conversion work. Deployment starts only after:
 
-Theme/plugin changes are deployed separately through the controlled Hostinger workflow. This latest-site parity work does **not** authorize Hostinger or production changes. Production deployment begins only after the Rosa-specific full verifier, matched screenshot review and manual Elementor acceptance are green, followed by separate explicit authorization.
+1. complete local verifier PASS;
+2. matched screenshot review PASS;
+3. manual Elementor editing acceptance PASS;
+4. separate explicit production authorization.
+
+Do not replace production database/uploads while deploying code.
