@@ -17,3 +17,22 @@ html[dir="rtl"] .rosa-preview-contact__details span {
   letter-spacing: 0;
   text-transform: none;
 }
+
+/* Preserve the finished-template logical spacing for the About introduction.
+ * The copy sits on the inline-start side in LTR and mirrors cleanly in RTL. */
+html[dir="rtl"] [data-preview-who-we-are] .rosa-preview-split__grid > div:last-child {
+  padding-inline-start: 0;
+  padding-inline-end: 74px;
+}
+
+@media (max-width: 64rem) {
+  html[dir="rtl"] [data-preview-who-we-are] .rosa-preview-split__grid > div:last-child {
+    padding-inline-end: 42px;
+  }
+}
+
+@media (max-width: 47.9375rem) {
+  html[dir="rtl"] [data-preview-who-we-are] .rosa-preview-split__grid > div:last-child {
+    padding-inline-end: 0;
+  }
+}
