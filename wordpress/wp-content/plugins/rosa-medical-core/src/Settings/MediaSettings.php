@@ -14,7 +14,14 @@ final class MediaSettings
         return [
             'logo',
 
-            // Latest Rosa Homepage parity media. These are the active Home slots.
+            // Active media slots for the finished MedicaShop-derived Rosa template.
+            'home-hero-01', 'home-who-01', 'home-feature-01',
+            'home-promo-01', 'home-promo-02', 'home-promo-03', 'home-promo-04',
+            'home-why-01', 'home-evidence-01', 'prefooter-person-01',
+            'about_procurement', 'about_hospitals', 'about_international',
+
+            // Superseded latest-custom Home keys remain accepted so existing
+            // stored attachment references are never destroyed by a settings save.
             'home-hero-01-desktop', 'home-hero-01-mobile',
             'home-hero-02-desktop', 'home-hero-02-mobile',
             'home-hero-03-desktop', 'home-hero-03-mobile',
@@ -24,12 +31,6 @@ final class MediaSettings
             'home-specialty-spine', 'home-securing-confidence',
             'catalogue-pdf-scissors', 'catalogue-pdf-cutters', 'catalogue-pdf-punches',
             'catalogue-pdf-chisels', 'catalogue-pdf-knives',
-
-            // Previous preview slots remain valid for rollback and existing attachments.
-            'home-hero-01', 'home-who-01', 'home-feature-01',
-            'home-promo-01', 'home-promo-02', 'home-promo-03', 'home-promo-04',
-            'home-why-01', 'home-evidence-01', 'prefooter-person-01',
-            'about_procurement', 'about_hospitals', 'about_international',
         ];
     }
 
