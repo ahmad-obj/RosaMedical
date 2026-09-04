@@ -40,6 +40,44 @@ wp eval '
   }
 '
 
+# Copy the exact latest Rosa Homepage family covers byte-for-byte into a
+# deterministic public uploads directory. This avoids WordPress SVG upload
+# restrictions while keeping the source files authoritative and reproducible.
+wp eval '
+  $upload = wp_upload_dir();
+  if (! empty($upload["error"])) {
+    WP_CLI::error("Could not resolve WordPress uploads directory: " . $upload["error"]);
+  }
+  $sourceRoot = "/rosa-reference-media/families/homepage-covers";
+  $targetDir = trailingslashit($upload["basedir"]) . "rosa-reference/homepage-covers";
+  if (! wp_mkdir_p($targetDir)) {
+    WP_CLI::error("Could not create Rosa family cover directory: {$targetDir}");
+  }
+  $files = [
+    "scissors-family-cover-full.svg",
+    "cutters-family-cover-full.svg",
+    "punches-family-cover.webp",
+    "chisels-family-cover-full.svg",
+    "knives-family-cover-full.svg",
+  ];
+  foreach ($files as $file) {
+    $source = trailingslashit($sourceRoot) . $file;
+    $target = trailingslashit($targetDir) . $file;
+    if (! is_file($source)) {
+      WP_CLI::error("Missing Rosa family cover source: {$source}");
+    }
+    $sourceHash = hash_file("sha256", $source);
+    $targetHash = is_file($target) ? hash_file("sha256", $target) : "";
+    if ($targetHash !== $sourceHash && ! copy($source, $target)) {
+      WP_CLI::error("Could not copy Rosa family cover: {$file}");
+    }
+    if (! is_file($target) || hash_file("sha256", $target) !== $sourceHash) {
+      WP_CLI::error("Rosa family cover copy verification failed: {$file}");
+    }
+  }
+  WP_CLI::success("Latest Rosa Homepage family covers copied exactly.");
+'
+
 import_media(){
   local key="$1"
   local rel="$2"
