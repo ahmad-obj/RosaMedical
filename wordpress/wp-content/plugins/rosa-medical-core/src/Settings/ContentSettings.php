@@ -36,7 +36,26 @@ final class ContentSettings
             return [];
         }
 
+        $fields = is_array($definition['fields'] ?? null) ? $definition['fields'] : [];
+        $option = (string) ($definition['option'] ?? '');
+        $existing = $option !== '' ? get_option($option, []) : [];
         $clean = [];
+
+        // Preserve already-stored fields from superseded schemas so changing a
+        // current settings field cannot destructively erase rollback data. New
+        // unknown submitted fields are still rejected below.
+        foreach (['en', 'ar'] as $locale) {
+            $storedLocale = is_array($existing) && is_array($existing[$locale] ?? null)
+                ? $existing[$locale]
+                : [];
+            foreach ($storedLocale as $key => $value) {
+                if (! is_string($key) || array_key_exists($key, $fields) || ! is_scalar($value)) {
+                    continue;
+                }
+                $clean[$locale][$key] = (string) $value;
+            }
+        }
+
         foreach (['en', 'ar'] as $locale) {
             $values = $input[$locale] ?? null;
             if (! is_array($values)) {
@@ -46,7 +65,7 @@ final class ContentSettings
                 if (! is_string($key) || ! is_scalar($value)) {
                     continue;
                 }
-                $field = $definition['fields'][$key] ?? null;
+                $field = $fields[$key] ?? null;
                 if (! is_array($field)) {
                     continue;
                 }
