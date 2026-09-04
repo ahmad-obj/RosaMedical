@@ -4,176 +4,169 @@ declare(strict_types=1);
 
 namespace RosaMedical\Core\Elementor\Widgets;
 
-final class HomeHeroWidget extends AbstractRosaSectionWidget
+final class HomeHeroCarouselWidget extends AbstractRosaSectionWidget
 {
-    public function get_name(): string { return 'rosa-home-hero'; }
-    public function get_title(): string { return 'Rosa Home — Hero'; }
+    public function get_name(): string { return 'rosa-home-hero-carousel'; }
+    public function get_title(): string { return 'Rosa Home — Hero Carousel'; }
+
     protected function register_controls(): void
     {
-        $this->beginContentSection('Hero');
-        $this->addText('hero_eyebrow', 'Eyebrow', 'Rosa Medical');
-        $this->addText('hero_title', 'Heading', 'Surgical instruments for professional procurement.');
-        $this->addTextarea('hero_body', 'Body', 'Explore Rosa instrument families and contact our team for catalogue and quotation support.');
-        $this->addText('hero_button', 'Button label', 'Browse products');
-        $this->addMedia('image', 'Hero image');
+        $this->beginContentSection('Hero carousel');
+        $this->addText('hero_1_eyebrow', 'Slide 1 eyebrow', 'Medical instruments supplier');
+        $this->addText('hero_1_title', 'Slide 1 heading', 'Precision instruments. Procurement made clear.');
+        $this->addTextarea('hero_1_body', 'Slide 1 body', 'A composed catalogue and quotation experience for hospitals, distributors and procurement teams.');
+        $this->addMedia('desktop_1', 'Slide 1 desktop image');
+        $this->addMedia('mobile_1', 'Slide 1 mobile image');
+
+        $this->addText('hero_2_eyebrow', 'Slide 2 eyebrow', 'Structured product discovery');
+        $this->addText('hero_2_title', 'Slide 2 heading', 'A clearer view of the instruments you need.');
+        $this->addTextarea('hero_2_body', 'Slide 2 body', 'Browse focused instrument families, review product codes and variants, and carry the right details into your inquiry.');
+        $this->addMedia('desktop_2', 'Slide 2 desktop image');
+        $this->addMedia('mobile_2', 'Slide 2 mobile image');
+
+        $this->addText('hero_3_eyebrow', 'Slide 3 eyebrow', 'Instrument selection');
+        $this->addText('hero_3_title', 'Slide 3 heading', 'Clearer instrument selection, from the start.');
+        $this->addTextarea('hero_3_body', 'Slide 3 body', 'Move from family browsing to product codes, configurations and quantities in one composed quotation path.');
+        $this->addMedia('desktop_3', 'Slide 3 desktop image');
+        $this->addMedia('mobile_3', 'Slide 3 mobile image');
+
+        $this->addText('hero_4_eyebrow', 'Slide 4 eyebrow', 'Catalogue to quotation');
+        $this->addText('hero_4_title', 'Slide 4 heading', 'From catalogue detail to one organised request.');
+        $this->addTextarea('hero_4_body', 'Slide 4 body', 'Identify the instrument family, review available configurations, and bring quantities together without losing product context.');
+        $this->addMedia('desktop_4', 'Slide 4 desktop image');
+        $this->addMedia('mobile_4', 'Slide 4 mobile image');
         $this->end_controls_section();
     }
-    protected function render(): void { $this->renderSection('hero', ['image']); }
+
+    protected function render(): void
+    {
+        $this->renderSection('latest-home-hero', [
+            'desktop_1', 'mobile_1', 'desktop_2', 'mobile_2',
+            'desktop_3', 'mobile_3', 'desktop_4', 'mobile_4',
+        ]);
+    }
 }
 
-final class HomeWhoWidget extends AbstractRosaSectionWidget
+final class HomeFamilyDiscoveryWidget extends AbstractRosaSectionWidget
 {
-    public function get_name(): string { return 'rosa-home-who'; }
-    public function get_title(): string { return 'Rosa Home — Who We Are'; }
+    public function get_name(): string { return 'rosa-home-family-discovery'; }
+    public function get_title(): string { return 'Rosa Home — Product Range'; }
+
     protected function register_controls(): void
     {
-        $this->beginContentSection('Who We Are');
-        $this->addText('who_eyebrow', 'Eyebrow', 'Who we are');
-        $this->addText('who_title', 'Heading', 'Expect more than an instrument catalogue.');
-        $this->addTextarea('who_body', 'Body', 'Rosa helps professional buyers identify instrument families, confirm catalogue references and prepare a clear quotation request.');
-        $this->addText('who_button', 'Button label', 'Discover Rosa');
-        $this->addText('stat_1_value', 'Statistic 1 value', '5');
-        $this->addText('stat_1_label', 'Statistic 1 label', 'Product families');
-        $this->addText('stat_2_value', 'Statistic 2 value', '5');
-        $this->addText('stat_2_label', 'Statistic 2 label', 'Catalogue PDFs');
-        $this->addText('stat_3_value', 'Statistic 3 value', '2');
-        $this->addText('stat_3_label', 'Statistic 3 label', 'Preview languages');
+        $this->beginContentSection('Product range');
+        $this->addText('family_title', 'Heading', 'Our range of products');
+        $this->end_controls_section();
+    }
+
+    protected function render(): void { $this->renderSection('latest-home-family-discovery'); }
+}
+
+final class HomeComprehensiveWidget extends AbstractRosaSectionWidget
+{
+    public function get_name(): string { return 'rosa-home-comprehensive'; }
+    public function get_title(): string { return 'Rosa Home — Comprehensive Plans'; }
+
+    protected function register_controls(): void
+    {
+        $this->beginContentSection('Comprehensive Plans');
+        $this->addText('comprehensive_title', 'Heading', 'Comprehensive Plans');
+        $this->addTextarea('comprehensive_body', 'Body', 'Rosa offers comprehensive surgical and dental instrument plans engineered to support clinical excellence across multiple specialties.');
+        $this->addText('comprehensive_lead_specialty', 'Lead specialty', 'Plastic Surgery');
+        $this->addText('comprehensive_specialty_1', 'Specialty 1', 'Orthopedics');
+        $this->addText('comprehensive_specialty_2', 'Specialty 2', 'Maxillofacial');
+        $this->addText('comprehensive_specialty_3', 'Specialty 3', 'Orthodontics');
+        $this->addText('comprehensive_specialty_4', 'Specialty 4', 'Spine');
+        $this->addMedia('lead_image', 'Lead specialty image');
+        $this->addMedia('specialty_1_image', 'Specialty 1 image');
+        $this->addMedia('specialty_2_image', 'Specialty 2 image');
+        $this->addMedia('specialty_3_image', 'Specialty 3 image');
+        $this->addMedia('specialty_4_image', 'Specialty 4 image');
+        $this->end_controls_section();
+    }
+
+    protected function render(): void
+    {
+        $this->renderSection('latest-home-comprehensive', [
+            'lead_image', 'specialty_1_image', 'specialty_2_image', 'specialty_3_image', 'specialty_4_image',
+        ]);
+    }
+}
+
+final class HomeConfidenceWidget extends AbstractRosaSectionWidget
+{
+    public function get_name(): string { return 'rosa-home-confidence'; }
+    public function get_title(): string { return 'Rosa Home — Securing Confidence'; }
+
+    protected function register_controls(): void
+    {
+        $this->beginContentSection('Securing Confidence');
+        $this->addText('confidence_title', 'Heading', 'Securing Confidence');
+        $this->addTextarea('confidence_body', 'Body', 'Rosa Medical Devices stands as a trusted partner in the GCC medical trading sector, dedicated to delivering uncompromising quality and precision.');
+        $this->addText('confidence_image_alt', 'Image alt text', 'Medical instrument quality and precision');
         $this->addMedia('image', 'Section image');
         $this->end_controls_section();
     }
-    protected function render(): void { $this->renderSection('home-who', ['image']); }
+
+    protected function render(): void { $this->renderSection('latest-home-confidence', ['image']); }
 }
 
-final class HomeFeaturedWidget extends AbstractRosaSectionWidget
+final class HomeContactBandWidget extends AbstractRosaSectionWidget
 {
-    public function get_name(): string { return 'rosa-home-featured'; }
-    public function get_title(): string { return 'Rosa Home — Featured Products'; }
+    public function get_name(): string { return 'rosa-home-contact-band'; }
+    public function get_title(): string { return 'Rosa Home — Direct Support'; }
+
     protected function register_controls(): void
     {
-        $this->beginContentSection('Featured Products Support');
-        $this->addText('featured_title', 'Section heading', 'Featured Products');
-        $this->addText('benefit_1_title', 'Benefit 1 heading', 'Catalogue support');
-        $this->addText('benefit_1_body', 'Benefit 1 text', 'Identify the right reference');
-        $this->addText('benefit_2_title', 'Benefit 2 heading', 'Quotation route');
-        $this->addText('benefit_2_body', 'Benefit 2 text', 'Ask about price and supply');
-        $this->addText('benefit_3_title', 'Benefit 3 heading', 'Five families');
-        $this->addText('benefit_3_body', 'Benefit 3 text', 'Browse instrument ranges');
+        $this->beginContentSection('Direct Support');
+        $this->addText('contact_eyebrow', 'Eyebrow', 'Direct support');
+        $this->addText('contact_title', 'Heading', 'Get in Touch Now');
+        $this->addText('contact_whatsapp_label', 'WhatsApp label', 'WhatsApp Chat');
+        $this->addText('contact_email_label', 'Email label', 'Email');
         $this->end_controls_section();
     }
-    protected function render(): void { $this->renderSection('home-featured'); }
+
+    protected function render(): void { $this->renderSection('latest-home-contact-band'); }
 }
 
-final class HomeFeatureBannerWidget extends AbstractRosaSectionWidget
+final class HomeAssuranceWidget extends AbstractRosaSectionWidget
 {
-    public function get_name(): string { return 'rosa-home-feature-banner'; }
-    public function get_title(): string { return 'Rosa Home — Feature Banner'; }
+    public function get_name(): string { return 'rosa-home-assurance'; }
+    public function get_title(): string { return 'Rosa Home — Client Success'; }
+
     protected function register_controls(): void
     {
-        $this->beginContentSection('Feature Banner');
-        $this->addText('feature_eyebrow', 'Eyebrow', 'Procurement support');
-        $this->addText('feature_title', 'Heading', 'From catalogue reference to a clear quotation request.');
-        $this->addTextarea('feature_body', 'Body', 'Browse instruments by family and share the exact references your procurement team needs.');
-        $this->addText('feature_button', 'Button label', 'Contact us');
-        $this->addMedia('image', 'Banner image');
+        $this->beginContentSection('Client Success');
+        $this->addText('assurance_title', 'Heading', 'Services Assure our Clients Success');
+        $this->addText('assurance_badge', 'Badge', 'SACS');
+        $this->addText('assurance_1_title', 'Card 1 heading', 'Customization');
+        $this->addTextarea('assurance_1_body', 'Card 1 body', 'We offer and deliver tailored, high-precision surgical and dental instruments customized precisely to meet your clinical specifications and unique procedural requirements.');
+        $this->addText('assurance_2_title', 'Card 2 heading', 'Compliance');
+        $this->addTextarea('assurance_2_body', 'Card 2 body', 'We ensure complete regulatory compliance through strict adherence to Saudi SFDA standards, helping guarantee safe and authorized medical products.');
+        $this->addText('assurance_3_title', 'Card 3 heading', 'Quality Standards');
+        $this->addTextarea('assurance_3_body', 'Card 3 body', 'We maintain exceptional quality standards, sourcing ISO-certified, surgical-grade instruments built for precision, durability and safety for medical professionals.');
+        $this->addText('assurance_4_title', 'Card 4 heading', 'Supply Chain');
+        $this->addTextarea('assurance_4_body', 'Card 4 body', 'We ensure reliable, efficient supply chain management, offering seamless import clearance and timely delivery of critical medical and dental instruments directly to our customers.');
         $this->end_controls_section();
     }
-    protected function render(): void { $this->renderSection('home-feature', ['image']); }
+
+    protected function render(): void { $this->renderSection('latest-home-assurance'); }
 }
 
-final class HomeLatestWidget extends AbstractRosaSectionWidget
+final class HomeQuotationWidget extends AbstractRosaSectionWidget
 {
-    public function get_name(): string { return 'rosa-home-latest'; }
-    public function get_title(): string { return 'Rosa Home — Latest Products'; }
-    protected function register_controls(): void
-    {
-        $this->beginContentSection('Latest Products');
-        $this->addText('latest_title', 'Section heading', 'Latest Products');
-        $this->end_controls_section();
-    }
-    protected function render(): void { $this->renderSection('home-latest'); }
-}
+    public function get_name(): string { return 'rosa-home-quotation'; }
+    public function get_title(): string { return 'Rosa Home — Quotation CTA'; }
 
-final class HomePromotionsWidget extends AbstractRosaSectionWidget
-{
-    public function get_name(): string { return 'rosa-home-promotions'; }
-    public function get_title(): string { return 'Rosa Home — Promotions'; }
     protected function register_controls(): void
     {
-        $this->beginContentSection('Promotion Tiles');
-        $this->addText('promo_1_title', 'Tile 1 heading', 'Surgical knives');
-        $this->addText('promo_1_body', 'Tile 1 text', 'Browse family references');
-        $this->addText('promo_2_title', 'Tile 2 heading', 'Precision scissors');
-        $this->addText('promo_2_body', 'Tile 2 text', 'Straight and curved options');
-        $this->addText('promo_3_title', 'Tile 3 heading', 'Punches and chisels');
-        $this->addText('promo_3_body', 'Tile 3 text', 'Identify the instrument needed');
-        $this->addText('promo_4_title', 'Tile 4 heading', 'Five instrument catalogues');
-        $this->addText('promo_4_body', 'Tile 4 text', 'Start with the right family');
-        $this->addMedia('image_1', 'Tile 1 image');
-        $this->addMedia('image_2', 'Tile 2 image');
-        $this->addMedia('image_3', 'Tile 3 image');
-        $this->addMedia('image_4', 'Tile 4 image');
+        $this->beginContentSection('Quotation CTA');
+        $this->addText('quotation_eyebrow', 'Eyebrow', 'Request a quotation');
+        $this->addText('quotation_title', 'Heading', 'Prepare your instruments inquiry.');
+        $this->addTextarea('quotation_body', 'Body', 'Build a structured product list and send one clear request to Rosa Medical.');
+        $this->addText('quotation_button', 'Button label', 'Request a Quote');
         $this->end_controls_section();
     }
-    protected function render(): void { $this->renderSection('home-promos', ['image_1', 'image_2', 'image_3', 'image_4']); }
-}
 
-final class HomeWhyWidget extends AbstractRosaSectionWidget
-{
-    public function get_name(): string { return 'rosa-home-why'; }
-    public function get_title(): string { return 'Rosa Home — Why Rosa'; }
-    protected function register_controls(): void
-    {
-        $this->beginContentSection('Why Rosa');
-        $this->addText('why_eyebrow', 'Eyebrow', 'ROSA');
-        $this->addText('why_title', 'Heading', 'Support built around instrument procurement');
-        $this->addText('why_1_title', 'Card 1 heading', 'Clear references');
-        $this->addTextarea('why_1_body', 'Card 1 text', 'Work with family names and product references.');
-        $this->addText('why_2_title', 'Card 2 heading', 'Exact configurations');
-        $this->addTextarea('why_2_body', 'Card 2 text', 'Review the real options available for each instrument.');
-        $this->addText('why_3_title', 'Card 3 heading', 'Direct support');
-        $this->addTextarea('why_3_body', 'Card 3 text', 'Share requirements for quotation support.');
-        $this->addMedia('image', 'Section image');
-        $this->end_controls_section();
-    }
-    protected function render(): void { $this->renderSection('home-why', ['image']); }
-}
-
-final class HomeProofWidget extends AbstractRosaSectionWidget
-{
-    public function get_name(): string { return 'rosa-home-proof'; }
-    public function get_title(): string { return 'Rosa Home — Catalogue Strip'; }
-    protected function register_controls(): void
-    {
-        $this->beginContentSection('Catalogue Strip');
-        $this->addText('proof_1', 'Label 1', 'Knives');
-        $this->addText('proof_2', 'Label 2', 'Scissors');
-        $this->addText('proof_3', 'Label 3', 'Punches');
-        $this->addText('proof_4', 'Label 4', 'Chisels');
-        $this->addText('proof_5', 'Label 5', 'Cutters');
-        $this->addText('proof_6', 'Label 6', 'Catalogues');
-        $this->end_controls_section();
-    }
-    protected function render(): void { $this->renderSection('home-proof'); }
-}
-
-final class HomeEvidenceWidget extends AbstractRosaSectionWidget
-{
-    public function get_name(): string { return 'rosa-home-evidence'; }
-    public function get_title(): string { return 'Rosa Home — Workflow'; }
-    protected function register_controls(): void
-    {
-        $this->beginContentSection('Workflow');
-        $this->addText('evidence_eyebrow', 'Eyebrow', 'A clear workflow');
-        $this->addText('evidence_title', 'Heading', 'Turn an instrument need into a clear procurement request.');
-        $this->addTextarea('evidence_body', 'Body', 'Three simple steps help our team understand exactly what you need.');
-        $this->addText('evidence_1_title', 'Step 1 heading', 'Identify the family');
-        $this->addTextarea('evidence_1_body', 'Step 1 text', 'Start with the instrument type you need.');
-        $this->addText('evidence_2_title', 'Step 2 heading', 'Share the reference');
-        $this->addTextarea('evidence_2_body', 'Step 2 text', 'Send the available code or configuration.');
-        $this->addText('evidence_3_title', 'Step 3 heading', 'Request a quotation');
-        $this->addTextarea('evidence_3_body', 'Step 3 text', 'Contact Rosa for procurement support.');
-        $this->addMedia('image', 'Workflow image');
-        $this->end_controls_section();
-    }
-    protected function render(): void { $this->renderSection('home-evidence', ['image']); }
+    protected function render(): void { $this->renderSection('latest-home-quotation'); }
 }
