@@ -49,7 +49,10 @@ expectSame('Catalogues', ContentSettings::get('home', 'proof_6', 'en'), 'target 
 expectSame('Turn an instrument need into a clear procurement request.', ContentSettings::get('home', 'evidence_title', 'en'), 'target Home evidence title missing');
 
 $GLOBALS['rosa_test_options']['rosa_home_content'] = [
-    'en' => ['hero_title' => 'Changed safely'],
+    'en' => [
+        'hero_title' => 'Changed safely',
+        'family_title' => 'Preserved superseded range title',
+    ],
     'ar' => [],
 ];
 expectSame('Changed safely', ContentSettings::get('home', 'hero_title', 'en'), 'stored English value must win');
@@ -67,7 +70,8 @@ $clean = ContentSettings::sanitizeSection('home', [
 ]);
 expectSame('Clean title', $clean['en']['hero_title'], 'text fields are sanitized');
 expectSame("Line one\nLine two", $clean['en']['evidence_body'], 'textarea fields preserve line breaks');
-expectSame(false, isset($clean['en']['not_allowed']), 'unknown submitted keys are discarded');
+expectSame('Preserved superseded range title', $clean['en']['family_title'] ?? null, 'stored superseded fields survive current settings saves');
+expectSame(false, isset($clean['en']['not_allowed']), 'new unknown submitted keys are discarded');
 expectSame('عنوان', $clean['ar']['hero_title'], 'Arabic is sanitized independently');
 
 fwrite(STDOUT, "PASS: ContentSettings finished-template Home contract\n");
