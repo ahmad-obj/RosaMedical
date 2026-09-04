@@ -5,14 +5,18 @@ import { createRequire } from 'node:module';
 const require = createRequire(new URL('../../apps/web/package.json', import.meta.url));
 const { chromium } = require('@playwright/test');
 
-const referenceBase = new URL(process.argv[2] || 'https://rosamedical.org/');
-const localBase = new URL(process.argv[3] || 'http://localhost:8088/');
+const templateBase = new URL(process.argv[2] || 'http://localhost:3000/');
+const wordpressBase = new URL(process.argv[3] || 'http://localhost:8088/');
 const outputDir = path.resolve(process.argv[4] || 'artifacts/latest-rosa-home-parity');
 const viewports = [[1440, 900], [1280, 800], [1024, 768], [768, 1024], [431, 932], [390, 844], [360, 800]];
 const locales = [
   { name: 'en', path: '/' },
   { name: 'ar', path: '/ar/' },
 ];
+
+if (['rosamedical.org', 'www.rosamedical.org'].includes(templateBase.hostname)) {
+  throw new Error('rosamedical.org is the deployment target, not the template parity reference');
+}
 
 await fs.mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -66,12 +70,12 @@ async function capture(base, sourceName, locale, width, height) {
 try {
   for (const locale of locales) {
     for (const [width, height] of viewports) {
-      await capture(referenceBase, 'reference', locale, width, height);
-      await capture(localBase, 'wordpress', locale, width, height);
+      await capture(templateBase, 'template', locale, width, height);
+      await capture(wordpressBase, 'wordpress', locale, width, height);
       process.stdout.write(`CAPTURED: ${locale.name} ${width}x${height}\n`);
     }
   }
-  process.stdout.write(`PASS: latest Rosa Home full-page and hero reference/WordPress captures written to ${outputDir}\n`);
+  process.stdout.write(`PASS: latest Rosa Home full-page and hero template/WordPress captures written to ${outputDir}\n`);
 } finally {
   await browser.close();
 }
