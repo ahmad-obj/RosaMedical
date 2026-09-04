@@ -3,7 +3,10 @@ if (! defined('ABSPATH')) { exit; }
 $sectionArgs = isset($args) && is_array($args) ? $args : [];
 $locale = (string)($sectionArgs['locale'] ?? rosa_preview_locale());
 $title = rosa_preview_section_value($sectionArgs, 'home', 'family_title', $locale, $locale === 'ar' ? 'مجموعة منتجاتنا' : 'Our range of products');
-$base = trailingslashit(get_stylesheet_directory_uri()) . 'assets/media/homepage-covers/';
+$upload = wp_upload_dir();
+$coverBase = empty($upload['error'])
+    ? trailingslashit((string)$upload['baseurl']) . 'rosa-reference/homepage-covers/'
+    : '';
 $families = [
     ['slug' => 'scissors', 'name' => $locale === 'ar' ? 'المقصات' : 'Scissors', 'cover' => 'scissors-family-cover-full.svg', 'pdf' => 'catalogue-pdf-scissors'],
     ['slug' => 'cutters', 'name' => $locale === 'ar' ? 'القواطع' : 'Cutters', 'cover' => 'cutters-family-cover-full.svg', 'pdf' => 'catalogue-pdf-cutters'],
@@ -27,11 +30,12 @@ $families = [
                     if (! is_string($pdfUrl) || $pdfUrl === '') {
                         $pdfUrl = home_url('/shop/');
                     }
+                    $coverUrl = $coverBase !== '' ? $coverBase . $family['cover'] : '';
                 ?>
                 <li class="home-family-gallery__panel" data-family-panel data-family="<?php echo esc_attr($family['slug']); ?>">
                     <a class="home-family-gallery__link" href="<?php echo esc_url($pdfUrl); ?>" target="_blank" rel="noreferrer" aria-label="<?php echo esc_attr($locale === 'ar' ? 'فتح كتالوج ' . $family['name'] : 'Open ' . $family['name'] . ' catalogue'); ?>">
                         <div class="home-family-gallery__media home-family-gallery__media--catalogue-cover">
-                            <img class="home-family-gallery__image" src="<?php echo esc_url($base . $family['cover']); ?>" alt="<?php echo esc_attr($family['name']); ?>" width="560" height="793" loading="lazy" decoding="async">
+                            <?php if ($coverUrl !== '') : ?><img class="home-family-gallery__image" src="<?php echo esc_url($coverUrl); ?>" alt="<?php echo esc_attr($family['name']); ?>" width="560" height="793" loading="lazy" decoding="async"><?php endif; ?>
                         </div>
                     </a>
                 </li>
