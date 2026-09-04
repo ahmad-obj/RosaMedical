@@ -169,17 +169,21 @@ try {
 
     const specialtyColumns = await firstRowCount(page.locator('.home-comprehensive__specialties > li'));
     const assuranceColumns = await firstRowCount(page.locator('.home-assurance__grid > li'));
+    const confidenceColumns = await page.locator('.home-confidence__grid').evaluate((element) => {
+      const tracks = getComputedStyle(element).gridTemplateColumns.trim();
+      return tracks && tracks !== 'none' ? tracks.split(/\s+/).length : 0;
+    });
     if (width > 640) {
       assert.equal(await firstRowCount(page.locator('[data-home-family-gallery] [data-family-panel]')), 5, `${width}px family covers must retain the source five-column row`);
       assert.equal(specialtyColumns, 4, `${width}px specialties must retain four columns`);
       assert.equal(assuranceColumns, 4, `${width}px assurance cards must retain four columns`);
-      assert.equal(await firstRowCount(page.locator('.home-confidence__grid > *')), 2, `${width}px confidence section must be split`);
+      assert.equal(confidenceColumns, 2, `${width}px confidence section must be split`);
     } else {
       const visibleFamilies = await visibleInViewportCount(page.locator('[data-home-family-gallery] [data-family-panel]'));
       assert.ok(visibleFamilies >= 2 && visibleFamilies <= 3, `${width}px family rail must expose roughly two catalogue covers at once, received ${visibleFamilies}`);
       assert.equal(specialtyColumns, 2, `${width}px specialties must use two mobile columns`);
       assert.equal(assuranceColumns, 2, `${width}px assurance cards must use two mobile columns`);
-      assert.equal(await firstRowCount(page.locator('.home-confidence__grid > *')), 1, `${width}px confidence section must stack on mobile`);
+      assert.equal(confidenceColumns, 1, `${width}px confidence section must stack on mobile`);
       assert.equal(await page.locator('.home-family-gallery__mobile-controls').isVisible(), true, `${width}px family rail controls must be visible on mobile`);
     }
     await context.close();
