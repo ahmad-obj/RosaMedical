@@ -6,13 +6,20 @@ CAPTURE="$ROOT/wordpress/scripts/client-preview-responsive-capture.sh"
 VIDEO="$ROOT/wordpress/scripts/client-preview-video-capture.sh"
 CAPTURE_HELPER="$ROOT/wordpress/scripts/client-preview-capture.mjs"
 VIDEO_REVIEW="$ROOT/wordpress/scripts/client-preview-video-review.mjs"
+PARITY_CAPTURE="$ROOT/wordpress/scripts/medicashop-elementor-parity-capture.mjs"
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 [[ -f "$RUNTIME" ]] || fail 'client preview runtime verifier missing'
 [[ -f "$CAPTURE" ]] || fail 'client preview responsive capture missing'
 [[ -f "$VIDEO" ]] || fail 'client preview video capture missing'
 [[ -f "$CAPTURE_HELPER" ]] || fail 'client preview media-settling helper missing'
 [[ -f "$VIDEO_REVIEW" ]] || fail 'client preview video review helper missing'
+[[ -f "$PARITY_CAPTURE" ]] || fail 'finished-template parity capture missing'
 grep -Fq 'client-preview-seed.sh' "$RUNTIME" || fail 'runtime verifier does not seed client preview'
+grep -Fq 'medicashop-elementor-reference-contract.test.sh' "$RUNTIME" || fail 'runtime verifier omits finished-template source authority contract'
+grep -Fq 'medicashop-elementor-home-contract.test.php' "$RUNTIME" || fail 'runtime verifier omits finished-template Elementor topology contract'
+grep -Fq 'medicashop-elementor-home-fidelity.test.mjs' "$RUNTIME" || fail 'runtime verifier omits finished-template browser geometry acceptance'
+! grep -Fq 'latest-rosa-home-parity.test.mjs' "$RUNTIME" || fail 'runtime verifier still uses superseded latest-custom Home parity test'
+! grep -Fq 'latest-rosa-home-reference-contract.test.sh' "$RUNTIME" || fail 'runtime verifier still uses superseded latest-custom source contract'
 grep -Fq '390,844' "$CAPTURE" || fail '390x844 capture missing'
 grep -Fq '2560,1440' "$CAPTURE" || fail '2560x1440 capture missing'
 grep -Fq '/ar/' "$CAPTURE" || fail 'Arabic capture routes missing'
@@ -22,6 +29,8 @@ grep -Fq 'settlePageMedia' "$CAPTURE_HELPER" || fail 'capture helper does not se
 grep -Fq 'client-preview-capture.test.mjs' "$RUNTIME" || fail 'runtime verification omits capture behavior regression'
 grep -Fq 'client-preview-accessibility.test.mjs' "$RUNTIME" || fail 'runtime verification omits browser accessibility acceptance'
 grep -Fq 'client-preview-video-review.mjs' "$VIDEO" || fail 'video capture does not inspect the generated recording'
+grep -Fq 'https://rosamedical.org/' "$PARITY_CAPTURE" || fail 'finished-template capture does not default to deployed visual reference'
+grep -Fq 'artifacts/medicashop-elementor-parity' "$PARITY_CAPTURE" || fail 'finished-template capture output directory changed'
 ! grep -Eq 'printf .*\| grep -' "$RUNTIME" || fail 'runtime verifier uses grep -q pipelines that are unsafe under pipefail; use here-strings'
 python3 - "$VIDEO" <<'PY'
 import sys
