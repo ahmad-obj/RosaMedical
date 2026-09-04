@@ -10,7 +10,7 @@ final class ElementorPageSeeder
     public const HASH_META = '_rosa_elementor_seed_hash';
     public const VERSION = '2';
     public const HOME_PARITY_META = '_rosa_elementor_home_parity_version';
-    public const HOME_PARITY_VERSION = '1';
+    public const HOME_PARITY_VERSION = '2';
     public const TEMPLATE = 'page-templates/rosa-elementor-authoring.php';
 
     public static function state(int $postId): string
@@ -54,9 +54,9 @@ final class ElementorPageSeeder
 
             if ($pageType === 'home'
                 && (string) get_post_meta($postId, self::HOME_PARITY_META, true) !== self::HOME_PARITY_VERSION) {
-                // The latest Homepage topology is a structural replacement, so it
-                // is automatic only when the existing Elementor document still
-                // exactly matches its stored Rosa seed baseline.
+                // Home topology replacement is automatic only while the
+                // existing Elementor document still matches its stored Rosa
+                // seed baseline. Edited documents require manual review.
                 if ($state !== 'migrated_untouched') {
                     return ['status' => 'home_parity_manual_required', 'post_id' => $postId];
                 }
