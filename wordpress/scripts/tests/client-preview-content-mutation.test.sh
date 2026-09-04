@@ -45,7 +45,10 @@ update_option("rosa_preview_media",$media);
 
 home_html="$(curl -fsSL "${home_url%/}/")" || fail 'English Home fetch failed after ownership mutation'
 ! grep -Fq 'ROLLBACK ONLY HOME TITLE' <<<"$home_html" || fail 'legacy Homepage option still competes with Elementor public content'
-grep -Fq 'LIVE SHARED CTA TITLE' <<<"$home_html" || fail 'Site & CTA setting no longer renders dynamically on Home'
+! grep -Fq 'LIVE SHARED CTA TITLE' <<<"$home_html" || fail 'latest Homepage rendered duplicate shared Site/CTA prefooter'
+
+about_html="$(curl -fsSL "${home_url%/}/about/")" || fail 'English About fetch failed after ownership mutation'
+grep -Fq 'LIVE SHARED CTA TITLE' <<<"$about_html" || fail 'Site & CTA setting no longer renders dynamically on About'
 
 shop_html="$(curl -fsSL "${home_url%/}/shop/")" || fail 'English Shop fetch failed after ownership mutation'
 grep -Fq 'LIVE SHOP TITLE' <<<"$shop_html" || fail 'Shop setting no longer renders dynamically'
@@ -66,6 +69,9 @@ template="$(wp eval '$page=get_page_by_path("home", OBJECT, "page"); echo $page?
 
 home_html="$(curl -fsSL "${home_url%/}/")" || fail 'English Home refetch failed after routine seed'
 ! grep -Fq 'ROLLBACK ONLY HOME TITLE' <<<"$home_html" || fail 'rollback-only Homepage data became public after routine seed'
-grep -Fq 'LIVE SHARED CTA TITLE' <<<"$home_html" || fail 'live shared CTA edit disappeared after routine seed'
+! grep -Fq 'LIVE SHARED CTA TITLE' <<<"$home_html" || fail 'latest Homepage rendered duplicate shared Site/CTA prefooter after routine seed'
 
-printf 'PASS: Elementor owns page bodies while rollback, Site/CTA, Shop and media data survive routine reseeding\n'
+about_html="$(curl -fsSL "${home_url%/}/about/")" || fail 'English About refetch failed after routine seed'
+grep -Fq 'LIVE SHARED CTA TITLE' <<<"$about_html" || fail 'live shared CTA edit disappeared from About after routine seed'
+
+printf 'PASS: Elementor owns page bodies while latest Home suppresses duplicate Site/CTA and shared settings survive routine reseeding\n'
