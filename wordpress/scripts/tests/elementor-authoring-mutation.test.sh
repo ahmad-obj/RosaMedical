@@ -63,15 +63,16 @@ function rosa_mutate_widget(array &\$elements, string \$widget, array \$changes)
 \$currentMedia = 0;
 foreach (\$en as \$root) {
     foreach ((array)(\$root['elements'] ?? []) as \$widget) {
-        if ((string)(\$widget['widgetType'] ?? '') === 'rosa-home-hero') \$currentMedia = (int)(\$widget['settings']['image']['id'] ?? 0);
+        if ((string)(\$widget['widgetType'] ?? '') === 'rosa-home-hero-carousel') \$currentMedia = (int)(\$widget['settings']['desktop_1']['id'] ?? 0);
     }
 }
-\$attachments = get_posts(['post_type' => 'attachment', 'post_status' => 'inherit', 'numberposts' => 50, 'fields' => 'ids']);
+\$attachments = get_posts(['post_type' => 'attachment', 'post_status' => 'inherit', 'numberposts' => 100, 'fields' => 'ids']);
 \$media = 0;
-foreach (\$attachments as \$candidate) { if ((int)\$candidate > 0 && (int)\$candidate !== \$currentMedia) { \$media = (int)\$candidate; break; } }
-if (\$media <= 0) WP_CLI::error('Need a second Media Library attachment for media mutation test');
-if (! rosa_mutate_widget(\$en, 'rosa-home-hero', ['hero_title' => 'TEST ELEMENTOR HERO', 'image' => ['id' => \$media]])) WP_CLI::error('English Home hero widget not found');
-if (! rosa_mutate_widget(\$ar, 'rosa-home-hero', ['hero_title' => 'AR TEST ELEMENTOR HERO'])) WP_CLI::error('Arabic Home hero widget not found');
+foreach (\$attachments as \$candidate) { if ((int)\$candidate > 0 && (int)\$candidate !== \$currentMedia && str_starts_with((string)get_post_mime_type((int)\$candidate), 'image/')) { \$media = (int)\$candidate; break; } }
+if (\$media <= 0) WP_CLI::error('Need a second Media Library image for media mutation test');
+if (! rosa_mutate_widget(\$en, 'rosa-home-family-discovery', ['family_title' => 'TEST ELEMENTOR PRODUCT RANGE'])) WP_CLI::error('English Home family widget not found');
+if (! rosa_mutate_widget(\$ar, 'rosa-home-family-discovery', ['family_title' => 'AR TEST ELEMENTOR PRODUCT RANGE'])) WP_CLI::error('Arabic Home family widget not found');
+if (! rosa_mutate_widget(\$en, 'rosa-home-hero-carousel', ['desktop_1' => ['id' => \$media]])) WP_CLI::error('English Home hero widget not found');
 if (! \$enDoc->save(['elements' => \$en])) WP_CLI::error('Could not save English Elementor mutation');
 if (! \$arDoc->save(['elements' => \$ar])) WP_CLI::error('Could not save Arabic Elementor mutation');
 echo \$media;
@@ -82,31 +83,33 @@ media_url="$(wp eval "echo (string) wp_get_attachment_url(${media_id});")"
 
 home_html="$(curl -fsSL "$BASE_URL/")"
 ar_html="$(curl -fsSL "$BASE_URL/ar/")"
-grep -Fq 'TEST ELEMENTOR HERO' <<<"$home_html" || fail 'English Elementor text edit did not render'
-! grep -Fq 'AR TEST ELEMENTOR HERO' <<<"$home_html" || fail 'Arabic Elementor edit leaked into English Home'
-grep -Fq 'AR TEST ELEMENTOR HERO' <<<"$ar_html" || fail 'Arabic Elementor text edit did not render'
+grep -Fq 'TEST ELEMENTOR PRODUCT RANGE' <<<"$home_html" || fail 'English Elementor text edit did not render'
+! grep -Fq 'AR TEST ELEMENTOR PRODUCT RANGE' <<<"$home_html" || fail 'Arabic Elementor edit leaked into English Home'
+grep -Fq 'AR TEST ELEMENTOR PRODUCT RANGE' <<<"$ar_html" || fail 'Arabic Elementor text edit did not render'
 grep -Fq 'lang="ar" dir="rtl"' <<<"$ar_html" || fail 'Arabic Home lost RTL document attributes'
-grep -Fq "$media_url" <<<"$home_html" || fail 'Elementor media control edit did not render selected attachment URL'
-for section in hero who featured feature latest promos why proof evidence; do
-  grep -Fq "data-home-section=\"${section}\"" <<<"$home_html" || fail "Home section disappeared after Elementor edit: ${section}"
+grep -Fq "$media_url" <<<"$home_html" || fail 'Elementor hero media edit did not render selected attachment URL'
+for section in home-hero family-discovery comprehensive-plans securing-confidence home-contact-band client-success-assurance quotation-cta; do
+  grep -Fq "data-section=\"${section}\"" <<<"$home_html" || fail "Latest Home section disappeared after Elementor edit: ${section}"
 done
 
 bash "$ROOT/wordpress/scripts/client-preview-seed.sh" >/dev/null
 for id in "$en_id" "$ar_id"; do
   template="$(wp post meta get "$id" _wp_page_template)"
   [[ "$template" == 'page-templates/rosa-elementor-authoring.php' ]] || fail 'routine client-preview seed reverted an Elementor authoring page template'
+  parity="$(wp post meta get "$id" _rosa_elementor_home_parity_version)"
+  [[ "$parity" == '1' ]] || fail 'routine client-preview seed lost latest Home parity metadata'
 done
 seed_output="$(bash "$ROOT/wordpress/scripts/elementor-authoring-seed.sh")"
 [[ "$(grep -c '| skipped$' <<<"$seed_output")" -eq 6 ]] || fail 'normal Elementor reseed must skip all previously migrated documents'
 
 home_html="$(curl -fsSL "$BASE_URL/")"
 ar_html="$(curl -fsSL "$BASE_URL/ar/")"
-grep -Fq 'TEST ELEMENTOR HERO' <<<"$home_html" || fail 'routine seed erased English Elementor edit'
-grep -Fq 'AR TEST ELEMENTOR HERO' <<<"$ar_html" || fail 'routine seed erased Arabic Elementor edit'
+grep -Fq 'TEST ELEMENTOR PRODUCT RANGE' <<<"$home_html" || fail 'routine seed erased English Elementor edit'
+grep -Fq 'AR TEST ELEMENTOR PRODUCT RANGE' <<<"$ar_html" || fail 'routine seed erased Arabic Elementor edit'
 grep -Fq "$media_url" <<<"$home_html" || fail 'routine seed erased Elementor media edit'
 
 restore
 trap - EXIT
 home_html="$(curl -fsSL "$BASE_URL/")"
-! grep -Fq 'TEST ELEMENTOR HERO' <<<"$home_html" || fail 'English mutation fixture did not restore'
-printf 'PASS: Elementor EN/AR/media edits persist and routine seeds cannot erase them\n'
+! grep -Fq 'TEST ELEMENTOR PRODUCT RANGE' <<<"$home_html" || fail 'English mutation fixture did not restore'
+printf 'PASS: latest Home Elementor EN/AR/media edits persist and routine seeds cannot erase them\n'
