@@ -119,6 +119,16 @@ add_action('wp_enqueue_scripts', static function (): void {
                 );
             }
 
+            $latestHomeFidelityCss = get_stylesheet_directory() . '/assets/css/latest-rosa-home-fidelity.css';
+            if (is_file($latestHomeFidelityCss)) {
+                wp_enqueue_style(
+                    'rosa-latest-home-fidelity',
+                    get_stylesheet_directory_uri() . '/assets/css/latest-rosa-home-fidelity.css',
+                    ['rosa-latest-home'],
+                    $version
+                );
+            }
+
             $latestHomeJs = get_stylesheet_directory() . '/assets/js/latest-rosa-home.js';
             if (is_file($latestHomeJs)) {
                 wp_enqueue_script(
