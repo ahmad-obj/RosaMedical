@@ -9,7 +9,12 @@ while (have_posts()) {
     the_content();
     echo '</div>';
 }
-echo '<div data-preview-contact-cta>';
-get_template_part('template-parts/client-preview/cta-banner', null, ['locale' => $locale]);
-echo '</div>';
+
+// Latest Home already ends with its source-matched quotation CTA. Retain the
+// legacy shared CTA for About/Contact and pre-parity Home only.
+if (! function_exists('rosa_is_latest_home_page') || ! rosa_is_latest_home_page((int) get_the_ID())) {
+    echo '<div data-preview-contact-cta>';
+    get_template_part('template-parts/client-preview/cta-banner', null, ['locale' => $locale]);
+    echo '</div>';
+}
 get_footer();
