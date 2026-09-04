@@ -9,6 +9,8 @@ final class ElementorPageSeeder
     public const VERSION_META = '_rosa_elementor_authoring_version';
     public const HASH_META = '_rosa_elementor_seed_hash';
     public const VERSION = '2';
+    public const HOME_PARITY_META = '_rosa_elementor_home_parity_version';
+    public const HOME_PARITY_VERSION = '1';
     public const TEMPLATE = 'page-templates/rosa-elementor-authoring.php';
 
     public static function state(int $postId): string
@@ -49,6 +51,39 @@ final class ElementorPageSeeder
                     return ['status' => $migrationStatus, 'post_id' => $postId];
                 }
             }
+
+            if ($pageType === 'home'
+                && (string) get_post_meta($postId, self::HOME_PARITY_META, true) !== self::HOME_PARITY_VERSION) {
+                // The latest Homepage topology is a structural replacement, so it
+                // is automatic only when the existing Elementor document still
+                // exactly matches its stored Rosa seed baseline.
+                if ($state !== 'migrated_untouched') {
+                    return ['status' => 'home_parity_manual_required', 'post_id' => $postId];
+                }
+
+                $document = self::document($postId);
+                if (! is_object($document)
+                    || ! method_exists($document, 'save')
+                    || ! method_exists($document, 'set_is_built_with_elementor')) {
+                    return ['status' => 'document_missing', 'post_id' => $postId];
+                }
+
+                if (! $document->save(['elements' => $elements])) {
+                    return ['status' => 'save_failed', 'post_id' => $postId];
+                }
+                $document->set_is_built_with_elementor(true);
+                update_post_meta($postId, '_wp_page_template', self::TEMPLATE);
+                update_post_meta($postId, self::HOME_PARITY_META, self::HOME_PARITY_VERSION);
+
+                $hash = self::currentHash($postId);
+                if ($hash === '') {
+                    return ['status' => 'reload_failed', 'post_id' => $postId];
+                }
+                update_post_meta($postId, self::HASH_META, $hash);
+
+                return ['status' => 'migrated_home_parity', 'post_id' => $postId];
+            }
+
             return ['status' => 'skipped', 'post_id' => $postId];
         }
 
@@ -78,6 +113,9 @@ final class ElementorPageSeeder
 
         update_post_meta($postId, self::VERSION_META, self::VERSION);
         update_post_meta($postId, self::HASH_META, $normalizedHash);
+        if ($pageType === 'home') {
+            update_post_meta($postId, self::HOME_PARITY_META, self::HOME_PARITY_VERSION);
+        }
 
         return [
             'status' => $force ? 'seeded_forced' : 'seeded',
