@@ -41,6 +41,18 @@ async function firstRowCount(locator) {
   return boxes.filter(({ y }) => Math.abs(y - firstY) <= 2).length;
 }
 
+async function visibleInViewportCount(locator) {
+  return locator.evaluateAll((elements) => elements.filter((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0
+      && rect.height > 0
+      && rect.right > 0
+      && rect.left < window.innerWidth
+      && rect.bottom > 0
+      && rect.top < window.innerHeight;
+  }).length);
+}
+
 async function loadHome(width, height, path = '/') {
   const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
   const page = await context.newPage();
@@ -56,8 +68,14 @@ async function loadHome(width, height, path = '/') {
 }
 
 async function assertNoOverflow(page, width, label) {
-  const dimensions = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
-  assert.ok(dimensions.scrollWidth <= dimensions.viewport + 1, `${width}px ${label} horizontally overflows: ${dimensions.scrollWidth} > ${dimensions.viewport}`);
+  const dimensions = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth,
+  }));
+  assert.ok(
+    dimensions.scrollWidth <= dimensions.viewport + 1,
+    `${width}px ${label} horizontally overflows: ${dimensions.scrollWidth} > ${dimensions.viewport}`,
+  );
 }
 
 async function assertNoSectionCollisions(page, width) {
@@ -83,6 +101,7 @@ async function assertNoSectionCollisions(page, width) {
 async function assertSharedHome(page, width, locale = 'en') {
   assert.equal(await page.locator('main').count(), 1, `${width}px Home must have exactly one main landmark`);
   assert.equal(await page.locator('.public-page--home').count(), 1, `${width}px latest Rosa Home root missing`);
+  assert.equal(await page.locator('[data-preview-contact-cta]').count(), 0, `${width}px latest Home must not render the legacy duplicate pre-footer CTA`);
   assert.deepEqual(
     await page.locator('.public-page--home [data-section]').evaluateAll((elements) => {
       const seen = new Set();
@@ -107,7 +126,10 @@ async function assertSharedHome(page, width, locale = 'en') {
   assert.equal(await page.locator('[data-section="quotation-cta"] .button--primary').count(), 1, `${width}px quotation CTA missing`);
 
   const contactBackground = await page.locator('.home-contact-band__surface').evaluate((element) => getComputedStyle(element).backgroundColor);
-  assert.ok(contactBackground === 'rgb(9, 9, 9)' || contactBackground === 'rgba(9, 9, 9, 1)', `${width}px direct-support band is not latest black surface: ${contactBackground}`);
+  assert.ok(
+    contactBackground === 'rgb(9, 9, 9)' || contactBackground === 'rgba(9, 9, 9, 1)',
+    `${width}px direct-support band is not latest black surface: ${contactBackground}`,
+  );
 
   const visibleBrokenImages = await page.locator('.public-page--home img').evaluateAll((images) => images.filter((image) => {
     const rect = image.getBoundingClientRect();
@@ -123,6 +145,20 @@ async function assertSharedHome(page, width, locale = 'en') {
   await assertNoSectionCollisions(page, width);
 }
 
+async function familyRailDelta(path) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const page = await context.newPage();
+  await page.goto(new URL(path, baseUrl).href, { waitUntil: 'load' });
+  const gallery = page.locator('[data-home-family-gallery]');
+  await gallery.waitFor({ state: 'visible' });
+  const before = await gallery.evaluate((element) => element.scrollLeft);
+  await page.locator('[data-family-gallery-next]').click();
+  await page.waitForTimeout(850);
+  const after = await gallery.evaluate((element) => element.scrollLeft);
+  await context.close();
+  return after - before;
+}
+
 try {
   for (const [width, height] of viewports) {
     const { context, page } = await loadHome(width, height);
@@ -131,16 +167,16 @@ try {
     if (width > 640) near(hero.height, 375, 500, `${width}px latest desktop/tablet hero height`);
     else near(hero.height, 495, 565, `${width}px latest mobile hero height`);
 
-    const familyColumns = await firstRowCount(page.locator('[data-home-family-gallery] [data-family-panel]'));
     const specialtyColumns = await firstRowCount(page.locator('.home-comprehensive__specialties > li'));
     const assuranceColumns = await firstRowCount(page.locator('.home-assurance__grid > li'));
     if (width > 640) {
-      assert.equal(familyColumns, 5, `${width}px family covers must retain the source five-column row`);
+      assert.equal(await firstRowCount(page.locator('[data-home-family-gallery] [data-family-panel]')), 5, `${width}px family covers must retain the source five-column row`);
       assert.equal(specialtyColumns, 4, `${width}px specialties must retain four columns`);
       assert.equal(assuranceColumns, 4, `${width}px assurance cards must retain four columns`);
       assert.equal(await firstRowCount(page.locator('.home-confidence__grid > *')), 2, `${width}px confidence section must be split`);
     } else {
-      assert.ok(familyColumns >= 2 && familyColumns <= 3, `${width}px family rail must show roughly two covers at once`);
+      const visibleFamilies = await visibleInViewportCount(page.locator('[data-home-family-gallery] [data-family-panel]'));
+      assert.ok(visibleFamilies >= 2 && visibleFamilies <= 3, `${width}px family rail must expose roughly two catalogue covers at once, received ${visibleFamilies}`);
       assert.equal(specialtyColumns, 2, `${width}px specialties must use two mobile columns`);
       assert.equal(assuranceColumns, 2, `${width}px assurance cards must use two mobile columns`);
       assert.equal(await firstRowCount(page.locator('.home-confidence__grid > *')), 1, `${width}px confidence section must stack on mobile`);
@@ -149,11 +185,24 @@ try {
     await context.close();
   }
 
+  // Normal motion: autoplay advances after the source 4750ms interval, focus pauses it,
+  // and keyboard dot navigation remains operable.
   {
     const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'no-preference' });
     const page = await context.newPage();
     await page.goto(baseUrl.href, { waitUntil: 'load' });
     const hero = page.locator('[data-latest-rosa-home-hero]');
+    const initial = await hero.getAttribute('data-active-slide');
+    await page.waitForTimeout(5000);
+    const autoplayed = await hero.getAttribute('data-active-slide');
+    assert.notEqual(autoplayed, initial, 'hero autoplay did not advance after the source 4750ms interval');
+
+    const currentDot = hero.locator('[data-rosa-hero-dot][aria-current="true"]');
+    await currentDot.focus();
+    const focusedSlide = await hero.getAttribute('data-active-slide');
+    await page.waitForTimeout(5000);
+    assert.equal(await hero.getAttribute('data-active-slide'), focusedSlide, 'hero autoplay must pause while carousel focus is inside');
+
     await hero.locator('[data-rosa-hero-dot][data-slide-index="1"]').click();
     assert.equal(await hero.getAttribute('data-active-slide'), 'clinical-instrument-context', 'hero dot did not activate slide 2');
     const activeDot = hero.locator('[data-rosa-hero-dot][aria-current="true"]');
@@ -163,11 +212,31 @@ try {
     await context.close();
   }
 
+  // Reduced motion must suppress source autoplay.
+  {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    await page.goto(baseUrl.href, { waitUntil: 'load' });
+    const hero = page.locator('[data-latest-rosa-home-hero]');
+    const initial = await hero.getAttribute('data-active-slide');
+    await page.waitForTimeout(5000);
+    assert.equal(await hero.getAttribute('data-active-slide'), initial, 'reduced-motion users must not receive hero autoplay');
+    await context.close();
+  }
+
   for (const [width, height] of [[1280, 800], [390, 844]]) {
     const { context, page } = await loadHome(width, height, '/ar/');
     await assertSharedHome(page, width, 'ar');
     await context.close();
   }
+
+  // The family arrow uses the same conceptual direction in both locales; the
+  // physical scroll delta must invert for RTL rather than moving the wrong way.
+  const enDelta = await familyRailDelta('/');
+  const arDelta = await familyRailDelta('/ar/');
+  assert.ok(Math.abs(enDelta) > 1, `English mobile family arrow did not move the rail: ${enDelta}`);
+  assert.ok(Math.abs(arDelta) > 1, `Arabic mobile family arrow did not move the rail: ${arDelta}`);
+  assert.ok(enDelta * arDelta < 0, `RTL family rail direction did not invert: en=${enDelta}, ar=${arDelta}`);
 
   process.stdout.write('PASS: WordPress Homepage matches latest Rosa topology, responsive geometry, interactions and RTL contracts\n');
 } finally {
