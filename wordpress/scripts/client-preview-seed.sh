@@ -40,44 +40,6 @@ wp eval '
   }
 '
 
-# Copy the exact latest Rosa Homepage family covers byte-for-byte into a
-# deterministic public uploads directory. This avoids WordPress SVG upload
-# restrictions while keeping the source files authoritative and reproducible.
-wp eval '
-  $upload = wp_upload_dir();
-  if (! empty($upload["error"])) {
-    WP_CLI::error("Could not resolve WordPress uploads directory: " . $upload["error"]);
-  }
-  $sourceRoot = "/rosa-reference-media/families/homepage-covers";
-  $targetDir = trailingslashit($upload["basedir"]) . "rosa-reference/homepage-covers";
-  if (! wp_mkdir_p($targetDir)) {
-    WP_CLI::error("Could not create Rosa family cover directory: {$targetDir}");
-  }
-  $files = [
-    "scissors-family-cover-full.svg",
-    "cutters-family-cover-full.svg",
-    "punches-family-cover.webp",
-    "chisels-family-cover-full.svg",
-    "knives-family-cover-full.svg",
-  ];
-  foreach ($files as $file) {
-    $source = trailingslashit($sourceRoot) . $file;
-    $target = trailingslashit($targetDir) . $file;
-    if (! is_file($source)) {
-      WP_CLI::error("Missing Rosa family cover source: {$source}");
-    }
-    $sourceHash = hash_file("sha256", $source);
-    $targetHash = is_file($target) ? hash_file("sha256", $target) : "";
-    if ($targetHash !== $sourceHash && ! copy($source, $target)) {
-      WP_CLI::error("Could not copy Rosa family cover: {$file}");
-    }
-    if (! is_file($target) || hash_file("sha256", $target) !== $sourceHash) {
-      WP_CLI::error("Rosa family cover copy verification failed: {$file}");
-    }
-  }
-  WP_CLI::success("Latest Rosa Homepage family covers copied exactly.");
-'
-
 import_media(){
   local key="$1"
   local rel="$2"
@@ -100,31 +62,6 @@ import_media(){
 
 media_lines="$(
   import_media logo 'apps/web/public/media/brand/rosa-header-logo-v1.webp'
-
-  # Latest Rosa Homepage parity media.
-  import_media home-hero-01-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-01-desktop.webp'
-  import_media home-hero-01-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-01-mobile.webp'
-  import_media home-hero-02-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-02-desktop.webp'
-  import_media home-hero-02-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-02-mobile.webp'
-  import_media home-hero-03-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-03-desktop.webp'
-  import_media home-hero-03-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-03-mobile.webp'
-  import_media home-hero-04-desktop 'apps/web/public/media/editorial/home-hero/client-v5/hero-04-desktop.webp'
-  import_media home-hero-04-mobile  'apps/web/public/media/editorial/home-hero/client-v5/hero-04-mobile.webp'
-  import_media home-specialty-plastic-surgery 'apps/web/public/media/editorial/home-specialties/plastic-surgery.webp'
-  import_media home-specialty-orthopedics 'apps/web/public/media/editorial/home-specialties/orthopedics.webp'
-  import_media home-specialty-maxillofacial 'apps/web/public/media/editorial/home-specialties/maxillofacial.webp'
-  import_media home-specialty-orthodontics 'apps/web/public/media/editorial/home-specialties/orthodontics.webp'
-  import_media home-specialty-spine 'apps/web/public/media/editorial/home-specialties/spine.webp'
-  import_media home-securing-confidence 'apps/web/public/media/editorial/home-specialties/securing-confidence.webp'
-
-  # Technical catalogue PDFs used by the latest Home family gallery.
-  import_media catalogue-pdf-scissors 'apps/web/public/media/catalogues/pdf/rosa-scissors-catalogue.pdf'
-  import_media catalogue-pdf-cutters 'apps/web/public/media/catalogues/pdf/rosa-cutters-catalogue.pdf'
-  import_media catalogue-pdf-punches 'apps/web/public/media/catalogues/pdf/rosa-punches-catalogue.pdf'
-  import_media catalogue-pdf-chisels 'apps/web/public/media/catalogues/pdf/rosa-chisels-catalogue.pdf'
-  import_media catalogue-pdf-knives 'apps/web/public/media/catalogues/pdf/rosa-knives-catalogue.pdf'
-
-  # Legacy preview assets remain imported for rollback templates and existing content.
   import_media hero 'apps/web/public/media/editorial/home-hero-surgical-instruments.jpg'
   import_media about_procurement 'apps/web/public/media/editorial/about-procurement.jpg'
   import_media about_hospitals 'apps/web/public/media/editorial/about-hospitals.jpg'
@@ -142,23 +79,7 @@ wp eval "
     [\$key, \$value] = explode('=', \$line, 2);
     \$map[\$key] = (int) \$value;
   }
-  \$required = [
-    'logo',
-    'home-hero-01-desktop', 'home-hero-01-mobile',
-    'home-hero-02-desktop', 'home-hero-02-mobile',
-    'home-hero-03-desktop', 'home-hero-03-mobile',
-    'home-hero-04-desktop', 'home-hero-04-mobile',
-    'home-specialty-plastic-surgery', 'home-specialty-orthopedics',
-    'home-specialty-maxillofacial', 'home-specialty-orthodontics',
-    'home-specialty-spine', 'home-securing-confidence',
-    'catalogue-pdf-scissors', 'catalogue-pdf-cutters', 'catalogue-pdf-punches',
-    'catalogue-pdf-chisels', 'catalogue-pdf-knives',
-  ];
-  foreach (\$required as \$key) {
-    if (! isset(\$map[\$key]) || (int) \$map[\$key] <= 0) {
-      WP_CLI::error('Rosa latest Homepage media map is incomplete at ' . \$key . '.');
-    }
-  }
+  if (! isset(\$map['logo'], \$map['hero'])) WP_CLI::error('Rosa preview media map is incomplete.');
   update_option('rosa_preview_media', \$map);
 "
 
