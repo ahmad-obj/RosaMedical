@@ -22,6 +22,8 @@ final class MediaSettings
             'home-specialty-plastic-surgery', 'home-specialty-orthopedics',
             'home-specialty-maxillofacial', 'home-specialty-orthodontics',
             'home-specialty-spine', 'home-securing-confidence',
+            'catalogue-pdf-scissors', 'catalogue-pdf-cutters', 'catalogue-pdf-punches',
+            'catalogue-pdf-chisels', 'catalogue-pdf-knives',
 
             // Previous preview slots remain valid for rollback and existing attachments.
             'home-hero-01', 'home-who-01', 'home-feature-01',
