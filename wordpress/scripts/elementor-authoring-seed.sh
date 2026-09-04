@@ -50,7 +50,7 @@ for target in "${targets[@]}"; do
   case "$status" in
     seeded|seeded_forced|skipped|migrated_home_parity) ;;
     home_parity_manual_required)
-      fail "$path contains client-edited legacy Home Elementor content. Latest Rosa Home parity was NOT applied. Review the edits explicitly; do not use --force as a routine migration."
+      fail "$path contains client-edited Home Elementor content. Finished-template parity was NOT applied. Review the edits explicitly; do not use --force as a routine migration."
       ;;
     *) fail "$path returned status $status" ;;
   esac
