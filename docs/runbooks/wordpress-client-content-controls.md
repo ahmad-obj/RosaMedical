@@ -83,9 +83,9 @@ The normal client preview seed idempotently imports the Rosa-owned source assets
 - Securing Confidence image;
 - five technical catalogue PDFs.
 
-The exact five Homepage catalogue-cover assets are deployed with the child theme. Page-specific hero/editorial images are copied into Elementor media controls during a safe Home migration and can then be changed in Elementor. The five family PDF destinations remain code/data-owned rather than editable layout controls.
+The exact five Homepage catalogue-cover files are copied byte-for-byte from the repository's read-only Rosa reference-media mount into the deterministic public uploads directory `wp-content/uploads/rosa-reference/homepage-covers/`. This preserves the four source SVG covers and the exact Punches WebP without requiring WordPress SVG Media Library support. The seed verifies the copied files by SHA-256 before continuing.
 
-Old preview media keys and attachments remain preserved for rollback compatibility.
+Page-specific hero/editorial images are copied into Elementor media controls during a safe Home migration and can then be changed in Elementor. The five family cover files and family PDF destinations remain code/data-owned rather than editable layout controls. Old preview media keys and attachments remain preserved for rollback compatibility.
 
 ## Initial migration and normal reseeding
 
@@ -144,22 +144,24 @@ Elementor renders only the page body. The Rosa child theme still owns and render
 - announcement/header/navigation/mobile drawer;
 - public language switch;
 - one `<main>` shell;
-- shared pre-footer CTA;
 - footer;
 - protected Rosa styles/scripts.
+
+About, Contact and pre-parity Home continue to receive the existing shared pre-footer CTA from the protected template. A Home carrying `_rosa_elementor_home_parity_version = 1` does **not** receive that extra legacy CTA because its source-matched seven-section body already ends with the latest Rosa quotation CTA. This prevents a duplicate band from appearing after the exact Home composition.
 
 Do not switch these pages to Elementor Canvas or Elementor Header/Footer modes.
 
 ## Latest Homepage design layer
 
-The current Home-specific parity layer is:
+The current Home-specific parity layers are:
 
 ```text
 wordpress/wp-content/themes/rosa-medical-child/assets/css/latest-rosa-home.css
+wordpress/wp-content/themes/rosa-medical-child/assets/css/latest-rosa-home-fidelity.css
 wordpress/wp-content/themes/rosa-medical-child/assets/js/latest-rosa-home.js
 ```
 
-They load only on EN Home and the paired AR Home authoring document. The stylesheet is deliberately loaded after legacy preview/Elementor wrapper CSS so obsolete MedicaShop geometry cannot become the effective Homepage layout.
+They load only after the safe Home parity marker exists on EN Home or the paired AR Home. `latest-rosa-home.css` ports the source Home visual system. `latest-rosa-home-fidelity.css` is the final-loaded source-cascade correction layer for the catalogue-cover rail and related late overrides. Both load after legacy preview/RTL/Elementor wrapper CSS so obsolete MedicaShop geometry cannot become the effective Homepage layout.
 
 The generic Elementor wrapper safeguard remains in `elementor-authoring.css`: zero root gap/padding, full width and non-wrapping vertical flow. Do not remove or weaken that fix.
 
@@ -226,12 +228,14 @@ Capture matched live-reference and local WordPress screenshots at 1440, 1280, 10
 
 ```bash
 node wordpress/scripts/latest-rosa-home-parity-capture.mjs \
-  http://localhost:8088/ \
   https://rosamedical.org/ \
+  http://localhost:8088/ \
   artifacts/latest-rosa-home-parity
 ```
 
-The command uses reduced motion and produces paired full-page PNGs. Review them side-by-side. Reject material drift in hero proportions/crop, five-family strip, typography hierarchy, spacing, clinical media crop, confidence split, black Direct Support band, assurance cards, quotation CTA or RTL composition.
+The command uses reduced motion and produces paired **full-page and hero** PNGs for the live reference and local WordPress build. Review them side-by-side. Reject material drift in hero proportions/crop, five-family strip, typography hierarchy, spacing, clinical media crop, confidence split, black Direct Support band, assurance cards, quotation CTA or RTL composition.
+
+If the live production page differs materially from the pinned custom frontend snapshot, document that discrepancy and treat the live production page as the final visual acceptance authority before changing the WordPress parity implementation.
 
 ## Manual Elementor acceptance
 
