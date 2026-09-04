@@ -44,12 +44,16 @@ final class ElementorSeedData
             ];
         }
 
+        $rootClasses = $pageType === 'home'
+            ? 'rosa-elementor-root public-page public-page--home'
+            : 'rosa-elementor-root';
+
         return [[
             'id' => self::deterministicId($pageType . '-' . $locale . '-root'),
             'elType' => 'container',
             'isInner' => false,
             'settings' => [
-                'css_classes' => 'rosa-elementor-root',
+                'css_classes' => $rootClasses,
                 'content_width' => 'full',
                 'gap' => ['unit' => 'px', 'size' => 0, 'sizes' => []],
                 'padding' => [
@@ -70,20 +74,36 @@ final class ElementorSeedData
     {
         if ($pageType === 'home') {
             return [
-                self::spec('rosa-home-hero', 'home', ['hero_eyebrow', 'hero_title', 'hero_body', 'hero_button'], ['image' => 'home-hero-01']),
-                self::spec('rosa-home-who', 'home', ['who_eyebrow', 'who_title', 'who_body', 'who_button', 'stat_1_value', 'stat_1_label', 'stat_2_value', 'stat_2_label', 'stat_3_value', 'stat_3_label'], ['image' => 'home-who-01']),
-                self::spec('rosa-home-featured', 'home', ['featured_title', 'benefit_1_title', 'benefit_1_body', 'benefit_2_title', 'benefit_2_body', 'benefit_3_title', 'benefit_3_body']),
-                self::spec('rosa-home-feature-banner', 'home', ['feature_eyebrow', 'feature_title', 'feature_body', 'feature_button'], ['image' => 'home-feature-01']),
-                self::spec('rosa-home-latest', 'home', ['latest_title']),
-                self::spec('rosa-home-promotions', 'home', ['promo_1_title', 'promo_1_body', 'promo_2_title', 'promo_2_body', 'promo_3_title', 'promo_3_body', 'promo_4_title', 'promo_4_body'], [
-                    'image_1' => 'home-promo-01',
-                    'image_2' => 'home-promo-02',
-                    'image_3' => 'home-promo-03',
-                    'image_4' => 'home-promo-04',
+                self::spec('rosa-home-hero-carousel', 'home', [
+                    'hero_1_eyebrow', 'hero_1_title', 'hero_1_body',
+                    'hero_2_eyebrow', 'hero_2_title', 'hero_2_body',
+                    'hero_3_eyebrow', 'hero_3_title', 'hero_3_body',
+                    'hero_4_eyebrow', 'hero_4_title', 'hero_4_body',
+                ], [
+                    'desktop_1' => 'home-hero-01-desktop', 'mobile_1' => 'home-hero-01-mobile',
+                    'desktop_2' => 'home-hero-02-desktop', 'mobile_2' => 'home-hero-02-mobile',
+                    'desktop_3' => 'home-hero-03-desktop', 'mobile_3' => 'home-hero-03-mobile',
+                    'desktop_4' => 'home-hero-04-desktop', 'mobile_4' => 'home-hero-04-mobile',
                 ]),
-                self::spec('rosa-home-why', 'home', ['why_eyebrow', 'why_title', 'why_1_title', 'why_1_body', 'why_2_title', 'why_2_body', 'why_3_title', 'why_3_body'], ['image' => 'home-why-01']),
-                self::spec('rosa-home-proof', 'home', ['proof_1', 'proof_2', 'proof_3', 'proof_4', 'proof_5', 'proof_6']),
-                self::spec('rosa-home-evidence', 'home', ['evidence_eyebrow', 'evidence_title', 'evidence_body', 'evidence_1_title', 'evidence_1_body', 'evidence_2_title', 'evidence_2_body', 'evidence_3_title', 'evidence_3_body'], ['image' => 'home-evidence-01']),
+                self::spec('rosa-home-family-discovery', 'home', ['family_title']),
+                self::spec('rosa-home-comprehensive', 'home', [
+                    'comprehensive_title', 'comprehensive_body', 'comprehensive_lead_specialty',
+                    'comprehensive_specialty_1', 'comprehensive_specialty_2', 'comprehensive_specialty_3', 'comprehensive_specialty_4',
+                ], [
+                    'lead_image' => 'home-specialty-plastic-surgery',
+                    'specialty_1_image' => 'home-specialty-orthopedics',
+                    'specialty_2_image' => 'home-specialty-maxillofacial',
+                    'specialty_3_image' => 'home-specialty-orthodontics',
+                    'specialty_4_image' => 'home-specialty-spine',
+                ]),
+                self::spec('rosa-home-confidence', 'home', ['confidence_title', 'confidence_body', 'confidence_image_alt'], ['image' => 'home-securing-confidence']),
+                self::spec('rosa-home-contact-band', 'home', ['contact_eyebrow', 'contact_title', 'contact_whatsapp_label', 'contact_email_label']),
+                self::spec('rosa-home-assurance', 'home', [
+                    'assurance_title', 'assurance_badge',
+                    'assurance_1_title', 'assurance_1_body', 'assurance_2_title', 'assurance_2_body',
+                    'assurance_3_title', 'assurance_3_body', 'assurance_4_title', 'assurance_4_body',
+                ]),
+                self::spec('rosa-home-quotation', 'home', ['quotation_eyebrow', 'quotation_title', 'quotation_body', 'quotation_button']),
             ];
         }
 
