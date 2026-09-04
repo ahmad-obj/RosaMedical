@@ -13,6 +13,17 @@ final class MediaSettings
     {
         return [
             'logo',
+
+            // Latest Rosa Homepage parity media. These are the active Home slots.
+            'home-hero-01-desktop', 'home-hero-01-mobile',
+            'home-hero-02-desktop', 'home-hero-02-mobile',
+            'home-hero-03-desktop', 'home-hero-03-mobile',
+            'home-hero-04-desktop', 'home-hero-04-mobile',
+            'home-specialty-plastic-surgery', 'home-specialty-orthopedics',
+            'home-specialty-maxillofacial', 'home-specialty-orthodontics',
+            'home-specialty-spine', 'home-securing-confidence',
+
+            // Previous preview slots remain valid for rollback and existing attachments.
             'home-hero-01', 'home-who-01', 'home-feature-01',
             'home-promo-01', 'home-promo-02', 'home-promo-03', 'home-promo-04',
             'home-why-01', 'home-evidence-01', 'prefooter-person-01',
