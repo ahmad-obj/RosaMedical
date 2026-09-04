@@ -83,6 +83,38 @@ add_action('wp_enqueue_scripts', static function (): void {
             wp_enqueue_style('rosa-client-preview-rtl', get_stylesheet_directory_uri() . '/assets/css/client-preview-rtl.css', ['rosa-client-preview'], $version);
         }
         wp_enqueue_script('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/js/client-preview.js', [], $version, true);
+
+        // Latest-Rosa Homepage parity assets are intentionally scoped to the
+        // EN front page and its paired AR root after Elementor migration.
+        $currentId = is_page() ? (int) get_queried_object_id() : 0;
+        $frontId = (int) get_option('page_on_front', 0);
+        $pageUri = $currentId > 0 && function_exists('get_page_uri') ? trim((string) get_page_uri($currentId), '/') : '';
+        $isLatestHome = $pageTemplate === 'page-templates/rosa-elementor-authoring.php'
+            && $currentId > 0
+            && ($currentId === $frontId || ($pageUri === 'ar' && rosa_preview_locale($currentId) === 'ar'));
+
+        if ($isLatestHome) {
+            $latestHomeCss = get_stylesheet_directory() . '/assets/css/latest-rosa-home.css';
+            if (is_file($latestHomeCss)) {
+                wp_enqueue_style(
+                    'rosa-latest-home',
+                    get_stylesheet_directory_uri() . '/assets/css/latest-rosa-home.css',
+                    ['rosa-elementor-authoring'],
+                    $version
+                );
+            }
+
+            $latestHomeJs = get_stylesheet_directory() . '/assets/js/latest-rosa-home.js';
+            if (is_file($latestHomeJs)) {
+                wp_enqueue_script(
+                    'rosa-latest-home',
+                    get_stylesheet_directory_uri() . '/assets/js/latest-rosa-home.js',
+                    ['rosa-client-preview'],
+                    $version,
+                    true
+                );
+            }
+        }
     }
 });
 
