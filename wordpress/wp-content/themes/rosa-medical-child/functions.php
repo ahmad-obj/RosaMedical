@@ -104,42 +104,6 @@ add_action('wp_enqueue_scripts', static function (): void {
             wp_enqueue_style('rosa-client-preview-rtl', get_stylesheet_directory_uri() . '/assets/css/client-preview-rtl.css', ['rosa-client-preview'], $version);
         }
         wp_enqueue_script('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/js/client-preview.js', [], $version, true);
-
-        // Latest-Rosa Homepage parity assets switch on only after the safe
-        // Home migration marker is present. About/Contact and legacy Home stay
-        // on their existing presentation until their own explicit cutovers.
-        if (is_page() && rosa_is_latest_home_page((int) get_queried_object_id())) {
-            $latestHomeCss = get_stylesheet_directory() . '/assets/css/latest-rosa-home.css';
-            if (is_file($latestHomeCss)) {
-                wp_enqueue_style(
-                    'rosa-latest-home',
-                    get_stylesheet_directory_uri() . '/assets/css/latest-rosa-home.css',
-                    ['rosa-elementor-authoring'],
-                    $version
-                );
-            }
-
-            $latestHomeFidelityCss = get_stylesheet_directory() . '/assets/css/latest-rosa-home-fidelity.css';
-            if (is_file($latestHomeFidelityCss)) {
-                wp_enqueue_style(
-                    'rosa-latest-home-fidelity',
-                    get_stylesheet_directory_uri() . '/assets/css/latest-rosa-home-fidelity.css',
-                    ['rosa-latest-home'],
-                    $version
-                );
-            }
-
-            $latestHomeJs = get_stylesheet_directory() . '/assets/js/latest-rosa-home.js';
-            if (is_file($latestHomeJs)) {
-                wp_enqueue_script(
-                    'rosa-latest-home',
-                    get_stylesheet_directory_uri() . '/assets/js/latest-rosa-home.js',
-                    ['rosa-client-preview'],
-                    $version,
-                    true
-                );
-            }
-        }
     }
 });
 
