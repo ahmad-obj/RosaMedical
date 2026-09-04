@@ -65,7 +65,7 @@ async function assertAuthoringShell(page, path, lang, dir) {
   assert.match(rootStyle.gap, /^(0px|normal)$/, `${path} Elementor root introduced a section gap: ${rootStyle.gap}`);
 }
 
-async function assertAbout(page, path, desktop) {
+async function assertAbout(page, path, desktop, viewportWidth) {
   const selectors = [
     '[data-preview-page-hero]',
     '[data-preview-who-we-are]',
@@ -79,6 +79,19 @@ async function assertAbout(page, path, desktop) {
   for (const selector of selectors) assert.equal(await page.locator(selector).count(), 1, `${path} missing/duplicated About section ${selector}`);
   assert.equal(await columnCount(page.locator('.rosa-preview-about-cards__grid > article')), desktop ? 3 : 1, `${path} About cards column count mismatch`);
   assert.equal(await page.locator('[data-preview-stats] .rosa-preview-stats__grid > div').count(), 3, `${path} About statistics count changed`);
+
+  if (path === '/ar/about/' && desktop) {
+    const expectedInlineEnd = viewportWidth <= 1024 ? '42px' : '74px';
+    const copyPadding = await page.locator('[data-preview-who-we-are] .rosa-preview-split__grid > div:last-child').evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        paddingInlineStart: style.paddingInlineStart,
+        paddingInlineEnd: style.paddingInlineEnd,
+      };
+    });
+    assert.equal(copyPadding.paddingInlineStart, '0px', `${path} Who copy must not pad the inline start in RTL`);
+    assert.equal(copyPadding.paddingInlineEnd, expectedInlineEnd, `${path} Who copy must preserve finished-template logical inline-end padding`);
+  }
 }
 
 async function assertContact(page, path, desktop) {
@@ -92,7 +105,7 @@ async function assertContact(page, path, desktop) {
 }
 
 try {
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }]) {
     const desktop = viewport.width > 768;
     for (const [path, type, lang, dir] of [
       ['/about/', 'about', 'en-US', 'ltr'],
@@ -102,7 +115,7 @@ try {
     ]) {
       const page = await load(path, viewport);
       await assertAuthoringShell(page, path, lang, dir);
-      if (type === 'about') await assertAbout(page, path, desktop);
+      if (type === 'about') await assertAbout(page, path, desktop, viewport.width);
       else await assertContact(page, path, desktop);
       await page.close();
     }
