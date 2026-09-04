@@ -37,41 +37,35 @@ function expectSame(mixed $expected, mixed $actual, string $message): void
     }
 }
 
-expectSame(
-    'Surgical instruments for professional procurement.',
-    ContentSettings::get('home', 'hero_title', 'en'),
-    'missing option must resolve to exact English default'
-);
-expectSame(
-    'أدوات جراحية مخصصة لاحتياجات التوريد المهني.',
-    ContentSettings::get('home', 'hero_title', 'ar'),
-    'missing option must resolve to exact Arabic default'
-);
+expectSame('Our range of products', ContentSettings::get('home', 'family_title', 'en'), 'latest Home family title missing');
+expectSame('Comprehensive Plans', ContentSettings::get('home', 'comprehensive_title', 'en'), 'latest Home comprehensive title missing');
+expectSame('Securing Confidence', ContentSettings::get('home', 'confidence_title', 'en'), 'latest Home confidence title missing');
+expectSame('Get in Touch Now', ContentSettings::get('home', 'contact_title', 'en'), 'latest Home contact title missing');
+expectSame('Services Assure our Clients Success', ContentSettings::get('home', 'assurance_title', 'en'), 'latest Home assurance title missing');
+expectSame('Prepare your instruments inquiry.', ContentSettings::get('home', 'quotation_title', 'en'), 'latest Home quotation title missing');
+expectSame('Precision instruments. Procurement made clear.', ContentSettings::get('home', 'hero_1_title', 'en'), 'latest Home hero slide 1 missing');
+expectSame('حوّل تفاصيل الكتالوج إلى طلب واحد منظم.', ContentSettings::get('home', 'hero_4_title', 'ar'), 'latest Arabic Home hero slide 4 missing');
 
 $GLOBALS['rosa_test_options']['rosa_home_content'] = [
-    'en' => ['hero_title' => 'Changed safely'],
+    'en' => ['family_title' => 'Changed safely'],
     'ar' => [],
 ];
-expectSame('Changed safely', ContentSettings::get('home', 'hero_title', 'en'), 'stored English value must win');
-expectSame(
-    'أدوات جراحية مخصصة لاحتياجات التوريد المهني.',
-    ContentSettings::get('home', 'hero_title', 'ar'),
-    'missing Arabic value must retain Arabic default'
-);
+expectSame('Changed safely', ContentSettings::get('home', 'family_title', 'en'), 'stored English value must win');
+expectSame('مجموعة منتجاتنا', ContentSettings::get('home', 'family_title', 'ar'), 'missing Arabic value must retain Arabic default');
 expectSame('fallback', ContentSettings::get('home', 'not_allowed', 'en', 'fallback'), 'unknown keys return fallback');
-expectSame('fallback', ContentSettings::get('missing', 'hero_title', 'en', 'fallback'), 'unknown sections return fallback');
+expectSame('fallback', ContentSettings::get('missing', 'family_title', 'en', 'fallback'), 'unknown sections return fallback');
 
 $clean = ContentSettings::sanitizeSection('home', [
     'en' => [
-        'hero_title' => ' <b>Clean title</b> ',
-        'hero_body' => "  Line one\nLine two  ",
+        'family_title' => ' <b>Clean title</b> ',
+        'comprehensive_body' => "  Line one\nLine two  ",
         'not_allowed' => 'drop',
     ],
-    'ar' => ['hero_title' => ' عنوان '],
+    'ar' => ['family_title' => ' عنوان '],
 ]);
-expectSame('Clean title', $clean['en']['hero_title'], 'text fields are sanitized');
-expectSame("Line one\nLine two", $clean['en']['hero_body'], 'textarea fields preserve line breaks');
+expectSame('Clean title', $clean['en']['family_title'], 'text fields are sanitized');
+expectSame("Line one\nLine two", $clean['en']['comprehensive_body'], 'textarea fields preserve line breaks');
 expectSame(false, isset($clean['en']['not_allowed']), 'unknown keys are discarded');
-expectSame('عنوان', $clean['ar']['hero_title'], 'Arabic is sanitized independently');
+expectSame('عنوان', $clean['ar']['family_title'], 'Arabic is sanitized independently');
 
-fwrite(STDOUT, "PASS: ContentSettings contract\n");
+fwrite(STDOUT, "PASS: ContentSettings latest Home contract\n");
