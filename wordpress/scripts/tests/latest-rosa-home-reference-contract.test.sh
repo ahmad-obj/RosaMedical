@@ -11,6 +11,9 @@ SOURCE_HOME_INTERACTIONS="$ROOT/apps/web/src/styles/home-client-interaction-fixe
 SOURCE_FAMILY_CSS="$ROOT/apps/web/src/styles/public-feedback-fixes.css"
 WP_TOKENS="$ROOT/wordpress/wp-content/themes/rosa-medical-child/assets/css/tokens.css"
 WP_HOME_CSS="$ROOT/wordpress/wp-content/themes/rosa-medical-child/assets/css/latest-rosa-home.css"
+WP_HOME_FIDELITY="$ROOT/wordpress/wp-content/themes/rosa-medical-child/assets/css/latest-rosa-home-fidelity.css"
+WP_FUNCTIONS="$ROOT/wordpress/wp-content/themes/rosa-medical-child/functions.php"
+WP_TEMPLATE="$ROOT/wordpress/wp-content/themes/rosa-medical-child/page-templates/rosa-elementor-authoring.php"
 WP_SEED="$ROOT/wordpress/scripts/client-preview-seed.sh"
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 
@@ -29,6 +32,7 @@ for literal in '#e00815' '#b9000b' '#191917' '#2d2d2a' '#f9f7f2' '#ffffff' '#f1f
 done
 
 [[ -f "$WP_HOME_CSS" ]] || fail 'latest Rosa WordPress Home CSS is missing'
+[[ -f "$WP_HOME_FIDELITY" ]] || fail 'latest Rosa WordPress final fidelity CSS is missing'
 for literal in \
   'min-height: clamp(23.5rem, 44vw, 31rem)' \
   'height: min(57svh, 31rem)' \
@@ -45,12 +49,28 @@ for literal in \
   grep -Fq -- "$literal" "$WP_HOME_CSS" || fail "WordPress latest Home CSS contract missing: $literal"
 done
 
+for literal in \
+  'aspect-ratio: 560 / 786' \
+  'overflow: visible' \
+  'flex: 0 0 min(44vw, 10.75rem)' \
+  'scroll-snap-type: inline mandatory' \
+  'width: 2.45rem' \
+  'border-radius: 999px'; do
+  grep -Fq -- "$literal" "$WP_HOME_FIDELITY" || fail "WordPress final Home fidelity cascade missing: $literal"
+done
+
+grep -Fq 'latest-rosa-home-fidelity.css' "$WP_FUNCTIONS" || fail 'final Home fidelity stylesheet is not enqueued'
+grep -Fq "_rosa_elementor_home_parity_version" "$WP_FUNCTIONS" || fail 'latest Home assets are not gated by parity migration metadata'
+grep -Fq "rosa_is_latest_home_page" "$WP_TEMPLATE" || fail 'latest Home template does not suppress duplicate legacy CTA conditionally'
+
 for source_check in \
   "$SOURCE_HERO_CSS:min-height: clamp(23.5rem, 44vw, 31rem)" \
   "$SOURCE_HOME_CSS:grid-template-columns: repeat(4, minmax(0, 1fr))" \
   "$SOURCE_HOME_POLISH:min-height: 5.6rem" \
   "$SOURCE_HOME_INTERACTIONS:transform: scale(1.14)" \
-  "$SOURCE_FAMILY_CSS:grid-template-columns: repeat(5, minmax(0, 1fr))"; do
+  "$SOURCE_FAMILY_CSS:grid-template-columns: repeat(5, minmax(0, 1fr))" \
+  "$SOURCE_FAMILY_CSS:aspect-ratio: 560 / 786" \
+  "$SOURCE_FAMILY_CSS:flex: 0 0 min(44vw, 10.75rem)"; do
   file="${source_check%%:*}"
   literal="${source_check#*:}"
   grep -Fq -- "$literal" "$file" || fail "latest source CSS drifted: $literal"
@@ -66,5 +86,6 @@ for cover in \
 done
 
 grep -Fq 'rosa-reference/homepage-covers' "$WP_SEED" || fail 'family covers must be copied to deterministic WordPress uploads path'
+grep -Fq 'hash_file("sha256"' "$WP_SEED" || fail 'family cover copy must be verified by SHA-256'
 
-printf 'PASS: latest Rosa Homepage source order, hero timing, design tokens and parity CSS are pinned\n'
+printf 'PASS: latest Rosa Homepage source order, hero timing, design tokens and final parity cascade are pinned\n'
