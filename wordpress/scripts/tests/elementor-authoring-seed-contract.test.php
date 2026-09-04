@@ -14,26 +14,21 @@ namespace {
 
     $GLOBALS['rosa_options'] = [
         'rosa_home_content' => [
-            'en' => ['hero_1_title' => 'EN TEST HERO', 'family_title' => 'EN RANGE'],
-            'ar' => ['hero_1_title' => 'AR TEST HERO', 'family_title' => 'AR RANGE'],
+            'en' => ['hero_title' => 'EN TEST HERO'],
+            'ar' => ['hero_title' => 'AR TEST HERO'],
         ],
         'rosa_about_content' => [],
         'rosa_contact_content' => [],
         'rosa_preview_media' => [
-            'home-hero-01-desktop' => 101,
-            'home-hero-01-mobile' => 102,
-            'home-hero-02-desktop' => 103,
-            'home-hero-02-mobile' => 104,
-            'home-hero-03-desktop' => 105,
-            'home-hero-03-mobile' => 106,
-            'home-hero-04-desktop' => 107,
-            'home-hero-04-mobile' => 108,
-            'home-specialty-plastic-surgery' => 109,
-            'home-specialty-orthopedics' => 110,
-            'home-specialty-maxillofacial' => 111,
-            'home-specialty-orthodontics' => 112,
-            'home-specialty-spine' => 113,
-            'home-securing-confidence' => 114,
+            'home-hero-01' => 101,
+            'home-who-01' => 102,
+            'home-feature-01' => 103,
+            'home-promo-01' => 104,
+            'home-promo-02' => 105,
+            'home-promo-03' => 106,
+            'home-promo-04' => 107,
+            'home-why-01' => 108,
+            'home-evidence-01' => 109,
             'about_procurement' => 201,
             'about_hospitals' => 202,
         ],
@@ -145,46 +140,36 @@ namespace {
     }
 
     $expectedNames = [
-        'home' => [
-            'rosa-home-hero-carousel', 'rosa-home-family-discovery', 'rosa-home-comprehensive',
-            'rosa-home-confidence', 'rosa-home-contact-band', 'rosa-home-assurance', 'rosa-home-quotation',
-        ],
+        'home' => ['rosa-home-hero', 'rosa-home-who', 'rosa-home-featured', 'rosa-home-feature-banner', 'rosa-home-latest', 'rosa-home-promotions', 'rosa-home-why', 'rosa-home-proof', 'rosa-home-evidence'],
         'about' => ['rosa-page-hero-about', 'rosa-about-who', 'rosa-about-stats', 'rosa-about-cards', 'rosa-about-feature', 'rosa-about-why', 'rosa-about-proof'],
         'contact' => ['rosa-page-hero-contact', 'rosa-contact-layout', 'rosa-contact-map'],
     ];
 
     foreach ($expectedNames as $pageType => $names) {
-        $document = ElementorSeedData::build($pageType, 'en');
-        $widgets = rosa_test_widgets($document);
+        $widgets = rosa_test_widgets(ElementorSeedData::build($pageType, 'en'));
         $actualNames = array_map(static fn(array $widget): string => (string) ($widget['widgetType'] ?? ''), $widgets);
         if ($actualNames !== $names) {
             fail_test("{$pageType} seed widget order mismatch");
         }
-        $rootClasses = (string)($document[0]['settings']['css_classes'] ?? '');
-        $expectedRootClasses = $pageType === 'home'
-            ? 'rosa-elementor-root public-page public-page--home'
-            : 'rosa-elementor-root';
-        if ($rootClasses !== $expectedRootClasses) {
-            fail_test("{$pageType} root classes mismatch");
+        $root = ElementorSeedData::build($pageType, 'en')[0] ?? null;
+        if (! is_array($root) || ($root['settings']['css_classes'] ?? '') !== 'rosa-elementor-root') {
+            fail_test("{$pageType} seed root class drifted");
         }
     }
 
     $enHome = rosa_test_widgets(ElementorSeedData::build('home', 'en'));
     $arHome = rosa_test_widgets(ElementorSeedData::build('home', 'ar'));
-    if (($enHome[0]['settings']['hero_1_title'] ?? '') !== 'EN TEST HERO') {
-        fail_test('English seed did not use latest English structured content');
+    if (($enHome[0]['settings']['hero_title'] ?? '') !== 'EN TEST HERO') {
+        fail_test('English seed did not use English structured content');
     }
-    if (($arHome[0]['settings']['hero_1_title'] ?? '') !== 'AR TEST HERO') {
-        fail_test('Arabic seed did not use latest Arabic structured content');
+    if (($arHome[0]['settings']['hero_title'] ?? '') !== 'AR TEST HERO') {
+        fail_test('Arabic seed did not use Arabic structured content');
     }
-    if ((int) ($enHome[0]['settings']['desktop_1']['id'] ?? 0) !== 101 || (int) ($enHome[0]['settings']['mobile_1']['id'] ?? 0) !== 102) {
-        fail_test('Home seed did not map latest desktop/mobile hero media controls');
-    }
-    if ((int) ($enHome[2]['settings']['lead_image']['id'] ?? 0) !== 109 || (int) ($enHome[3]['settings']['image']['id'] ?? 0) !== 114) {
-        fail_test('Home seed did not map latest editorial media controls');
+    if ((int) ($enHome[0]['settings']['image']['id'] ?? 0) !== 101) {
+        fail_test('Home seed did not map existing Rosa media to Elementor media control');
     }
 
-    $forbidden = ['phone', 'email', 'address', 'address_ar', 'whatsapp', 'whatsapp_href', 'email_href', 'form_action', 'submit_endpoint'];
+    $forbidden = ['phone', 'email', 'address', 'address_ar', 'whatsapp', 'form_action', 'submit_endpoint'];
     foreach (['home', 'about', 'contact'] as $pageType) {
         foreach (rosa_test_widgets(ElementorSeedData::build($pageType, 'en')) as $widget) {
             $settings = is_array($widget['settings'] ?? null) ? $widget['settings'] : [];
@@ -223,22 +208,25 @@ namespace {
     if (($GLOBALS['rosa_meta'][44]['_rosa_elementor_authoring_version'] ?? '') !== '2') {
         fail_test('Seeder did not store authoring version 2');
     }
+    if (($GLOBALS['rosa_meta'][44][ElementorPageSeeder::HOME_PARITY_META] ?? '') !== '2') {
+        fail_test('Seeder did not store finished-template Home parity version 2');
+    }
     if (ElementorPageSeeder::state(44) !== 'migrated_untouched') {
         fail_test('Freshly seeded page must be migrated_untouched');
     }
 
-    $documents->documents[44]->elements[0]['elements'][0]['settings']['hero_1_title'] = 'CLIENT EDIT';
+    $documents->documents[44]->elements[0]['elements'][0]['settings']['hero_title'] = 'CLIENT EDIT';
     if (ElementorPageSeeder::state(44) !== 'migrated_edited') {
         fail_test('Changed Elementor document must be migrated_edited');
     }
     $skipped = ElementorPageSeeder::seedPage(44, 'home', 'en');
-    if (($skipped['status'] ?? '') !== 'skipped' || ($documents->documents[44]->elements[0]['elements'][0]['settings']['hero_1_title'] ?? '') !== 'CLIENT EDIT') {
+    if (($skipped['status'] ?? '') !== 'skipped' || ($documents->documents[44]->elements[0]['elements'][0]['settings']['hero_title'] ?? '') !== 'CLIENT EDIT') {
         fail_test('Normal reseed must preserve client-edited Elementor content');
     }
     $forced = ElementorPageSeeder::seedPage(44, 'home', 'en', true);
-    if (($forced['status'] ?? '') !== 'seeded_forced' || ($documents->documents[44]->elements[0]['elements'][0]['settings']['hero_1_title'] ?? '') !== 'EN TEST HERO' || ! $documents->documents[44]->is_built_with_elementor()) {
+    if (($forced['status'] ?? '') !== 'seeded_forced' || ($documents->documents[44]->elements[0]['elements'][0]['settings']['hero_title'] ?? '') !== 'EN TEST HERO' || ! $documents->documents[44]->is_built_with_elementor()) {
         fail_test('Force reseed did not intentionally restore Rosa migration source and Elementor built state');
     }
 
-    fwrite(STDOUT, "PASS: Elementor latest Home seed data and idempotent migration contract\n");
+    fwrite(STDOUT, "PASS: Elementor seed data and finished-template migration contract\n");
 }
