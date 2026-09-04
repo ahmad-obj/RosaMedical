@@ -43,7 +43,7 @@ for literal in \
   'aspect-ratio: 1.6 / 1' \
   'aspect-ratio: 5 / 6' \
   'transform: scale(1.14)' \
-  '@media (max-width: 64rem)' \
+  '@media (min-width: 40.001rem) and (max-width: 64rem)' \
   '@media (max-width: 40rem)' \
   '@media (prefers-reduced-motion: reduce)'; do
   grep -Fq -- "$literal" "$WP_HOME_CSS" || fail "WordPress latest Home CSS contract missing: $literal"
@@ -66,6 +66,7 @@ grep -Fq "rosa_is_latest_home_page" "$WP_TEMPLATE" || fail 'latest Home template
 for source_check in \
   "$SOURCE_HERO_CSS:min-height: clamp(23.5rem, 44vw, 31rem)" \
   "$SOURCE_HOME_CSS:grid-template-columns: repeat(4, minmax(0, 1fr))" \
+  "$SOURCE_HOME_POLISH:@media (min-width: 40.001rem) and (max-width: 64rem)" \
   "$SOURCE_HOME_POLISH:min-height: 5.6rem" \
   "$SOURCE_HOME_INTERACTIONS:transform: scale(1.14)" \
   "$SOURCE_FAMILY_CSS:grid-template-columns: repeat(5, minmax(0, 1fr))" \
