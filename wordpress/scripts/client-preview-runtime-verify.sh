@@ -17,8 +17,11 @@ cd "$ROOT_DIR"
 run php wordpress/scripts/tests/elementor-authoring-integration.test.php
 run php wordpress/scripts/tests/elementor-authoring-seed-contract.test.php
 run php wordpress/scripts/tests/elementor-authoring-root-class-migration.test.php
+run php wordpress/scripts/tests/elementor-home-parity-migration.test.php
+run php wordpress/scripts/tests/latest-rosa-home-elementor-contract.test.php
 
 source_tests=(
+  wordpress/scripts/tests/latest-rosa-home-reference-contract.test.sh
   wordpress/scripts/tests/foundation-preflight.test.sh
   wordpress/scripts/tests/foundation-contract.test.sh
   wordpress/scripts/tests/foundation-theme-contract.test.sh
@@ -47,7 +50,10 @@ run php wordpress/scripts/tests/client-preview-content.test.php
 while IFS= read -r -d '' file; do php -l "$file" >/dev/null || fail "PHP syntax error: $file"; done < <(find wordpress/wp-content -type f -name '*.php' -print0)
 while IFS= read -r -d '' file; do bash -n "$file" || fail "shell syntax error: $file"; done < <(find wordpress/scripts -type f -name '*.sh' -print0)
 run node --check "$THEME/assets/js/client-preview.js"
+run node --check "$THEME/assets/js/latest-rosa-home.js"
 run node --check "$ROOT_DIR/wordpress/wp-content/plugins/rosa-medical-core/assets/admin/rosa-content-admin.js"
+run node --check wordpress/scripts/tests/latest-rosa-home-parity.test.mjs
+run node --check wordpress/scripts/latest-rosa-home-parity-capture.mjs
 run node --check wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs
 run node wordpress/scripts/tests/client-preview-capture.test.mjs
 
@@ -163,7 +169,7 @@ run bash wordpress/scripts/tests/client-preview-content-zero-drift.test.sh
 run bash wordpress/scripts/tests/client-preview-content-mutation.test.sh
 run bash wordpress/scripts/tests/elementor-authoring-mutation.test.sh
 run node wordpress/scripts/tests/client-preview-accessibility.test.mjs "$home_url"
-run node wordpress/scripts/tests/client-preview-home-fidelity.test.mjs "$home_url"
+run node wordpress/scripts/tests/latest-rosa-home-parity.test.mjs "$home_url"
 run node wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs "$home_url"
 
-printf 'PASS: Rosa client preview source, runtime, Elementor authoring, bilingual routes, editable content and Stevens foundation regression\n'
+printf 'PASS: Rosa WordPress runtime, latest Homepage parity, Elementor authoring, bilingual routes, editable content and Stevens foundation regression\n'
