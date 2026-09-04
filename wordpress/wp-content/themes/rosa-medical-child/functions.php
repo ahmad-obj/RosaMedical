@@ -10,6 +10,27 @@ if (! defined('ABSPATH')) {
 require_once __DIR__ . '/inc/client-preview.php';
 require_once __DIR__ . '/inc/client-preview-navigation.php';
 
+function rosa_is_latest_home_page(?int $postId = null): bool
+{
+    $postId = $postId ?? (int) get_queried_object_id();
+    if ($postId <= 0 || get_post_type($postId) !== 'page') {
+        return false;
+    }
+
+    if ((string) get_page_template_slug($postId) !== 'page-templates/rosa-elementor-authoring.php') {
+        return false;
+    }
+
+    if ((string) get_post_meta($postId, '_rosa_elementor_home_parity_version', true) !== '1') {
+        return false;
+    }
+
+    $frontId = (int) get_option('page_on_front', 0);
+    $pageUri = function_exists('get_page_uri') ? trim((string) get_page_uri($postId), '/') : '';
+
+    return $postId === $frontId || ($pageUri === 'ar' && rosa_preview_locale($postId) === 'ar');
+}
+
 add_action('after_setup_theme', static function (): void {
     add_theme_support('title-tag');
     add_theme_support('custom-logo');
@@ -84,16 +105,10 @@ add_action('wp_enqueue_scripts', static function (): void {
         }
         wp_enqueue_script('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/js/client-preview.js', [], $version, true);
 
-        // Latest-Rosa Homepage parity assets are intentionally scoped to the
-        // EN front page and its paired AR root after Elementor migration.
-        $currentId = is_page() ? (int) get_queried_object_id() : 0;
-        $frontId = (int) get_option('page_on_front', 0);
-        $pageUri = $currentId > 0 && function_exists('get_page_uri') ? trim((string) get_page_uri($currentId), '/') : '';
-        $isLatestHome = $pageTemplate === 'page-templates/rosa-elementor-authoring.php'
-            && $currentId > 0
-            && ($currentId === $frontId || ($pageUri === 'ar' && rosa_preview_locale($currentId) === 'ar'));
-
-        if ($isLatestHome) {
+        // Latest-Rosa Homepage parity assets switch on only after the safe
+        // Home migration marker is present. About/Contact and legacy Home stay
+        // on their existing presentation until their own explicit cutovers.
+        if (is_page() && rosa_is_latest_home_page((int) get_queried_object_id())) {
             $latestHomeCss = get_stylesheet_directory() . '/assets/css/latest-rosa-home.css';
             if (is_file($latestHomeCss)) {
                 wp_enqueue_style(
