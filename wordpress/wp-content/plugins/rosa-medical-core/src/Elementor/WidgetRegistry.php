@@ -40,15 +40,13 @@ final class WidgetRegistry
     public static function widgetClasses(): array
     {
         return [
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeHeroWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeWhoWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeFeaturedWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeFeatureBannerWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeLatestWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomePromotionsWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeWhyWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeProofWidget',
-            'RosaMedical\\Core\\Elementor\\Widgets\\HomeEvidenceWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\HomeHeroCarouselWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\HomeFamilyDiscoveryWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\HomeComprehensiveWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\HomeConfidenceWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\HomeContactBandWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\HomeAssuranceWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\HomeQuotationWidget',
             'RosaMedical\\Core\\Elementor\\Widgets\\AboutHeroWidget',
             'RosaMedical\\Core\\Elementor\\Widgets\\AboutWhoWidget',
             'RosaMedical\\Core\\Elementor\\Widgets\\AboutStatsWidget',
