@@ -25,14 +25,29 @@ html[dir="rtl"] [data-preview-who-we-are] .rosa-preview-split__grid > div:last-c
   padding-inline-end: 74px;
 }
 
+/* Preserve the finished-template logical spacing for the Home introduction.
+ * The LTR source uses physical right padding, so mirror it explicitly in RTL. */
+html[dir="rtl"] [data-home-section="who"] .rosa-preview-who__copy {
+  padding-inline-start: 0;
+  padding-inline-end: 74px;
+}
+
 @media (max-width: 64rem) {
   html[dir="rtl"] [data-preview-who-we-are] .rosa-preview-split__grid > div:last-child {
+    padding-inline-end: 42px;
+  }
+
+  html[dir="rtl"] [data-home-section="who"] .rosa-preview-who__copy {
     padding-inline-end: 42px;
   }
 }
 
 @media (max-width: 47.9375rem) {
   html[dir="rtl"] [data-preview-who-we-are] .rosa-preview-split__grid > div:last-child {
+    padding-inline-end: 0;
+  }
+
+  html[dir="rtl"] [data-home-section="who"] .rosa-preview-who__copy {
     padding-inline-end: 0;
   }
 }
