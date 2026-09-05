@@ -43,13 +43,14 @@ async function columnCount(locator) {
   return boxes.filter(({ y }) => Math.abs(y - firstRowY) <= 2).length;
 }
 
-async function loadHome(width, height) {
+async function loadHome(width, height, path = '') {
   const page = await browser.newPage({ viewport: { width, height } });
   const forbidden = [];
   page.on('request', (request) => {
     if (/preview\.themeforest\.net|fullkit\.moxcreative\.com|elements?kit|skyboot/i.test(request.url())) forbidden.push(request.url());
   });
-  await page.goto(baseUrl.href, { waitUntil: 'load' });
+  const url = new URL(path, baseUrl);
+  await page.goto(url.href, { waitUntil: 'load' });
   await settlePageMedia(page, { scrollDelayMs: 10 });
   assert.deepEqual(forbidden, [], `${width}px Home requested target/proprietary resources`);
   return page;
@@ -75,6 +76,18 @@ async function assertSharedHome(page, width) {
     return bounds.width > 0 && bounds.height > 0 && image.checkVisibility() && (!image.complete || image.naturalWidth === 0);
   }).map((image) => image.currentSrc || image.src));
   assert.deepEqual(visibleBrokenImages, [], `${width}px Home contains visibly broken images`);
+}
+
+async function assertRtlHomeWhoPadding(page, width, expectedInlineEnd) {
+  const padding = await page.locator('.rosa-preview-who__copy').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      left: Number.parseFloat(style.paddingLeft),
+      right: Number.parseFloat(style.paddingRight),
+    };
+  });
+  near(padding.left, expectedInlineEnd - 0.5, expectedInlineEnd + 0.5, `${width}px Arabic Home Who physical left padding`);
+  near(padding.right, 0, 0.5, `${width}px Arabic Home Who physical right padding`);
 }
 
 async function assertNoVerticalCollisions(page, width) {
@@ -121,6 +134,20 @@ try {
     near(promoColumns[0] / (promoColumns[0] + promoColumns[1]), 0.28, 0.32, '1024 promo primary column ratio');
     assert.equal(await page.locator('.rosa-preview-prefooter__media').isVisible(), true, '1024 pre-footer media must remain visible');
     assert.equal(await columnCount(page.locator('.rosa-preview-footer__grid > .rosa-preview-footer__column')), 1, '1024 footer must retain the target brand row');
+    await page.close();
+  }
+
+  {
+    const page = await loadHome(1440, 900, 'ar/');
+    await assertSharedHome(page, 1440);
+    await assertRtlHomeWhoPadding(page, 1440, 74);
+    await page.close();
+  }
+
+  {
+    const page = await loadHome(1024, 768, 'ar/');
+    await assertSharedHome(page, 1024);
+    await assertRtlHomeWhoPadding(page, 1024, 42);
     await page.close();
   }
 
