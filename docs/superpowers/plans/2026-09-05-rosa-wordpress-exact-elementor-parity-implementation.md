@@ -2,46 +2,46 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Finish converting the approved Rosa/MedicaShop-derived WordPress site into a genuinely Elementor Free-editable bilingual site while keeping Home, About, Contact, Shop, shared shell, and supported catalogue surfaces visually faithful to the finished Rosa implementation and preserving WooCommerce/settings ownership.
+**Goal:** Finish converting the approved Rosa/MedicaShop-derived WordPress site into a genuinely Elementor Free-editable bilingual site while preserving the finished public appearance, WooCommerce catalogue ownership, centralized Rosa settings, RTL behavior, and safe edit-preserving migrations.
 
-**Architecture:** Keep the pinned finished Rosa branch at `d0726eed34b4fc14267570853ade8b74df49ae9e` as the primary visual/source reference and run it as an isolated local reference runtime when visual diagnosis is required. Elementor remains only the editing interface for Home/About/Contact body content: custom Rosa widgets delegate to the existing theme partials and target CSS/RTL/JS. WooCommerce owns catalogue truth, Rosa settings own shared business/site values, and visual repairs must be root-cause fixes backed by RED→GREEN tests rather than new redesign CSS.
+**Architecture:** The pinned finished Rosa implementation at `d0726eed34b4fc14267570853ade8b74df49ae9e` remains the primary visual/source authority. Home/About/Contact stay genuine Elementor Free documents, but their Rosa widgets only pass editable content/media into the established child-theme renderers; Elementor does not own layout geometry. Shop/Product surfaces stay Woo/theme-owned, shared shell/CTA stays theme/settings-owned, and all visual repairs must begin with measured target/current evidence and a focused RED→GREEN regression.
 
-**Tech Stack:** WordPress/PHP 8+, Hello Elementor, Elementor Free, WooCommerce, Bash/WP-CLI, Docker Compose, vanilla CSS/JS, Playwright through `apps/web`, Git worktrees for isolated reference execution.
+**Tech Stack:** WordPress/PHP 8+, Hello Elementor, Elementor Free, WooCommerce, Docker Compose, Bash/WP-CLI, vanilla CSS/JS, Playwright via `apps/web`, Git worktrees for the isolated finished-target runtime.
 
 **Spec:** `docs/superpowers/specs/2026-09-05-rosa-wordpress-exact-elementor-parity-master-design.md`
 
 ## Global Constraints
 
-- Working branch: `wordpress/client-content-controls`.
-- Remote branch baseline when this plan was written: `e39e48781ee27ba2d6730c58903de9ddc0b0a7f0`.
-- Pinned finished-template source: `wordpress/client-preview-medicashop-recreation` at `d0726eed34b4fc14267570853ade8b74df49ae9e`.
-- Do not use `apps/web/**` as visual authority for this conversion.
-- Do not redesign the site.
-- Elementor Free owns EN/AR Home, About, and Contact body copy/media only.
-- Theme/code owns announcement, header, footer, navigation, responsive/RTL behavior, shared pre-footer CTA structure, and Woo presentation.
-- WooCommerce remains sole truth for products, categories/families, product media, SKUs, attributes/configurations, descriptions, publish state, and future pricing.
-- Rosa centralized settings remain sole truth for phone, email, address, Arabic address, WhatsApp, and shared Site/CTA values.
-- Do not serialize Woo product records or shared business data into Elementor documents.
-- No Elementor Pro.
-- No public checkout/payment/cart behavior.
-- No new Contact backend; Contact remains presentation/mailto oriented.
-- No routine use of `elementor-authoring-seed.sh --force`.
-- Do not weaken historical geometry, accessibility, overflow, RTL, or interaction assertions to make a defect pass.
-- Required visual viewports: 1440×900, 1280×800, 1024×768, 768×1024, 431×932, 390×844, 360×800; retain 1920/2560 where existing capture already supports them.
-- Preserve `rosa-elementor-root` full-width/zero-gap/zero-padding/non-wrapping safeguards.
-- Do not delete/stash/overwrite local untracked secondary-page work before inspecting it.
-- Do not merge or delete the branch during this plan.
-- Hostinger/production is out of scope until a separate explicit deployment approval.
+- Work on `wordpress/client-content-controls`; do not merge/delete it during this plan.
+- Plan baseline commit: `e39e48781ee27ba2d6730c58903de9ddc0b0a7f0`.
+- Finished visual/source authority: `d0726eed34b4fc14267570853ade8b74df49ae9e` from `wordpress/client-preview-medicashop-recreation`.
+- `https://rosamedical.org/` is external confirmation only; if it materially conflicts with the pinned branch, document the conflict instead of silently changing authority.
+- `apps/web/**` is not visual authority for this conversion.
+- Do not redesign Rosa Medical.
+- Elementor Free owns EN/AR Home, About, Contact body copy/media only.
+- Child theme/code owns announcement, header, footer, navigation, target DOM/classes, CSS, RTL, JS, shared pre-footer CTA structure, and Woo public templates.
+- WooCommerce owns products, categories/families, product media, SKUs, attributes/configurations, descriptions, publish state, and future pricing.
+- Rosa centralized settings own phone, email, address, Arabic address, WhatsApp, and shared Site/CTA values.
+- Do not duplicate Woo records or shared business values inside Elementor JSON.
+- No Elementor Pro or proprietary MedicaShop runtime assets.
+- No public cart/checkout/payment flow.
+- Contact remains presentation/mailto-oriented; do not add a submission backend.
+- `elementor-authoring-seed.sh --force` is never a routine migration path.
+- Preserve `rosa-elementor-root` full-width, zero-gap, zero-padding, non-wrapping safeguards.
+- Do not weaken existing geometry, RTL, overflow, accessibility, interaction, or console/network thresholds to make a failure disappear.
+- Required viewports: 1440×900, 1280×800, 1024×768, 768×1024, 431×932, 390×844, 360×800. Retain existing 1920/2560 capture coverage.
+- Inspect and preserve reported local untracked secondary-page work before touching competing files.
+- No Hostinger/production action is authorized by this plan.
 
 ---
 
-## File Structure
+## File Map
 
-### Existing production files to modify only when a failing test proves the need
+### Visual/authoring production files
 
-- `wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview-rtl.css` — route-specific RTL corrections only.
+- `wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview-rtl.css` — RTL-specific corrections only.
 - `wordpress/wp-content/themes/rosa-medical-child/assets/css/elementor-authoring.css` — Elementor wrapper neutralization only.
-- `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/page-hero.php` — shared About/Contact hero renderer.
+- `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/page-hero.php`
 - `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-who.php`
 - `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-stats.php`
 - `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-cards.php`
@@ -51,20 +51,20 @@
 - `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/contact-layout.php`
 - `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/contact-map.php`
 - `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/cta-banner.php`
+- `wordpress/wp-content/themes/rosa-medical-child/header.php`
+- `wordpress/wp-content/themes/rosa-medical-child/footer.php`
 - `wordpress/wp-content/themes/rosa-medical-child/woocommerce/archive-product.php`
 - `wordpress/wp-content/themes/rosa-medical-child/page-templates/client-preview-shop.php`
 - `wordpress/wp-content/plugins/rosa-medical-core/templates/product-detail-prototype.php`
 - `wordpress/wp-content/plugins/rosa-medical-core/src/Elementor/Widgets/AboutWidgets.php`
 - `wordpress/wp-content/plugins/rosa-medical-core/src/Elementor/Widgets/ContactWidgets.php`
 - `wordpress/wp-content/plugins/rosa-medical-core/src/Elementor/ElementorSeedData.php`
-- `wordpress/wp-content/plugins/rosa-medical-core/src/Admin/RosaAdmin.php`
-- `wordpress/wp-content/plugins/rosa-medical-core/src/Admin/ElementorShortcutPage.php`
-- `wordpress/wp-content/plugins/rosa-medical-core/src/Settings/BusinessSettings.php`
 
-### Existing tests/tooling to strengthen
+### Verification/tooling files
 
 - `wordpress/scripts/tests/medicashop-elementor-home-fidelity.test.mjs`
 - `wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs`
+- `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs` — adopt the reported local file if present; otherwise create it in Task 2.
 - `wordpress/scripts/tests/client-preview-accessibility.test.mjs`
 - `wordpress/scripts/tests/client-preview-about-contract.test.sh`
 - `wordpress/scripts/tests/client-preview-contact-contract.test.sh`
@@ -74,12 +74,10 @@
 - `wordpress/scripts/tests/client-preview-content-mutation.test.sh`
 - `wordpress/scripts/tests/client-preview-content-zero-drift.test.sh`
 - `wordpress/scripts/tests/client-preview-runtime-tooling.test.sh`
-- `wordpress/scripts/client-preview-runtime-verify.sh`
 - `wordpress/scripts/medicashop-elementor-parity-capture.mjs`
+- `wordpress/scripts/client-preview-runtime-verify.sh`
 
-### Local untracked work that must be inspected before competing edits
-
-The prior operator reported these local files; GitHub does not prove their current contents:
+### Reported local untracked work — inspect first
 
 ```text
 docs/superpowers/plans/2026-09-01-rosa-wordpress-medicashop-secondary-pages-fidelity-implementation.md
@@ -93,23 +91,21 @@ wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/sho
 wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/shop-products.php
 ```
 
-If any exist, preserve them, read them completely, and either adopt them deliberately or leave them untouched. Never replace them merely because a tracked plan proposes a similarly named file.
+Do not stage, delete, replace, or rename these until Task 0 records their contents and decides whether they are reusable.
 
 ---
 
-### Task 0: Freeze the Execution Baseline and Protect Local Work
+### Task 0: Freeze State and Protect Existing Local Work
 
 **Files:**
-- Inspect only: repository state and the local untracked files listed above.
-- Create local-only evidence directory: `artifacts/exact-elementor-parity/preflight/`.
+- Read only: repository/worktree state and every reported untracked file above.
+- Local evidence: `artifacts/exact-elementor-parity/preflight/`.
 
 **Interfaces:**
-- Consumes: branch `wordpress/client-content-controls` and remote baseline `e39e48781ee27ba2d6730c58903de9ddc0b0a7f0`.
-- Produces: a trusted execution-state report and an inventory of local work that later tasks must preserve.
+- Consumes: current local checkout plus remote branch.
+- Produces: trusted baseline and local-work inventory used by all later tasks.
 
-- [ ] **Step 1: Record repository identity and dirty state without changing anything**
-
-Run:
+- [ ] **Step 1: Record branch, HEAD, remote, and dirty state**
 
 ```bash
 mkdir -p artifacts/exact-elementor-parity/preflight
@@ -121,11 +117,9 @@ mkdir -p artifacts/exact-elementor-parity/preflight
 } | tee artifacts/exact-elementor-parity/preflight/repository-state.txt
 ```
 
-Expected: branch is `wordpress/client-content-controls`. If local HEAD is not the current remote HEAD, record the difference; do not reset/rebase/stash automatically.
+Expected: branch is `wordpress/client-content-controls`. Do not auto-reset/rebase/stash if local HEAD or status differs.
 
-- [ ] **Step 2: Read every known local secondary-page artifact before touching the same area**
-
-Run:
+- [ ] **Step 2: Record every reported local secondary artifact**
 
 ```bash
 for file in \
@@ -140,42 +134,38 @@ for file in \
   wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/shop-products.php; do
   if [[ -f "$file" ]]; then
     printf '\n===== %s =====\n' "$file"
-    sed -n '1,320p' "$file"
+    sed -n '1,400p' "$file"
   fi
 done | tee artifacts/exact-elementor-parity/preflight/local-secondary-work.txt
 ```
 
-Expected: no file is modified. Before Task 2, write a short local note stating which untracked artifacts contain reusable evidence/code.
+Expected: no source file changes.
 
-- [ ] **Step 3: Confirm the pinned reference commit exists locally**
-
-Run:
+- [ ] **Step 3: Verify the pinned target commit exists**
 
 ```bash
 git cat-file -e d0726eed34b4fc14267570853ade8b74df49ae9e^{commit}
 ```
 
-Expected: exit 0. If absent, fetch the named branch/commit without changing the working branch.
+Expected: exit 0. Fetch the named reference if missing; do not switch/reset the implementation branch.
 
 - [ ] **Step 4: Commit nothing**
 
-This task is deliberately read-only.
+Task 0 is read-only.
 
 ---
 
-### Task 1: Close the Existing Arabic Home Who-Section RTL RED→GREEN Boundary
+### Task 1: Finish the Existing Arabic Home Who RTL RED→GREEN Boundary
 
 **Files:**
-- Test already present: `wordpress/scripts/tests/medicashop-elementor-home-fidelity.test.mjs`
+- Test: `wordpress/scripts/tests/medicashop-elementor-home-fidelity.test.mjs`
 - Modify: `wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview-rtl.css`
 
 **Interfaces:**
-- Consumes: existing `assertRtlHomeWhoPadding(page, width, expectedInlineEnd)` test.
-- Produces: Home Who copy spacing mirrored logically in Arabic: desktop inline-end 74px, tablet 42px, mobile 0.
+- Consumes: committed `assertRtlHomeWhoPadding()` regression.
+- Produces: Arabic Home Who spacing mirrored logically: 74px desktop, 42px tablet, 0 mobile.
 
-- [ ] **Step 1: Prepare the local runtime without force-reseeding edited documents**
-
-Run:
+- [ ] **Step 1: Prepare local runtime without force reseeding**
 
 ```bash
 bash wordpress/scripts/foundation-bootstrap.sh
@@ -184,21 +174,19 @@ bash wordpress/scripts/foundation-seed.sh
 bash wordpress/scripts/elementor-authoring-seed.sh
 ```
 
-Do not retry with `--force` if the seed script reports `home_parity_manual_required`.
+If `home_parity_manual_required` appears, stop and preserve the edited Home document.
 
-- [ ] **Step 2: Observe RED before changing production CSS**
-
-Run:
+- [ ] **Step 2: Observe RED**
 
 ```bash
 node wordpress/scripts/tests/medicashop-elementor-home-fidelity.test.mjs http://localhost:8088/
 ```
 
-Expected: FAIL on Arabic Home `.rosa-preview-who__copy` physical padding at 1440 and/or 1024. Record the exact assertion output.
+Expected: fail on Arabic `.rosa-preview-who__copy` physical padding at 1440 and/or 1024. Save the exact failure output.
 
-- [ ] **Step 3: Apply the minimum Home-specific RTL correction**
+- [ ] **Step 3: Add the minimum RTL rule**
 
-Append to `client-preview-rtl.css` after the existing About RTL rule:
+Append after the existing About RTL spacing rules:
 
 ```css
 html[dir="rtl"] [data-home-section="who"] .rosa-preview-who__copy {
@@ -219,11 +207,9 @@ html[dir="rtl"] [data-home-section="who"] .rosa-preview-who__copy {
 }
 ```
 
-Do not modify `client-preview.css`; its hash is pinned to the finished target.
+Do not edit `client-preview.css`.
 
 - [ ] **Step 4: Verify focused GREEN**
-
-Run:
 
 ```bash
 node wordpress/scripts/tests/medicashop-elementor-home-fidelity.test.mjs http://localhost:8088/
@@ -231,9 +217,7 @@ node wordpress/scripts/tests/medicashop-elementor-home-fidelity.test.mjs http://
 
 Expected: PASS.
 
-- [ ] **Step 5: Run the broader verifier**
-
-Run:
+- [ ] **Step 5: Verify full runtime**
 
 ```bash
 bash wordpress/scripts/client-preview-runtime-verify.sh
@@ -245,9 +229,7 @@ Expected final line:
 PASS: Rosa WordPress runtime matches the finished template with Elementor authoring, bilingual routes, editable content and catalogue regressions intact
 ```
 
-- [ ] **Step 6: Refresh Home visual evidence**
-
-Run:
+- [ ] **Step 6: Refresh Home captures and freeze Home**
 
 ```bash
 node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
@@ -256,7 +238,7 @@ node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
   artifacts/exact-elementor-parity/home-after-rtl
 ```
 
-Inspect EN/AR 1440, 1024, and 390 full-page captures. Freeze Home after this task unless later direct evidence proves a new defect.
+Inspect EN/AR 1440, 1024, 390. Do not widen scope into Home cleanup unless new direct evidence proves another defect.
 
 - [ ] **Step 7: Commit**
 
@@ -267,20 +249,20 @@ git commit -m "fix(wordpress): mirror Home Who spacing in Arabic"
 
 ---
 
-### Task 2: Build Deterministic Secondary-Page Reference/Local Parity Tooling
+### Task 2: Add Deterministic Secondary-Page Parity Tooling
 
 **Files:**
 - Modify: `wordpress/scripts/medicashop-elementor-parity-capture.mjs`
-- Adopt/modify after Task 0 inspection: `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs`
+- Create/adopt: `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs`
 - Modify: `wordpress/scripts/tests/client-preview-runtime-tooling.test.sh`
 
 **Interfaces:**
-- Consumes: reference base URL, local base URL, Playwright.
-- Produces: deterministic screenshots + geometry/style JSON for Home/About/Contact/Shop EN/AR and a reusable target/local browser comparison test.
+- Consumes: two base URLs and Playwright.
+- Produces: route/viewport screenshots plus computed geometry/style evidence; secondary test compares pinned target to current runtime.
 
-- [ ] **Step 1: Extend capture route definitions**
+- [ ] **Step 1: Expand capture routes**
 
-Replace the Home-only locale list with:
+Use:
 
 ```js
 const routes = [
@@ -295,23 +277,12 @@ const routes = [
 ];
 ```
 
-Keep the existing seven required viewports.
+Keep all seven required viewports.
 
-- [ ] **Step 2: Record route-specific section boxes and computed styles**
-
-Add:
+- [ ] **Step 2: Record route-specific selectors**
 
 ```js
 const selectorsByKind = {
-  home: [
-    '.rosa-preview-announcement', '.rosa-preview-header',
-    '[data-home-section="hero"]', '[data-home-section="who"]',
-    '[data-home-section="featured"]', '[data-home-section="feature"]',
-    '[data-home-section="latest"]', '[data-home-section="promos"]',
-    '[data-home-section="why"]', '[data-home-section="proof"]',
-    '[data-home-section="evidence"]', '.rosa-preview-prefooter',
-    '[data-rosa-preview-footer]',
-  ],
   about: [
     '.rosa-preview-announcement', '.rosa-preview-header',
     '[data-preview-page-hero]', '[data-preview-who-we-are]',
@@ -328,31 +299,18 @@ const selectorsByKind = {
   ],
   shop: [
     '.rosa-preview-announcement', '.rosa-preview-header',
-    '[data-preview-shop-hero]', '.rosa-preview-shop-search',
+    '.rosa-preview-shop-hero', '.rosa-preview-shop-search',
     '.rosa-preview-shop-grid', '.rosa-preview-pagination',
     '.rosa-preview-prefooter', '[data-rosa-preview-footer]',
   ],
 };
 ```
 
-For each selector that exists, store:
+For each existing selector write JSON containing box `{x,y,width,height}` and computed `display`, `gridTemplateColumns`, physical padding/margins, `fontSize`, `lineHeight`, `backgroundColor`, `borderRadius`.
 
-```js
-{
-  x, y, width, height,
-  display,
-  gridTemplateColumns,
-  paddingTop, paddingRight, paddingBottom, paddingLeft,
-  marginTop, marginRight, marginBottom, marginLeft,
-  fontSize, lineHeight,
-  backgroundColor,
-  borderRadius,
-}
-```
+- [ ] **Step 3: Use deterministic artifact names**
 
-- [ ] **Step 3: Make screenshots and JSON deterministic**
-
-Use stems such as:
+Example:
 
 ```text
 reference/en-about-1440x900-full.png
@@ -361,11 +319,11 @@ local/en-about-1440x900-full.png
 local/en-about-1440x900-metrics.json
 ```
 
-Fail capture if visible images are broken or navigation fails.
+Fail on visible broken images or page navigation failure.
 
-- [ ] **Step 4: Track the secondary comparison test**
+- [ ] **Step 4: Implement secondary comparison contract**
 
-The test must accept:
+Command:
 
 ```bash
 node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs \
@@ -373,36 +331,19 @@ node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs \
   http://localhost:8088/
 ```
 
-Use these tolerances:
+Compare About/Contact/Shop EN/AR only; Home keeps its dedicated historical fidelity test. Use:
 
 ```js
-const tolerance = {
-  position: 2,
-  size: 2,
-  font: 0.6,
-  spacing: 1,
-};
+const tolerance = { position: 2, size: 2, font: 0.6, spacing: 1 };
 ```
 
-For every compared selector, print the route, viewport, selector, target value, and current value in the assertion failure. Do not widen tolerances to hide a known mismatch.
+Each assertion failure must print route, viewport, selector, target value, current value. Text/content mismatches are reported separately from geometry so intentional editor content does not get misdiagnosed as CSS drift.
 
-- [ ] **Step 5: Strengthen the tooling contract**
+- [ ] **Step 5: Strengthen tooling contract**
 
-Add these source assertions to `client-preview-runtime-tooling.test.sh`:
+Add checks requiring `/about/`, `/ar/about/`, `/contact/`, `/ar/contact/`, `/shop/`, `/ar/shop/` in the capture script and requiring `client-preview-secondary-fidelity.test.mjs` to exist.
 
-```bash
-grep -Fq "'/about/'" "$PARITY_CAPTURE" || fail 'About parity capture missing'
-grep -Fq "'/ar/about/'" "$PARITY_CAPTURE" || fail 'Arabic About parity capture missing'
-grep -Fq "'/contact/'" "$PARITY_CAPTURE" || fail 'Contact parity capture missing'
-grep -Fq "'/ar/contact/'" "$PARITY_CAPTURE" || fail 'Arabic Contact parity capture missing'
-grep -Fq "'/shop/'" "$PARITY_CAPTURE" || fail 'Shop parity capture missing'
-grep -Fq "'/ar/shop/'" "$PARITY_CAPTURE" || fail 'Arabic Shop parity capture missing'
-[[ -f "$ROOT/wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs" ]] || fail 'secondary fidelity test missing'
-```
-
-- [ ] **Step 6: Run syntax/tooling verification**
-
-Run:
+- [ ] **Step 6: Verify tooling**
 
 ```bash
 node --check wordpress/scripts/medicashop-elementor-parity-capture.mjs
@@ -412,7 +353,7 @@ bash wordpress/scripts/tests/client-preview-runtime-tooling.test.sh
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit tooling only**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add wordpress/scripts/medicashop-elementor-parity-capture.mjs \
@@ -423,52 +364,61 @@ git commit -m "test(wordpress): add secondary-page parity diagnostics"
 
 ---
 
-### Task 3: Run the Pinned Finished Branch as an Isolated Local Reference
+### Task 3: Run the Pinned Finished Branch as an Isolated Reference Runtime
 
 **Files:**
-- No tracked production files.
-- Create a detached reference worktree selected by `superpowers:using-git-worktrees`.
-- Local-only `wordpress/dev/.env` in that worktree.
+- No production-file changes.
+- Reference worktree: `.worktrees/rosa-medicashop-target` from the repository root.
+- Local-only `.worktrees/rosa-medicashop-target/wordpress/dev/.env`.
 
 **Interfaces:**
 - Consumes: pinned commit `d0726eed34b4fc14267570853ade8b74df49ae9e`.
-- Produces: deterministic finished-template reference at `http://localhost:8090/`.
+- Produces: finished-template reference runtime at `http://localhost:8090/`.
 
-- [ ] **Step 1: Invoke the worktree skill before creating the checkout**
+- [ ] **Step 1: Invoke `superpowers:using-git-worktrees` and perform its safety checks**
 
-Use `superpowers:using-git-worktrees`. Then create a detached worktree equivalent to:
+Confirm whether the implementation checkout is already linked, verify `.worktrees` is ignored, and use the project-local `.worktrees` location. If `.worktrees` is not ignored:
 
 ```bash
-git worktree add --detach <reference-worktree> d0726eed34b4fc14267570853ade8b74df49ae9e
+printf '\n.worktrees/\n' >> .gitignore
+git add .gitignore
+git commit -m "chore: ignore local worktrees"
 ```
 
-- [ ] **Step 2: Configure an isolated port/project**
+- [ ] **Step 2: Create the exact reference checkout**
 
-Inside the reference worktree:
+From repository root:
 
 ```bash
-cp wordpress/dev/.env.example wordpress/dev/.env
-cat >> wordpress/dev/.env <<'EOF'
+rm -rf .worktrees/rosa-medicashop-target 2>/dev/null || true
+git worktree prune
+git worktree add --detach .worktrees/rosa-medicashop-target d0726eed34b4fc14267570853ade8b74df49ae9e
+```
+
+Do not run the `rm -rf` command if `git worktree list` shows that path as a live worktree; remove it with `git worktree remove .worktrees/rosa-medicashop-target` first.
+
+- [ ] **Step 3: Configure isolated runtime values**
+
+```bash
+cp .worktrees/rosa-medicashop-target/wordpress/dev/.env.example \
+   .worktrees/rosa-medicashop-target/wordpress/dev/.env
+cat >> .worktrees/rosa-medicashop-target/wordpress/dev/.env <<'EOF'
 ROSA_WP_PORT=8090
 COMPOSE_PROJECT_NAME=rosa-medicashop-target
 EOF
 ```
 
-- [ ] **Step 3: Bootstrap and seed reference data**
-
-Run:
+- [ ] **Step 4: Bootstrap/seed the reference**
 
 ```bash
+cd .worktrees/rosa-medicashop-target
 COMPOSE_PROJECT_NAME=rosa-medicashop-target ROSA_WP_PORT=8090 bash wordpress/scripts/foundation-bootstrap.sh
 COMPOSE_PROJECT_NAME=rosa-medicashop-target ROSA_WP_PORT=8090 bash wordpress/scripts/client-preview-seed.sh
 COMPOSE_PROJECT_NAME=rosa-medicashop-target ROSA_WP_PORT=8090 bash wordpress/scripts/foundation-seed.sh
+cd -
 ```
 
-Use the same safe local business-setting inputs for current/reference if explicit values are needed for matched content.
-
-- [ ] **Step 4: Smoke-check reference routes**
-
-Run:
+- [ ] **Step 5: Smoke-check target routes**
 
 ```bash
 for path in / /about/ /contact/ /shop/ /ar/ /ar/about/ /ar/contact/ /ar/shop/; do
@@ -476,11 +426,9 @@ for path in / /about/ /contact/ /shop/ /ar/ /ar/about/ /ar/contact/ /ar/shop/; d
 done
 ```
 
-Expected: all return success.
+Expected: all success.
 
-- [ ] **Step 5: Capture target/current baseline evidence**
-
-From the implementation worktree:
+- [ ] **Step 6: Capture baseline pinned/current evidence**
 
 ```bash
 node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
@@ -489,55 +437,36 @@ node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
   artifacts/exact-elementor-parity/secondary/baseline
 ```
 
-Then capture production only as confirmation:
+Also capture production confirmation separately. Do not blend production/pinned differences.
 
-```bash
-node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
-  https://rosamedical.org/ \
-  http://localhost:8088/ \
-  artifacts/exact-elementor-parity/secondary/production-confirmation
-```
+- [ ] **Step 7: Commit nothing**
 
-If production differs materially from the pinned target, log the route/selector discrepancy. Do not silently change authority.
-
-- [ ] **Step 6: Commit nothing**
-
-Reference runtime and screenshot artifacts are local evidence.
+Reference worktree and artifacts are local evidence.
 
 ---
 
-### Task 4: Audit and Repair EN/AR About by Root Cause
+### Task 4: Restore EN/AR About Parity by Root Cause
 
 **Files:**
 - Test: `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs`
 - Test: `wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs`
-- Modify according to diagnosed source: `page-hero.php`, `about-who.php`, `about-stats.php`, `about-cards.php`, `about-feature.php`, `about-why.php`, `about-proof.php`, `elementor-authoring.css`, `client-preview-rtl.css`, `AboutWidgets.php`, `ElementorSeedData.php`.
+- Repair source chosen from: `page-hero.php`, `about-who.php`, `about-stats.php`, `about-cards.php`, `about-feature.php`, `about-why.php`, `about-proof.php`, `elementor-authoring.css`, `client-preview-rtl.css`, `AboutWidgets.php`, `ElementorSeedData.php`.
 
 **Interfaces:**
-- Consumes: pinned About runtime at 8090 and existing seven-widget About topology.
-- Produces: EN/AR About that matches the finished target while remaining Elementor editable.
+- Consumes: pinned target runtime and seven About widget topology.
+- Produces: finished-target About geometry/styles in EN/AR while keeping content/media authorable.
 
-- [ ] **Step 1: Run the About comparison and observe RED**
-
-Run:
+- [ ] **Step 1: Observe first About RED**
 
 ```bash
 node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs http://localhost:8090/ http://localhost:8088/
 ```
 
-Record the first About failure including route, viewport, selector, target/current values.
+Record first About route/viewport/selector mismatch.
 
-- [ ] **Step 2: Verify topology before any styling change**
+- [ ] **Step 2: Pin topology before styling**
 
-Run:
-
-```bash
-for path in about ar/about; do
-  curl -fsS "http://localhost:8088/${path}/" > "/tmp/rosa-${path//\//-}.html"
-done
-```
-
-The current About output must contain exactly one each of:
+Require exactly one each:
 
 ```text
 data-preview-page-hero
@@ -550,11 +479,11 @@ data-preview-family-strip
 data-preview-contact-cta
 ```
 
-If topology differs, fix partial/widget output first. If topology matches, continue to geometry/style diagnosis.
+If topology differs, repair renderer/widget output before CSS.
 
-- [ ] **Step 3: Pin the observed defect with a focused assertion**
+- [ ] **Step 3: Add a focused regression for the observed mismatch**
 
-Add the actual failing selector to the comparison test. The assertion pattern is:
+Use the target/current selector directly:
 
 ```js
 const targetBox = await targetPage.locator(selector).boundingBox();
@@ -562,29 +491,27 @@ const localBox = await localPage.locator(selector).boundingBox();
 assert.ok(targetBox && localBox, `${label}: missing rendered box`);
 assert.ok(
   Math.abs(localBox.y - targetBox.y) <= 2,
-  `${label}: y target=${targetBox.y} local=${localBox.y}`,
+  `${label}: y target=${targetBox.y} current=${localBox.y}`,
 );
 ```
 
-For spacing bugs compare computed `paddingLeft/paddingRight`; for grid bugs compare `gridTemplateColumns`; for typography compare `fontSize/lineHeight`.
+Use computed padding/grid/font assertions instead when those are the actual failing property.
 
-- [ ] **Step 4: Apply exactly one root-cause repair path**
+- [ ] **Step 4: Repair the actual source, not the symptom**
 
-Use this mapping:
+Use this deterministic ownership map:
 
 ```text
-wrong editable/default copy -> AboutWidgets.php / ElementorSeedData.php
-wrong media mapping          -> AboutWidgets.php / existing media mapping
-extra Elementor spacing      -> elementor-authoring.css scoped to .rosa-elementor-authoring
-partial DOM/class drift      -> specific about-*.php partial
-Arabic-only logical spacing  -> client-preview-rtl.css scoped to About marker
+wrong generated editable/default value -> AboutWidgets.php / ElementorSeedData.php
+wrong About media binding              -> AboutWidgets.php media mapping
+Elementor wrapper spacing              -> elementor-authoring.css
+partial DOM/class drift                -> the specific about-*.php partial
+Arabic-only physical/logical spacing   -> client-preview-rtl.css scoped to About marker
 ```
 
-Do not add a page-wide arbitrary transform, negative margin, or new design layer.
+If current page content is client-edited, do not reset it to target defaults; classify it as content-state difference and compare geometry separately.
 
-- [ ] **Step 5: Verify About GREEN**
-
-Run:
+- [ ] **Step 5: Verify GREEN**
 
 ```bash
 bash wordpress/scripts/tests/client-preview-about-contract.test.sh
@@ -592,56 +519,42 @@ node wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs http://l
 node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs http://localhost:8090/ http://localhost:8088/
 ```
 
-Expected: About EN/AR comparisons pass at every required viewport; no overflow/console errors.
+Expected: About EN/AR geometry/style passes every required viewport with no overflow/console errors.
 
-- [ ] **Step 6: Capture and inspect About**
+- [ ] **Step 6: Manual About review**
 
-Run the parity capture and inspect EN/AR About at 1440×900, 1024×768, 390×844. Check full page, image crop, family/proof strip, CTA, footer, and RTL ordering.
+Inspect EN/AR 1440, 1024, 390 captures: section rhythm, image crop, stats/cards, feature, Why, family/proof strip, CTA/footer, RTL ordering.
 
-- [ ] **Step 7: Commit only the focused repair**
+- [ ] **Step 7: Commit only changed About/test files**
 
 ```bash
+git diff --name-only
 git add wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs \
-  wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/page-hero.php \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-who.php \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-stats.php \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-cards.php \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-feature.php \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-why.php \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/about-proof.php \
-  wordpress/wp-content/themes/rosa-medical-child/assets/css/elementor-authoring.css \
-  wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview-rtl.css \
-  wordpress/wp-content/plugins/rosa-medical-core/src/Elementor/Widgets/AboutWidgets.php \
-  wordpress/wp-content/plugins/rosa-medical-core/src/Elementor/ElementorSeedData.php
-```
-
-Before committing, run `git diff --cached --name-only` and unstage unchanged/unrelated files. Then:
-
-```bash
+  wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs
+# Add only the diagnosed About production file(s), then:
 git commit -m "fix(wordpress): restore finished About parity"
 ```
 
 ---
 
-### Task 5: Audit and Repair EN/AR Contact by Root Cause
+### Task 5: Restore EN/AR Contact Parity by Root Cause
 
 **Files:**
 - Test: `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs`
 - Test: `wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs`
-- Modify according to diagnosis: `page-hero.php`, `contact-layout.php`, `contact-map.php`, `elementor-authoring.css`, `client-preview-rtl.css`, `ContactWidgets.php`, `ElementorSeedData.php`.
+- Repair source chosen from: `page-hero.php`, `contact-layout.php`, `contact-map.php`, `elementor-authoring.css`, `client-preview-rtl.css`, `ContactWidgets.php`, `ElementorSeedData.php`.
 
 **Interfaces:**
-- Consumes: centralized Business settings at render time.
-- Produces: target-matched EN/AR Contact, still presentation/mailto-only, with no duplicated business values in Elementor.
+- Consumes: centralized Business settings and pinned Contact reference.
+- Produces: finished-target Contact EN/AR, still mailto/presentation-only.
 
-- [ ] **Step 1: Observe Contact RED**
+- [ ] **Step 1: Observe first Contact RED**
 
 Run the secondary fidelity test and record the first Contact mismatch.
 
-- [ ] **Step 2: Pin Contact structural invariants**
+- [ ] **Step 2: Pin structural/backend boundaries**
 
-Keep/add assertions:
+Keep/add:
 
 ```js
 assert.equal(await page.locator('[data-preview-contact-layout]').count(), 1);
@@ -654,13 +567,9 @@ assert.match(
 );
 ```
 
-- [ ] **Step 3: Pin exact finished-target hero content/defaults**
+- [ ] **Step 3: Verify centralized business ownership before repair**
 
-The pinned Contact target renders the hero body through `rosa_preview_copy('contact_title', $locale)`. Compare that target text against current Elementor `page_body`. If they differ, set Contact seed/widget default to the target value so the editable document starts from the finished target. Do not modify already client-edited documents automatically; use the existing edit-state/hash protection.
-
-- [ ] **Step 4: Apply the diagnosed minimum repair**
-
-Use the same source mapping as Task 4. Business values must continue to resolve inside `contact-layout.php` through:
+`contact-layout.php` must continue resolving:
 
 ```php
 $address = rosa_preview_business_value('address', $locale);
@@ -668,11 +577,13 @@ $phone = rosa_theme_business_value('phone');
 $email = rosa_theme_business_value('email');
 ```
 
-Do not add `phone`, `email`, `address`, `address_ar`, `form_action`, or `submit_endpoint` controls to Contact widgets.
+Contact widgets must not expose `phone`, `email`, `address`, `address_ar`, `form_action`, or `submit_endpoint`.
 
-- [ ] **Step 5: Verify Contact GREEN**
+- [ ] **Step 4: Add focused property regression and repair its root source**
 
-Run:
+Use the same geometry/style assertion pattern as Task 4. If hero copy differs from the pinned target, classify whether it is a generated-default mismatch or an intentional Elementor edit before changing seed data. Never overwrite a `migrated_edited` document.
+
+- [ ] **Step 5: Verify GREEN**
 
 ```bash
 bash wordpress/scripts/tests/client-preview-contact-contract.test.sh
@@ -681,15 +592,11 @@ node wordpress/scripts/tests/elementor-authoring-about-contact.test.mjs http://l
 node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs http://localhost:8090/ http://localhost:8088/
 ```
 
-Expected: EN/AR Contact matches target geometry/styles; centralized values still render; form remains mailto/presentation only.
+- [ ] **Step 6: Manual Contact review**
 
-- [ ] **Step 6: Capture and manually inspect Contact**
+Inspect EN/AR 1440, 1024, 390: contact card/form split, map panel, CTA/footer, RTL labels, and LTR isolation for phone/email.
 
-Inspect EN/AR 1440, 1024, 390. Check form column geometry, detail cards, map block, CTA, footer, RTL field alignment, and LTR isolation for phone/email.
-
-- [ ] **Step 7: Commit**
-
-Stage only files changed for the diagnosed Contact defect and commit:
+- [ ] **Step 7: Commit only changed Contact/test files**
 
 ```bash
 git commit -m "fix(wordpress): restore finished Contact parity"
@@ -697,20 +604,20 @@ git commit -m "fix(wordpress): restore finished Contact parity"
 
 ---
 
-### Task 6: Prove Shared Shell Parity Across Every Public Surface
+### Task 6: Prove Shared Shell Parity Across Home/About/Contact/Shop
 
 **Files:**
 - Test: `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs`
 - Test: `wordpress/scripts/tests/client-preview-accessibility.test.mjs`
-- Modify only if RED proves shared shell drift: `header.php`, `footer.php`, `cta-banner.php`, `client-preview-rtl.css`, `client-preview.js`.
+- Repair only if RED: `header.php`, `footer.php`, `cta-banner.php`, `client-preview-rtl.css`, `client-preview.js`.
 
 **Interfaces:**
-- Consumes: shared announcement/header/footer/CTA implementation.
-- Produces: one shell implementation whose geometry/behavior matches across Home/About/Contact/Shop EN/AR.
+- Consumes: one shared shell implementation.
+- Produces: identical shared shell geometry/behavior on all public routes.
 
-- [ ] **Step 1: Add shell comparison assertions independent of page body**
+- [ ] **Step 1: Compare shared selectors on every secondary route**
 
-For every route/viewport compare:
+Require target/current parity for:
 
 ```text
 .rosa-preview-announcement
@@ -722,113 +629,93 @@ For every route/viewport compare:
 .rosa-preview-footer__bottom
 ```
 
-At desktop also compare nav visibility and header action boxes; at mobile compare menu trigger box and drawer top/width after opening.
+At mobile also open the drawer and compare top, width, height, nav-row count, and RTL origin.
 
-- [ ] **Step 2: Run and observe RED if any shared shell component differs**
-
-Run:
+- [ ] **Step 2: Observe RED**
 
 ```bash
 node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs http://localhost:8090/ http://localhost:8088/
 node wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localhost:8088/
 ```
 
-- [ ] **Step 3: Fix shared shell only at the shared source**
+- [ ] **Step 3: Repair only the shared source**
 
-If the same component drifts on multiple routes, repair `header.php`, `footer.php`, `cta-banner.php`, shared RTL, or shared JS. Never patch the same shell component separately inside page-specific partials.
+If a shell component fails multiple routes, fix the shared file once; never patch About/Contact/Shop individually for the same shell component.
 
-- [ ] **Step 4: Verify every route after a shell change**
-
-Run both commands from Step 2 again plus:
+- [ ] **Step 4: Verify GREEN**
 
 ```bash
 bash wordpress/scripts/tests/client-preview-shell-contract.test.sh
+node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs http://localhost:8090/ http://localhost:8088/
+node wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localhost:8088/
 ```
-
-Expected: all pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs \
-  wordpress/scripts/tests/client-preview-accessibility.test.mjs \
-  wordpress/wp-content/themes/rosa-medical-child/header.php \
-  wordpress/wp-content/themes/rosa-medical-child/footer.php \
-  wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/cta-banner.php \
-  wordpress/wp-content/themes/rosa-medical-child/assets/css/client-preview-rtl.css \
-  wordpress/wp-content/themes/rosa-medical-child/assets/js/client-preview.js
 git commit -m "fix(wordpress): keep shared Rosa shell in target parity"
 ```
 
-Unstage unchanged files before committing.
-
 ---
 
-### Task 7: Audit and Repair Shop While Keeping WooCommerce as Data Owner
+### Task 7: Restore Shop Parity Without Moving Shop into Elementor
 
 **Files:**
 - Test: `wordpress/scripts/tests/client-preview-shop-contract.test.sh`
 - Test: `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs`
-- Modify according to diagnosis: `wordpress/wp-content/themes/rosa-medical-child/woocommerce/archive-product.php`, `page-templates/client-preview-shop.php`, existing Shop/product-card partials, RTL CSS.
+- Repair only if RED: `woocommerce/archive-product.php`, `page-templates/client-preview-shop.php`, `product-card.php`, `client-preview-rtl.css`.
 
 **Interfaces:**
-- Consumes: WooCommerce query/product data and Rosa Shop content settings.
-- Produces: target-matched Shop archive with dynamic Woo product cards and no Elementor Shop document.
+- Consumes: WooCommerce product query/data and Shop content settings.
+- Produces: target-matched EN/AR Shop while Woo/theme retains ownership.
 
-- [ ] **Step 1: Pin ownership before visual repair**
+- [ ] **Step 1: Pin Shop ownership with real source assertions**
 
-Strengthen the Shop contract to require:
+Add to the Shop contract:
 
 ```bash
-grep -Fq 'wc_get_products' "$THEME/template-parts/client-preview/product-grid.php" || true
-! grep -R "rosa-page-.*shop\|rosa-shop-.*Widget" "$ROOT/wordpress/wp-content/plugins/rosa-medical-core/src/Elementor" >/dev/null
+grep -Fq "new WP_Query(['post_type'=>'product'" \
+  "$THEME/template-parts/client-preview/product-grid.php" \
+  || fail 'Home product grids no longer query Woo products dynamically'
+
+grep -Fq 'wc_get_product' "$THEME/woocommerce/archive-product.php" \
+  || fail 'Shop archive no longer resolves Woo product objects'
+
+if grep -RIlE 'rosa-shop-.*Widget|rosa-page-hero-shop' \
+  "$ROOT/wordpress/wp-content/plugins/rosa-medical-core/src/Elementor" >/dev/null; then
+  fail 'Shop must not become an Elementor-authored product page'
+fi
 ```
 
-The exact query helper may differ; the invariant is that Shop cards come from WooCommerce objects/templates rather than Elementor JSON.
-
-- [ ] **Step 2: Observe Shop RED against the pinned target runtime**
-
-Run:
+- [ ] **Step 2: Observe first Shop RED**
 
 ```bash
 node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs http://localhost:8090/ http://localhost:8088/
 ```
 
-Record the first EN/AR Shop mismatch: hero, search, grid, card geometry, pagination, CTA, or shell.
+Classify hero/search/grid/card/pagination/CTA/shell mismatch.
 
-- [ ] **Step 3: Add a focused regression for the first Shop defect**
+- [ ] **Step 3: Add a focused Shop regression**
 
-Examples:
+For a grid issue, compare first-row column count; for search/hero/card drift compare target/current boxes/styles directly.
 
-```js
-assert.equal(
-  await columnCount(localPage.locator('.rosa-preview-shop-grid > *')),
-  await columnCount(targetPage.locator('.rosa-preview-shop-grid > *')),
-  `${label}: Shop column count drift`,
-);
-```
+- [ ] **Step 4: Repair only Woo/theme rendering**
 
-or compare the specific hero/search/card box.
+Do not add Shop widgets to `WidgetRegistry`. Preserve Woo product IDs/names/images/SKUs as dynamic data.
 
-- [ ] **Step 4: Repair only the Woo/theme renderer**
-
-Do not create a Shop Elementor widget/page. Preserve `archive-product.php` as the primary Woo archive renderer and `client-preview-shop.php` only for the supported Arabic localized route.
-
-- [ ] **Step 5: Verify dynamic Shop behavior**
-
-Run:
+- [ ] **Step 5: Verify GREEN**
 
 ```bash
 bash wordpress/scripts/tests/client-preview-shop-contract.test.sh
-node wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localhost:8088/
 node wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs http://localhost:8090/ http://localhost:8088/
+node wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localhost:8088/
 ```
 
-Confirm search remains usable and card links resolve to actual Woo products.
+Confirm search remains usable and product card links resolve.
 
-- [ ] **Step 6: Manual visual review**
+- [ ] **Step 6: Manual Shop review**
 
-Inspect EN/AR Shop at 1440, 1024, 390. Verify product image ratios/crop, card density, search layout, pagination, CTA/footer, and no public prices/checkout semantics unless already explicitly supported.
+Inspect EN/AR 1440, 1024, 390: image crop, grid density, search, pagination, CTA/footer, RTL, and absence of public checkout/payment semantics.
 
 - [ ] **Step 7: Commit**
 
@@ -836,35 +723,33 @@ Inspect EN/AR Shop at 1440, 1024, 390. Verify product image ratios/crop, card de
 git commit -m "fix(wordpress): restore WooCommerce Shop parity"
 ```
 
-Stage only Shop-related tests/renderers actually changed.
-
 ---
 
-### Task 8: Verify Representative Product Detail and Public Category/Family Surfaces
+### Task 8: Verify Representative Product Detail and Public Family/Category Surface
 
 **Files:**
 - Test: `wordpress/scripts/tests/product-detail-structure.test.sh`
 - Test: `wordpress/scripts/tests/product-template-hook.test.sh`
-- Add browser coverage in `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs` for the representative product route and public category route when present.
-- Modify only if pinned Rosa implementation proves drift: `wordpress/wp-content/plugins/rosa-medical-core/templates/product-detail-prototype.php` and relevant Woo/category renderer.
+- Extend: `wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs` only for product/category smoke geometry.
+- Repair only if pinned Rosa implementation proves drift: `wordpress/wp-content/plugins/rosa-medical-core/templates/product-detail-prototype.php` and relevant Woo renderer.
 
 **Interfaces:**
-- Consumes: canonical local product `rosa-foundation-stevens-scissors-regular` and its variations `04-0901`, `04-0911`.
-- Produces: dynamic Product Detail and category/family coverage without fabricating unavailable MedicaShop Single Product fidelity.
+- Consumes: canonical local product `rosa-foundation-stevens-scissors-regular`, variations `04-0901`, `04-0911`.
+- Produces: dynamic catalogue-surface verification without inventing unavailable MedicaShop Single Product fidelity.
 
-- [ ] **Step 1: Add the representative product route to capture/comparison**
+- [ ] **Step 1: Add representative Product Detail capture**
 
-Resolve it dynamically in the current/reference runtime. The canonical expected path is:
+Use:
 
 ```text
 /product/rosa-foundation-stevens-scissors-regular/
 ```
 
-Capture it at 1440×900, 1024×768, 390×844.
+Capture 1440×900, 1024×768, 390×844.
 
-- [ ] **Step 2: Define Product Detail acceptance from the pinned Rosa implementation only**
+- [ ] **Step 2: Pin dynamic Product Detail content**
 
-Require visible dynamic values:
+Require visible:
 
 ```text
 Stevens Scissors
@@ -874,22 +759,28 @@ Straight
 Curved
 ```
 
-Require exactly one `<main>` shell path and no retail checkout/cart/payment language.
+Require one public main shell and no cart/checkout/payment language.
 
-- [ ] **Step 3: Compare current and pinned Product Detail renderer source**
-
-Run:
+- [ ] **Step 3: Confirm source parity before any visual rewrite**
 
 ```bash
 git diff d0726eed34b4fc14267570853ade8b74df49ae9e -- \
   wordpress/wp-content/plugins/rosa-medical-core/templates/product-detail-prototype.php
 ```
 
-Expected at plan-writing time: no content drift. If still identical, do not redesign it merely to resemble a MedicaShop Single Product page that was never authoritative.
+If still identical, do not redesign it to imitate an unavailable MedicaShop Single Product reference.
 
-- [ ] **Step 4: Verify public category/family route if WordPress exposes one**
+- [ ] **Step 4: Resolve one public product category route if the current model exposes it**
 
-Use WP-CLI to identify a public `product_cat` term permalink. If it resolves publicly, add one representative category route to the browser capture and assert shell, product cards, no overflow, and dynamic Woo data. If the taxonomy is intentionally non-public in the local foundation, record `not public by current model` and do not invent a route.
+```bash
+wp_term_url="$({ docker compose -f wordpress/dev/compose.yaml run --rm wpcli eval '
+$terms=get_terms(["taxonomy"=>"product_cat","hide_empty"=>false]);
+foreach($terms as $term){$url=get_term_link($term);if(!is_wp_error($url)){echo $url;break;}}
+'; } | tail -n1)"
+printf '%s\n' "$wp_term_url"
+```
+
+If no public term URL exists by current model, record that fact and do not invent one.
 
 - [ ] **Step 5: Run product gates**
 
@@ -902,7 +793,7 @@ node wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localh
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit only if tests/tooling or a proven renderer defect changed**
+- [ ] **Step 6: Commit only real test/renderer changes**
 
 ```bash
 git commit -m "test(wordpress): cover representative catalogue surfaces"
@@ -910,19 +801,17 @@ git commit -m "test(wordpress): cover representative catalogue surfaces"
 
 ---
 
-### Task 9: Prove Real Elementor Editing on Home, About, and Contact in Both Languages
+### Task 9: Prove Six-Page Elementor Edit Persistence
 
 **Files:**
 - Modify: `wordpress/scripts/tests/elementor-authoring-mutation.test.sh`
 - Modify: `wordpress/scripts/tests/client-preview-content-zero-drift.test.sh`
 
 **Interfaces:**
-- Consumes: six Elementor documents and existing safe document backup/restore pattern.
-- Produces: automated proof that representative EN/AR Home/About/Contact text edits and media edits persist through routine seeds.
+- Consumes: six Elementor documents and current document backup/restore pattern.
+- Produces: proof that EN/AR Home/About/Contact edits persist through routine seeds and remain language-independent.
 
-- [ ] **Step 1: Extend mutation backup to all six target pages**
-
-Resolve IDs for:
+- [ ] **Step 1: Extend mutation backup/restore to all six paths**
 
 ```text
 home
@@ -933,53 +822,41 @@ ar/about
 ar/contact
 ```
 
-Store each document's `get_elements_data()` in temporary WordPress options and restore them in `trap` exactly as the current Home mutation test does.
+Back up `get_elements_data()` to temporary options and restore through `trap` exactly like the current Home test.
 
-- [ ] **Step 2: Mutate representative widget settings**
-
-Use these exact disposable values:
+- [ ] **Step 2: Mutate these exact settings**
 
 ```text
-EN Home:    rosa-home-hero.hero_title      = TEST ELEMENTOR HOME EN
-AR Home:    rosa-home-hero.hero_title      = اختبار الصفحة الرئيسية
-EN About:   rosa-page-hero-about.page_title = TEST ELEMENTOR ABOUT EN
-AR About:   rosa-page-hero-about.page_title = اختبار من نحن
-EN Contact: rosa-page-hero-contact.page_title = TEST ELEMENTOR CONTACT EN
-AR Contact: rosa-page-hero-contact.page_title = اختبار اتصل بنا
+EN Home     rosa-home-hero.hero_title           = TEST ELEMENTOR HOME EN
+AR Home     rosa-home-hero.hero_title           = اختبار الصفحة الرئيسية
+EN About    rosa-page-hero-about.page_title     = TEST ELEMENTOR ABOUT EN
+AR About    rosa-page-hero-about.page_title     = اختبار من نحن
+EN Contact  rosa-page-hero-contact.page_title   = TEST ELEMENTOR CONTACT EN
+AR Contact  rosa-page-hero-contact.page_title   = اختبار اتصل بنا
 ```
 
-Keep the existing Home media replacement test with a second Media Library image.
+Keep the existing Home media replacement with a second attachment.
 
-- [ ] **Step 3: Observe RED after extending the test**
+- [ ] **Step 3: Save through Elementor document API and assert frontend isolation**
 
-Run:
+Each disposable title must appear on exactly its route and not its language pair.
 
-```bash
-bash wordpress/scripts/tests/elementor-authoring-mutation.test.sh
-```
+- [ ] **Step 4: Run routine seed paths**
 
-Expected before script implementation is complete: FAIL because About/Contact are not yet mutated/asserted by the current test.
-
-- [ ] **Step 4: Save through Elementor documents and assert frontend independence**
-
-For each locale/page, assert its disposable title appears only on that route and does not leak to its language pair.
-
-- [ ] **Step 5: Run routine seeds and prove persistence**
-
-Run inside the test:
+Inside the test:
 
 ```bash
 bash wordpress/scripts/client-preview-seed.sh
 bash wordpress/scripts/elementor-authoring-seed.sh
 ```
 
-Require all six migrated documents to remain on `page-templates/rosa-elementor-authoring.php`, normal seed statuses to be safe/non-force, and every mutation to remain visible.
+Require all six pages to remain on `page-templates/rosa-elementor-authoring.php`; no normal seed may erase the edits.
 
-- [ ] **Step 6: Restore all documents and prove cleanup**
+- [ ] **Step 5: Restore all six documents and prove cleanup**
 
-The test trap must restore the exact original Elementor document JSON, then refetch pages and assert no disposable marker remains.
+After restore, refetch all six routes and fail if any disposable marker remains.
 
-- [ ] **Step 7: Run GREEN**
+- [ ] **Step 6: Run acceptance**
 
 ```bash
 bash wordpress/scripts/tests/elementor-authoring-mutation.test.sh
@@ -988,7 +865,7 @@ bash wordpress/scripts/tests/client-preview-content-zero-drift.test.sh
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add wordpress/scripts/tests/elementor-authoring-mutation.test.sh \
@@ -1003,66 +880,51 @@ git commit -m "test(wordpress): prove six-page Elementor edit persistence"
 **Files:**
 - Modify: `wordpress/scripts/tests/client-preview-content-mutation.test.sh`
 - Modify: `wordpress/scripts/tests/business-settings.test.php`
-- Add safe runtime assertions to `wordpress/scripts/client-preview-runtime-verify.sh` only after focused GREEN.
 
 **Interfaces:**
-- Consumes: Woo canonical fixture product and Rosa `rosa_business_settings` / `rosa_site_content` options.
-- Produces: proof that shared business/site values update consuming surfaces and Woo product edits update Woo-driven surfaces without touching Elementor JSON.
+- Consumes: canonical Woo fixture plus `rosa_business_settings` and `rosa_site_content`.
+- Produces: proof that shared settings and Woo data update their public consumers without entering Elementor JSON.
 
-- [ ] **Step 1: Back up local fixture state**
+- [ ] **Step 1: Back up local option/product state and register a restore trap**
 
-In the mutation test, save:
+Back up:
 
 ```text
 rosa_business_settings
 rosa_site_content
-canonical fixture product name/description
+canonical fixture product name and description
 ```
 
-Use a trap to restore all values.
-
-- [ ] **Step 2: Apply safe disposable centralized values**
-
-Use:
+- [ ] **Step 2: Apply disposable centralized values**
 
 ```text
 phone: +966 55 000 1122
 email: ownership-test@example.invalid
 address: Ownership Test Address
 address_ar: عنوان اختبار الملكية
-cta_title EN: OWNERSHIP TEST CTA
+whatsapp: +966 55 000 3344
+site CTA title EN: OWNERSHIP TEST CTA
 ```
 
-- [ ] **Step 3: Assert centralized values render on all intended surfaces**
+- [ ] **Step 3: Assert intended consumers update**
 
-At minimum:
+Verify phone/email on announcement/footer/Contact where consumed, English address on Contact/footer, Arabic address on Arabic Contact/footer, and CTA title on shared pre-footer CTA for Home/About/Contact.
 
-```text
-phone/email -> announcement/header/footer/Contact where applicable
-address      -> Contact/footer
-address_ar   -> Arabic Contact/footer
-cta_title    -> shared pre-footer CTA on Home/About/Contact
-```
+- [ ] **Step 4: Mutate the local Woo fixture through Woo API/WP-CLI**
 
-Do not require a business value on a surface that intentionally does not consume it.
-
-- [ ] **Step 4: Mutate the canonical local Woo fixture product**
-
-Temporarily change its name to:
+Temporary product name:
 
 ```text
 OWNERSHIP TEST STEVENS
 ```
 
-Save through WooCommerce API/WP-CLI PHP, not Elementor.
+- [ ] **Step 5: Assert Woo surfaces update**
 
-- [ ] **Step 5: Assert Woo-driven surfaces update**
+Require the changed name on Product Detail and Shop. If the fixture is selected by Home Latest/Featured ordering, require it there too; otherwise do not manipulate ordering merely for the test.
 
-Require the new product name on Product Detail and on any Home/Shop card query where the fixture is present. If fixture ordering prevents it from appearing on Home Latest/Featured, assert Shop + Product Detail and separately inspect Home Elementor document JSON to prove no product names/SKUs are serialized there.
+- [ ] **Step 6: Assert protected values are absent from Elementor JSON**
 
-- [ ] **Step 6: Prove Elementor documents do not contain protected data**
-
-Use WP-CLI to encode each Home document and fail if it contains:
+Fail if Home/About/Contact Elementor document JSON contains any of:
 
 ```text
 04-0901
@@ -1072,16 +934,14 @@ ownership-test@example.invalid
 Ownership Test Address
 ```
 
-- [ ] **Step 7: Restore state and run GREEN**
-
-Run:
+- [ ] **Step 7: Restore and run GREEN**
 
 ```bash
 bash wordpress/scripts/tests/client-preview-content-mutation.test.sh
 php wordpress/scripts/tests/business-settings.test.php
 ```
 
-Expected: PASS and all disposable values restored.
+Expected: PASS with all temporary values restored.
 
 - [ ] **Step 8: Commit**
 
@@ -1093,54 +953,135 @@ git commit -m "test(wordpress): enforce Woo and shared-settings ownership"
 
 ---
 
-### Task 11: Make the WordPress Editing UX Clear and Protect Role Boundaries
+### Task 11: Implement a Clear Client Editing UX and a Real Content-Manager Permission Boundary
 
 **Files:**
-- Test: `wordpress/scripts/tests/client-preview-admin-contract.test.sh`
+- Create: `wordpress/wp-content/plugins/rosa-medical-core/src/Admin/Capabilities.php`
+- Modify: `wordpress/wp-content/plugins/rosa-medical-core/rosa-medical-core.php`
+- Modify: `wordpress/wp-content/plugins/rosa-medical-core/src/Plugin.php`
 - Modify: `wordpress/wp-content/plugins/rosa-medical-core/src/Admin/RosaAdmin.php`
 - Modify: `wordpress/wp-content/plugins/rosa-medical-core/src/Admin/ElementorShortcutPage.php`
-- Modify only if capability handling requires it: admin registration code in `Plugin.php` or `BusinessSettings.php`.
+- Modify: `wordpress/wp-content/plugins/rosa-medical-core/src/Admin/ContentPage.php`
+- Modify: `wordpress/wp-content/plugins/rosa-medical-core/src/Settings/BusinessSettings.php`
+- Modify: `wordpress/scripts/tests/client-preview-admin-contract.test.sh`
 
 **Interfaces:**
-- Consumes: Elementor edit URLs for six marketing pages, Rosa Business settings, Woo Products menu.
-- Produces: one understandable client editing model without duplicate legacy marketing-page editors.
+- Produces role `rosa_content_manager` and capability `rosa_manage_content`.
+- Role combines safe page/media capabilities from Editor with catalogue capabilities from Woo Shop Manager, but must not gain plugin/theme installation/edit capabilities.
+- Rosa Business, Site & CTA, Shop UI, and Elementor shortcuts use `rosa_manage_content`; Elementor page opening additionally requires `edit_post` for the target page.
 
-- [ ] **Step 1: Pin the desired admin navigation contract**
+- [ ] **Step 1: Write failing admin/capability source assertions**
 
-The Rosa admin surface must expose clear links for:
+Require:
 
-```text
-Home — Edit with Elementor
-About — Edit with Elementor
-Contact — Edit with Elementor
-Arabic Home — Edit with Elementor
-Arabic About — Edit with Elementor
-Arabic Contact — Edit with Elementor
-Rosa Business
-Products / WooCommerce
+```bash
+grep -Fq "'rosa_manage_content'" "$PLUGIN/src/Admin/Capabilities.php" || fail 'Rosa content capability missing'
+grep -Fq "'rosa_content_manager'" "$PLUGIN/src/Admin/Capabilities.php" || fail 'Rosa content-manager role missing'
+! grep -Fq "'manage_options'" "$PLUGIN/src/Admin/RosaAdmin.php" || fail 'Rosa content menu is still administrator-only'
+grep -Fq 'current_user_can(Capabilities::MANAGE_CONTENT)' "$PLUGIN/src/Admin/ElementorShortcutPage.php" || fail 'Elementor shortcut capability boundary missing'
 ```
 
-Legacy Home/About/Contact option editors must not be presented as the normal editing path for pages already migrated to Elementor.
-
-- [ ] **Step 2: Write source/runtime admin assertions before changing UI**
-
-Strengthen `client-preview-admin-contract.test.sh` to require `ElementorShortcutPage` to derive real Elementor edit URLs and to require the Rosa admin page to name the correct ownership surface for page content, business values, and products.
-
-- [ ] **Step 3: Run RED**
+- [ ] **Step 2: Run RED**
 
 ```bash
 bash wordpress/scripts/tests/client-preview-admin-contract.test.sh
 ```
 
-Expected: fail on any missing/ambiguous shortcut or duplicate normal-editing path exposed by current admin UI.
+Expected: FAIL because `Capabilities.php`/custom capability do not exist yet and current menu uses `manage_options`.
 
-- [ ] **Step 4: Apply the minimum admin UX correction**
+- [ ] **Step 3: Implement `Capabilities`**
 
-Keep administrator-only technical settings under `manage_options`. For a future nontechnical content-manager role, use WordPress content capabilities rather than granting theme/plugin installation. This task does not create a custom role unless the existing project already has one; it ensures the UI does not imply that ordinary page edits require code/system settings.
+Use:
 
-- [ ] **Step 5: Verify editor links**
+```php
+final class Capabilities
+{
+    public const MANAGE_CONTENT = 'rosa_manage_content';
+    public const ROLE = 'rosa_content_manager';
+    private const VERSION = '1';
 
-Run:
+    public static function ensure(): void
+    {
+        if ((string) get_option('rosa_capabilities_version', '') === self::VERSION) {
+            return;
+        }
+        self::install();
+        update_option('rosa_capabilities_version', self::VERSION, false);
+    }
+
+    public static function install(): void
+    {
+        $caps = ['read' => true, 'upload_files' => true, self::MANAGE_CONTENT => true];
+        foreach (['editor', 'shop_manager'] as $sourceName) {
+            $source = get_role($sourceName);
+            if (! $source) continue;
+            foreach ($source->capabilities as $cap => $grant) {
+                if ($grant) $caps[$cap] = true;
+            }
+        }
+
+        $role = get_role(self::ROLE);
+        if (! $role) {
+            $role = add_role(self::ROLE, 'Rosa Content Manager', $caps);
+        } elseif ($role) {
+            foreach ($caps as $cap => $grant) if ($grant) $role->add_cap($cap);
+        }
+
+        $admin = get_role('administrator');
+        if ($admin) $admin->add_cap(self::MANAGE_CONTENT);
+    }
+
+    public static function settingsCapability(): string
+    {
+        return self::MANAGE_CONTENT;
+    }
+}
+```
+
+- [ ] **Step 4: Register capability lifecycle and settings groups**
+
+In plugin bootstrap require `Capabilities.php`. In `Plugin::register()`:
+
+```php
+add_action('init', [Capabilities::class, 'ensure'], 20);
+foreach (['rosa_business', 'rosa_media', 'rosa_content_site', 'rosa_content_shop'] as $group) {
+    add_filter('option_page_capability_' . $group, [Capabilities::class, 'settingsCapability']);
+}
+```
+
+Do not lower technical plugin/theme configuration capabilities.
+
+- [ ] **Step 5: Switch normal Rosa content UI to the custom capability**
+
+Use `Capabilities::MANAGE_CONTENT` in Rosa menu/submenus, ContentPage, BusinessSettings render page, and ElementorShortcutPage. After resolving an Elementor page ID also require:
+
+```php
+if (! current_user_can('edit_post', $pageId)) {
+    self::notice(__('You do not have permission to edit this page.', 'rosa-medical'), admin_url());
+    return;
+}
+```
+
+- [ ] **Step 6: Verify runtime role safety**
+
+After bootstrap:
+
+```bash
+bash wordpress/scripts/foundation-bootstrap.sh
+docker compose -f wordpress/dev/compose.yaml run --rm wpcli eval '
+$role=get_role("rosa_content_manager");
+if(!$role) WP_CLI::error("Rosa Content Manager role missing");
+foreach(["rosa_manage_content","edit_pages","upload_files","edit_products"] as $cap){
+  if(empty($role->capabilities[$cap])) WP_CLI::error("Missing capability: {$cap}");
+}
+foreach(["install_plugins","edit_plugins","update_plugins","switch_themes","edit_themes"] as $cap){
+  if(!empty($role->capabilities[$cap])) WP_CLI::error("Forbidden capability: {$cap}");
+}
+WP_CLI::success("Rosa content-manager boundary verified");
+'
+```
+
+- [ ] **Step 7: Verify admin/editor links**
 
 ```bash
 bash wordpress/scripts/tests/client-preview-admin-contract.test.sh
@@ -1149,38 +1090,35 @@ bash wordpress/scripts/tests/elementor-authoring-editor-links.test.sh
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
-git add wordpress/scripts/tests/client-preview-admin-contract.test.sh \
-  wordpress/wp-content/plugins/rosa-medical-core/src/Admin/RosaAdmin.php \
-  wordpress/wp-content/plugins/rosa-medical-core/src/Admin/ElementorShortcutPage.php
-git commit -m "fix(wordpress): clarify Rosa client editing ownership"
+git add wordpress/wp-content/plugins/rosa-medical-core \
+  wordpress/scripts/tests/client-preview-admin-contract.test.sh
+git commit -m "feat(wordpress): add Rosa content-manager editing boundary"
 ```
 
 ---
 
-### Task 12: Integrate Secondary Fidelity into the Full Runtime Verifier
+### Task 12: Integrate Secondary Fidelity into the Full Verifier
 
 **Files:**
 - Modify: `wordpress/scripts/client-preview-runtime-verify.sh`
 - Modify: `wordpress/scripts/tests/client-preview-runtime-tooling.test.sh`
 
 **Interfaces:**
-- Consumes: all focused GREEN contracts from Tasks 1–11.
-- Produces: one local acceptance command that fails on structural/runtime/authoring/accessibility/secondary-fidelity regressions.
+- Consumes: all focused tests.
+- Produces: ordinary offline-friendly verifier plus strict target-parity mode when `ROSA_REFERENCE_URL` is supplied.
 
-- [ ] **Step 1: Add syntax gate for the secondary fidelity test**
-
-Add:
+- [ ] **Step 1: Add syntax gate**
 
 ```bash
 run node --check wordpress/scripts/tests/client-preview-secondary-fidelity.test.mjs
 ```
 
-- [ ] **Step 2: Add secondary runtime execution behind an explicit reference URL**
+- [ ] **Step 2: Add strict parity execution without making normal verification internet-dependent**
 
-Use:
+After resolving `$home_url`:
 
 ```bash
 if [[ -n "${ROSA_REFERENCE_URL:-}" ]]; then
@@ -1189,51 +1127,48 @@ if [[ -n "${ROSA_REFERENCE_URL:-}" ]]; then
 fi
 ```
 
-Do not make the normal verifier depend on public internet availability. The strict visual-parity run uses `ROSA_REFERENCE_URL=http://localhost:8090/`.
+- [ ] **Step 3: Pin this integration in tooling contract**
 
-- [ ] **Step 3: Add tooling-contract assertions**
+Require `ROSA_REFERENCE_URL` and `client-preview-secondary-fidelity.test.mjs` in verifier source.
 
-Require `ROSA_REFERENCE_URL` and the secondary test invocation to exist in the verifier source.
-
-- [ ] **Step 4: Run ordinary verifier**
+- [ ] **Step 4: Run normal verifier**
 
 ```bash
 bash wordpress/scripts/client-preview-runtime-verify.sh
 ```
 
-Expected: PASS without needing a reference runtime.
+Expected: PASS without reference runtime.
 
-- [ ] **Step 5: Run strict parity verifier**
-
-With target runtime running:
+- [ ] **Step 5: Run strict verifier**
 
 ```bash
 ROSA_REFERENCE_URL=http://localhost:8090/ bash wordpress/scripts/client-preview-runtime-verify.sh
 ```
 
-Expected: PASS including secondary parity.
+Expected: PASS including secondary geometry/style parity.
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add wordpress/scripts/client-preview-runtime-verify.sh \
   wordpress/scripts/tests/client-preview-runtime-tooling.test.sh
-git commit -m "test(wordpress): gate full runtime on optional target parity"
+git commit -m "test(wordpress): gate strict runtime on finished target parity"
 ```
 
 ---
 
-### Task 13: Final Deterministic Capture and Human Visual Acceptance
+### Task 13: Final Visual Acceptance, Cleanup, and Local Completion Boundary
 
 **Files:**
-- No production changes unless a newly observed real defect starts a new focused RED→GREEN loop.
 - Evidence: `artifacts/exact-elementor-parity/final/`.
+- Candidate cleanup only after zero-reference proof: seven `latest-home-*.php` partials, stale `rosa_is_latest_home_page()` helper, stale `latest-rosa-home-parity-capture-contract.test.sh` if it no longer guards active behavior.
+- Update if inaccurate: `docs/runbooks/wordpress-client-content-controls.md`.
 
 **Interfaces:**
-- Consumes: green strict verifier.
-- Produces: final side-by-side evidence for human acceptance.
+- Consumes: strict green verifier.
+- Produces: accepted local implementation ready for a separate staging/deployment decision.
 
-- [ ] **Step 1: Run final target/current capture matrix**
+- [ ] **Step 1: Generate final pinned/current captures**
 
 ```bash
 node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
@@ -1242,7 +1177,7 @@ node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
   artifacts/exact-elementor-parity/final/pinned-target
 ```
 
-- [ ] **Step 2: Run production confirmation capture**
+- [ ] **Step 2: Generate production confirmation captures**
 
 ```bash
 node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
@@ -1251,51 +1186,25 @@ node wordpress/scripts/medicashop-elementor-parity-capture.mjs \
   artifacts/exact-elementor-parity/final/production-confirmation
 ```
 
-- [ ] **Step 3: Review the required route/viewport matrix manually**
+- [ ] **Step 3: Human-review matrix**
 
-At minimum review:
+Review at minimum:
 
 ```text
-Home EN/AR:     1440, 1024, 768, 390
-About EN/AR:    1440, 1024, 390
-Contact EN/AR:  1440, 1024, 390
-Shop EN/AR:     1440, 1024, 390
-Product Detail: 1440, 1024, 390
+Home EN/AR     1440, 1024, 768, 390
+About EN/AR    1440, 1024, 390
+Contact EN/AR  1440, 1024, 390
+Shop EN/AR     1440, 1024, 390
+Product Detail 1440, 1024, 390
 ```
 
-For each page check section order, vertical rhythm, typography, crop/aspect ratio, grids, CTA, footer, mobile stacking, RTL logical spacing, clipping, and broken media.
+Check section order, rail/spacing, typography, crop/aspect ratio, grids, CTA/footer, responsive stacking, RTL logical spacing, clipping/overlap, and media.
 
-- [ ] **Step 4: Reject screenshot-only rationalization**
+- [ ] **Step 4: If visual drift remains, reopen RED→GREEN instead of rationalizing it**
 
-If a visible mismatch remains, identify its selector/source, write a focused failing assertion, repair it, rerun strict verification, then regenerate the affected captures. Do not mark the project complete with a known unexplained visual drift.
+Identify the exact selector/source, add a focused failing assertion, make the minimum root-cause repair, rerun strict verifier, regenerate affected captures.
 
-- [ ] **Step 5: Commit nothing solely for screenshots**
-
-Artifacts remain untracked unless the repository already has an explicit approved evidence-commit convention.
-
----
-
-### Task 14: Remove Only Proven-Dead Superseded Home Runtime Code
-
-**Files:**
-- Candidate stale runtime only after zero-reference proof:
-  - `wordpress/wp-content/themes/rosa-medical-child/template-parts/client-preview/latest-home-hero.php`
-  - `latest-home-family-discovery.php`
-  - `latest-home-comprehensive.php`
-  - `latest-home-confidence.php`
-  - `latest-home-contact-band.php`
-  - `latest-home-assurance.php`
-  - `latest-home-quotation.php`
-- Candidate stale helper in `functions.php`: `rosa_is_latest_home_page()` if still unused.
-- Candidate stale test: `wordpress/scripts/tests/latest-rosa-home-parity-capture-contract.test.sh` if it only references removed runtime tooling and provides no active negative guard value.
-
-**Interfaces:**
-- Consumes: final green site and repository search.
-- Produces: smaller runtime with no superseded latest-custom Home implementation capable of being accidentally reactivated.
-
-- [ ] **Step 1: Search references before deletion**
-
-Run:
+- [ ] **Step 5: Prove stale latest-custom Home code is dead before deletion**
 
 ```bash
 grep -RIn --exclude-dir=.git \
@@ -1310,133 +1219,86 @@ grep -RIn --exclude-dir=.git \
   wordpress docs
 ```
 
-Classify each hit as active runtime, intentional negative guard, historical doc, or dead code.
+Classify hits as active runtime, negative guard, historical documentation, or dead runtime. Delete only dead runtime; keep historical specs/plans.
 
-- [ ] **Step 2: Write/update a negative runtime contract first**
-
-Keep `medicashop-elementor-reference-contract.test.sh` asserting that latest-custom CSS/JS are not enqueued. Add source assertions that active Home widgets/seed topology contain only the nine finished-template widget names.
-
-- [ ] **Step 3: Run the negative contract before deletion**
+- [ ] **Step 6: Verify after cleanup**
 
 ```bash
 bash wordpress/scripts/tests/medicashop-elementor-reference-contract.test.sh
 php wordpress/scripts/tests/medicashop-elementor-home-contract.test.php
-```
-
-Expected: PASS.
-
-- [ ] **Step 4: Delete only files with zero active runtime references**
-
-Do not delete historical specs/plans merely because they describe superseded work. Preserve them as history with explicit superseded status.
-
-- [ ] **Step 5: Run full verification after cleanup**
-
-```bash
 ROSA_REFERENCE_URL=http://localhost:8090/ bash wordpress/scripts/client-preview-runtime-verify.sh
 ```
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit cleanup**
-
-```bash
-git commit -m "chore(wordpress): remove superseded Home runtime remnants"
-```
-
----
-
-### Task 15: Final Local Acceptance and Deployment Stop Boundary
-
-**Files:**
-- Modify documentation only if current runbook is inaccurate: `docs/runbooks/wordpress-client-content-controls.md`.
-- Do not touch Hostinger/production.
-
-**Interfaces:**
-- Consumes: all final local verification evidence.
-- Produces: a local-complete handoff that is ready for a separate staging/deployment approval.
-
-- [ ] **Step 1: Run the complete strict verifier from a cleanly understood worktree**
-
-```bash
-ROSA_REFERENCE_URL=http://localhost:8090/ bash wordpress/scripts/client-preview-runtime-verify.sh
-```
-
-Expected: PASS.
-
-- [ ] **Step 2: Run responsive capture tooling**
-
-```bash
-bash wordpress/scripts/client-preview-responsive-capture.sh
-```
-
-Expected: 64 bilingual screenshots from the existing eight-route/eight-viewport matrix.
-
-- [ ] **Step 3: Re-run editor/ownership acceptance**
+- [ ] **Step 7: Run complete authoring/ownership/accessibility acceptance again**
 
 ```bash
 bash wordpress/scripts/tests/elementor-authoring-editor-links.test.sh
 bash wordpress/scripts/tests/elementor-authoring-mutation.test.sh
 bash wordpress/scripts/tests/client-preview-content-mutation.test.sh
-bash wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localhost:8088/
+node wordpress/scripts/tests/client-preview-accessibility.test.mjs http://localhost:8088/
+bash wordpress/scripts/client-preview-responsive-capture.sh
 ```
 
-Expected: PASS.
+Expected: all PASS; responsive capture creates its existing 64 screenshots.
 
-- [ ] **Step 4: Update the runbook with the final client ownership model**
+- [ ] **Step 8: Update runbook ownership model**
 
-The runbook must state:
+Document exactly:
 
 ```text
 Home/About/Contact -> Edit with Elementor
 Products/categories/attributes -> WooCommerce
 Phone/email/address/WhatsApp -> Rosa Business
 Shared CTA/site copy -> Rosa Site & CTA
-Routine seeds -> non-destructive; no --force for normal operation
+Routine seeds -> non-destructive; never use --force normally
+Rosa Content Manager -> page/media/catalogue/content permissions without plugin/theme installation permissions
 ```
 
-- [ ] **Step 5: Record final git state**
+- [ ] **Step 9: Record final local state**
 
 ```bash
 git status --short
-git log --oneline --decorate -15
+git log --oneline --decorate -20
 ```
 
-Any remaining untracked files from Task 0 must be accounted for explicitly; do not silently delete them.
+Account for every remaining Task-0 untracked file explicitly; do not silently delete it.
 
-- [ ] **Step 6: Stop before production**
+- [ ] **Step 10: Stop before Hostinger/production**
 
-Do not run `hostinger-export.sh`, upload files, import databases, modify DNS, or run `hostinger-postdeploy-verify.sh` against production until the user separately approves deployment/staging work.
+Do not run export/upload/database-import/DNS/production verification steps until the user separately approves staging/deployment.
 
-- [ ] **Step 7: Commit documentation only if changed**
+- [ ] **Step 11: Commit cleanup/runbook changes if present**
 
 ```bash
-git add docs/runbooks/wordpress-client-content-controls.md
-git commit -m "docs(wordpress): finalize Elementor client editing runbook"
+git commit -m "chore(wordpress): finalize exact Elementor parity locally"
 ```
 
 ---
 
 ## Final Acceptance Checklist
 
-Implementation is locally complete only when every statement below is true:
+Local completion requires every item:
 
-- [ ] Home matches the finished target and the Arabic Who RTL regression is green.
+- [ ] Arabic Home Who RTL regression is green and Home remains visually accepted.
 - [ ] About EN/AR matches the pinned finished target at required viewports.
 - [ ] Contact EN/AR matches the pinned finished target at required viewports.
-- [ ] Shop EN/AR preserves target Rosa appearance while remaining Woo-owned.
+- [ ] Shop EN/AR preserves finished Rosa appearance and remains Woo-owned.
 - [ ] Representative Product Detail remains dynamic and matches the approved Rosa implementation; no unsupported MedicaShop Single Product fidelity claim is made.
-- [ ] Public category/family coverage is verified where that route is actually public.
-- [ ] Shared announcement/header/footer/pre-footer CTA remains one global code-owned implementation.
-- [ ] Home/About/Contact are genuine Elementor Free documents with real edit URLs.
-- [ ] Representative EN and AR edits on all three page types persist.
-- [ ] Home media edits persist.
-- [ ] Routine seeds do not overwrite edited Elementor documents.
-- [ ] Woo product truth is not serialized into Elementor.
-- [ ] Business and Site/CTA values remain centralized and dynamic.
-- [ ] Contact remains mailto/presentation-only; no backend submission was added.
-- [ ] No Elementor Pro or proprietary demo runtime dependency is introduced.
-- [ ] No unintended horizontal overflow, vertical collision, broken required media, console/page error, or RTL regression remains.
-- [ ] Strict local verifier with `ROSA_REFERENCE_URL=http://localhost:8090/` passes.
+- [ ] A public category/family route is verified when the current routing model actually exposes one.
+- [ ] Shared announcement/header/footer/pre-footer CTA is one code-owned implementation across pages.
+- [ ] Home/About/Contact are genuine Elementor Free documents with real editor URLs.
+- [ ] Representative EN/AR edits on all three page types persist independently.
+- [ ] Home media edit persists.
+- [ ] Routine seeds do not erase client-edited Elementor documents.
+- [ ] Woo product data and shared business values are absent from Elementor JSON.
+- [ ] Business/Site values remain centralized and dynamic.
+- [ ] Contact remains mailto/presentation-only.
+- [ ] `rosa_content_manager` can edit approved page/media/catalogue/content surfaces but cannot install/edit/update plugins or themes.
+- [ ] No Elementor Pro/proprietary demo runtime dependency exists.
+- [ ] No unintended overflow, vertical collision, broken required media, browser error, or RTL regression remains.
+- [ ] `ROSA_REFERENCE_URL=http://localhost:8090/ bash wordpress/scripts/client-preview-runtime-verify.sh` passes.
 - [ ] Final side-by-side human review passes.
 - [ ] Superseded latest-custom Home runtime cannot override the finished-template target.
-- [ ] Hostinger/production remains untouched pending separate approval.
+- [ ] Hostinger/production remains untouched until separate approval.
