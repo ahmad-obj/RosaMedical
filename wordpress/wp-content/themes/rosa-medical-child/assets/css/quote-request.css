@@ -152,6 +152,19 @@ body[data-rosa-preview-shell] .rosa-quote-request-item h3 {
   min-height: 44px;
 }
 
+.rosa-quote-request-form {
+  position: relative;
+}
+
+.rosa-quote-request-form__honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .rosa-quote-request-form__grid {
   display: grid;
   gap: .45rem;
@@ -187,6 +200,39 @@ body[data-rosa-preview-shell] .rosa-quote-request-item h3 {
   width: 100%;
   min-height: 48px;
   margin-top: 1rem;
+}
+
+.rosa-quote-request-form__submit:disabled {
+  cursor: wait;
+  opacity: .68;
+}
+
+.rosa-quote-request-form__handoff {
+  display: grid;
+  gap: .75rem;
+  margin-top: .85rem;
+}
+
+.rosa-quote-request-form__status {
+  min-height: 1.5rem;
+  margin: 0;
+  color: var(--preview-muted);
+  font-size: .8125rem;
+  line-height: 1.5;
+}
+
+.rosa-quote-request-form__whatsapp {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  justify-content: center;
+  border: 1px solid var(--preview-line);
+  background: #fff;
+  color: var(--preview-ink);
+}
+
+.rosa-quote-request-form__whatsapp[hidden] {
+  display: none;
 }
 
 html[dir="rtl"] .rosa-quote-request-page,
