@@ -32,7 +32,7 @@ async function assertNoHorizontalOverflow(page) {
   assert.ok(size.scroll <= size.client + 1, `${productPath} overflows horizontally: ${size.scroll} > ${size.client}`);
 }
 
-async function assertWideLayout(page, viewport) {
+async function assertDesktopLayout(page, viewport) {
   const topologyDisplay = await page.locator('.rosa-product-detail__topology').evaluate((element) => getComputedStyle(element).display);
   assert.equal(topologyDisplay, 'grid', `${viewport.width}px Product Detail must use a composed grid, not the old vertical prototype`);
 
@@ -43,17 +43,52 @@ async function assertWideLayout(page, viewport) {
   assert.ok(gallery.width >= viewport.width * 0.38, `${viewport.width}px gallery must remain a substantial primary visual column`);
   assert.ok(summary.x > gallery.x + gallery.width * 0.6, `${viewport.width}px summary must sit beside the gallery`);
   assert.ok(Math.abs(summary.y - gallery.y) <= 80, `${viewport.width}px summary must begin alongside the gallery`);
-
-  if (viewport.width >= 1200) {
-    assert.ok(support.x > summary.x + summary.width * 0.55, `${viewport.width}px support panel must occupy the third frozen-live column`);
-    assert.ok(Math.abs(support.y - gallery.y) <= 80, `${viewport.width}px support panel must begin alongside gallery and summary`);
-  } else {
-    assert.ok(support.x >= summary.x - 8, `${viewport.width}px support panel must remain in the information column`);
-    assert.ok(support.y > summary.y, `${viewport.width}px support panel must follow the main product summary`);
-  }
+  assert.ok(support.x > summary.x + summary.width * 0.55, `${viewport.width}px support panel must occupy the third frozen-live column`);
+  assert.ok(Math.abs(support.y - gallery.y) <= 80, `${viewport.width}px support panel must begin alongside gallery and summary`);
 
   const configurations = await box(page, '[data-preview-product-configurations]');
   assert.ok(configurations.y > gallery.y + Math.min(gallery.height, 300), `${viewport.width}px configuration section must continue below the product intro`);
+}
+
+async function assertTabletLayout(page, viewport) {
+  const topologyDisplay = await page.locator('.rosa-product-detail__topology').evaluate((element) => getComputedStyle(element).display);
+  assert.equal(topologyDisplay, 'grid', `${viewport.width}px Product Detail must keep a composed tablet grid`);
+
+  const gallery = await box(page, '[data-preview-product-gallery]');
+  const summary = await box(page, '[data-preview-product-summary]');
+  const support = await box(page, '[data-preview-product-support]');
+
+  assert.ok(gallery.width >= viewport.width * 0.38, `${viewport.width}px gallery must remain a substantial primary visual column`);
+  assert.ok(summary.x > gallery.x + gallery.width * 0.6, `${viewport.width}px summary must sit beside the gallery`);
+  assert.ok(Math.abs(summary.y - gallery.y) <= 80, `${viewport.width}px summary must begin alongside the gallery`);
+
+  const introRight = Math.max(gallery.x + gallery.width, summary.x + summary.width);
+  const introBottom = Math.max(gallery.y + gallery.height, summary.y + summary.height);
+  assert.ok(support.x <= gallery.x + 8, `${viewport.width}px support surface must begin with the gallery column`);
+  assert.ok(support.x + support.width >= introRight - 8, `${viewport.width}px support surface must span beneath gallery and summary`);
+  assert.ok(support.y >= introBottom - 4, `${viewport.width}px support surface must follow the complete gallery/summary row`);
+
+  const stepBoxes = await page.locator('[data-preview-product-support-step]').evaluateAll((elements) => elements.map((element) => {
+    const rect = element.getBoundingClientRect();
+    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+  }));
+  assert.equal(stepBoxes.length, 3, `${viewport.width}px support surface must retain three procurement steps`);
+  const stepY = stepBoxes.map((step) => step.y);
+  assert.ok(Math.max(...stepY) - Math.min(...stepY) <= 24, `${viewport.width}px support steps must form one horizontal row`);
+  assert.ok(stepBoxes[1].x > stepBoxes[0].x && stepBoxes[2].x > stepBoxes[1].x,
+    `${viewport.width}px support steps must progress horizontally across the support surface`);
+
+  const configurations = await box(page, '[data-preview-product-configurations]');
+  assert.ok(configurations.y >= support.y + support.height - 4, `${viewport.width}px configurations must continue below the tablet support surface`);
+
+  const description = await box(page, '.rosa-product-detail__description');
+  const media = await box(page, '[data-preview-product-description-media]');
+  const configurationList = await box(page, '.rosa-product-detail__configuration-list');
+  assert.ok(description.y < media.y, `${viewport.width}px description heading/copy must lead the media/configuration row`);
+  assert.ok(media.x + media.width + 12 <= configurationList.x,
+    `${viewport.width}px description media must not overlap the configuration content`);
+  assert.ok(Math.abs(media.y - configurationList.y) <= 40,
+    `${viewport.width}px description media and configuration cards must share a clean two-column row`);
 }
 
 async function assertMobileLayout(page, viewport) {
@@ -75,8 +110,10 @@ try {
     { width: 390, height: 844 },
   ]) {
     const page = await load(viewport);
-    if (viewport.width >= 1024) {
-      await assertWideLayout(page, viewport);
+    if (viewport.width >= 1200) {
+      await assertDesktopLayout(page, viewport);
+    } else if (viewport.width >= 1024) {
+      await assertTabletLayout(page, viewport);
     } else {
       await assertMobileLayout(page, viewport);
     }
