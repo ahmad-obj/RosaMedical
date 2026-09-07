@@ -128,19 +128,19 @@ async function validateInternalLinks(browser, records) {
     destinations.set(requestUrl.href, sourcePath);
 
     if (target.hash) {
-      const fragmentKey = `${requestUrl.href}#${decodeURIComponent(target.hash.slice(1))}`;
-      fragments.set(fragmentKey, { requestUrl: requestUrl.href, id: decodeURIComponent(target.hash.slice(1)), sourcePath });
+      const id = decodeURIComponent(target.hash.slice(1));
+      fragments.set(`${requestUrl.href}#${id}`, { requestUrl: requestUrl.href, id, sourcePath });
     }
   }
 
-  const requestContext = await browser.newContext().then((context) => context.request);
+  const context = await browser.newContext();
   try {
     for (const [url, sourcePath] of destinations) {
-      const response = await requestContext.get(url, { maxRedirects: 5, timeout: 30_000 });
+      const response = await context.request.get(url, { maxRedirects: 5, timeout: 30_000 });
       assert.ok(response.status() < 400, `${sourcePath} links to dead internal destination ${url} (HTTP ${response.status()})`);
     }
   } finally {
-    await requestContext.dispose();
+    await context.close();
   }
 
   for (const { requestUrl, id, sourcePath } of fragments.values()) {
@@ -148,7 +148,11 @@ async function validateInternalLinks(browser, records) {
     try {
       const response = await page.goto(requestUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
       assert.ok(response && response.status() < 400, `${sourcePath} fragment destination failed: ${requestUrl}`);
-      assert.equal(await page.locator(`#${CSS.escape(id)}`).count(), 1, `${sourcePath} links to missing fragment #${id} on ${requestUrl}`);
+      const targetCount = await page.locator('[id]').evaluateAll(
+        (elements, targetId) => elements.filter((element) => element.id === targetId).length,
+        id,
+      );
+      assert.equal(targetCount, 1, `${sourcePath} links to missing fragment #${id} on ${requestUrl}`);
     } finally {
       await page.close();
     }
@@ -193,7 +197,9 @@ async function assertCoreFlows(browser) {
   try {
     await assertHeaderRoutes(home, 'en');
     await assertSharedCta(home, '/contact/#inquiry', 'English Home');
-    assert.equal(normalizedPath(await home.locator('.rosa-preview-language').getAttribute('href')), '/ar/', 'English Home language switch must target Arabic Home');
+    const languageHref = await home.locator('.rosa-preview-language').getAttribute('href');
+    assert.ok(languageHref, 'English Home language switch is missing');
+    assert.equal(normalizedPath(languageHref), '/ar/', 'English Home language switch must target Arabic Home');
   } finally {
     await home.close();
   }
@@ -209,7 +215,9 @@ async function assertCoreFlows(browser) {
   try {
     await assertHeaderRoutes(arHome, 'ar');
     await assertSharedCta(arHome, '/ar/contact/#inquiry', 'Arabic Home');
-    assert.equal(normalizedPath(await arHome.locator('.rosa-preview-language').getAttribute('href')), '/', 'Arabic Home language switch must target English Home');
+    const languageHref = await arHome.locator('.rosa-preview-language').getAttribute('href');
+    assert.ok(languageHref, 'Arabic Home language switch is missing');
+    assert.equal(normalizedPath(languageHref), '/', 'Arabic Home language switch must target English Home');
   } finally {
     await arHome.close();
   }
