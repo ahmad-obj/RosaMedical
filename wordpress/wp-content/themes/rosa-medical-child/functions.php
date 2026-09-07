@@ -88,6 +88,16 @@ add_action('wp_enqueue_scripts', static function (): void {
             );
         }
 
+        $isProductSurface = function_exists('is_product') && is_product();
+        if ($isProductSurface) {
+            wp_enqueue_style(
+                'rosa-product-detail-live-visual-recovery',
+                get_stylesheet_directory_uri() . '/assets/css/product-detail-live-visual-recovery.css',
+                ['rosa-live-visual-recovery'],
+                $version
+            );
+        }
+
         $media = get_option(ROSA_PREVIEW_MEDIA_OPTION, []);
         $editableMediaKeys = [
             'home-hero-01', 'home-who-01', 'home-feature-01',
