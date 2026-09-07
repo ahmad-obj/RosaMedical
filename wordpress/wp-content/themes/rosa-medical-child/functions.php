@@ -85,6 +85,18 @@ add_action('wp_enqueue_scripts', static function (): void {
             . '.rosa-preview-contact__message-card .rosa-preview-contact-form textarea:focus-visible'
             . '{outline:3px solid var(--preview-focus);outline-offset:3px;}'
         );
+        wp_add_inline_style(
+            'rosa-live-visual-recovery',
+            'body[data-rosa-preview-shell] .rosa-preview-button--accent,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-button--accent:hover,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-button--accent:active,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-button--accent:focus-visible,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-product__action,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-product__action:hover,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-product__action:active,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-product__action:focus-visible'
+            . '{color:#fff;}'
+        );
 
         $isContactSurface = is_page() && in_array($pageUri, ['contact', 'ar/contact'], true);
         if ($isContactSurface) {
