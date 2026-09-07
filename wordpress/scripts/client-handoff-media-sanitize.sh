@@ -128,18 +128,9 @@ foreach ($targets as $path => $indexes) {
             '_elementor_data',
             wp_slash(wp_json_encode($doc, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
         );
+        delete_post_meta($pageId, '_elementor_element_cache');
         delete_post_meta($pageId, '_elementor_css');
-    }
-}
-
-if (class_exists('\\Elementor\\Plugin')) {
-    try {
-        $plugin = \\Elementor\\Plugin::$instance;
-        if (is_object($plugin) && isset($plugin->files_manager) && is_object($plugin->files_manager)) {
-            $plugin->files_manager->clear_cache();
-        }
-    } catch (Throwable $e) {
-        WP_CLI::warning('Elementor cache clear skipped: ' . $e->getMessage());
+        clean_post_cache($pageId);
     }
 }
 
