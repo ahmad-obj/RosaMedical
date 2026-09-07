@@ -28,6 +28,10 @@ product_id="$(wp post list --post_type=product --name="$slug" --post_status=publ
 product_type="$(wp eval "echo wc_get_product(${product_id})->get_type();")"
 [[ "$product_type" == 'variable' ]] || fail "fixture product must be variable, got '$product_type'"
 
+description="$(wp eval "echo wc_get_product(${product_id})->get_description();")"
+[[ -n "$description" ]] || fail 'fixture product description must not be empty'
+[[ "$description" != *'Foundation-gate fixture'* ]] || fail 'fixture product description exposes internal Foundation-gate fixture wording'
+
 mapfile -t variation_ids < <(wp post list --post_type=product_variation --post_parent="$product_id" --post_status=publish --field=ID --format=ids | tr ' ' '\n' | sed '/^$/d')
 [[ ${#variation_ids[@]} -eq 2 ]] || fail "expected exactly 2 real variations, found ${#variation_ids[@]}"
 
@@ -63,5 +67,14 @@ html="$(curl -fsS "$product_url")" || fail "product detail route did not resolve
 [[ "$html" == *'04-0911'* ]] || fail 'product detail does not render curved SKU 04-0911'
 [[ "$html" == *'Straight'* ]] || fail 'product detail does not render Straight configuration'
 [[ "$html" == *'Curved'* ]] || fail 'product detail does not render Curved configuration'
+[[ "$html" != *'Foundation-gate fixture'* ]] || fail 'English product detail exposes internal Foundation-gate fixture wording'
+
+site_url="$(wp option get home)"
+site_url="${site_url%/}"
+ar_url="${site_url}/ar/product/${slug}/"
+ar_html="$(curl -fsS "$ar_url")" || fail "Arabic product detail route did not resolve: $ar_url"
+[[ "$ar_html" == *'04-0901'* ]] || fail 'Arabic product detail does not render straight SKU 04-0901'
+[[ "$ar_html" == *'04-0911'* ]] || fail 'Arabic product detail does not render curved SKU 04-0911'
+[[ "$ar_html" != *'Foundation-gate fixture'* ]] || fail 'Arabic product detail exposes internal Foundation-gate fixture wording'
 
 printf 'PASS: Stevens Scissors Regular foundation fixture parity and shared detail rendering\n'
