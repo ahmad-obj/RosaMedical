@@ -47,10 +47,35 @@ $imageIds = array_values(array_unique(array_filter(array_merge(
 $primaryImageId = (int) ($imageIds[0] ?? 0);
 $relatedProducts = [];
 
-foreach (wc_get_related_products($productId, 3) as $relatedId) {
+foreach (wc_get_related_products($productId, 4) as $relatedId) {
     $related = wc_get_product((int) $relatedId);
     if ($related instanceof WC_Product && $related->get_status() === 'publish') {
         $relatedProducts[] = $related;
+    }
+}
+
+$relatedFamilies = [];
+$taxonomyFamilies = get_terms([
+    'taxonomy' => 'product_cat',
+    'hide_empty' => false,
+    'number' => 8,
+]);
+if (! is_wp_error($taxonomyFamilies)) {
+    foreach ($taxonomyFamilies as $term) {
+        if (! $term instanceof WP_Term || ($familyTerm instanceof WP_Term && $term->term_id === $familyTerm->term_id)) {
+            continue;
+        }
+        $termUrl = get_term_link($term);
+        if (is_wp_error($termUrl)) {
+            continue;
+        }
+        $relatedFamilies[] = [
+            'label' => $term->name,
+            'url' => $termUrl,
+        ];
+        if (count($relatedFamilies) >= 4) {
+            break;
+        }
     }
 }
 
@@ -87,13 +112,16 @@ get_header();
                     <?php endif; ?>
                 </div>
                 <div class="rosa-product-detail__thumbnails" data-preview-product-thumbnails>
-                    <?php if ($imageIds !== []) : ?>
-                        <?php foreach (array_slice($imageIds, 0, 4) as $imageId) : ?>
-                            <span class="rosa-product-detail__thumbnail"><?php echo wp_get_attachment_image((int) $imageId, 'woocommerce_thumbnail', false, ['alt' => $product->get_name()]); ?></span>
-                        <?php endforeach; ?>
-                    <?php else : ?>
-                        <span class="rosa-product-detail__thumbnail"><?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?></span>
-                    <?php endif; ?>
+                    <?php for ($thumbnailIndex = 0; $thumbnailIndex < 4; $thumbnailIndex++) :
+                        $thumbnailImageId = (int) ($imageIds[$thumbnailIndex] ?? 0); ?>
+                        <span class="rosa-product-detail__thumbnail">
+                            <?php if ($thumbnailImageId > 0) : ?>
+                                <?php echo wp_get_attachment_image($thumbnailImageId, 'woocommerce_thumbnail', false, ['alt' => $product->get_name()]); ?>
+                            <?php else : ?>
+                                <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?>
+                            <?php endif; ?>
+                        </span>
+                    <?php endfor; ?>
                 </div>
             </section>
 
@@ -136,47 +164,58 @@ get_header();
         </div>
 
         <section class="rosa-product-detail__configurations" data-preview-product-configurations aria-labelledby="rosa-configurations-title">
-            <div class="rosa-product-detail__description">
-                <p class="rosa-product-detail__eyebrow"><?php echo esc_html($label('Product details', 'تفاصيل المنتج')); ?></p>
-                <h2 id="rosa-configurations-title"><?php echo esc_html($label('Description & configurations', 'الوصف والتكوينات')); ?></h2>
-                <?php if ($product->get_description() !== '') : ?>
-                    <?php echo wp_kses_post(wpautop($product->get_description())); ?>
-                <?php else : ?>
-                    <p><?php echo esc_html($label('Review the available catalogue configurations below.', 'راجع تكوينات الكتالوج المتاحة أدناه.')); ?></p>
-                <?php endif; ?>
-            </div>
-
-            <?php if ($variations !== []) : ?>
-                <div class="rosa-product-detail__configuration-list">
-                    <?php foreach ($variations as $variation) :
-                        $attributes = $variation->get_attributes();
-                        $directionSlug = (string) ($attributes['pa_direction'] ?? '');
-                        $sizeSlug = (string) ($attributes['pa_size'] ?? '');
-                        $variantSlug = (string) ($attributes['pa_variant'] ?? '');
-
-                        $directionTerm = $directionSlug !== '' ? get_term_by('slug', $directionSlug, 'pa_direction') : false;
-                        $sizeTerm = $sizeSlug !== '' ? get_term_by('slug', $sizeSlug, 'pa_size') : false;
-                        $variantTerm = $variantSlug !== '' ? get_term_by('slug', $variantSlug, 'pa_variant') : false;
-                        $directionLabel = $directionTerm instanceof WP_Term ? $directionTerm->name : $directionSlug;
-                        ?>
-                        <article class="rosa-product-detail__configuration" data-variation-id="<?php echo esc_attr((string) $variation->get_id()); ?>">
-                            <div>
-                                <p class="rosa-product-detail__configuration-label"><?php echo esc_html($label('Configuration', 'التكوين')); ?></p>
-                                <h3><?php echo esc_html($directionLabel); ?></h3>
-                            </div>
-                            <dl>
-                                <div><dt><?php echo esc_html($label('SKU', 'SKU')); ?></dt><dd><?php echo esc_html($variation->get_sku()); ?></dd></div>
-                                <?php if ($sizeSlug !== '') : ?>
-                                    <div><dt><?php echo esc_html($label('Size', 'المقاس')); ?></dt><dd><?php echo esc_html($sizeTerm instanceof WP_Term ? $sizeTerm->name : $sizeSlug); ?></dd></div>
-                                <?php endif; ?>
-                                <?php if ($variantSlug !== '') : ?>
-                                    <div><dt><?php echo esc_html($label('Variant', 'النوع')); ?></dt><dd><?php echo esc_html($variantTerm instanceof WP_Term ? $variantTerm->name : $variantSlug); ?></dd></div>
-                                <?php endif; ?>
-                            </dl>
-                        </article>
-                    <?php endforeach; ?>
+            <nav class="rosa-product-detail__tabs" data-preview-product-tabs aria-label="<?php echo esc_attr($label('Product detail sections', 'أقسام تفاصيل المنتج')); ?>">
+                <span class="is-active"><?php echo esc_html($label('Description', 'الوصف')); ?></span>
+                <span><?php echo esc_html($label('Available configurations', 'التكوينات المتاحة')); ?></span>
+            </nav>
+            <div class="rosa-product-detail__description-layout">
+                <div class="rosa-product-detail__description-media" data-preview-product-description-media>
+                    <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?>
                 </div>
-            <?php endif; ?>
+                <div class="rosa-product-detail__description-content">
+                    <div class="rosa-product-detail__description">
+                        <p class="rosa-product-detail__eyebrow"><?php echo esc_html($label('Product details', 'تفاصيل المنتج')); ?></p>
+                        <h2 id="rosa-configurations-title"><?php echo esc_html($label('Description & configurations', 'الوصف والتكوينات')); ?></h2>
+                        <?php if ($product->get_description() !== '') : ?>
+                            <?php echo wp_kses_post(wpautop($product->get_description())); ?>
+                        <?php else : ?>
+                            <p><?php echo esc_html($label('Review the available catalogue configurations below.', 'راجع تكوينات الكتالوج المتاحة أدناه.')); ?></p>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($variations !== []) : ?>
+                        <div class="rosa-product-detail__configuration-list">
+                            <?php foreach ($variations as $variation) :
+                                $attributes = $variation->get_attributes();
+                                $directionSlug = (string) ($attributes['pa_direction'] ?? '');
+                                $sizeSlug = (string) ($attributes['pa_size'] ?? '');
+                                $variantSlug = (string) ($attributes['pa_variant'] ?? '');
+
+                                $directionTerm = $directionSlug !== '' ? get_term_by('slug', $directionSlug, 'pa_direction') : false;
+                                $sizeTerm = $sizeSlug !== '' ? get_term_by('slug', $sizeSlug, 'pa_size') : false;
+                                $variantTerm = $variantSlug !== '' ? get_term_by('slug', $variantSlug, 'pa_variant') : false;
+                                $directionLabel = $directionTerm instanceof WP_Term ? $directionTerm->name : $directionSlug;
+                                ?>
+                                <article class="rosa-product-detail__configuration" data-variation-id="<?php echo esc_attr((string) $variation->get_id()); ?>">
+                                    <div>
+                                        <p class="rosa-product-detail__configuration-label"><?php echo esc_html($label('Configuration', 'التكوين')); ?></p>
+                                        <h3><?php echo esc_html($directionLabel); ?></h3>
+                                    </div>
+                                    <dl>
+                                        <div><dt><?php echo esc_html($label('SKU', 'SKU')); ?></dt><dd><?php echo esc_html($variation->get_sku()); ?></dd></div>
+                                        <?php if ($sizeSlug !== '') : ?>
+                                            <div><dt><?php echo esc_html($label('Size', 'المقاس')); ?></dt><dd><?php echo esc_html($sizeTerm instanceof WP_Term ? $sizeTerm->name : $sizeSlug); ?></dd></div>
+                                        <?php endif; ?>
+                                        <?php if ($variantSlug !== '') : ?>
+                                            <div><dt><?php echo esc_html($label('Variant', 'النوع')); ?></dt><dd><?php echo esc_html($variantTerm instanceof WP_Term ? $variantTerm->name : $variantSlug); ?></dd></div>
+                                        <?php endif; ?>
+                                    </dl>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
         </section>
 
         <section class="rosa-product-detail__related" data-preview-product-related>
@@ -184,15 +223,16 @@ get_header();
                 <p class="rosa-product-detail__eyebrow"><?php echo esc_html($label('Related instruments', 'أدوات ذات صلة')); ?></p>
                 <h2><?php echo esc_html($label('Continue exploring the catalogue', 'واصل استكشاف الكتالوج')); ?></h2>
             </div>
-            <?php if ($relatedProducts !== []) : ?>
-                <div class="rosa-product-detail__related-grid">
-                    <?php foreach ($relatedProducts as $relatedProduct) : ?>
-                        <?php get_template_part('template-parts/client-preview/product-card', null, ['product' => $relatedProduct, 'locale' => $locale]); ?>
-                    <?php endforeach; ?>
-                </div>
-            <?php else : ?>
-                <a class="rosa-product-detail__related-fallback" href="<?php echo esc_url(home_url($isArabic ? '/ar/shop/' : '/shop/')); ?>"><?php echo esc_html($label('Browse all instrument families', 'تصفح جميع فئات الأدوات')); ?></a>
-            <?php endif; ?>
+            <div class="rosa-product-detail__related-grid">
+                <?php foreach (array_slice($relatedProducts, 0, 4) as $relatedProduct) : ?>
+                    <?php get_template_part('template-parts/client-preview/product-card', null, ['product' => $relatedProduct, 'locale' => $locale]); ?>
+                <?php endforeach; ?>
+                <?php
+                $relatedCount = count($relatedProducts);
+                foreach (array_slice($relatedFamilies, 0, max(0, 4 - $relatedCount)) as $relatedFamily) : ?>
+                    <?php get_template_part('template-parts/client-preview/product-card', null, ['family' => $relatedFamily, 'locale' => $locale, 'placeholder' => true]); ?>
+                <?php endforeach; ?>
+            </div>
         </section>
     </article>
 </div>
