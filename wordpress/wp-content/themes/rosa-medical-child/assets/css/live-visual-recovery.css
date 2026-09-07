@@ -967,7 +967,7 @@ html[dir="rtl"] .rosa-preview-contact-form label {
 
   .rosa-preview-stats[data-preview-stats] {
     height: 100px;
-    margin-block: -122px 22px;
+    margin-block: 0 22px;
   }
 
   .rosa-preview-stats[data-preview-stats] .rosa-preview-stats__grid {
