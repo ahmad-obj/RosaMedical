@@ -182,12 +182,16 @@ async function assertHeaderRoutes(page, locale) {
   for (const path of expected) assert.ok(paths.includes(path), `header navigation missing ${path}`);
 }
 
-async function assertSharedCta(page, expectedPath, label) {
-  const hrefs = await page.locator('.rosa-preview-prefooter a[href]').evaluateAll((anchors) => anchors.map((anchor) => anchor.href));
-  assert.ok(hrefs.length > 0, `${label} shared quotation CTA is missing`);
-  for (const href of hrefs) {
-    assert.equal(normalizedPath(href), expectedPath, `${label} shared CTA must resolve to ${expectedPath}`);
-  }
+async function assertSharedNewsletter(page, label) {
+  const banner = page.locator('[data-rosa-newsletter-banner]');
+  assert.equal(await banner.count(), 1, `${label} shared newsletter banner is missing or duplicated`);
+
+  const form = banner.locator('[data-rosa-newsletter-form]');
+  assert.equal(await form.count(), 1, `${label} shared newsletter form is missing or duplicated`);
+  assert.equal(await form.locator('input[name="name"]').count(), 1, `${label} newsletter Name field is missing`);
+  assert.equal(await form.locator('input[name="email"][type="email"]').count(), 1, `${label} newsletter Email field is missing or not type=email`);
+  assert.equal(await form.locator('button[type="submit"], input[type="submit"]').count(), 1, `${label} newsletter Sign Up control is missing`);
+  assert.equal(await banner.locator('a[href*="#inquiry"]').count(), 0, `${label} newsletter must not restore the retired quotation prefooter link`);
 }
 
 async function assertCoreFlows(browser) {
@@ -196,7 +200,7 @@ async function assertCoreFlows(browser) {
   const home = await openHealthyPage(browser, { label: 'English Home flow', path: '/', lang: 'en-US', dir: 'ltr', viewport: desktop });
   try {
     await assertHeaderRoutes(home, 'en');
-    await assertSharedCta(home, '/contact/#inquiry', 'English Home');
+    await assertSharedNewsletter(home, 'English Home');
     const languageHref = await home.locator('.rosa-preview-language').getAttribute('href');
     assert.ok(languageHref, 'English Home language switch is missing');
     assert.equal(normalizedPath(languageHref), '/ar/', 'English Home language switch must target Arabic Home');
@@ -206,7 +210,7 @@ async function assertCoreFlows(browser) {
 
   const about = await openHealthyPage(browser, { label: 'English About flow', path: '/about/', lang: 'en-US', dir: 'ltr', viewport: desktop });
   try {
-    await assertSharedCta(about, '/contact/#inquiry', 'English About');
+    await assertSharedNewsletter(about, 'English About');
   } finally {
     await about.close();
   }
@@ -214,7 +218,7 @@ async function assertCoreFlows(browser) {
   const arHome = await openHealthyPage(browser, { label: 'Arabic Home flow', path: '/ar/', lang: 'ar', dir: 'rtl', viewport: desktop });
   try {
     await assertHeaderRoutes(arHome, 'ar');
-    await assertSharedCta(arHome, '/ar/contact/#inquiry', 'Arabic Home');
+    await assertSharedNewsletter(arHome, 'Arabic Home');
     const languageHref = await arHome.locator('.rosa-preview-language').getAttribute('href');
     assert.ok(languageHref, 'Arabic Home language switch is missing');
     assert.equal(normalizedPath(languageHref), '/', 'Arabic Home language switch must target English Home');
