@@ -60,7 +60,7 @@ if [[ "${ROSA_MEDIA_INVENTORY_SKIP_RUNTIME:-0}" != '1' ]]; then
     grep -Fq -- "$source" "$output" || fail "runtime evidence source missing: $source"
   done
 
-  grep -Eq '^attachment\tmedia_library\t' "$output" || fail 'runtime inventory did not emit any Media Library attachment records'
+  grep -Fq -- $'attachment\tmedia_library\t' "$output" || fail 'runtime inventory did not emit any Media Library attachment records'
 fi
 
 printf 'PASS: client handoff media inventory is read-only and covers all required provenance sources\n'
