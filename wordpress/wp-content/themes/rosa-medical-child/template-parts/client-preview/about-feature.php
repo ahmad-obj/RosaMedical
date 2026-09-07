@@ -6,11 +6,11 @@ $c = static fn(string $key, string $en, string $ar): string => rosa_preview_sect
 $imageId = rosa_preview_section_media_id($sectionArgs, 'image', 'about_hospitals');
 ?>
 <section class="rosa-preview-about-feature" data-preview-feature-banner>
-  <div class="rosa-preview-about-feature__media" aria-hidden="true">
+  <div class="rosa-preview-about-feature__media">
     <?php if ($imageId > 0) : ?>
       <?php echo wp_get_attachment_image($imageId, 'large'); ?>
     <?php else : ?>
-      <div class="rosa-preview-media-slot"><span>ROSA</span></div>
+      <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'about_hospitals', 'label' => 'Rosa procurement support media', 'image_id' => 0]); ?>
     <?php endif; ?>
   </div>
   <div class="rosa-preview-rail rosa-preview-about-feature__content">
