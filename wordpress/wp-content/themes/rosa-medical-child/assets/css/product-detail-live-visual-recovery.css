@@ -511,6 +511,32 @@
   .rosa-product-detail__related .rosa-preview-product__action { min-block-size: 38px; padding-inline: .75rem; font-size: .68rem; }
 }
 
+@media (max-width: 48rem) {
+  .rosa-product-detail__description-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .rosa-product-detail__description-media {
+    min-height: 0;
+    aspect-ratio: 1.25 / 1;
+  }
+
+  .rosa-product-detail__description-content { display: contents; }
+  .rosa-product-detail__description { order: -1; }
+
+  .rosa-product-detail__configuration-list {
+    grid-template-columns: 1fr;
+    margin-block-start: .5rem;
+  }
+
+  .rosa-product-detail__configuration {
+    grid-template-columns: 1fr;
+    gap: .8rem;
+    padding: 1rem;
+  }
+}
+
 html[dir="rtl"] .rosa-product-detail__breadcrumb .rosa-preview-rail,
 html[dir="rtl"] .rosa-product-detail__summary,
 html[dir="rtl"] .rosa-product-detail__support,
