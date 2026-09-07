@@ -8,10 +8,10 @@ const baseUrl = new URL(process.argv[2] || 'http://localhost:8088/');
 const productPath = process.argv[3] || '/product/rosa-foundation-stevens-scissors-regular/';
 const browser = await chromium.launch({ headless: true });
 
-async function load(viewport) {
+async function load(viewport, path = productPath) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
-  const response = await page.goto(new URL(productPath, baseUrl).href, { waitUntil: 'load', timeout: 60_000 });
-  assert.ok(response?.ok(), `${productPath} returned ${response?.status() ?? 'no response'}`);
+  const response = await page.goto(new URL(path, baseUrl).href, { waitUntil: 'load', timeout: 60_000 });
+  assert.ok(response?.ok(), `${path} returned ${response?.status() ?? 'no response'}`);
   await page.evaluate(async () => { if (document.fonts?.ready) await document.fonts.ready; });
   await settlePageMedia(page, { scrollDelayMs: 10 });
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -24,12 +24,28 @@ async function box(page, selector) {
   return value;
 }
 
-async function assertNoHorizontalOverflow(page) {
+function overlaps(a, b, tolerance = 1) {
+  return !(
+    a.x + a.width <= b.x + tolerance
+    || b.x + b.width <= a.x + tolerance
+    || a.y + a.height <= b.y + tolerance
+    || b.y + b.height <= a.y + tolerance
+  );
+}
+
+function containedBy(inner, outer, tolerance = 1) {
+  return inner.x >= outer.x - tolerance
+    && inner.y >= outer.y - tolerance
+    && inner.x + inner.width <= outer.x + outer.width + tolerance
+    && inner.y + inner.height <= outer.y + outer.height + tolerance;
+}
+
+async function assertNoHorizontalOverflow(page, path = productPath) {
   const size = await page.evaluate(() => ({
     client: document.documentElement.clientWidth,
     scroll: document.documentElement.scrollWidth,
   }));
-  assert.ok(size.scroll <= size.client + 1, `${productPath} overflows horizontally: ${size.scroll} > ${size.client}`);
+  assert.ok(size.scroll <= size.client + 1, `${path} overflows horizontally: ${size.scroll} > ${size.client}`);
 }
 
 async function assertDesktopLayout(page, viewport) {
@@ -103,6 +119,29 @@ async function assertMobileLayout(page, viewport) {
   assert.ok(support.width >= viewport.width - 48, `${viewport.width}px support must use the mobile content width`);
 }
 
+async function assertNarrowTabletDescription(page, path) {
+  const section = await box(page, '[data-preview-product-configurations]');
+  const description = await box(page, '.rosa-product-detail__description');
+  const media = await box(page, '[data-preview-product-description-media]');
+  const list = await box(page, '.rosa-product-detail__configuration-list');
+
+  assert.equal(overlaps(media, description), false,
+    `${path} 768px description media must not overlap description copy`);
+  assert.equal(overlaps(media, list), false,
+    `${path} 768px description media must not overlap configuration cards`);
+
+  const cards = await page.locator('.rosa-product-detail__configuration').evaluateAll((elements) =>
+    elements.filter((element) => element.checkVisibility()).map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    }));
+
+  assert.ok(cards.length >= 2, `${path} must retain the verified configurations`);
+  for (const card of cards) {
+    assert.ok(containedBy(card, section), `${path} 768px configuration card must stay inside its section`);
+  }
+}
+
 try {
   for (const viewport of [
     { width: 1440, height: 900 },
@@ -118,6 +157,18 @@ try {
       await assertMobileLayout(page, viewport);
     }
     await assertNoHorizontalOverflow(page);
+    await page.close();
+  }
+
+  const narrowTablet = { width: 768, height: 1024 };
+  for (const path of [
+    '/product/rosa-foundation-stevens-scissors-regular/',
+    '/ar/product/rosa-foundation-stevens-scissors-regular/',
+  ]) {
+    const page = await load(narrowTablet, path);
+    await assertMobileLayout(page, narrowTablet);
+    await assertNarrowTabletDescription(page, path);
+    await assertNoHorizontalOverflow(page, path);
     await page.close();
   }
 
