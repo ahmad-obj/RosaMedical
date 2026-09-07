@@ -41,6 +41,16 @@ async function combinedHeight(page, startSelector, endSelector, label) {
   return (end.y + end.height) - start.y;
 }
 
+async function columnCount(locator) {
+  const boxes = await locator.evaluateAll((elements) => elements.map((element) => {
+    const rect = element.getBoundingClientRect();
+    return { x: Math.round(rect.x), y: Math.round(rect.y), width: rect.width, height: rect.height };
+  }).filter(({ width, height }) => width > 0 && height > 0));
+  assert.ok(boxes.length > 0, 'expected at least one visible item');
+  const firstRowY = Math.min(...boxes.map(({ y }) => y));
+  return boxes.filter(({ y }) => Math.abs(y - firstRowY) <= 2).length;
+}
+
 async function documentHeight(page) {
   return page.evaluate(() => document.documentElement.scrollHeight);
 }
@@ -51,6 +61,19 @@ async function noOverflow(page, label) {
     scroll: document.documentElement.scrollWidth,
   }));
   assert.ok(size.scroll <= size.client + 1, `${label} horizontally overflows: ${size.scroll} > ${size.client}`);
+}
+
+async function assertWhySplit(page, path, expectedColumns, viewportLabel) {
+  assert.equal(
+    await page.locator('[data-preview-why-us] .rosa-preview-about-why__layout').count(),
+    1,
+    `${path} Why Rosa must expose the frozen-live split composition at ${viewportLabel}`,
+  );
+  assert.equal(
+    await columnCount(page.locator('[data-preview-why-us] .rosa-preview-about-why__layout > *')),
+    expectedColumns,
+    `${path} Why Rosa split column count mismatch at ${viewportLabel}`,
+  );
 }
 
 async function assertDesktop(page, path) {
@@ -65,6 +88,7 @@ async function assertDesktop(page, path) {
   near(await height(page, '[data-preview-about-cards]'), 642, 24, `${path} information-card band at 1440`);
   near(await height(page, '[data-preview-feature-banner]'), 546, 16, `${path} feature band at 1440`);
   near(await height(page, '[data-preview-why-us]'), 767, 24, `${path} Why Rosa band at 1440`);
+  await assertWhySplit(page, path, 2, '1440');
   near(await height(page, '[data-preview-family-strip]'), 856, 28, `${path} evidence + proof surface at 1440`);
   await noOverflow(page, `${path} 1440`);
 }
@@ -73,6 +97,11 @@ async function assertTablet(page, path) {
   near(await documentHeight(page), 4562, 24, `${path} frozen-live full-page height at 1024`);
   near(await height(page, '[data-preview-page-hero]'), 241, 16, `${path} About hero height at 1024`);
   await noOverflow(page, `${path} 1024`);
+}
+
+async function assertWideMobile(page, path) {
+  near(await documentHeight(page), 5888, 24, `${path} frozen-live full-page height at 431`);
+  await noOverflow(page, `${path} 431`);
 }
 
 async function assertMobile(page, path) {
@@ -87,6 +116,7 @@ async function assertMobile(page, path) {
   near(await height(page, '[data-preview-about-cards]'), 1591, 36, `${path} information-card band at 390`);
   near(await height(page, '[data-preview-feature-banner]'), 375, 18, `${path} feature band at 390`);
   near(await height(page, '[data-preview-why-us]'), 998, 28, `${path} Why Rosa band at 390`);
+  await assertWhySplit(page, path, 1, '390');
   near(await height(page, '[data-preview-family-strip]'), 646, 28, `${path} evidence + proof surface at 390`);
   await noOverflow(page, `${path} 390`);
 }
@@ -101,6 +131,10 @@ try {
     const tablet = await load(browser, path, { width: 1024, height: 768 });
     await assertTablet(tablet, path);
     await tablet.close();
+
+    const wideMobile = await load(browser, path, { width: 431, height: 932 });
+    await assertWideMobile(wideMobile, path);
+    await wideMobile.close();
 
     const mobile = await load(browser, path, { width: 390, height: 844 });
     await assertMobile(mobile, path);
