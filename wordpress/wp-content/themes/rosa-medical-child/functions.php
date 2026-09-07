@@ -97,6 +97,17 @@ add_action('wp_enqueue_scripts', static function (): void {
             . 'body[data-rosa-preview-shell] .rosa-preview-product__action:focus-visible'
             . '{color:#fff;}'
         );
+        wp_add_inline_style(
+            'rosa-live-visual-recovery',
+            'body[data-rosa-preview-shell] .rosa-preview-hero > [data-media-slot="home-hero-01"],'
+            . 'body[data-rosa-preview-shell] .rosa-preview-page-hero'
+            . '{background-color:var(--preview-accent);background-image:none;}'
+            . 'body[data-rosa-preview-shell] .rosa-preview-hero > [data-media-slot="home-hero-01"]'
+            . '{color:rgb(255 255 255 / .18);}'
+            . 'body[data-rosa-preview-shell] .rosa-preview-hero > [data-media-slot="home-hero-01"]::after,'
+            . 'body[data-rosa-preview-shell] .rosa-preview-page-hero::after'
+            . '{background:none;}'
+        );
 
         $isContactSurface = is_page() && in_array($pageUri, ['contact', 'ar/contact'], true);
         if ($isContactSurface) {
