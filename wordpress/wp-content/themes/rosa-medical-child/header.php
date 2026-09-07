@@ -8,14 +8,19 @@ $isWooCatalogue = function_exists('is_shop') && (
     || is_product_tag()
     || (function_exists('is_product') && is_product())
 );
+$isQuoteRequest = function_exists('rosa_is_quote_request_route') && rosa_is_quote_request_route();
 $previewPostId = $isWooShop ? (int) get_option('woocommerce_shop_page_id', 0) : get_the_ID();
 $rawPreviewLocale = (string) get_post_meta($previewPostId, ROSA_PREVIEW_LOCALE_META, true);
-$isPreviewPage = in_array($rawPreviewLocale, ['en', 'ar'], true) || $isWooCatalogue;
-$previewLocale = function_exists('rosa_preview_locale')
-    ? rosa_preview_locale($previewPostId ?: null)
-    : ($rawPreviewLocale === 'ar' ? 'ar' : 'en');
+$isPreviewPage = in_array($rawPreviewLocale, ['en', 'ar'], true) || $isWooCatalogue || $isQuoteRequest;
+$previewLocale = $isQuoteRequest && function_exists('rosa_quote_request_route_locale')
+    ? (rosa_quote_request_route_locale() === 'ar' ? 'ar' : 'en')
+    : (function_exists('rosa_preview_locale')
+        ? rosa_preview_locale($previewPostId ?: null)
+        : ($rawPreviewLocale === 'ar' ? 'ar' : 'en'));
 $navItems = function_exists('rosa_preview_nav_items') ? rosa_preview_nav_items($previewLocale) : [];
-$pairUrl = function_exists('rosa_preview_pair_url') ? rosa_preview_pair_url($previewPostId ?: null) : home_url('/');
+$pairUrl = $isQuoteRequest
+    ? home_url($previewLocale === 'ar' ? '/quote-request/' : '/ar/quote-request/')
+    : (function_exists('rosa_preview_pair_url') ? rosa_preview_pair_url($previewPostId ?: null) : home_url('/'));
 $email = rosa_theme_business_value('email');
 $phone = rosa_theme_business_value('phone');
 $logoId = function_exists('rosa_preview_media_id') ? rosa_preview_media_id('logo') : 0;
