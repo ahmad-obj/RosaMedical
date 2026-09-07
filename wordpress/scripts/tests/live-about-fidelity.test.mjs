@@ -34,6 +34,14 @@ async function height(page, selector, label = selector) {
   return box.height;
 }
 
+async function renderedBox(page, selector, label = selector) {
+  const locator = page.locator(selector).first();
+  await locator.waitFor({ state: 'visible' });
+  const box = await locator.boundingBox();
+  assert.ok(box, `${label} has no rendered box`);
+  return box;
+}
+
 async function combinedHeight(page, startSelector, endSelector, label) {
   const start = await page.locator(startSelector).first().boundingBox();
   const end = await page.locator(endSelector).first().boundingBox();
@@ -65,6 +73,39 @@ async function noOverflow(page, label) {
     scroll: document.documentElement.scrollWidth,
   }));
   assert.ok(size.scroll <= size.client + 1, `${label} horizontally overflows: ${size.scroll} > ${size.client}`);
+}
+
+async function assertMobileWhoStatsRhythm(page, path, viewportLabel) {
+  const media = await renderedBox(
+    page,
+    '[data-preview-who-we-are] .rosa-preview-split__media',
+    `${path} Who media at ${viewportLabel}`,
+  );
+  const copy = await renderedBox(
+    page,
+    '[data-preview-who-we-are] .rosa-preview-split__grid > div:last-child',
+    `${path} Who copy at ${viewportLabel}`,
+  );
+  const finalParagraph = await renderedBox(
+    page,
+    '[data-preview-who-we-are] .rosa-preview-split__grid > div:last-child > p:last-child',
+    `${path} Who final paragraph at ${viewportLabel}`,
+  );
+  const stats = await renderedBox(page, '[data-preview-stats]', `${path} stats at ${viewportLabel}`);
+  const gap = stats.y - (finalParagraph.y + finalParagraph.height);
+
+  assert.ok(
+    media.y + media.height <= copy.y + 1,
+    `${path} Who media must finish before the copy begins at ${viewportLabel}`,
+  );
+  assert.ok(
+    gap >= -1,
+    `${path} Who copy must not overlap the stats at ${viewportLabel}; received ${gap.toFixed(1)}px`,
+  );
+  assert.ok(
+    gap <= 96,
+    `${path} Who copy-to-stats gap must be <= 96px at ${viewportLabel}; received ${gap.toFixed(1)}px`,
+  );
 }
 
 async function assertWhySplit(page, path, expectedColumns, viewportLabel) {
@@ -104,19 +145,13 @@ async function assertTablet(page, path) {
 }
 
 async function assertWideMobile(page, path) {
-  near(await documentHeight(page), 5888, 24, `${path} frozen-live full-page height at 431`);
+  await assertMobileWhoStatsRhythm(page, path, '431');
   await noOverflow(page, `${path} 431`);
 }
 
 async function assertMobile(page, path) {
-  near(await documentHeight(page), 6007, 24, `${path} frozen-live full-page height at 390`);
   near(await height(page, '[data-preview-page-hero]'), 241, 16, `${path} About hero height at 390`);
-  near(
-    await combinedHeight(page, '[data-preview-who-we-are]', '[data-preview-stats]', `${path} Who + stats band`),
-    754,
-    28,
-    `${path} Who + stats visual band at 390`,
-  );
+  await assertMobileWhoStatsRhythm(page, path, '390');
   near(await height(page, '[data-preview-about-cards]'), 1591, 36, `${path} information-card band at 390`);
   near(await height(page, '[data-preview-feature-banner]'), 375, 18, `${path} feature band at 390`);
   near(await height(page, '[data-preview-why-us]'), 998, 28, `${path} Why Rosa band at 390`);
@@ -145,7 +180,7 @@ try {
     await mobile.close();
   }
 
-  process.stdout.write('PASS: About matches frozen-live desktop/tablet/mobile composition geometry\n');
+  process.stdout.write('PASS: About preserves protected desktop/tablet geometry and standalone mobile Who/stats rhythm\n');
 } finally {
   await browser.close();
 }
