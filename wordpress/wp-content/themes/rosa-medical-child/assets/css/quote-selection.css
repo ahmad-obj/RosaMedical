@@ -36,7 +36,8 @@
   font-size: .75rem;
 }
 
-[data-rosa-quote-quantity] {
+[data-rosa-quote-quantity],
+[data-rosa-quote-drawer-quantity] {
   width: 4.25rem;
   min-width: 44px;
   min-height: 44px;
@@ -66,7 +67,7 @@
   position: fixed;
   z-index: 9999;
   inset-inline-end: clamp(1rem, 3vw, 2rem);
-  bottom: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(5.25rem, 8vw, 6rem);
   max-width: min(24rem, calc(100vw - 2rem));
   border-radius: 999px;
   background: var(--preview-ink);
@@ -81,7 +82,200 @@
   display: none;
 }
 
-html[dir="rtl"] .rosa-preview-product__quote [data-rosa-quote-configuration] {
+.rosa-preview-quote-review-trigger {
+  position: fixed;
+  z-index: 9998;
+  inset-inline-end: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  border: 1px solid rgb(255 255 255 / .22);
+  border-radius: 999px;
+  background: var(--preview-accent);
+  color: #fff;
+  padding: .65rem .75rem .65rem 1rem;
+  box-shadow: 0 14px 34px rgb(17 24 39 / .24);
+  font: inherit;
+  font-size: .8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rosa-preview-quote-review-trigger:hover,
+.rosa-preview-quote-review-trigger:active,
+.rosa-preview-quote-review-trigger:focus-visible {
+  color: #fff;
+}
+
+.rosa-preview-quote-review-trigger__count {
+  display: inline-flex;
+  min-width: 28px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--preview-accent-dark);
+  padding-inline: .4rem;
+  font-size: .75rem;
+  line-height: 1;
+}
+
+.rosa-preview-quote-drawer-backdrop {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  background: rgb(10 14 20 / .46);
+  backdrop-filter: blur(1px);
+}
+
+.rosa-preview-quote-drawer-backdrop[hidden],
+.rosa-preview-quote-drawer[hidden] {
+  display: none !important;
+}
+
+.rosa-preview-quote-drawer {
+  position: fixed;
+  z-index: 10001;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: min(32rem, 100vw);
+  max-width: 100vw;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  color: var(--preview-ink);
+  box-shadow: -18px 0 48px rgb(17 24 39 / .18);
+}
+
+html[dir="rtl"] .rosa-preview-quote-drawer {
+  box-shadow: 18px 0 48px rgb(17 24 39 / .18);
+}
+
+body.rosa-quote-drawer-open {
+  overflow: hidden;
+}
+
+.rosa-preview-quote-drawer__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--preview-line);
+  padding: clamp(1.1rem, 3vw, 1.6rem);
+}
+
+.rosa-preview-quote-drawer__eyebrow {
+  margin: 0 0 .35rem;
+  color: var(--preview-accent);
+  font-size: .6875rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+body[data-rosa-preview-shell] .rosa-preview-quote-drawer__header h2 {
+  margin: 0;
+  color: var(--preview-ink);
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+  line-height: 1.12;
+}
+
+.rosa-preview-quote-drawer__close {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--preview-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--preview-ink);
+  font: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rosa-preview-quote-drawer__body {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.rosa-preview-quote-drawer__items {
+  display: grid;
+  gap: .9rem;
+}
+
+.rosa-preview-quote-drawer__item {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid var(--preview-line);
+  border-radius: .5rem;
+  background: #fff;
+  padding: 1rem;
+}
+
+.rosa-preview-quote-drawer__item-copy {
+  min-width: 0;
+}
+
+body[data-rosa-preview-shell] .rosa-preview-quote-drawer__item h3 {
+  margin: 0 0 .4rem;
+  color: var(--preview-ink);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.rosa-preview-quote-drawer__item-copy p {
+  margin: .2rem 0 0;
+  color: var(--preview-muted);
+  font-size: .775rem;
+  overflow-wrap: anywhere;
+}
+
+.rosa-preview-quote-drawer__item-actions {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+}
+
+.rosa-preview-quote-drawer__item-actions [data-rosa-quote-remove] {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--preview-line);
+  border-radius: .25rem;
+  background: #fff;
+  color: var(--preview-accent-dark);
+  padding: .55rem .8rem;
+  font: inherit;
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rosa-preview-quote-drawer__empty {
+  margin: 0;
+  border: 1px dashed var(--preview-line);
+  border-radius: .5rem;
+  padding: 1.25rem;
+  color: var(--preview-muted);
+  font-size: .875rem;
+  line-height: 1.55;
+}
+
+.rosa-preview-quote-drawer__empty[hidden] {
+  display: none;
+}
+
+html[dir="rtl"] .rosa-preview-product__quote [data-rosa-quote-configuration],
+html[dir="rtl"] .rosa-preview-quote-drawer {
   text-align: right;
 }
 
@@ -99,5 +293,32 @@ html[dir="rtl"] .rosa-preview-product__quote [data-rosa-quote-configuration] {
   .rosa-preview-product__quote [data-rosa-add-to-quote],
   .rosa-product-detail__quote-controls [data-rosa-add-to-quote] {
     width: 100%;
+  }
+
+  .rosa-preview-quote-review-trigger {
+    max-width: calc(100vw - 2rem);
+    min-height: 52px;
+  }
+
+  .rosa-preview-quote-drawer {
+    width: 100vw;
+  }
+
+  .rosa-preview-quote-drawer__header,
+  .rosa-preview-quote-drawer__body {
+    padding-inline: 1rem;
+  }
+}
+
+@media (max-width: 26.875rem) {
+  .rosa-preview-quote-review-trigger__label {
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rosa-preview-quote-drawer__item-actions {
+    justify-content: space-between;
   }
 }
