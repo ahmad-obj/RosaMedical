@@ -44,6 +44,9 @@ add_action('wp_enqueue_scripts', static function (): void {
     $theme = wp_get_theme();
     $version = (string) $theme->get('Version');
     $pageTemplate = is_page() ? (string) get_page_template_slug() : '';
+    $pageUri = is_page() && function_exists('get_page_uri')
+        ? trim((string) get_page_uri((int) get_queried_object_id()), '/')
+        : '';
 
     wp_enqueue_style(
         'rosa-medical-tokens',
@@ -76,6 +79,16 @@ add_action('wp_enqueue_scripts', static function (): void {
     if ($isPreviewPage || $isPreviewCatalogue) {
         wp_enqueue_style('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/css/client-preview.css', ['rosa-medical-base'], $version);
         wp_enqueue_style('rosa-live-visual-recovery', get_stylesheet_directory_uri() . '/assets/css/live-visual-recovery.css', ['rosa-client-preview'], $version);
+
+        $isAboutSurface = is_page() && in_array($pageUri, ['about', 'ar/about'], true);
+        if ($isAboutSurface) {
+            wp_enqueue_style(
+                'rosa-about-live-visual-recovery',
+                get_stylesheet_directory_uri() . '/assets/css/about-live-visual-recovery.css',
+                ['rosa-live-visual-recovery'],
+                $version
+            );
+        }
 
         $isShopSurface = $pageTemplate === 'page-templates/client-preview-shop.php'
             || (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag()));
