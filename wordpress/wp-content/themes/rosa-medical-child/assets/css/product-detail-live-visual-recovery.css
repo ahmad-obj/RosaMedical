@@ -359,20 +359,75 @@
   font-size: .88rem;
 }
 
-/* At 1024 the approved composition keeps gallery beside the information column,
- * with support continuing beneath summary. */
+/* At the 1024px tablet breakpoint the intro stays two-column, while the
+ * procurement-support surface spans the complete row below it. The product
+ * description then leads a clean media/configuration row. */
 @media (max-width: 74.9375rem) and (min-width: 64rem) {
   .rosa-product-detail__topology {
     grid-template-columns: minmax(0, 1.08fr) minmax(19rem, .92fr);
     grid-template-areas:
       "gallery summary"
-      "gallery support";
+      "support support";
     gap: 1.5rem 2rem;
   }
 
   .rosa-product-detail__summary h1 { font-size: clamp(2rem, 4vw, 3rem); }
-  .rosa-product-detail__support { padding: 1.3rem; }
-  .rosa-product-detail__support h2 { font-size: 1.35rem; }
+
+  .rosa-product-detail__support {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 1.3rem;
+  }
+
+  .rosa-product-detail__support-eyebrow,
+  .rosa-product-detail__support h2 {
+    grid-column: 1 / -1;
+  }
+
+  .rosa-product-detail__support h2 {
+    margin-block-end: .65rem;
+    font-size: 1.35rem;
+  }
+
+  .rosa-product-detail__support-step {
+    min-height: 104px;
+    border-block-start: 1px solid var(--preview-border);
+    padding: .9rem 1rem;
+  }
+
+  .rosa-product-detail__support-step + .rosa-product-detail__support-step {
+    border-inline-start: 1px solid var(--preview-border);
+  }
+
+  .rosa-product-detail__description-layout {
+    grid-template-columns: minmax(12rem, .55fr) minmax(0, 1.45fr);
+    grid-template-rows: auto auto;
+    gap: 1rem 1.5rem;
+  }
+
+  .rosa-product-detail__description-content {
+    display: contents;
+  }
+
+  .rosa-product-detail__description {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    max-width: 52rem;
+  }
+
+  .rosa-product-detail__description-media {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .rosa-product-detail__configuration-list {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    margin-block-start: 0;
+  }
 }
 
 @media (max-width: 63.9375rem) {
