@@ -140,8 +140,8 @@ try {
   for (const [selector, label] of [
     ['.rosa-preview-product__media', 'product media'],
     ['.rosa-preview-product__action', 'product action'],
-    ['.rosa-preview-shop-search input', 'Shop search input'],
-    ['.rosa-preview-shop-search button', 'Shop search button'],
+    ['.rosa-live-shop-search input', 'Shop search input'],
+    ['.rosa-live-shop-search button', 'Shop search button'],
     ['.rosa-preview-footer a', 'footer link'],
   ]) {
     await assertTarget(page, selector, label);
