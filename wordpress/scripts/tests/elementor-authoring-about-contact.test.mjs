@@ -95,10 +95,21 @@ async function assertAbout(page, path, desktop, viewportWidth) {
 }
 
 async function assertContact(page, path, desktop) {
-  for (const selector of ['[data-preview-page-hero]', '[data-preview-contact-layout]', '[data-preview-map-role]']) {
-    assert.equal(await page.locator(selector).count(), 1, `${path} missing/duplicated Contact section ${selector}`);
-  }
-  assert.equal(await columnCount(page.locator('.rosa-preview-contact__grid > *')), desktop ? 2 : 1, `${path} Contact primary column count mismatch`);
+  assert.equal(await page.locator('[data-preview-page-hero]').count(), 1, `${path} must render one Contact hero`);
+  assert.equal(await page.locator('[data-preview-contact-layout]').count(), 1, `${path} must render one Contact composition`);
+
+  // Contact was recovered against the frozen live baseline after this combined
+  // authoring test was first written. The approved composition intentionally
+  // removes the historical standalone map/location band and uses two cards.
+  assert.equal(await page.locator('[data-preview-map-role]').count(), 0, `${path} must not restore the obsolete separate map/location band`);
+  assert.equal(await page.locator('.rosa-preview-contact__conversation-card').count(), 1, `${path} must render the conversation/details card`);
+  assert.equal(await page.locator('.rosa-preview-contact__message-card').count(), 1, `${path} must render the message card`);
+  assert.equal(await page.locator('.rosa-preview-contact__channel').count(), 3, `${path} must render three contact channels`);
+  assert.equal(
+    await columnCount(page.locator('[data-preview-contact-layout] .rosa-preview-contact__card')),
+    desktop ? 2 : 1,
+    `${path} Contact primary column count mismatch`,
+  );
   assert.equal(await columnCount(page.locator('.rosa-preview-contact-form > label')), desktop ? 2 : 1, `${path} Contact form first-row column count mismatch`);
   assert.equal(await page.locator('.rosa-preview-contact-form').getAttribute('action'), null, `${path} must not introduce a form submission backend`);
   assert.equal(await page.locator('.rosa-preview-contact-form .rosa-preview-button[href^="mailto:"]').count(), 1, `${path} must preserve the mailto contact action`);
@@ -121,7 +132,7 @@ try {
     }
   }
 
-  process.stdout.write('PASS: Elementor About/Contact finished-template topology, responsive geometry and RTL contracts\n');
+  process.stdout.write('PASS: Elementor About/Contact current topology, responsive geometry and RTL contracts\n');
 } finally {
   await browser.close();
 }
