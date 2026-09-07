@@ -54,28 +54,48 @@ foreach (wc_get_related_products($productId, 4) as $relatedId) {
     }
 }
 
+/*
+ * Representative local fixtures can contain a single populated product family.
+ * The public catalogue still exposes the five canonical Woo family navigation
+ * surfaces. Use the same family-navigation model as Shop: resolve a real term
+ * when it exists, otherwise link back to the Shop family filter. This never
+ * creates or duplicates Woo product records.
+ */
 $relatedFamilies = [];
-$taxonomyFamilies = get_terms([
-    'taxonomy' => 'product_cat',
-    'hide_empty' => false,
-    'number' => 8,
-]);
-if (! is_wp_error($taxonomyFamilies)) {
-    foreach ($taxonomyFamilies as $term) {
-        if (! $term instanceof WP_Term || ($familyTerm instanceof WP_Term && $term->term_id === $familyTerm->term_id)) {
-            continue;
-        }
+$shopUrl = $isArabic ? home_url('/ar/shop/') : (get_post_type_archive_link('product') ?: home_url('/shop/'));
+$canonicalFamilies = [
+    ['slug' => 'knives', 'label' => 'Knives'],
+    ['slug' => 'scissors', 'label' => 'Scissors'],
+    ['slug' => 'punches', 'label' => 'Punches'],
+    ['slug' => 'chisels', 'label' => 'Chisels'],
+    ['slug' => 'cutters', 'label' => 'Cutters'],
+];
+$currentFamilySlug = $familyTerm instanceof WP_Term ? (string) $familyTerm->slug : '';
+
+foreach ($canonicalFamilies as $family) {
+    if ($family['slug'] === $currentFamilySlug) {
+        continue;
+    }
+
+    $term = get_term_by('slug', $family['slug'], 'product_cat');
+    $url = add_query_arg('family', $family['slug'], $shopUrl);
+    $displayLabel = $family['label'];
+
+    if ($term instanceof WP_Term) {
         $termUrl = get_term_link($term);
-        if (is_wp_error($termUrl)) {
-            continue;
+        if (! is_wp_error($termUrl)) {
+            $url = (string) $termUrl;
         }
-        $relatedFamilies[] = [
-            'label' => $term->name,
-            'url' => $termUrl,
-        ];
-        if (count($relatedFamilies) >= 4) {
-            break;
-        }
+        $displayLabel = $term->name;
+    }
+
+    $relatedFamilies[] = [
+        'label' => $displayLabel,
+        'url' => $url,
+    ];
+
+    if (count($relatedFamilies) >= 4) {
+        break;
     }
 }
 
