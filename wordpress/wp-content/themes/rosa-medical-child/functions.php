@@ -79,6 +79,12 @@ add_action('wp_enqueue_scripts', static function (): void {
     if ($isPreviewPage || $isPreviewCatalogue) {
         wp_enqueue_style('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/css/client-preview.css', ['rosa-medical-base'], $version);
         wp_enqueue_style('rosa-live-visual-recovery', get_stylesheet_directory_uri() . '/assets/css/live-visual-recovery.css', ['rosa-client-preview'], $version);
+        wp_add_inline_style(
+            'rosa-live-visual-recovery',
+            '.rosa-preview-contact__message-card .rosa-preview-contact-form input:focus-visible,'
+            . '.rosa-preview-contact__message-card .rosa-preview-contact-form textarea:focus-visible'
+            . '{outline:3px solid var(--preview-focus);outline-offset:3px;}'
+        );
 
         $isAboutSurface = is_page() && in_array($pageUri, ['about', 'ar/about'], true);
         if ($isAboutSurface) {
