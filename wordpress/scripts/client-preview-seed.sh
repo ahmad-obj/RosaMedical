@@ -62,11 +62,6 @@ import_media(){
 
 media_lines="$(
   import_media logo 'apps/web/public/media/brand/rosa-header-logo-v1.webp'
-  import_media hero 'apps/web/public/media/editorial/home-hero-surgical-instruments.jpg'
-  import_media about_procurement 'apps/web/public/media/editorial/about-procurement.jpg'
-  import_media about_hospitals 'apps/web/public/media/editorial/about-hospitals.jpg'
-  import_media about_international 'apps/web/public/media/editorial/about-international-buyers.webp'
-  import_media procurement_support 'apps/web/public/media/editorial/procurement-support.jpg'
 )"
 media_lines_b64="$(printf '%s' "$media_lines" | base64 | tr -d '\n')"
 wp eval "
@@ -79,7 +74,23 @@ wp eval "
     [\$key, \$value] = explode('=', \$line, 2);
     \$map[\$key] = (int) \$value;
   }
-  if (! isset(\$map['logo'], \$map['hero'])) WP_CLI::error('Rosa preview media map is incomplete.');
+  foreach ([
+    'hero',
+    'about_procurement',
+    'about_hospitals',
+    'about_international',
+    'home-hero-01',
+    'procurement_support',
+    'home-specialty-plastic-surgery',
+    'home-specialty-orthopedics',
+    'home-specialty-maxillofacial',
+    'home-specialty-orthodontics',
+    'home-specialty-spine',
+    'home-securing-confidence'
+  ] as \$unsafe_key) {
+    \$map[\$unsafe_key] = 0;
+  }
+  if (! isset(\$map['logo']) || (int) \$map['logo'] <= 0) WP_CLI::error('Rosa preview media map is incomplete.');
   update_option('rosa_preview_media', \$map);
 "
 
