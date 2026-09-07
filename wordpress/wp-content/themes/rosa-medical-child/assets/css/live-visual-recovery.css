@@ -6,7 +6,7 @@
  * that the historical style is not the approved rosamedical.org presentation.
  */
 
-/* Contact — frozen 2026-09-06 live presentation */
+/* Contact — recovered presentation with standalone handoff spacing. */
 .rosa-preview-page-hero--contact {
   position: relative;
   overflow: hidden;
@@ -55,7 +55,7 @@
 }
 
 .rosa-preview-contact {
-  padding-block: clamp(3.25rem, 4.8vw, 4.75rem) clamp(32rem, 38vw, 35rem);
+  padding-block: clamp(3.25rem, 4.8vw, 4.75rem) clamp(4rem, 6vw, 6rem);
   background: #f6f6f6;
 }
 
@@ -231,7 +231,6 @@
 
   .rosa-preview-contact {
     padding-block-start: clamp(4.9rem, 5.6vw, 5.75rem);
-    padding-block-end: clamp(34rem, 39vw, 37rem);
   }
 
   .rosa-preview-contact__cards {
@@ -243,8 +242,7 @@
   }
 }
 
-/* Tablet: the frozen site keeps the two cards side-by-side through 768px.
- * The wide blank procurement spacer remains, but is smaller than desktop. */
+/* Tablet: the recovered site keeps the two cards side-by-side through 768px. */
 @media (max-width: 64rem) and (min-width: 48rem) {
   .rosa-preview-page-hero--contact {
     padding-block: 4.35rem;
@@ -252,7 +250,6 @@
 
   .rosa-preview-contact {
     padding-block-start: 3.5rem;
-    padding-block-end: 27rem;
   }
 
   .rosa-preview-contact__cards {
@@ -286,7 +283,7 @@
   }
 
   .rosa-preview-contact {
-    padding-block: 2.35rem 27rem;
+    padding-block: 2.35rem 4rem;
   }
 
   .rosa-preview-contact__cards {
