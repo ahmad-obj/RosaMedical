@@ -41,14 +41,18 @@ async function combinedHeight(page, startSelector, endSelector, label) {
   return (end.y + end.height) - start.y;
 }
 
-async function columnCount(locator) {
+async function horizontalColumnCount(locator) {
   const boxes = await locator.evaluateAll((elements) => elements.map((element) => {
     const rect = element.getBoundingClientRect();
-    return { x: Math.round(rect.x), y: Math.round(rect.y), width: rect.width, height: rect.height };
+    return { x: rect.x, width: rect.width, height: rect.height };
   }).filter(({ width, height }) => width > 0 && height > 0));
   assert.ok(boxes.length > 0, 'expected at least one visible item');
-  const firstRowY = Math.min(...boxes.map(({ y }) => y));
-  return boxes.filter(({ y }) => Math.abs(y - firstRowY) <= 2).length;
+
+  const columns = [];
+  for (const { x } of boxes.sort((a, b) => a.x - b.x)) {
+    if (!columns.some((existing) => Math.abs(existing - x) <= 2)) columns.push(x);
+  }
+  return columns.length;
 }
 
 async function documentHeight(page) {
@@ -70,7 +74,7 @@ async function assertWhySplit(page, path, expectedColumns, viewportLabel) {
     `${path} Why Rosa must expose the frozen-live split composition at ${viewportLabel}`,
   );
   assert.equal(
-    await columnCount(page.locator('[data-preview-why-us] .rosa-preview-about-why__layout > *')),
+    await horizontalColumnCount(page.locator('[data-preview-why-us] .rosa-preview-about-why__layout > *')),
     expectedColumns,
     `${path} Why Rosa split column count mismatch at ${viewportLabel}`,
   );
