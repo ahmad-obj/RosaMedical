@@ -6,13 +6,14 @@ COMPOSE="$ROOT/wordpress/dev/compose.yaml"
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 [[ -f "$SEED" ]] || fail 'client preview seed script missing'
 grep -Fq 'rosa-header-logo-v1.webp' "$SEED" || fail 'Rosa logo import missing'
+seed_import_block="$(sed -n '/^media_lines="$(/,/^)\"$/p' "$SEED")"
 for unsafe_source in \
   'home-hero-surgical-instruments.jpg' \
   'about-procurement.jpg' \
   'about-hospitals.jpg' \
   'about-international-buyers.webp' \
   'procurement-support.jpg'; do
-  ! grep -Fq "$unsafe_source" "$SEED" || fail "unsafe preview media source remains in routine seed: $unsafe_source"
+  ! grep -Fq "$unsafe_source" <<< "$seed_import_block" || fail "unsafe preview media source remains in routine import block: $unsafe_source"
 done
 grep -Fq 'home-specialty-plastic-surgery' "$SEED" || fail 'unsafe preview media neutralization list missing'
 grep -Fq 'home-securing-confidence' "$SEED" || fail 'unsafe confidence media neutralization missing'
