@@ -23,7 +23,7 @@ if ($product instanceof WC_Product) {
     if ($product instanceof WC_Product_Variable) {
         foreach ($product->get_children() as $variationId) {
             $variation = wc_get_product((int) $variationId);
-            if (! $variation instanceof WC_Product_Variation || $variation->get_status() !== 'publish') {
+            if (! ($variation instanceof WC_Product_Variation) || $variation->get_status() !== 'publish') {
                 continue;
             }
 
@@ -75,7 +75,7 @@ if ($product instanceof WC_Product) {
           <?php endif; ?>
           <label class="screen-reader-text" for="rosa-quote-quantity-<?php echo esc_attr((string) $product->get_id()); ?>"><?php echo esc_html($quantityLabel); ?></label>
           <input id="rosa-quote-quantity-<?php echo esc_attr((string) $product->get_id()); ?>" data-rosa-quote-quantity type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="<?php echo esc_attr($quantityLabel); ?>">
-          <button type="button" class="rosa-preview-button rosa-preview-button--accent" data-rosa-add-to-quote data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>"<?php if (! $product instanceof WC_Product_Variable) : ?> data-variation-id="0" data-sku="<?php echo esc_attr($quoteOptions[0]['sku']); ?>"<?php endif; ?>><?php echo esc_html($addQuoteLabel); ?></button>
+          <button type="button" class="rosa-preview-button rosa-preview-button--accent" data-rosa-add-to-quote data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>"<?php if (! ($product instanceof WC_Product_Variable)) : ?> data-variation-id="0" data-sku="<?php echo esc_attr($quoteOptions[0]['sku']); ?>"<?php endif; ?>><?php echo esc_html($addQuoteLabel); ?></button>
         </div>
       <?php endif; ?>
       </div>
