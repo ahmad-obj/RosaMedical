@@ -119,6 +119,17 @@ async function assertMobileLayout(page, viewport) {
   assert.ok(support.width >= viewport.width - 48, `${viewport.width}px support must use the mobile content width`);
 }
 
+async function assertNarrowTabletStacking(page, path) {
+  const gallery = await box(page, '[data-preview-product-gallery]');
+  const summary = await box(page, '[data-preview-product-summary]');
+  const support = await box(page, '[data-preview-product-support]');
+
+  assert.ok(summary.y > gallery.y + gallery.height - 4,
+    `${path} 768px summary must stack below the gallery`);
+  assert.ok(support.y > summary.y + summary.height - 4,
+    `${path} 768px support must stack below the summary`);
+}
+
 async function assertNarrowTabletDescription(page, path) {
   const section = await box(page, '[data-preview-product-configurations]');
   const description = await box(page, '.rosa-product-detail__description');
@@ -166,7 +177,7 @@ try {
     '/ar/product/rosa-foundation-stevens-scissors-regular/',
   ]) {
     const page = await load(narrowTablet, path);
-    await assertMobileLayout(page, narrowTablet);
+    await assertNarrowTabletStacking(page, path);
     await assertNarrowTabletDescription(page, path);
     await assertNoHorizontalOverflow(page, path);
     await page.close();
