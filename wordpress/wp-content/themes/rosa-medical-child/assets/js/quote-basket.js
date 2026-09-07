@@ -93,6 +93,12 @@
 
   const getState = () => cloneState(state);
 
+  const announceChange = () => {
+    window.dispatchEvent(new CustomEvent('rosa:quote-basket-change', {
+      detail: getState(),
+    }));
+  };
+
   const add = (candidate) => {
     const item = normalizeItem(candidate);
     if (!item) return getState();
@@ -107,6 +113,7 @@
     }
 
     state = persist(state);
+    announceChange();
     return getState();
   };
 
@@ -116,6 +123,7 @@
 
     state.items = state.items.filter((entry) => identityKey(entry) !== key);
     state = persist(state);
+    announceChange();
     return getState();
   };
 
@@ -129,11 +137,13 @@
 
     existing.quantity = quantity;
     state = persist(state);
+    announceChange();
     return getState();
   };
 
   const clear = () => {
     state = persist(emptyState());
+    announceChange();
     return getState();
   };
 
@@ -150,6 +160,7 @@
 
     state.items = state.items.filter((entry) => allowed.has(identityKey(entry)));
     state = persist(state);
+    announceChange();
     return getState();
   };
 
