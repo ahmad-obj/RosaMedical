@@ -31,14 +31,6 @@ const routes = [
   { label: 'Product AR', path: `/ar/product/${productSlug}/`, locale: 'ar', lang: 'ar', dir: 'rtl' },
 ];
 
-function visibleLabelText(element) {
-  const labels = element.labels ? Array.from(element.labels) : [];
-  return labels.map((label) => (label.textContent || '').trim()).filter(Boolean).join(' ')
-    || element.getAttribute('aria-label')
-    || element.getAttribute('placeholder')
-    || '';
-}
-
 async function assertNewsletter(browser, route, viewport) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const context = `${route.label} ${route.path} ${viewport.width}x${viewport.height}`;
@@ -80,6 +72,13 @@ async function assertNewsletter(browser, route, viewport) {
       const nameInput = element.querySelector('input[name="name"]');
       const emailInput = element.querySelector('input[name="email"]');
       const submitControl = element.querySelector('button[type="submit"], input[type="submit"]');
+      const visibleLabelText = (control) => {
+        const labels = control.labels ? Array.from(control.labels) : [];
+        return labels.map((label) => (label.textContent || '').trim()).filter(Boolean).join(' ')
+          || control.getAttribute('aria-label')
+          || control.getAttribute('placeholder')
+          || '';
+      };
       const rect = (node) => {
         const box = node.getBoundingClientRect();
         return { x: box.x, y: box.y, width: box.width, height: box.height, right: box.right, bottom: box.bottom };
