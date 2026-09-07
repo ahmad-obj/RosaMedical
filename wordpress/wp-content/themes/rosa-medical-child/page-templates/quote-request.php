@@ -21,14 +21,16 @@ $copy = $isArabic
         'quantity' => 'الكمية',
         'remove' => 'إزالة',
         'contactTitle' => 'بيانات طلب عرض السعر',
-        'contactIntro' => 'أدخل بيانات التواصل والمؤسسة. سيتم ربطها بالأدوات المحددة عند الإرسال.',
+        'contactIntro' => 'أدخل بيانات التواصل والمؤسسة. سيتم التحقق من الأدوات المحددة قبل تجهيز البريد ورسالة واتساب.',
         'name' => 'الاسم',
         'email' => 'البريد الإلكتروني',
         'phone' => 'واتساب / الهاتف',
         'institution' => 'المؤسسة / المستشفى',
         'location' => 'الدولة / المدينة',
         'notes' => 'ملاحظات',
-        'submit' => 'إرسال طلب عرض السعر',
+        'submit' => 'تجهيز طلب عرض السعر',
+        'website' => 'الموقع الإلكتروني',
+        'whatsapp' => 'فتح رسالة واتساب المجهزة',
     ]
     : [
         'eyebrow' => 'Quotation request',
@@ -42,18 +44,22 @@ $copy = $isArabic
         'quantity' => 'Quantity',
         'remove' => 'Remove',
         'contactTitle' => 'Quotation inquiry details',
-        'contactIntro' => 'Add your contact and institution details. They will be paired with the selected instruments when submission is enabled.',
+        'contactIntro' => 'Add your contact and institution details. Selected instruments are verified before email and WhatsApp handoff preparation.',
         'name' => 'Name',
         'email' => 'Email',
         'phone' => 'WhatsApp / Phone',
         'institution' => 'Institution / Hospital',
         'location' => 'Country / City',
         'notes' => 'Notes',
-        'submit' => 'Send quote request',
+        'submit' => 'Prepare quote request',
+        'website' => 'Website',
+        'whatsapp' => 'Open prepared WhatsApp message',
     ];
 
 $catalog = function_exists('rosa_quote_request_catalog_payload') ? rosa_quote_request_catalog_payload() : [];
 $catalogUrl = home_url($isArabic ? '/ar/shop/' : '/shop/');
+$submissionEndpoint = function_exists('rosa_quote_submission_endpoint') ? rosa_quote_submission_endpoint() : '';
+$submissionNonce = function_exists('rosa_quote_submission_nonce') ? rosa_quote_submission_nonce() : '';
 
 $theme = wp_get_theme();
 $version = (string) $theme->get('Version');
@@ -96,7 +102,19 @@ get_header();
             <section class="rosa-quote-request-page__inquiry" aria-labelledby="rosa-quote-request-form-title">
                 <h2 id="rosa-quote-request-form-title"><?php echo esc_html($copy['contactTitle']); ?></h2>
                 <p><?php echo esc_html($copy['contactIntro']); ?></p>
-                <form class="rosa-quote-request-form" data-rosa-quote-request-form method="post" action="">
+                <form
+                    class="rosa-quote-request-form"
+                    data-rosa-quote-request-form
+                    data-rosa-quote-submit-endpoint="<?php echo esc_url($submissionEndpoint); ?>"
+                    method="post"
+                    action="<?php echo esc_url($submissionEndpoint); ?>"
+                >
+                    <input type="hidden" name="rosa_quote_nonce" value="<?php echo esc_attr($submissionNonce); ?>">
+                    <div class="rosa-quote-request-form__honeypot" aria-hidden="true">
+                        <label for="rosa-quote-request-website"><?php echo esc_html($copy['website']); ?></label>
+                        <input id="rosa-quote-request-website" name="website" type="text" autocomplete="off" tabindex="-1">
+                    </div>
+
                     <div class="rosa-quote-request-form__grid">
                         <label for="rosa-quote-request-name"><?php echo esc_html($copy['name']); ?></label>
                         <input id="rosa-quote-request-name" name="name" type="text" required autocomplete="name">
@@ -117,6 +135,18 @@ get_header();
                         <textarea id="rosa-quote-request-notes" name="notes" rows="5"></textarea>
                     </div>
                     <button class="rosa-preview-button rosa-preview-button--accent rosa-quote-request-form__submit" type="submit" data-rosa-quote-request-submit><?php echo esc_html($copy['submit']); ?></button>
+                    <div class="rosa-quote-request-form__handoff">
+                        <p class="rosa-quote-request-form__status" data-rosa-quote-submit-status role="status" aria-live="polite" aria-atomic="true"></p>
+                        <a
+                            class="rosa-preview-button rosa-quote-request-form__whatsapp"
+                            data-rosa-quote-whatsapp-link
+                            href="#"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="<?php echo esc_attr($copy['whatsapp']); ?>"
+                            hidden
+                        ><?php echo esc_html($copy['whatsapp']); ?></a>
+                    </div>
                 </form>
             </section>
         </div>
