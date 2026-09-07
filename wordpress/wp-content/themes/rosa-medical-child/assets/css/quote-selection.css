@@ -1,0 +1,103 @@
+/* Quotation-only catalogue controls. No Woo cart/checkout presentation. */
+.rosa-preview-quote-count {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(224 8 21 / .28);
+  border-radius: 999px;
+  padding-inline: .8rem;
+  background: #fff;
+  color: var(--preview-accent-dark);
+  font-size: .75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rosa-preview-product__quote,
+.rosa-product-detail__quote-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .55rem;
+  align-items: center;
+  margin-top: .75rem;
+}
+
+.rosa-preview-product__quote [data-rosa-quote-configuration] {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--preview-line);
+  border-radius: .25rem;
+  background: #fff;
+  padding: .55rem .65rem;
+  color: var(--preview-ink);
+  font: inherit;
+  font-size: .75rem;
+}
+
+[data-rosa-quote-quantity] {
+  width: 4.25rem;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--preview-line);
+  border-radius: .25rem;
+  background: #fff;
+  padding: .45rem .5rem;
+  color: var(--preview-ink);
+  font: inherit;
+  text-align: center;
+}
+
+.rosa-preview-product__quote [data-rosa-add-to-quote],
+.rosa-product-detail__quote-controls [data-rosa-add-to-quote] {
+  min-width: 0;
+  min-height: 44px;
+  padding-inline: .9rem;
+  white-space: nowrap;
+}
+
+.rosa-product-detail__quote-controls {
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  margin-top: 1rem;
+}
+
+.rosa-preview-quote-feedback {
+  position: fixed;
+  z-index: 9999;
+  inset-inline-end: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  max-width: min(24rem, calc(100vw - 2rem));
+  border-radius: 999px;
+  background: var(--preview-ink);
+  color: #fff;
+  padding: .8rem 1rem;
+  box-shadow: 0 12px 30px rgb(17 24 39 / .18);
+  font-size: .8125rem;
+  font-weight: 700;
+}
+
+.rosa-preview-quote-feedback[hidden] {
+  display: none;
+}
+
+html[dir="rtl"] .rosa-preview-product__quote [data-rosa-quote-configuration] {
+  text-align: right;
+}
+
+@media (max-width: 47.9375rem) {
+  .rosa-preview-quote-count {
+    min-width: 44px;
+    padding-inline: .6rem;
+  }
+
+  .rosa-preview-product__quote,
+  .rosa-product-detail__quote-controls {
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+  }
+
+  .rosa-preview-product__quote [data-rosa-add-to-quote],
+  .rosa-product-detail__quote-controls [data-rosa-add-to-quote] {
+    width: 100%;
+  }
+}
