@@ -51,15 +51,15 @@ $media = get_option('rosa_preview_media', []);
 if (! is_array($media)) {
     $media = [];
 }
+$nextMedia = $media;
 $settingsChanged = 0;
 foreach ($unsafeSettingKeys as $key) {
-    $current = isset($media[$key]) && is_scalar($media[$key]) ? (int) $media[$key] : 0;
-    if ($current !== 0) {
+    $currentId = isset($media[$key]) && is_scalar($media[$key]) ? max(0, (int) $media[$key]) : 0;
+    if ($currentId > 0 && isset($unsafeMap[$currentId])) {
+        $nextMedia[$key] = 0;
         $settingsChanged++;
     }
-    $media[$key] = 0;
 }
-update_option('rosa_preview_media', $media);
 
 $targets = [
     'home' => [0 => 22],
@@ -67,8 +67,11 @@ $targets = [
     'about' => [1 => 20, 4 => 21],
     'ar/about' => [1 => 20, 4 => 21],
 ];
+$preparedPages = [];
 $elementorChanged = 0;
 
+// Validate every audited Elementor document first. No WordPress content is
+// mutated until all expected structures and IDs have passed this preflight.
 foreach ($targets as $path => $indexes) {
     $page = get_page_by_path($path, OBJECT, 'page');
     if (! $page instanceof WP_Post) {
@@ -123,15 +126,23 @@ foreach ($targets as $path => $indexes) {
     }
 
     if ($pageChanged) {
-        update_post_meta(
-            $pageId,
-            '_elementor_data',
-            wp_slash(wp_json_encode($doc, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
-        );
-        delete_post_meta($pageId, '_elementor_element_cache');
-        delete_post_meta($pageId, '_elementor_css');
-        clean_post_cache($pageId);
+        $preparedPages[$pageId] = $doc;
     }
+}
+
+if ($settingsChanged > 0) {
+    update_option('rosa_preview_media', $nextMedia);
+}
+
+foreach ($preparedPages as $pageId => $doc) {
+    update_post_meta(
+        (int) $pageId,
+        '_elementor_data',
+        wp_slash(wp_json_encode($doc, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+    );
+    delete_post_meta((int) $pageId, '_elementor_element_cache');
+    delete_post_meta((int) $pageId, '_elementor_css');
+    clean_post_cache((int) $pageId);
 }
 
 WP_CLI::success(sprintf(
