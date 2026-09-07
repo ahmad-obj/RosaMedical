@@ -3,13 +3,64 @@ if (! defined('ABSPATH') && PHP_SAPI !== 'cli') { exit; }
 const ROSA_PREVIEW_LOCALE_META = '_rosa_preview_locale';
 const ROSA_PREVIEW_PAIR_META = '_rosa_preview_pair_id';
 const ROSA_PREVIEW_MEDIA_OPTION = 'rosa_preview_media';
+const ROSA_PREVIEW_ROUTE_LOCALE_QUERY = 'rosa_preview_route_locale';
+
+add_filter('query_vars', static function (array $vars): array {
+    if (! in_array(ROSA_PREVIEW_ROUTE_LOCALE_QUERY, $vars, true)) {
+        $vars[] = ROSA_PREVIEW_ROUTE_LOCALE_QUERY;
+    }
+    return $vars;
+});
+
+add_action('init', static function (): void {
+    add_rewrite_rule(
+        '^ar/product/([^/]+)/?$',
+        'index.php?product=$matches[1]&' . ROSA_PREVIEW_ROUTE_LOCALE_QUERY . '=ar',
+        'top'
+    );
+}, 20);
+
+add_filter('redirect_canonical', static function ($redirect, $requested) {
+    if ((string) get_query_var(ROSA_PREVIEW_ROUTE_LOCALE_QUERY) === 'ar'
+        && function_exists('is_product')
+        && is_product()) {
+        return false;
+    }
+    return $redirect;
+}, 10, 2);
+
+function rosa_preview_request_locale(): string {
+    if (! function_exists('get_query_var')) {
+        return '';
+    }
+    return (string) get_query_var(ROSA_PREVIEW_ROUTE_LOCALE_QUERY) === 'ar' ? 'ar' : '';
+}
 function rosa_preview_locale(?int $postId = null): string {
     $id = $postId ?? get_the_ID();
+    $queriedId = function_exists('get_queried_object_id') ? (int) get_queried_object_id() : 0;
+    if (($postId === null || $id === $queriedId) && rosa_preview_request_locale() === 'ar') {
+        return 'ar';
+    }
     $locale = (string) get_post_meta($id, ROSA_PREVIEW_LOCALE_META, true);
     return $locale === 'ar' ? 'ar' : 'en';
 }
+function rosa_preview_product_url(int $productId, string $locale = 'en'): string {
+    $canonical = get_permalink($productId);
+    $canonical = is_string($canonical) && $canonical !== '' ? $canonical : home_url('/shop/');
+    if ($locale !== 'ar' || get_post_type($productId) !== 'product') {
+        return $canonical;
+    }
+    $slug = (string) get_post_field('post_name', $productId);
+    if ($slug === '') {
+        return $canonical;
+    }
+    return home_url('/ar/product/' . rawurlencode($slug) . '/');
+}
 function rosa_preview_pair_url(?int $postId = null): string {
     $id = $postId ?? get_the_ID();
+    if ($id > 0 && get_post_type($id) === 'product') {
+        return rosa_preview_product_url($id, rosa_preview_locale($id) === 'ar' ? 'en' : 'ar');
+    }
     $pair = (int) get_post_meta($id, ROSA_PREVIEW_PAIR_META, true);
     return $pair > 0 ? get_permalink($pair) : home_url(rosa_preview_locale($id) === 'ar' ? '/' : '/ar/');
 }
