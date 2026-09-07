@@ -1,18 +1,18 @@
 /* Shared newsletter banner replacing the legacy quotation prefooter. */
 .rosa-preview-newsletter {
   height: auto;
-  min-height: 190px;
+  min-height: 166px;
   background: var(--preview-accent);
   color: #fff;
 }
 
 .rosa-preview-newsletter__layout {
-  min-height: 190px;
+  min-height: 166px;
   display: grid;
   grid-template-columns: minmax(0, .9fr) minmax(0, 1.65fr) minmax(7.5rem, .45fr);
   gap: clamp(1rem, 2.4vw, 2.4rem);
   align-items: center;
-  padding-block: 1.5rem;
+  padding-block: 1rem;
 }
 
 .rosa-preview-newsletter__content {
