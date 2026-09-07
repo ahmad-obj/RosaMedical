@@ -1,0 +1,19 @@
+/* Contact-specific visual recovery layer. */
+.rosa-preview-contact__conversation-card h2,
+.rosa-preview-contact__message-card h2 {
+  font-weight: 700;
+}
+
+.rosa-preview-contact__message-card .rosa-preview-contact-form label {
+  font-weight: 700;
+}
+
+.rosa-preview-contact__message-card .rosa-preview-contact-form input,
+.rosa-preview-contact__message-card .rosa-preview-contact-form textarea {
+  font-weight: 400;
+}
+
+.rosa-preview-contact__message-card .rosa-preview-contact-form input::placeholder,
+.rosa-preview-contact__message-card .rosa-preview-contact-form textarea::placeholder {
+  font-weight: 400;
+}

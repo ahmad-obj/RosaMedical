@@ -86,6 +86,16 @@ add_action('wp_enqueue_scripts', static function (): void {
             . '{outline:3px solid var(--preview-focus);outline-offset:3px;}'
         );
 
+        $isContactSurface = is_page() && in_array($pageUri, ['contact', 'ar/contact'], true);
+        if ($isContactSurface) {
+            wp_enqueue_style(
+                'rosa-contact-live-visual-recovery',
+                get_stylesheet_directory_uri() . '/assets/css/contact-live-visual-recovery.css',
+                ['rosa-live-visual-recovery'],
+                $version
+            );
+        }
+
         $isAboutSurface = is_page() && in_array($pageUri, ['about', 'ar/about'], true);
         if ($isAboutSurface) {
             wp_enqueue_style(
