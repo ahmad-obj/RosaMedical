@@ -13,12 +13,22 @@
         configuration: 'التكوين',
         quantity: 'الكمية',
         remove: 'إزالة',
+        pending: 'جارٍ تجهيز طلب عرض السعر والتحقق من الأدوات المحددة…',
+        emailSent: 'تم إرسال البريد الإلكتروني. رسالة واتساب المجهزة جاهزة للفتح.',
+        emailUnconfirmed: 'تم تجهيز الطلب، لكن تعذر تأكيد إرسال البريد الإلكتروني. رسالة واتساب المجهزة جاهزة للفتح.',
+        failed: 'تعذر تجهيز طلب عرض السعر. تحقق من البيانات وحاول مرة أخرى.',
+        empty: 'أضف أداة واحدة على الأقل قبل تجهيز طلب عرض السعر.',
       }
     : {
         sku: 'SKU',
         configuration: 'Configuration',
         quantity: 'Quantity',
         remove: 'Remove',
+        pending: 'Preparing your quote request and validating selected instruments…',
+        emailSent: 'Email sent. Your prepared WhatsApp message is ready to open.',
+        emailUnconfirmed: 'Request prepared, but email delivery could not be confirmed. Your prepared WhatsApp message is ready to open.',
+        failed: 'The quote request could not be prepared. Check your details and try again.',
+        empty: 'Add at least one instrument before preparing your quote request.',
       };
 
   const identityKey = (item) => `${Number(item.productId) || 0}:${Number(item.variationId) || 0}:${String(item.sku || '').trim()}`;
@@ -49,6 +59,9 @@
   const itemsRoot = surface.querySelector('[data-rosa-quote-request-items]');
   const emptyState = surface.querySelector('[data-rosa-quote-request-empty]');
   const form = surface.querySelector('[data-rosa-quote-request-form]');
+  const status = surface.querySelector('[data-rosa-quote-submit-status]');
+  const whatsappLink = surface.querySelector('[data-rosa-quote-whatsapp-link]');
+  const submitButton = surface.querySelector('[data-rosa-quote-request-submit]');
 
   const render = () => {
     if (!(itemsRoot instanceof HTMLElement) || !(emptyState instanceof HTMLElement)) return;
@@ -142,9 +155,89 @@
     basket.remove(identityFromLine(line));
   });
 
+  const setStatus = (message) => {
+    if (status instanceof HTMLElement) status.textContent = message;
+  };
+
+  const hideWhatsapp = () => {
+    if (!(whatsappLink instanceof HTMLAnchorElement)) return;
+    whatsappLink.hidden = true;
+    whatsappLink.removeAttribute('href');
+  };
+
   if (form instanceof HTMLFormElement) {
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
+
+      const endpoint = (form.dataset.rosaQuoteSubmitEndpoint || '').trim();
+      const nonce = (form.querySelector('input[name="rosa_quote_nonce"]')?.value || '').trim();
+      const state = basket.getState();
+      hideWhatsapp();
+
+      if (endpoint === '' || nonce === '' || state.items.length === 0) {
+        setStatus(state.items.length === 0 ? copy.empty : copy.failed);
+        return;
+      }
+
+      const fieldValue = (name) => {
+        const control = form.elements.namedItem(name);
+        return control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement
+          ? control.value
+          : '';
+      };
+
+      const payload = {
+        locale: isArabic ? 'ar' : 'en',
+        nonce,
+        customer: {
+          name: fieldValue('name'),
+          email: fieldValue('email'),
+          phone: fieldValue('phone'),
+          institution: fieldValue('institution'),
+          location: fieldValue('location'),
+          notes: fieldValue('notes'),
+        },
+        items: state.items.map((item) => ({
+          productId: item.productId,
+          variationId: item.variationId,
+          sku: item.sku,
+          quantity: item.quantity,
+        })),
+        website: fieldValue('website'),
+      };
+
+      if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
+      setStatus(copy.pending);
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok || !result || result.accepted !== true) {
+          setStatus(copy.failed);
+          return;
+        }
+
+        const prepared = result.whatsapp?.prepared === true && typeof result.whatsapp?.url === 'string';
+        if (prepared && whatsappLink instanceof HTMLAnchorElement) {
+          whatsappLink.href = result.whatsapp.url;
+          whatsappLink.hidden = false;
+        }
+
+        setStatus(result.email?.sent === true ? copy.emailSent : copy.emailUnconfirmed);
+      } catch {
+        setStatus(copy.failed);
+      } finally {
+        if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+      }
     });
   }
 
