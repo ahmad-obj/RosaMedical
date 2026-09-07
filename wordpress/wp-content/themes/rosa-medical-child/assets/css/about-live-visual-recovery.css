@@ -1,0 +1,191 @@
+/* About Pass 2 — frozen 2026-09-06 composition tuning.
+ * Loaded only on /about/ and /ar/about/ after the shared recovery sheet. */
+
+.rosa-preview-why[data-preview-why-us] > .rosa-preview-about-why__layout {
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+  grid-template-rows: 1fr;
+  gap: clamp(3.5rem, 6.5vw, 6.5rem);
+  align-items: center;
+  align-content: stretch;
+}
+
+.rosa-preview-about-why__intro {
+  min-width: 0;
+}
+
+.rosa-preview-about-why__intro .rosa-preview-eyebrow {
+  margin-block-end: .8rem;
+}
+
+.rosa-preview-why[data-preview-why-us] .rosa-preview-about-why__intro h2 {
+  max-width: 31rem;
+  margin: 0;
+  font-size: 44.2px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  text-align: start;
+}
+
+.rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  align-self: stretch;
+}
+
+.rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid article {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr);
+  gap: 1.15rem;
+  align-items: center;
+  border: 0;
+  border-block-start: 1px solid var(--preview-border);
+  border-radius: 0;
+  background: transparent;
+  padding: 1.3rem 0;
+  box-shadow: none;
+}
+
+.rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid article:last-child {
+  border-block-end: 1px solid var(--preview-border);
+}
+
+.rosa-preview-about-why__number {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(224 8 21 / .09);
+  color: var(--preview-accent);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
+
+.rosa-preview-about-why__copy {
+  min-width: 0;
+}
+
+.rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid h3 {
+  margin: 0 0 .35rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid p {
+  max-width: 34rem;
+  margin: 0;
+  font-size: .84rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 64rem) and (min-width: 48rem) {
+  .rosa-preview-why[data-preview-why-us] > .rosa-preview-about-why__layout {
+    grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+    grid-template-rows: 1fr;
+    gap: 42px;
+  }
+
+  .rosa-preview-why[data-preview-why-us] .rosa-preview-about-why__intro h2 {
+    font-size: 34.18px;
+    letter-spacing: -1.5px;
+  }
+
+  .rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid article {
+    grid-template-columns: 2.9rem minmax(0, 1fr);
+    gap: .9rem;
+    padding-block: .85rem;
+  }
+
+  .rosa-preview-about-why__number {
+    width: 2.9rem;
+    height: 2.9rem;
+  }
+}
+
+@media (max-width: 47.9375rem) {
+  .rosa-preview-why[data-preview-why-us] > .rosa-preview-about-why__layout {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 28px;
+    align-items: stretch;
+  }
+
+  .rosa-preview-about-why__intro {
+    text-align: center;
+  }
+
+  .rosa-preview-why[data-preview-why-us] .rosa-preview-about-why__intro h2 {
+    max-width: 22rem;
+    margin-inline: auto;
+    font-size: 26.96px;
+    letter-spacing: -1px;
+    text-align: center;
+  }
+
+  .rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid article {
+    min-height: 0;
+    grid-template-columns: 2.8rem minmax(0, 1fr);
+    gap: .9rem;
+    padding: 1rem .15rem;
+    text-align: start;
+  }
+
+  .rosa-preview-about-why__number {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+
+  .rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid h3 {
+    font-size: .94rem;
+  }
+
+  .rosa-preview-why[data-preview-why-us] .rosa-preview-why__grid p {
+    font-size: .8rem;
+  }
+}
+
+/* The frozen 431px capture is 112px shorter than the 390px capture.
+ * At the wider mobile width, the three information cards need less vertical
+ * text room; reduce that band without altering the 390px contract. */
+@media (min-width: 26.9375rem) and (max-width: 47.9375rem) {
+  .rosa-preview-about-cards[data-preview-about-cards] {
+    height: 1479px;
+  }
+
+  .rosa-preview-about-cards__grid {
+    height: 1367px;
+  }
+}
+
+html[dir="rtl"] .rosa-preview-about-why__intro,
+html[dir="rtl"] .rosa-preview-about-why__copy {
+  text-align: right;
+}
+
+html[dir="rtl"] .rosa-preview-why[data-preview-why-us] .rosa-preview-about-why__intro h2 {
+  text-align: right;
+}
+
+@media (max-width: 47.9375rem) {
+  html[dir="rtl"] .rosa-preview-about-why__intro,
+  html[dir="rtl"] .rosa-preview-why[data-preview-why-us] .rosa-preview-about-why__intro h2 {
+    text-align: center;
+  }
+}
