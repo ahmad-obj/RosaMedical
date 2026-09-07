@@ -43,8 +43,14 @@ async function assertWideLayout(page, viewport) {
   assert.ok(gallery.width >= viewport.width * 0.38, `${viewport.width}px gallery must remain a substantial primary visual column`);
   assert.ok(summary.x > gallery.x + gallery.width * 0.6, `${viewport.width}px summary must sit beside the gallery`);
   assert.ok(Math.abs(summary.y - gallery.y) <= 80, `${viewport.width}px summary must begin alongside the gallery`);
-  assert.ok(support.x >= summary.x - 8, `${viewport.width}px support panel must remain in the information column`);
-  assert.ok(support.y > summary.y, `${viewport.width}px support panel must follow the main product summary`);
+
+  if (viewport.width >= 1200) {
+    assert.ok(support.x > summary.x + summary.width * 0.55, `${viewport.width}px support panel must occupy the third frozen-live column`);
+    assert.ok(Math.abs(support.y - gallery.y) <= 80, `${viewport.width}px support panel must begin alongside gallery and summary`);
+  } else {
+    assert.ok(support.x >= summary.x - 8, `${viewport.width}px support panel must remain in the information column`);
+    assert.ok(support.y > summary.y, `${viewport.width}px support panel must follow the main product summary`);
+  }
 
   const configurations = await box(page, '[data-preview-product-configurations]');
   assert.ok(configurations.y > gallery.y + Math.min(gallery.height, 300), `${viewport.width}px configuration section must continue below the product intro`);
