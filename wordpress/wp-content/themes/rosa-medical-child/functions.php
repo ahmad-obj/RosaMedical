@@ -86,6 +86,10 @@ add_action('wp_enqueue_scripts', static function (): void {
                 ['rosa-live-visual-recovery'],
                 $version
             );
+            wp_add_inline_style(
+                'rosa-shop-live-visual-recovery',
+                '.rosa-live-shop-search input[type="search"]{min-height:44px;}'
+            );
         }
 
         $isProductSurface = function_exists('is_product') && is_product();
