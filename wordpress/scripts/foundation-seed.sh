@@ -157,7 +157,7 @@ $product->set_slug($fixture['slug']);
 $product->set_status('publish');
 $product->set_catalog_visibility('visible');
 $product->set_category_ids([$category_id]);
-$product->set_description('Foundation-gate fixture derived from the verified Rosa scissors catalogue.');
+$product->set_description('Stevens Scissors — Regular, available in straight and curved 10.5 cm configurations. Contact Rosa Medical for catalogue and quotation support.');
 $product_id = $product->save();
 
 $product_attributes = [];
