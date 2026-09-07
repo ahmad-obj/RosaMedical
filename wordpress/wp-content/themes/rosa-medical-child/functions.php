@@ -101,7 +101,9 @@ add_action('wp_enqueue_scripts', static function (): void {
             );
             wp_add_inline_style(
                 'rosa-shop-live-visual-recovery',
-                '.rosa-live-shop-search input[type="search"]{min-height:44px;}.rosa-live-shop-search input[type="search"]:focus-visible{outline:2px solid var(--preview-focus);outline-offset:2px;}'
+                '.rosa-live-shop-search input[type="search"]{min-height:44px;}'
+                . '.rosa-live-shop-search input[type="search"]:focus-visible{outline:2px solid var(--preview-focus);outline-offset:2px;}'
+                . '.rosa-live-shop-search .rosa-preview-button{min-height:44px;}'
             );
         }
 
