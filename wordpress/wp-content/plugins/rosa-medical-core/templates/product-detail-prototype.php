@@ -257,5 +257,4 @@ get_header();
     </article>
 </div>
 <?php
-get_template_part('template-parts/client-preview/cta-banner', null, ['locale' => $locale]);
 get_footer();
