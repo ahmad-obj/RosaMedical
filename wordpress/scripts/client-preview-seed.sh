@@ -74,6 +74,19 @@ wp eval "
     [\$key, \$value] = explode('=', \$line, 2);
     \$map[\$key] = (int) \$value;
   }
+  \$unsafe_sources = [
+    'apps/web/public/media/editorial/home-hero-surgical-instruments.jpg',
+    'apps/web/public/media/editorial/about-procurement.jpg',
+    'apps/web/public/media/editorial/about-hospitals.jpg',
+    'apps/web/public/media/editorial/about-international-buyers.webp',
+    'apps/web/public/media/editorial/procurement-support.jpg',
+    'apps/web/public/media/editorial/home-specialties/plastic-surgery.webp',
+    'apps/web/public/media/editorial/home-specialties/orthopedics.webp',
+    'apps/web/public/media/editorial/home-specialties/maxillofacial.webp',
+    'apps/web/public/media/editorial/home-specialties/orthodontics.webp',
+    'apps/web/public/media/editorial/home-specialties/spine.webp',
+    'apps/web/public/media/editorial/home-specialties/securing-confidence.webp'
+  ];
   foreach ([
     'hero',
     'about_procurement',
@@ -88,7 +101,12 @@ wp eval "
     'home-specialty-spine',
     'home-securing-confidence'
   ] as \$unsafe_key) {
-    \$map[\$unsafe_key] = 0;
+    \$id = isset(\$map[\$unsafe_key]) && is_scalar(\$map[\$unsafe_key]) ? max(0, (int) \$map[\$unsafe_key]) : 0;
+    if (\$id <= 0) continue;
+    \$source = (string) get_post_meta(\$id, '_rosa_preview_source_path', true);
+    if (in_array(\$source, \$unsafe_sources, true)) {
+      \$map[\$unsafe_key] = 0;
+    }
   }
   if (! isset(\$map['logo']) || (int) \$map['logo'] <= 0) WP_CLI::error('Rosa preview media map is incomplete.');
   update_option('rosa_preview_media', \$map);
