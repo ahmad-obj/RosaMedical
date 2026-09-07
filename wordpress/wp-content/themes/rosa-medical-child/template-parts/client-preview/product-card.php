@@ -9,7 +9,9 @@ $detailLabel = rosa_preview_content('site', 'view_details', $locale, $locale ===
 if ($product instanceof WC_Product) {
     $imageId = $product->get_image_id();
     $name = $product->get_name();
-    $url = get_permalink($product->get_id());
+    $url = function_exists('rosa_preview_product_url')
+        ? rosa_preview_product_url($product->get_id(), $locale)
+        : get_permalink($product->get_id());
     $terms = wc_get_product_terms($product->get_id(), 'product_cat', ['fields'=>'names']);
     $fallbackInstrument = rosa_preview_content('site', 'medical_instrument', $locale, $locale === 'ar' ? 'أداة طبية' : 'Medical instrument');
     $familyLabel = $terms ? rosa_preview_family_label((string) $terms[0], $locale) : $fallbackInstrument;
