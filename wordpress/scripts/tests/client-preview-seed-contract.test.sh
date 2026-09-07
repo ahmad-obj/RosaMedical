@@ -6,7 +6,7 @@ COMPOSE="$ROOT/wordpress/dev/compose.yaml"
 fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 [[ -f "$SEED" ]] || fail 'client preview seed script missing'
 grep -Fq 'rosa-header-logo-v1.webp' "$SEED" || fail 'Rosa logo import missing'
-seed_import_block="$(sed -n '/^media_lines="$(/,/^)\"$/p' "$SEED")"
+seed_import_block="$(awk '/^media_lines="/{capture=1} capture{print} capture && /^[)]"$/{exit}' "$SEED")"
 for unsafe_source in \
   'home-hero-surgical-instruments.jpg' \
   'about-procurement.jpg' \
