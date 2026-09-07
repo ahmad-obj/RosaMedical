@@ -190,6 +190,12 @@ body[data-rosa-preview-shell] .rosa-preview-quote-drawer__header h2 {
   flex: 0 0 auto;
   width: 44px;
   height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   border: 1px solid var(--preview-line);
   border-radius: 999px;
   background: #fff;
