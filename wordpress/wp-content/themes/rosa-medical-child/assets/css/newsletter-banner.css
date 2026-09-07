@@ -123,11 +123,11 @@ html[dir="rtl"] .rosa-preview-newsletter__field input {
 
 @media (max-width: 64rem) {
   .rosa-preview-newsletter {
-    min-height: 220px;
+    min-height: 252px;
   }
 
   .rosa-preview-newsletter__layout {
-    min-height: 220px;
+    min-height: 252px;
     grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);
     gap: 1.5rem;
   }
