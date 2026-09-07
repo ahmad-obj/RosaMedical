@@ -32,10 +32,26 @@ async function assertFocusVisible(page, selector, label) {
   const target = page.locator(selector).first();
   await page.keyboard.press('Tab');
   await target.focus();
-  const outline = await target.evaluate((element) => {
-    const style = getComputedStyle(element);
-    return { style: style.outlineStyle, width: Number.parseFloat(style.outlineWidth) };
+  const outline = await target.evaluate(async (element) => {
+    const deadline = performance.now() + 750;
+    let snapshot;
+
+    do {
+      const style = getComputedStyle(element);
+      snapshot = {
+        focusVisible: element.matches(':focus-visible'),
+        style: style.outlineStyle,
+        width: Number.parseFloat(style.outlineWidth),
+      };
+      if (snapshot.focusVisible && snapshot.style !== 'none' && snapshot.width > 0) {
+        return snapshot;
+      }
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    } while (performance.now() < deadline);
+
+    return snapshot;
   });
+  assert.equal(outline.focusVisible, true, `${label} is focused without matching :focus-visible`);
   assert.notEqual(outline.style, 'none', `${label} has no visible focus outline`);
   assert.ok(outline.width > 0, `${label} focus outline has zero width`);
 }
