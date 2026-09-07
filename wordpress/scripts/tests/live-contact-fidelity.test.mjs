@@ -27,6 +27,16 @@ async function columnCount(locator) {
   return boxes.filter(({ y }) => Math.abs(y - firstRow) <= 2).length;
 }
 
+function assertRosaRed(value, label) {
+  const match = String(value).match(/rgba?\(\s*([\d.]+)[, ]+\s*([\d.]+)[, ]+\s*([\d.]+)/i);
+  assert.ok(match, `${label} must expose a parseable rendered color; got ${value}`);
+  const [, red, green, blue] = match.map(Number);
+  assert.ok(
+    red >= 180 && red >= green + 100 && red >= blue + 80,
+    `${label} must use the solid Rosa-red placeholder treatment; got ${value}`,
+  );
+}
+
 async function assertLiveContact(page, path, desktop) {
   assert.equal(await page.locator('[data-preview-page-hero]').count(), 1, `${path} must render one Contact hero`);
   assert.equal(await page.locator('[data-preview-contact-layout]').count(), 1, `${path} must render one Contact composition`);
@@ -47,7 +57,8 @@ async function assertLiveContact(page, path, desktop) {
     const style = getComputedStyle(element);
     return { image: style.backgroundImage, color: style.backgroundColor };
   });
-  assert.notEqual(heroBackground.image, 'none', `${path} Contact hero must preserve the live layered/gradient treatment`);
+  assert.equal(heroBackground.image, 'none', `${path} Contact hero must use the approved solid placeholder treatment without a gradient/image`);
+  assertRosaRed(heroBackground.color, `${path} Contact hero`);
 
   const form = page.locator('.rosa-preview-contact-form');
   assert.equal(await form.count(), 1, `${path} must render the message form presentation once`);
@@ -67,7 +78,7 @@ try {
       await page.close();
     }
   }
-  process.stdout.write('PASS: Contact EN/AR matches the frozen live Rosa topology at desktop/tablet/mobile\n');
+  process.stdout.write('PASS: Contact EN/AR matches the approved Rosa topology and solid hero placeholder treatment at desktop/tablet/mobile\n');
 } finally {
   await browser.close();
 }
