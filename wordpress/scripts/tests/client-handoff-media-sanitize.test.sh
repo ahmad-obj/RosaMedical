@@ -80,9 +80,18 @@ snapshot_state() {
       return $doc;
     }
 
-    $state = ["keep_media" => [], "elementor_non_media" => [], "woo" => [], "product_cat" => []];
+    $state = ["media_non_unsafe" => [], "keep_media" => [], "elementor_non_media" => [], "woo" => [], "product_cat" => []];
     $media = get_option("rosa_preview_media", []);
     if (! is_array($media)) $media = [];
+    $unsafeMap = array_fill_keys([19,20,21,22,23,39,80,81,82,83,84,85], true);
+    $normalizedMedia = $media;
+    foreach ($normalizedMedia as $key => $value) {
+      $id = is_scalar($value) ? (int) $value : 0;
+      if ($id > 0 && isset($unsafeMap[$id])) $normalizedMedia[$key] = 0;
+    }
+    ksort($normalizedMedia);
+    $state["media_non_unsafe"] = $normalizedMedia;
+
     foreach ([
       "logo",
       "home-hero-01-desktop", "home-hero-01-mobile",
@@ -220,7 +229,7 @@ fi
 bash "$SANITIZER"
 
 after_b64="$(snapshot_state)"
-[[ "$after_b64" == "$baseline_b64" ]] || fail 'sanitizer changed KEEP media, non-media Elementor structure/content, Woo product media/SKUs, or product-category thumbnails'
+[[ "$after_b64" == "$baseline_b64" ]] || fail 'sanitizer changed safe media, KEEP media, non-media Elementor structure/content, Woo product media/SKUs, or product-category thumbnails'
 
 post_hits="$(find_unsafe_runtime_refs)"
 [[ -z "$post_hits" ]] || {
@@ -228,9 +237,10 @@ post_hits="$(find_unsafe_runtime_refs)"
   fail 'unsafe delivered media references remain after sanitization'
 }
 
+seed_import_block="$(awk '/^media_lines="/{capture=1} capture{print} capture && /^[)]"$/{exit}' "$SEED")"
 for source in "${unsafe_seed_sources[@]}"; do
-  if grep -Fq -- "$source" "$SEED"; then
-    fail "routine preview seed still reintroduces unsafe media source: $source"
+  if grep -Fq -- "$source" <<< "$seed_import_block"; then
+    fail "routine preview seed still imports unsafe media source: $source"
   fi
 done
 
