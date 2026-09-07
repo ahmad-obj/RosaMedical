@@ -8,6 +8,7 @@ $shopPath = $locale === 'ar' ? '/ar/shop/' : '/shop/';
 $content = static fn(string $key, string $en, string $ar): string => rosa_preview_content('site', $key, $locale, $locale === 'ar' ? $ar : $en);
 ?>
 </main>
+<div data-preview-contact-cta><?php get_template_part('template-parts/client-preview/cta-banner', null, ['locale' => $locale]); ?></div>
 <footer class="rosa-preview-footer" data-rosa-preview-footer>
     <div class="rosa-preview-rail rosa-preview-footer__grid">
         <section class="rosa-preview-footer__column rosa-preview-footer__about"><strong class="rosa-preview-footer__brand">ROSA</strong><p><?php echo esc_html($content('footer_description', 'Medical and surgical instruments with clear catalogue and quotation support.', 'أدوات طبية وجراحية مع دعم واضح للكتالوج وطلبات عروض الأسعار.')); ?></p><a class="rosa-preview-footer__contact-link" href="mailto:<?php echo esc_attr($email); ?>"><bdi dir="ltr"><?php echo esc_html($email); ?></bdi></a></section>

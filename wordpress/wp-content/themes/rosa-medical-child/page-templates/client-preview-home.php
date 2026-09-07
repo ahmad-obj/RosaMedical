@@ -12,6 +12,4 @@ get_template_part('template-parts/client-preview/home-promos', null, ['locale' =
 get_template_part('template-parts/client-preview/home-why', null, ['locale' => $locale]);
 get_template_part('template-parts/client-preview/home-proof', null, ['locale' => $locale]);
 get_template_part('template-parts/client-preview/home-evidence', null, ['locale' => $locale]);
-?>
-<div data-preview-contact-cta><?php get_template_part('template-parts/client-preview/cta-banner', null, ['locale' => $locale]); ?></div>
-<?php get_footer();
+get_footer();

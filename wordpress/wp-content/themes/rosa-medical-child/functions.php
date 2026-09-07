@@ -183,6 +183,13 @@ add_action('wp_enqueue_scripts', static function (): void {
         if (rosa_preview_locale() === 'ar' && file_exists(get_stylesheet_directory() . '/assets/css/client-preview-rtl.css')) {
             wp_enqueue_style('rosa-client-preview-rtl', get_stylesheet_directory_uri() . '/assets/css/client-preview-rtl.css', ['rosa-client-preview'], $version);
         }
+
+        wp_enqueue_style(
+            'rosa-newsletter-banner',
+            get_stylesheet_directory_uri() . '/assets/css/newsletter-banner.css',
+            ['rosa-live-visual-recovery'],
+            $version
+        );
         wp_enqueue_script('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/js/client-preview.js', [], $version, true);
     }
 });

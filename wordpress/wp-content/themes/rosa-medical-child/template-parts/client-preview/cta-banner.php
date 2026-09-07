@@ -1,7 +1,31 @@
 <?php
 if (! defined('ABSPATH')) { exit; }
 $locale = (string) ($args['locale'] ?? rosa_preview_locale());
-$contact = home_url($locale === 'ar' ? '/ar/contact/#inquiry' : '/contact/#inquiry');
 $content = static fn(string $key, string $en, string $ar): string => rosa_preview_content('site', $key, $locale, $locale === 'ar' ? $ar : $en);
+$nameLabel = $content('newsletter_name_label', 'Name', 'الاسم');
+$emailLabel = $content('newsletter_email_label', 'Email', 'البريد الإلكتروني');
+$submitLabel = $content('newsletter_submit_label', 'Sign Up', 'اشترك');
 ?>
-<section class="rosa-preview-prefooter"><div class="rosa-preview-rail rosa-preview-prefooter__layout"><div class="rosa-preview-prefooter__content"><h2><?php echo esc_html($content('cta_title', 'Need an instrument reference or quotation?', 'هل تحتاج إلى مرجع أداة أو عرض سعر؟')); ?></h2><p><?php echo esc_html($content('cta_body', 'Share the family and any available reference with the Rosa team.', 'شارك الفئة والمرجع المتاح وسيساعدك فريق روزا.')); ?></p></div><div class="rosa-preview-prefooter__actions"><a href="<?php echo esc_url($contact); ?>"><?php echo esc_html($content('cta_action_1', 'Choose a family', 'اختر الفئة')); ?></a><a href="<?php echo esc_url($contact); ?>"><?php echo esc_html($content('cta_action_2', 'Add a reference', 'أضف المرجع')); ?></a><a class="rosa-preview-button rosa-preview-button--accent" href="<?php echo esc_url($contact); ?>"><?php echo esc_html($content('request_quote', 'Request a quote', 'اطلب عرض سعر')); ?></a></div><div class="rosa-preview-prefooter__media"><?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'prefooter-person-01', 'label' => 'Rosa support contact']); ?></div></div></section>
+<section class="rosa-preview-prefooter rosa-preview-newsletter" data-rosa-newsletter-banner>
+    <div class="rosa-preview-rail rosa-preview-newsletter__layout">
+        <div class="rosa-preview-newsletter__content">
+            <p class="rosa-preview-eyebrow rosa-preview-newsletter__eyebrow"><?php echo esc_html($content('newsletter_eyebrow', 'Stay informed', 'ابقَ على اطلاع')); ?></p>
+            <h2><?php echo esc_html($content('newsletter_title', 'Sign up for Rosa updates', 'اشترك في تحديثات روزا')); ?></h2>
+            <p><?php echo esc_html($content('newsletter_body', 'Receive catalogue, product and company updates from Rosa Medical.', 'استلم تحديثات الكتالوج والمنتجات والشركة من روزا ميديكال.')); ?></p>
+        </div>
+        <form class="rosa-preview-newsletter__form" data-rosa-newsletter-form data-rosa-newsletter-provider="pending" method="post" action="" aria-label="<?php echo esc_attr($content('newsletter_form_label', 'Newsletter signup', 'الاشتراك في النشرة البريدية')); ?>">
+            <label class="rosa-preview-newsletter__field">
+                <span class="screen-reader-text"><?php echo esc_html($nameLabel); ?></span>
+                <input type="text" name="name" required autocomplete="name" placeholder="<?php echo esc_attr($nameLabel); ?>">
+            </label>
+            <label class="rosa-preview-newsletter__field">
+                <span class="screen-reader-text"><?php echo esc_html($emailLabel); ?></span>
+                <input type="email" name="email" required autocomplete="email" placeholder="<?php echo esc_attr($emailLabel); ?>">
+            </label>
+            <button class="rosa-preview-newsletter__submit" type="submit"><?php echo esc_html($submitLabel); ?></button>
+        </form>
+        <div class="rosa-preview-newsletter__media">
+            <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'prefooter-person-01', 'label' => $content('newsletter_media_label', 'Rosa Medical updates', 'تحديثات روزا ميديكال')]); ?>
+        </div>
+    </div>
+</section>
