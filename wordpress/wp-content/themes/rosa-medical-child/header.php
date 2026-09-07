@@ -11,7 +11,9 @@ $isWooCatalogue = function_exists('is_shop') && (
 $previewPostId = $isWooShop ? (int) get_option('woocommerce_shop_page_id', 0) : get_the_ID();
 $rawPreviewLocale = (string) get_post_meta($previewPostId, ROSA_PREVIEW_LOCALE_META, true);
 $isPreviewPage = in_array($rawPreviewLocale, ['en', 'ar'], true) || $isWooCatalogue;
-$previewLocale = $rawPreviewLocale === 'ar' ? 'ar' : 'en';
+$previewLocale = function_exists('rosa_preview_locale')
+    ? rosa_preview_locale($previewPostId ?: null)
+    : ($rawPreviewLocale === 'ar' ? 'ar' : 'en');
 $navItems = function_exists('rosa_preview_nav_items') ? rosa_preview_nav_items($previewLocale) : [];
 $pairUrl = function_exists('rosa_preview_pair_url') ? rosa_preview_pair_url($previewPostId ?: null) : home_url('/');
 $email = rosa_theme_business_value('email');
