@@ -932,7 +932,8 @@ html[dir="rtl"] .rosa-preview-contact-form label {
   }
 
   .rosa-preview-split[data-preview-who-we-are] {
-    height: 754px;
+    height: auto;
+    min-height: 0;
     align-items: start;
     padding-block: 58px 34px;
   }
