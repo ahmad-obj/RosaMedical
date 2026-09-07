@@ -16,3 +16,5 @@ function rosa_preview_nav_items(?string $locale = null): array {
         : ['/', '/about/', '/shop/', '/contact/', '/contact/#inquiry'];
     return array_map(static fn(string $label, string $path): array => ['label' => $label, 'url' => home_url($path)], $labels, $paths);
 }
+
+require_once __DIR__ . '/quote-request.php';
