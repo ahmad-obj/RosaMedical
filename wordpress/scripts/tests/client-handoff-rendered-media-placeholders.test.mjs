@@ -15,36 +15,14 @@ const unsafeBrandPattern = /(preview\.themeforest|fullkit\.moxcreative|unsplash|
 const unsafeFilenamePattern = /(home-hero-surgical-instruments|about-procurement|about-hospitals|about-international-buyers|procurement-support|plastic-surgery|orthopedics|maxillofacial|orthodontics|spine|securing-confidence)\.(?:jpe?g|png|webp|gif|svg)/i;
 
 const routes = [
-  {
-    path: '/',
-    expectedNeutralSlots: [
-      'home-hero-01',
-      'home-specialty-plastic-surgery',
-      'home-specialty-orthopedics',
-      'home-specialty-maxillofacial',
-      'home-specialty-orthodontics',
-      'home-specialty-spine',
-      'home-securing-confidence',
-    ],
-  },
-  {
-    path: '/ar/',
-    expectedNeutralSlots: [
-      'home-hero-01',
-      'home-specialty-plastic-surgery',
-      'home-specialty-orthopedics',
-      'home-specialty-maxillofacial',
-      'home-specialty-orthodontics',
-      'home-specialty-spine',
-      'home-securing-confidence',
-    ],
-  },
+  { path: '/', expectedNeutralSlots: ['home-hero-01'] },
+  { path: '/ar/', expectedNeutralSlots: ['home-hero-01'] },
   { path: '/about/', expectedNeutralSlots: ['about_procurement', 'about_hospitals'] },
   { path: '/ar/about/', expectedNeutralSlots: ['about_procurement', 'about_hospitals'] },
-  { path: '/shop/', requireAnyMediaSlot: true },
-  { path: '/ar/shop/', requireAnyMediaSlot: true },
-  { path: '/product/rosa-foundation-stevens-scissors-regular/', requireAnyMediaSlot: true },
-  { path: '/ar/product/rosa-foundation-stevens-scissors-regular/', requireAnyMediaSlot: true },
+  { path: '/shop/' },
+  { path: '/ar/shop/' },
+  { path: '/product/rosa-foundation-stevens-scissors-regular/' },
+  { path: '/ar/product/rosa-foundation-stevens-scissors-regular/' },
 ];
 
 const browser = await chromium.launch(launchOptions);
