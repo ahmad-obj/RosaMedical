@@ -64,7 +64,9 @@
   let feedbackTimer = null;
 
   const syncCount = () => {
-    countIndicator.textContent = `${copy.count} ${totalQuantity()}`;
+    const count = totalQuantity();
+    countIndicator.textContent = String(count);
+    countIndicator.setAttribute('aria-label', isArabic ? `عدد عناصر طلب عرض السعر: ${count}` : `Quote request item count: ${count}`);
   };
 
   const showFeedback = () => {
