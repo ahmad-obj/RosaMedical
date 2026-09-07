@@ -170,5 +170,3 @@ $workflow = $locale === 'ar'
     </nav>
   </div>
 </section>
-
-<?php get_template_part('template-parts/client-preview/cta-banner', null, ['locale' => $locale]); ?>
