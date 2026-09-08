@@ -9,7 +9,6 @@ $submitLabel = $content('newsletter_submit_label', 'Sign Up', 'اشترك');
 <section class="rosa-preview-prefooter rosa-preview-newsletter" data-rosa-newsletter-banner>
     <div class="rosa-preview-rail rosa-preview-newsletter__layout">
         <div class="rosa-preview-newsletter__content">
-            <p class="rosa-preview-eyebrow rosa-preview-newsletter__eyebrow"><?php echo esc_html($content('newsletter_eyebrow', 'Stay informed', 'ابقَ على اطلاع')); ?></p>
             <h2><?php echo esc_html($content('newsletter_title', 'Sign up for Rosa updates', 'اشترك في تحديثات روزا')); ?></h2>
             <p><?php echo esc_html($content('newsletter_body', 'Receive catalogue, product and company updates from Rosa Medical.', 'استلم تحديثات الكتالوج والمنتجات والشركة من روزا ميديكال.')); ?></p>
         </div>
@@ -22,7 +21,7 @@ $submitLabel = $content('newsletter_submit_label', 'Sign Up', 'اشترك');
                 <span class="screen-reader-text"><?php echo esc_html($emailLabel); ?></span>
                 <input type="email" name="email" required autocomplete="email" placeholder="<?php echo esc_attr($emailLabel); ?>">
             </label>
-            <button class="rosa-preview-newsletter__submit" type="submit"><?php echo esc_html($submitLabel); ?></button>
+            <button class="rosa-preview-newsletter__submit" type="submit"><span aria-hidden="true">✉</span><span><?php echo esc_html($submitLabel); ?></span></button>
         </form>
         <div class="rosa-preview-newsletter__media">
             <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'prefooter-person-01', 'label' => $content('newsletter_media_label', 'Rosa Medical updates', 'تحديثات روزا ميديكال')]); ?>
