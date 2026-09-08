@@ -44,9 +44,13 @@ add_action('wp_enqueue_scripts', static function (): void {
     $theme = wp_get_theme();
     $version = (string) $theme->get('Version');
     $pageTemplate = is_page() ? (string) get_page_template_slug() : '';
+    $queriedId = function_exists('get_queried_object_id') ? (int) get_queried_object_id() : 0;
     $pageUri = is_page() && function_exists('get_page_uri')
-        ? trim((string) get_page_uri((int) get_queried_object_id()), '/')
+        ? trim((string) get_page_uri($queriedId), '/')
         : '';
+    $isProductTemplatePreview = $queriedId > 0
+        && get_post_type($queriedId) === 'elementor_library'
+        && (string) get_post_meta($queriedId, '_rosa_product_template', true) === '1';
 
     wp_enqueue_style(
         'rosa-medical-tokens',
@@ -70,12 +74,12 @@ add_action('wp_enqueue_scripts', static function (): void {
         'page-templates/rosa-elementor-authoring.php',
     ];
     $isPreviewPage = is_page() && (in_array($pageTemplate, $previewTemplates, true) || rosa_preview_locale() === 'ar');
-    $isPreviewCatalogue = function_exists('is_shop') && (
+    $isPreviewCatalogue = $isProductTemplatePreview || (function_exists('is_shop') && (
         is_shop()
         || is_product_category()
         || is_product_tag()
         || (function_exists('is_product') && is_product())
-    );
+    ));
     if ($isPreviewPage || $isPreviewCatalogue) {
         wp_enqueue_style('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/css/client-preview.css', ['rosa-medical-base'], $version);
         wp_enqueue_style('rosa-live-visual-recovery', get_stylesheet_directory_uri() . '/assets/css/live-visual-recovery.css', ['rosa-client-preview'], $version);
@@ -146,13 +150,20 @@ add_action('wp_enqueue_scripts', static function (): void {
             );
         }
 
-        $isProductSurface = function_exists('is_product') && is_product();
+        $isProductSurface = $isProductTemplatePreview || (function_exists('is_product') && is_product());
         if ($isProductSurface) {
             wp_enqueue_style(
                 'rosa-product-detail-live-visual-recovery',
                 get_stylesheet_directory_uri() . '/assets/css/product-detail-live-visual-recovery.css',
                 ['rosa-live-visual-recovery'],
                 $version
+            );
+            wp_enqueue_script(
+                'rosa-product-detail',
+                get_stylesheet_directory_uri() . '/assets/js/product-detail.js',
+                [],
+                $version,
+                true
             );
         }
 

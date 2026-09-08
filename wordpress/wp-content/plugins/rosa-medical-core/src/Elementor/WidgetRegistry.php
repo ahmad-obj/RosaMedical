@@ -22,6 +22,7 @@ final class WidgetRegistry
             __DIR__ . '/Widgets/HomeWidgets.php',
             __DIR__ . '/Widgets/AboutWidgets.php',
             __DIR__ . '/Widgets/ContactWidgets.php',
+            __DIR__ . '/Widgets/ProductWidgets.php',
         ];
         foreach ($groups as $file) {
             if (is_readable($file)) {
@@ -59,6 +60,13 @@ final class WidgetRegistry
             'RosaMedical\\Core\\Elementor\\Widgets\\ContactHeroWidget',
             'RosaMedical\\Core\\Elementor\\Widgets\\ContactLayoutWidget',
             'RosaMedical\\Core\\Elementor\\Widgets\\ContactMapWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\ProductBreadcrumbWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\ProductGalleryWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\ProductSummaryWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\ProductDetailsWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\ProductConfigurationsWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\ProductSupportWidget',
+            'RosaMedical\\Core\\Elementor\\Widgets\\ProductRelatedWidget',
         ];
     }
 }

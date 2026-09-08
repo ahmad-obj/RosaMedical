@@ -23,12 +23,14 @@ require_once __DIR__ . '/src/Admin/Capabilities.php';
 require_once __DIR__ . '/src/Admin/ContentPage.php';
 require_once __DIR__ . '/src/Admin/MediaField.php';
 require_once __DIR__ . '/src/Admin/ElementorShortcutPage.php';
-require_once __DIR__ . '/src/Admin/RosaAdmin.php';
 require_once __DIR__ . '/src/Elementor/WidgetRegistry.php';
 require_once __DIR__ . '/src/Elementor/ElementorIntegration.php';
 require_once __DIR__ . '/src/Elementor/ElementorSeedData.php';
 require_once __DIR__ . '/src/Elementor/ElementorPageSeeder.php';
 require_once __DIR__ . '/src/Elementor/ElementorRenderCache.php';
+require_once __DIR__ . '/src/Elementor/ProductTemplate.php';
+require_once __DIR__ . '/src/Admin/ProductTemplatePage.php';
+require_once __DIR__ . '/src/Admin/RosaAdmin.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 use RosaMedical\Core\Plugin;

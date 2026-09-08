@@ -8,6 +8,7 @@ use RosaMedical\Core\Admin\Capabilities;
 use RosaMedical\Core\Admin\RosaAdmin;
 use RosaMedical\Core\Elementor\ElementorIntegration;
 use RosaMedical\Core\Elementor\ElementorRenderCache;
+use RosaMedical\Core\Elementor\ProductTemplate;
 use RosaMedical\Core\Settings\BusinessSettings;
 use RosaMedical\Core\Settings\ContentSettings;
 use RosaMedical\Core\Settings\MediaSettings;
@@ -38,9 +39,10 @@ final class Plugin
         add_action('admin_menu', [RosaAdmin::class, 'register']);
         add_action('admin_enqueue_scripts', [RosaAdmin::class, 'enqueue']);
         ElementorIntegration::register();
+        ProductTemplate::register();
 
         // Elementor Free registers template_include at priority 11. Run later so
-        // Rosa's shared Product Detail prototype remains authoritative only for
+        // Rosa's global Elementor Product Page remains authoritative only for
         // WooCommerce product requests while leaving all other templates alone.
         add_filter('template_include', [self::class, 'productTemplate'], 100);
     }
@@ -51,8 +53,8 @@ final class Plugin
             return $template;
         }
 
-        $rosa_template = dirname(ROSA_MEDICAL_CORE_FILE) . '/templates/product-detail-prototype.php';
+        $rosaTemplate = dirname(ROSA_MEDICAL_CORE_FILE) . '/templates/product-detail-elementor.php';
 
-        return is_readable($rosa_template) ? $rosa_template : $template;
+        return is_readable($rosaTemplate) ? $rosaTemplate : $template;
     }
 }

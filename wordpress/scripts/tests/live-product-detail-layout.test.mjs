@@ -24,133 +24,43 @@ async function box(page, selector) {
   return value;
 }
 
-function overlaps(a, b, tolerance = 1) {
-  return !(
-    a.x + a.width <= b.x + tolerance
-    || b.x + b.width <= a.x + tolerance
-    || a.y + a.height <= b.y + tolerance
-    || b.y + b.height <= a.y + tolerance
-  );
-}
-
-function containedBy(inner, outer, tolerance = 1) {
-  return inner.x >= outer.x - tolerance
-    && inner.y >= outer.y - tolerance
-    && inner.x + inner.width <= outer.x + outer.width + tolerance
-    && inner.y + inner.height <= outer.y + outer.height + tolerance;
-}
-
 async function assertNoHorizontalOverflow(page, path = productPath) {
-  const size = await page.evaluate(() => ({
-    client: document.documentElement.clientWidth,
-    scroll: document.documentElement.scrollWidth,
-  }));
+  const size = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
   assert.ok(size.scroll <= size.client + 1, `${path} overflows horizontally: ${size.scroll} > ${size.client}`);
 }
 
-async function assertDesktopLayout(page, viewport) {
-  const topologyDisplay = await page.locator('.rosa-product-detail__topology').evaluate((element) => getComputedStyle(element).display);
-  assert.equal(topologyDisplay, 'grid', `${viewport.width}px Product Detail must use a composed grid, not the old vertical prototype`);
+async function assertSectionOrder(page, path = productPath) {
+  const ordered = await page.evaluate(() => {
+    const selectors = ['[data-preview-product-details]', '[data-preview-product-configurations]', '[data-preview-product-support]', '[data-preview-product-related]'];
+    const nodes = selectors.map((selector) => document.querySelector(selector));
+    if (nodes.some((node) => !node)) return false;
+    return nodes.slice(0, -1).every((node, index) => Boolean(node.compareDocumentPosition(nodes[index + 1]) & Node.DOCUMENT_POSITION_FOLLOWING));
+  });
+  assert.equal(ordered, true, `${path} must flow details → configurations → procurement support → related instruments`);
+}
+
+async function assertWideHero(page, viewport, rtl = false) {
+  const heroDisplay = await page.locator('.rosa-product-elementor-hero').evaluate((element) => getComputedStyle(element).display);
+  assert.equal(heroDisplay, 'grid', `${viewport.width}px Product Detail hero must use the Elementor grid composition`);
 
   const gallery = await box(page, '[data-preview-product-gallery]');
   const summary = await box(page, '[data-preview-product-summary]');
-  const support = await box(page, '[data-preview-product-support]');
-
-  assert.ok(gallery.width >= viewport.width * 0.38, `${viewport.width}px gallery must remain a substantial primary visual column`);
-  assert.ok(summary.x > gallery.x + gallery.width * 0.6, `${viewport.width}px summary must sit beside the gallery`);
-  assert.ok(Math.abs(summary.y - gallery.y) <= 80, `${viewport.width}px summary must begin alongside the gallery`);
-  assert.ok(support.x > summary.x + summary.width * 0.55, `${viewport.width}px support panel must occupy the third frozen-live column`);
-  assert.ok(Math.abs(support.y - gallery.y) <= 80, `${viewport.width}px support panel must begin alongside gallery and summary`);
-
-  const configurations = await box(page, '[data-preview-product-configurations]');
-  assert.ok(configurations.y > gallery.y + Math.min(gallery.height, 300), `${viewport.width}px configuration section must continue below the product intro`);
-}
-
-async function assertTabletLayout(page, viewport) {
-  const topologyDisplay = await page.locator('.rosa-product-detail__topology').evaluate((element) => getComputedStyle(element).display);
-  assert.equal(topologyDisplay, 'grid', `${viewport.width}px Product Detail must keep a composed tablet grid`);
-
-  const gallery = await box(page, '[data-preview-product-gallery]');
-  const summary = await box(page, '[data-preview-product-summary]');
-  const support = await box(page, '[data-preview-product-support]');
-
-  assert.ok(gallery.width >= viewport.width * 0.38, `${viewport.width}px gallery must remain a substantial primary visual column`);
-  assert.ok(summary.x > gallery.x + gallery.width * 0.6, `${viewport.width}px summary must sit beside the gallery`);
-  assert.ok(Math.abs(summary.y - gallery.y) <= 80, `${viewport.width}px summary must begin alongside the gallery`);
-
-  const introRight = Math.max(gallery.x + gallery.width, summary.x + summary.width);
-  const introBottom = Math.max(gallery.y + gallery.height, summary.y + summary.height);
-  assert.ok(support.x <= gallery.x + 8, `${viewport.width}px support surface must begin with the gallery column`);
-  assert.ok(support.x + support.width >= introRight - 8, `${viewport.width}px support surface must span beneath gallery and summary`);
-  assert.ok(support.y >= introBottom - 4, `${viewport.width}px support surface must follow the complete gallery/summary row`);
-
-  const stepBoxes = await page.locator('[data-preview-product-support-step]').evaluateAll((elements) => elements.map((element) => {
-    const rect = element.getBoundingClientRect();
-    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-  }));
-  assert.equal(stepBoxes.length, 3, `${viewport.width}px support surface must retain three procurement steps`);
-  const stepY = stepBoxes.map((step) => step.y);
-  assert.ok(Math.max(...stepY) - Math.min(...stepY) <= 24, `${viewport.width}px support steps must form one horizontal row`);
-  assert.ok(stepBoxes[1].x > stepBoxes[0].x && stepBoxes[2].x > stepBoxes[1].x,
-    `${viewport.width}px support steps must progress horizontally across the support surface`);
-
-  const configurations = await box(page, '[data-preview-product-configurations]');
-  assert.ok(configurations.y >= support.y + support.height - 4, `${viewport.width}px configurations must continue below the tablet support surface`);
-
-  const description = await box(page, '.rosa-product-detail__description');
-  const media = await box(page, '[data-preview-product-description-media]');
-  const configurationList = await box(page, '.rosa-product-detail__configuration-list');
-  assert.ok(description.y < media.y, `${viewport.width}px description heading/copy must lead the media/configuration row`);
-  assert.ok(media.x + media.width + 12 <= configurationList.x,
-    `${viewport.width}px description media must not overlap the configuration content`);
-  assert.ok(Math.abs(media.y - configurationList.y) <= 40,
-    `${viewport.width}px description media and configuration cards must share a clean two-column row`);
-}
-
-async function assertMobileLayout(page, viewport) {
-  const gallery = await box(page, '[data-preview-product-gallery]');
-  const summary = await box(page, '[data-preview-product-summary]');
-  const support = await box(page, '[data-preview-product-support]');
-
-  assert.ok(gallery.width >= viewport.width - 48, `${viewport.width}px gallery must use the mobile content width`);
-  assert.ok(summary.y > gallery.y + gallery.height - 4, `${viewport.width}px summary must stack below the gallery`);
-  assert.ok(support.y > summary.y + summary.height - 4, `${viewport.width}px support must stack below the summary`);
-  assert.ok(summary.width >= viewport.width - 48, `${viewport.width}px summary must use the mobile content width`);
-  assert.ok(support.width >= viewport.width - 48, `${viewport.width}px support must use the mobile content width`);
-}
-
-async function assertNarrowTabletStacking(page, path) {
-  const gallery = await box(page, '[data-preview-product-gallery]');
-  const summary = await box(page, '[data-preview-product-summary]');
-  const support = await box(page, '[data-preview-product-support]');
-
-  assert.ok(summary.y > gallery.y + gallery.height - 4,
-    `${path} 768px summary must stack below the gallery`);
-  assert.ok(support.y > summary.y + summary.height - 4,
-    `${path} 768px support must stack below the summary`);
-}
-
-async function assertNarrowTabletDescription(page, path) {
-  const section = await box(page, '[data-preview-product-configurations]');
-  const description = await box(page, '.rosa-product-detail__description');
-  const media = await box(page, '[data-preview-product-description-media]');
-  const list = await box(page, '.rosa-product-detail__configuration-list');
-
-  assert.equal(overlaps(media, description), false,
-    `${path} 768px description media must not overlap description copy`);
-  assert.equal(overlaps(media, list), false,
-    `${path} 768px description media must not overlap configuration cards`);
-
-  const cards = await page.locator('.rosa-product-detail__configuration').evaluateAll((elements) =>
-    elements.filter((element) => element.checkVisibility()).map((element) => {
-      const rect = element.getBoundingClientRect();
-      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-    }));
-
-  assert.ok(cards.length >= 2, `${path} must retain the verified configurations`);
-  for (const card of cards) {
-    assert.ok(containedBy(card, section), `${path} 768px configuration card must stay inside its section`);
+  assert.ok(gallery.width >= viewport.width * 0.35, `${viewport.width}px gallery must remain a substantial visual column`);
+  assert.ok(summary.width >= viewport.width * 0.28, `${viewport.width}px summary must remain a substantial information column`);
+  assert.ok(Math.abs(summary.y - gallery.y) <= 80, `${viewport.width}px gallery and summary must start on the same hero row`);
+  if (rtl) {
+    assert.ok(gallery.x > summary.x, `${viewport.width}px RTL must mirror the gallery to the right of the summary`);
+  } else {
+    assert.ok(summary.x > gallery.x, `${viewport.width}px summary must sit to the right of the gallery in English`);
   }
+}
+
+async function assertMobileHero(page, viewport, path = productPath) {
+  const gallery = await box(page, '[data-preview-product-gallery]');
+  const summary = await box(page, '[data-preview-product-summary]');
+  assert.ok(gallery.width >= viewport.width - 48, `${path} gallery must use the mobile content width`);
+  assert.ok(summary.y >= gallery.y + gallery.height - 4, `${path} summary must stack below the gallery`);
+  assert.ok(summary.width >= viewport.width - 48, `${path} summary must use the mobile content width`);
 }
 
 try {
@@ -160,30 +70,32 @@ try {
     { width: 390, height: 844 },
   ]) {
     const page = await load(viewport);
-    if (viewport.width >= 1200) {
-      await assertDesktopLayout(page, viewport);
-    } else if (viewport.width >= 1024) {
-      await assertTabletLayout(page, viewport);
-    } else {
-      await assertMobileLayout(page, viewport);
-    }
+    if (viewport.width >= 1024) await assertWideHero(page, viewport);
+    else await assertMobileHero(page, viewport);
+
+    const configurations = await box(page, '[data-preview-product-configurations]');
+    const support = await box(page, '[data-preview-product-support]');
+    assert.ok(support.y >= configurations.y + configurations.height - 4,
+      `${viewport.width}px procurement support must follow the configuration catalogue, not compete with the hero`);
+    await assertSectionOrder(page);
     await assertNoHorizontalOverflow(page);
     await page.close();
   }
 
-  const narrowTablet = { width: 768, height: 1024 };
-  for (const path of [
-    '/product/rosa-foundation-stevens-scissors-regular/',
-    '/ar/product/rosa-foundation-stevens-scissors-regular/',
-  ]) {
-    const page = await load(narrowTablet, path);
-    await assertNarrowTabletStacking(page, path);
-    await assertNarrowTabletDescription(page, path);
-    await assertNoHorizontalOverflow(page, path);
-    await page.close();
-  }
+  const rtlPath = '/ar/product/rosa-foundation-stevens-scissors-regular/';
+  const rtlDesktop = await load({ width: 1440, height: 900 }, rtlPath);
+  assert.equal(await rtlDesktop.locator('html').getAttribute('dir'), 'rtl', 'Arabic Product Detail must retain RTL document direction');
+  await assertWideHero(rtlDesktop, { width: 1440, height: 900 }, true);
+  await assertSectionOrder(rtlDesktop, rtlPath);
+  await assertNoHorizontalOverflow(rtlDesktop, rtlPath);
+  await rtlDesktop.close();
 
-  process.stdout.write('PASS: representative Product Detail uses the approved responsive gallery/information/support composition\n');
+  const narrow = await load({ width: 768, height: 1024 }, rtlPath);
+  await assertMobileHero(narrow, { width: 768, height: 1024 }, rtlPath);
+  await assertNoHorizontalOverflow(narrow, rtlPath);
+  await narrow.close();
+
+  process.stdout.write('PASS: Elementor Product Detail uses the approved responsive two-column hero and mirrored RTL composition\n');
 } finally {
   await browser.close();
 }

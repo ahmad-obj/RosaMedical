@@ -49,6 +49,15 @@ final class RosaAdmin
             static fn(): mixed => ElementorShortcutPage::render('contact', 'Contact')
         );
 
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Rosa Medical — Product Page', 'rosa-medical'),
+            __('Product Page', 'rosa-medical'),
+            Capabilities::MANAGE_CONTENT,
+            'rosa-medical-product-page',
+            [ProductTemplatePage::class, 'render']
+        );
+
         self::addContentSubmenu('Shop', 'rosa-medical-shop', 'shop');
         self::addContentSubmenu('Site & CTA', 'rosa-medical-site', 'site');
 
