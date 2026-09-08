@@ -15,6 +15,7 @@ if (process.env.ROSA_PLAYWRIGHT_NO_SANDBOX === '1') {
 const forbiddenCommerceRequest = /(?:[?&]wc-ajax=add_to_cart\b|\/wp-json\/wc\/store\/v1\/cart(?:\/|\?|$)|\/wp-json\/wc\/v3\/orders(?:\/|\?|$)|\/cart\/?(?:\?|#|$)|\/checkout\/?(?:\?|#|$))/i;
 const forbiddenCommerceUi = '.single_add_to_cart_button, .add_to_cart_button, [name="add-to-cart"], a[href*="/cart/"], a[href*="/checkout/"], .woocommerce-cart-form, .wc-block-cart, .wc-block-checkout';
 const forbiddenPricingUi = '.price, .woocommerce-Price-amount, [data-rosa-quote-price], [data-price]';
+const expectedRejectedRequestConsole = /^Failed to load resource: the server responded with a status of 422 \(Unprocessable Entity\)$/;
 
 async function load(page, path, label) {
   const response = await page.goto(new URL(path, baseUrl).href, { waitUntil: 'load', timeout: 60_000 });
@@ -160,7 +161,10 @@ page.on('request', (request) => {
 });
 page.on('pageerror', (error) => browserErrors.push(error.message));
 page.on('console', (message) => {
-  if (message.type() === 'error') browserErrors.push(message.text());
+  if (message.type() !== 'error') return;
+  const text = message.text();
+  if (expectedRejectedRequestConsole.test(text)) return;
+  browserErrors.push(text);
 });
 
 try {
