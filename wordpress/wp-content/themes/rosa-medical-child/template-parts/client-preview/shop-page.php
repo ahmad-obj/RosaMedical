@@ -128,9 +128,9 @@ $workflow = $locale === 'ar'
 <section class="rosa-live-shop-workflow" data-preview-shop-workflow>
   <div class="rosa-preview-rail rosa-live-shop-workflow__layout">
     <div class="rosa-live-shop-workflow__intro">
-      <p class="rosa-preview-eyebrow"><?php echo esc_html($locale === 'ar' ? 'مسار واضح' : 'A CLEAR WORKFLOW'); ?></p>
-      <h2><?php echo esc_html($locale === 'ar' ? 'حوّل احتياجك للأداة إلى طلب توريد واضح.' : 'Turn an instrument need into a clear procurement request.'); ?></h2>
-      <p><?php echo esc_html($locale === 'ar' ? 'ثلاث خطوات تساعد فريق روزا على فهم ما تحتاجه بسرعة.' : 'Three simple steps help the Rosa team understand exactly what you need.'); ?></p>
+      <p class="rosa-preview-eyebrow" style="color:#fff"><?php echo esc_html($locale === 'ar' ? 'مسار واضح' : 'A CLEAR WORKFLOW'); ?></p>
+      <h2 style="color:#fff"><?php echo esc_html($locale === 'ar' ? 'حوّل احتياجك للأداة إلى طلب توريد واضح.' : 'Turn an instrument need into a clear procurement request.'); ?></h2>
+      <p style="color:#fff"><?php echo esc_html($locale === 'ar' ? 'ثلاث خطوات تساعد فريق روزا على فهم ما تحتاجه بسرعة.' : 'Three simple steps help the Rosa team understand exactly what you need.'); ?></p>
     </div>
     <div class="rosa-live-shop-workflow__steps">
       <?php foreach ($workflow as [$number, $title, $body]) : ?>
@@ -152,21 +152,5 @@ $workflow = $locale === 'ar'
       <article><span>02</span><div><h3><?php echo esc_html($locale === 'ar' ? 'تكوينات دقيقة' : 'Exact configurations'); ?></h3><p><?php echo esc_html($locale === 'ar' ? 'راجع الخيارات المتاحة للأداة قبل إرسال الطلب.' : 'Review the available instrument options before sending your request.'); ?></p></div></article>
       <article><span>03</span><div><h3><?php echo esc_html($locale === 'ar' ? 'تواصل مباشر' : 'Direct support'); ?></h3><p><?php echo esc_html($locale === 'ar' ? 'شارك متطلباتك مع فريق روزا للحصول على دعم عرض السعر.' : 'Share your requirements with the Rosa team for quotation support.'); ?></p></article>
     </div>
-  </div>
-</section>
-
-<section class="rosa-live-shop-families" data-preview-shop-families>
-  <div class="rosa-preview-rail">
-    <div class="rosa-live-shop-heading rosa-live-shop-families__heading">
-      <div>
-        <p class="rosa-preview-eyebrow"><?php echo esc_html($locale === 'ar' ? 'فئات الأدوات' : 'INSTRUMENT FAMILIES'); ?></p>
-        <h2><?php echo esc_html($locale === 'ar' ? 'ابدأ من الفئة المناسبة' : 'Start with the right instrument family'); ?></h2>
-      </div>
-    </div>
-    <nav class="rosa-live-shop-families__grid" aria-label="<?php echo esc_attr($locale === 'ar' ? 'فئات المنتجات' : 'Product families'); ?>">
-      <?php foreach ($families as $index => $family) : ?>
-        <a href="<?php echo esc_url($familyUrl($family['slug'])); ?>"><span><?php echo esc_html('0' . ($index + 1)); ?></span><strong><?php echo esc_html(rosa_preview_family_label($family['label'], $locale)); ?></strong><b aria-hidden="true">→</b></a>
-      <?php endforeach; ?>
-    </nav>
   </div>
 </section>

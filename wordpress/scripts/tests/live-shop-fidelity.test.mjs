@@ -25,6 +25,18 @@ async function assertNoHorizontalOverflow(page, path) {
   assert.ok(size.scroll <= size.client + 1, `${path} overflows horizontally: ${size.scroll} > ${size.client}`);
 }
 
+async function assertWorkflowCopyIsWhite(page, path) {
+  const colors = await page.locator('[data-preview-shop-workflow] .rosa-live-shop-workflow__intro').evaluate((intro) => ({
+    eyebrow: getComputedStyle(intro.querySelector('.rosa-preview-eyebrow')).color,
+    heading: getComputedStyle(intro.querySelector('h2')).color,
+    body: getComputedStyle(intro.querySelector('p:last-child')).color,
+  }));
+
+  for (const [label, color] of Object.entries(colors)) {
+    assert.equal(color, 'rgb(255, 255, 255)', `${path} workflow ${label} copy must render white on the red background; got ${color}`);
+  }
+}
+
 async function assertLiveShop(page, path, locale) {
   assert.equal(await page.locator('[data-preview-shop-hero]').count(), 1, `${path} must render one Shop hero`);
   assert.equal(await page.locator('[data-preview-shop-grid]').count(), 1, `${path} must render one catalogue grid`);
@@ -36,22 +48,21 @@ async function assertLiveShop(page, path, locale) {
     assert.notEqual(heroTitle, 'المنتجات', `${path} must not use the obsolete generic Shop hero title`);
   }
 
-  // Frozen live Shop shows a populated catalogue, not the old one-product/empty preview.
   const visibleCards = await page.locator('[data-preview-shop-grid] .rosa-preview-product').evaluateAll((elements) =>
     elements.filter((element) => element.checkVisibility()).length,
   );
   assert.ok(visibleCards >= 5, `${path} must expose the populated multi-family catalogue; found ${visibleCards} visible cards`);
 
-  // Frozen live Shop continues beyond the product grid with the procurement workflow,
-  // support content, family/category navigation, then the shared quotation CTA.
   assert.equal(await page.locator('[data-preview-shop-workflow]').count(), 1, `${path} must render the live procurement workflow section`);
   assert.equal(await page.locator('[data-preview-shop-support]').count(), 1, `${path} must render the live procurement support section`);
-  assert.equal(await page.locator('[data-preview-shop-families]').count(), 1, `${path} must render the live family navigation section`);
+  assert.equal(await page.locator('[data-preview-shop-families]').count(), 0, `${path} must not render the removed Instrument Families navigation section`);
   assert.equal(await page.locator('.rosa-preview-prefooter').count(), 1, `${path} must preserve the shared quotation CTA`);
+
+  await assertWorkflowCopyIsWhite(page, path);
 
   if (locale === 'en') {
     const workflowText = (await page.locator('[data-preview-shop-workflow]').textContent()) || '';
-    assert.match(workflowText, /Turn an instrument need into a clear procurement request\./, `${path} must preserve the frozen live workflow heading`);
+    assert.match(workflowText, /Turn an instrument need into a clear procurement request\./, `${path} must preserve the workflow heading`);
   }
 
   await assertNoHorizontalOverflow(page, path);
@@ -69,7 +80,7 @@ try {
       await page.close();
     }
   }
-  process.stdout.write('PASS: Shop EN/AR matches the frozen live Rosa topology at desktop/tablet/mobile\n');
+  process.stdout.write('PASS: Shop EN/AR keeps white workflow copy, removes Instrument Families navigation, and preserves responsive catalogue/support topology\n');
 } finally {
   await browser.close();
 }
