@@ -240,9 +240,14 @@ async function assertCoreFlows(browser) {
 
   const product = await openHealthyPage(browser, { label: 'English Product flow', path: productPath, lang: 'en-US', dir: 'ltr', viewport: desktop });
   try {
-    const quoteHref = await product.locator('.rosa-product-detail__summary .rosa-preview-button--accent').getAttribute('href');
-    assert.ok(quoteHref, 'Product Detail quotation CTA is missing');
-    assert.equal(normalizedPath(quoteHref), '/contact/#inquiry', 'Product Detail quotation CTA must target Contact #inquiry');
+    const addQuoteBtn = product.locator('.rosa-product-detail__summary [data-rosa-add-to-quote]');
+    if (await addQuoteBtn.count() > 0) {
+      assert.ok(await addQuoteBtn.first().isVisible(), 'Product Detail Add to Quote CTA must be visible');
+    } else {
+      const quoteHref = await product.locator('.rosa-product-detail__summary .rosa-preview-button--accent').getAttribute('href');
+      assert.ok(quoteHref, 'Product Detail quotation CTA is missing');
+      assert.equal(normalizedPath(quoteHref), '/contact/#inquiry', 'Product Detail quotation CTA must target Contact #inquiry');
+    }
   } finally {
     await product.close();
   }
