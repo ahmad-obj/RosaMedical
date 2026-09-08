@@ -235,6 +235,21 @@ body[data-rosa-preview-shell] .rosa-quote-request-item h3 {
   display: none;
 }
 
+.rosa-quote-request-form__confirmation {
+  border: 1px solid rgb(25 112 73 / .28);
+  border-radius: .5rem;
+  background: rgb(25 112 73 / .07);
+  padding: .9rem 1rem;
+  color: var(--preview-ink);
+  font-size: .875rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.rosa-quote-request-form__confirmation[hidden] {
+  display: none;
+}
+
 html[dir="rtl"] .rosa-quote-request-page,
 html[dir="rtl"] .rosa-quote-request-form__grid input,
 html[dir="rtl"] .rosa-quote-request-form__grid textarea {
