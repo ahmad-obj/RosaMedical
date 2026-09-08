@@ -14,8 +14,11 @@
         quantity: 'الكمية',
         remove: 'إزالة',
         pending: 'جارٍ تجهيز طلب عرض السعر والتحقق من الأدوات المحددة…',
-        emailSent: 'تم إرسال البريد الإلكتروني. رسالة واتساب المجهزة جاهزة للفتح.',
-        emailUnconfirmed: 'تم تجهيز الطلب، لكن تعذر تأكيد إرسال البريد الإلكتروني. رسالة واتساب المجهزة جاهزة للفتح.',
+        emailSent: 'تم إرسال البريد الإلكتروني. تم إفراغ قائمة طلب عرض السعر ويمكنك بدء طلب جديد.',
+        emailUnconfirmed: 'تم تجهيز الطلب، لكن تعذر تأكيد إرسال البريد الإلكتروني. افتح رسالة واتساب المجهزة لإكمال التسليم.',
+        whatsappOpened: 'تم فتح رسالة واتساب المجهزة. تم إفراغ قائمة الطلب، ولم يتم تأكيد التسليم أو الاستلام عبر واتساب.',
+        confirmationEmail: 'تم إرسال طلب عرض السعر عبر البريد الإلكتروني. تم إفراغ قائمة الطلب ويمكنك بدء طلب جديد.',
+        confirmationWhatsapp: 'تم فتح رسالة واتساب المجهزة لطلب عرض السعر. تم إفراغ القائمة، وهذا لا يؤكد تسليم رسالة واتساب أو استلامها.',
         failed: 'تعذر تجهيز طلب عرض السعر. تحقق من البيانات وحاول مرة أخرى.',
         empty: 'أضف أداة واحدة على الأقل قبل تجهيز طلب عرض السعر.',
       }
@@ -25,8 +28,11 @@
         quantity: 'Quantity',
         remove: 'Remove',
         pending: 'Preparing your quote request and validating selected instruments…',
-        emailSent: 'Email sent. Your prepared WhatsApp message is ready to open.',
-        emailUnconfirmed: 'Request prepared, but email delivery could not be confirmed. Your prepared WhatsApp message is ready to open.',
+        emailSent: 'Email sent. Your quote basket has been cleared and is ready for a new request.',
+        emailUnconfirmed: 'Request prepared, but email delivery could not be confirmed. Open the prepared WhatsApp message to complete the handoff.',
+        whatsappOpened: 'Prepared WhatsApp message opened. Your quote basket was cleared; WhatsApp delivery or receipt has not been confirmed.',
+        confirmationEmail: 'Your quote request was sent by email. The quotation basket is cleared and ready for a new request.',
+        confirmationWhatsapp: 'Your prepared WhatsApp quote message was opened. The basket is cleared; this does not confirm WhatsApp delivery or receipt.',
         failed: 'The quote request could not be prepared. Check your details and try again.',
         empty: 'Add at least one instrument before preparing your quote request.',
       };
@@ -61,7 +67,9 @@
   const form = surface.querySelector('[data-rosa-quote-request-form]');
   const status = surface.querySelector('[data-rosa-quote-submit-status]');
   const whatsappLink = surface.querySelector('[data-rosa-quote-whatsapp-link]');
+  const confirmation = surface.querySelector('[data-rosa-quote-confirmation]');
   const submitButton = surface.querySelector('[data-rosa-quote-request-submit]');
+  let whatsappAwaitingActivation = false;
 
   const render = () => {
     if (!(itemsRoot instanceof HTMLElement) || !(emptyState instanceof HTMLElement)) return;
@@ -159,11 +167,40 @@
     if (status instanceof HTMLElement) status.textContent = message;
   };
 
+  const hideConfirmation = () => {
+    if (!(confirmation instanceof HTMLElement)) return;
+    confirmation.hidden = true;
+    confirmation.removeAttribute('data-rosa-quote-confirmation-channel');
+  };
+
+  const showConfirmation = (channel) => {
+    if (!(confirmation instanceof HTMLElement)) return;
+    confirmation.textContent = channel === 'email' ? copy.confirmationEmail : copy.confirmationWhatsapp;
+    confirmation.setAttribute('data-rosa-quote-confirmation-channel', channel);
+    confirmation.hidden = false;
+  };
+
+  const clearCompletedHandoff = (channel) => {
+    if (typeof basket.clear !== 'function') return;
+    basket.clear();
+    showConfirmation(channel);
+  };
+
   const hideWhatsapp = () => {
+    whatsappAwaitingActivation = false;
     if (!(whatsappLink instanceof HTMLAnchorElement)) return;
     whatsappLink.hidden = true;
     whatsappLink.removeAttribute('href');
   };
+
+  if (whatsappLink instanceof HTMLAnchorElement) {
+    whatsappLink.addEventListener('click', () => {
+      if (!whatsappAwaitingActivation) return;
+      whatsappAwaitingActivation = false;
+      clearCompletedHandoff('whatsapp');
+      setStatus(copy.whatsappOpened);
+    });
+  }
 
   if (form instanceof HTMLFormElement) {
     form.addEventListener('submit', async (event) => {
@@ -173,6 +210,7 @@
       const nonce = (form.querySelector('input[name="rosa_quote_nonce"]')?.value || '').trim();
       const state = basket.getState();
       hideWhatsapp();
+      hideConfirmation();
 
       if (endpoint === '' || nonce === '' || state.items.length === 0) {
         setStatus(state.items.length === 0 ? copy.empty : copy.failed);
@@ -232,7 +270,15 @@
           whatsappLink.hidden = false;
         }
 
-        setStatus(result.email?.sent === true ? copy.emailSent : copy.emailUnconfirmed);
+        if (result.email?.sent === true) {
+          whatsappAwaitingActivation = false;
+          clearCompletedHandoff('email');
+          setStatus(copy.emailSent);
+          return;
+        }
+
+        whatsappAwaitingActivation = prepared;
+        setStatus(copy.emailUnconfirmed);
       } catch {
         setStatus(copy.failed);
       } finally {
