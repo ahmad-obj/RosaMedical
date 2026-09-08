@@ -31,6 +31,11 @@ const routes = [
   { label: 'Product AR', path: `/ar/product/${productSlug}/`, locale: 'ar', lang: 'ar', dir: 'rtl' },
 ];
 
+function rgbChannels(value) {
+  const match = String(value).match(/rgba?\((\d+)[, ]+(\d+)[, ]+(\d+)/i);
+  return match ? match.slice(1, 4).map(Number) : [];
+}
+
 async function assertNewsletter(browser, route, viewport) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const context = `${route.label} ${route.path} ${viewport.width}x${viewport.height}`;
@@ -44,11 +49,7 @@ async function assertNewsletter(browser, route, viewport) {
     assert.equal(await page.locator('html').getAttribute('dir'), route.dir, `${context} dir mismatch`);
 
     const banner = page.locator('[data-rosa-newsletter-banner]');
-    assert.equal(
-      await banner.count(),
-      1,
-      `${context} must render exactly one shared newsletter signup banner`,
-    );
+    assert.equal(await banner.count(), 1, `${context} must render exactly one shared newsletter signup banner`);
     await banner.waitFor({ state: 'visible' });
 
     const form = banner.locator('form[data-rosa-newsletter-form]');
@@ -57,10 +58,14 @@ async function assertNewsletter(browser, route, viewport) {
     const name = form.locator('input[name="name"]');
     const email = form.locator('input[name="email"]');
     const submit = form.locator('button[type="submit"], input[type="submit"]');
+    const media = banner.locator('.rosa-preview-newsletter__media');
+    const content = banner.locator('.rosa-preview-newsletter__content');
 
     assert.equal(await name.count(), 1, `${context} newsletter must expose one Name control`);
     assert.equal(await email.count(), 1, `${context} newsletter must expose one Email control`);
     assert.equal(await submit.count(), 1, `${context} newsletter must expose one Sign Up submit control`);
+    assert.equal(await media.count(), 1, `${context} newsletter must expose one dedicated media placeholder`);
+    assert.equal(await banner.locator('.rosa-preview-newsletter__eyebrow').count(), 0, `${context} reference-style newsletter must not retain the old eyebrow row`);
 
     assert.equal((await name.getAttribute('type')) || 'text', 'text', `${context} Name control must be text input`);
     assert.equal(await email.getAttribute('type'), 'email', `${context} Email control must use type=email`);
@@ -117,36 +122,59 @@ async function assertNewsletter(browser, route, viewport) {
       assert.ok(box.width >= 44 && box.height >= 44, `${context} ${label} control must keep a 44px minimum target`);
     }
 
+    const visual = await page.evaluate(() => {
+      const bannerNode = document.querySelector('[data-rosa-newsletter-banner]');
+      const contentNode = bannerNode.querySelector('.rosa-preview-newsletter__content');
+      const formNode = bannerNode.querySelector('.rosa-preview-newsletter__form');
+      const mediaNode = bannerNode.querySelector('.rosa-preview-newsletter__media');
+      const submitNode = formNode.querySelector('button[type="submit"], input[type="submit"]');
+      const rect = (node) => {
+        const box = node.getBoundingClientRect();
+        return { x: box.x, y: box.y, width: box.width, height: box.height, right: box.right, bottom: box.bottom };
+      };
+      return {
+        bannerBackground: getComputedStyle(bannerNode).backgroundColor,
+        submitBackground: getComputedStyle(submitNode).backgroundColor,
+        submitColor: getComputedStyle(submitNode).color,
+        contentRect: rect(contentNode),
+        formRect: rect(formNode),
+        mediaRect: rect(mediaNode),
+      };
+    });
+
+    const bannerRgb = rgbChannels(visual.bannerBackground);
+    assert.equal(bannerRgb.length, 3, `${context} newsletter background must resolve to RGB`);
+    assert.ok(bannerRgb.every((channel) => channel >= 235), `${context} newsletter must use a light neutral Rosa-adapted background; got ${visual.bannerBackground}`);
+    assert.match(visual.submitBackground, /rgb\(224, 8, 21\)|rgb\(185, 10, 20\)/, `${context} Sign Up button must use Rosa red; got ${visual.submitBackground}`);
+    assert.match(visual.submitColor, /rgb\(255, 255, 255\)/, `${context} Sign Up button text must remain white`);
+
+    const mediaBox = await media.boundingBox();
+    assert.ok(mediaBox && mediaBox.width >= 90 && mediaBox.height >= 90, `${context} media placeholder must remain visibly present`);
+
     if (viewport.width >= 1024) {
-      const centers = [semantics.nameRect, semantics.emailRect, semantics.submitRect]
-        .map((box) => box.y + (box.height / 2));
-      assert.ok(
-        Math.max(...centers) - Math.min(...centers) <= 8,
-        `${context} desktop Name, Email and Sign Up controls must align as one row`,
-      );
+      const inputCenters = [semantics.nameRect, semantics.emailRect].map((box) => box.y + (box.height / 2));
+      assert.ok(Math.max(...inputCenters) - Math.min(...inputCenters) <= 8, `${context} desktop Name and Email controls must share the first form row`);
+      assert.ok(semantics.submitRect.y >= Math.max(semantics.nameRect.bottom, semantics.emailRect.bottom) + 6, `${context} desktop Sign Up control must occupy a second row below Name and Email`);
+      const fieldSpan = Math.max(semantics.nameRect.right, semantics.emailRect.right) - Math.min(semantics.nameRect.x, semantics.emailRect.x);
+      assert.ok(semantics.submitRect.width >= fieldSpan - 4, `${context} desktop Sign Up control must span the full two-field form width`);
+
+      if (route.dir === 'ltr') {
+        assert.ok(visual.contentRect.right <= visual.formRect.x + 2, `${context} desktop text block must sit before the form`);
+        assert.ok(visual.formRect.right <= visual.mediaRect.x + 2, `${context} desktop media must sit to the right of the form`);
+      } else {
+        assert.ok(visual.mediaRect.right <= visual.formRect.x + 2, `${context} RTL desktop media must mirror to the left of the form`);
+        assert.ok(visual.formRect.right <= visual.contentRect.x + 2, `${context} RTL desktop text block must mirror after the form`);
+      }
     }
 
     if (viewport.width <= 430) {
-      assert.ok(
-        semantics.nameRect.bottom <= semantics.emailRect.y + 1,
-        `${context} mobile Name control must stack before Email`,
-      );
-      assert.ok(
-        semantics.emailRect.bottom <= semantics.submitRect.y + 1,
-        `${context} mobile Email control must stack before Sign Up`,
-      );
+      assert.ok(semantics.nameRect.bottom <= semantics.emailRect.y + 1, `${context} mobile Name control must stack before Email`);
+      assert.ok(semantics.emailRect.bottom <= semantics.submitRect.y + 1, `${context} mobile Email control must stack before Sign Up`);
+      assert.ok(mediaBox.y >= semantics.submitRect.bottom - 1, `${context} mobile media placeholder must stack beneath the signup form`);
     }
 
-    assert.equal(
-      await banner.locator('.rosa-preview-prefooter__actions').count(),
-      0,
-      `${context} must remove the old quote-prefooter action cluster`,
-    );
-    assert.equal(
-      await banner.locator('a[href*="#inquiry"]').count(),
-      0,
-      `${context} newsletter banner must not retain old quotation links`,
-    );
+    assert.equal(await banner.locator('.rosa-preview-prefooter__actions').count(), 0, `${context} must remove the old quote-prefooter action cluster`);
+    assert.equal(await banner.locator('a[href*="#inquiry"]').count(), 0, `${context} newsletter banner must not retain old quotation links`);
 
     const placement = await page.evaluate(() => {
       const bannerNode = document.querySelector('[data-rosa-newsletter-banner]');
@@ -161,14 +189,8 @@ async function assertNewsletter(browser, route, viewport) {
       };
     });
 
-    assert.ok(
-      placement.bannerBottom <= placement.footerTop + 2,
-      `${context} newsletter banner must stay immediately before the shared footer`,
-    );
-    assert.ok(
-      placement.scrollWidth <= placement.clientWidth + 1,
-      `${context} newsletter banner causes horizontal overflow: ${placement.scrollWidth} > ${placement.clientWidth}`,
-    );
+    assert.ok(placement.bannerBottom <= placement.footerTop + 2, `${context} newsletter banner must stay immediately before the shared footer`);
+    assert.ok(placement.scrollWidth <= placement.clientWidth + 1, `${context} newsletter banner causes horizontal overflow: ${placement.scrollWidth} > ${placement.clientWidth}`);
   } finally {
     await page.close();
   }
@@ -182,7 +204,7 @@ try {
     }
   }
 
-  process.stdout.write('PASS: shared EN/AR newsletter banner exposes accessible Name, Email and Sign Up controls with responsive layout and no legacy quote-prefooter actions across primary routes\n');
+  process.stdout.write('PASS: shared EN/AR newsletter banner matches the reference-style text, two-field form, full-width Rosa CTA and media layout with responsive stacking across primary routes\n');
 } finally {
   await browser.close();
 }
