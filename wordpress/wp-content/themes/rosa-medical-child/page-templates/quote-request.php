@@ -31,6 +31,7 @@ $copy = $isArabic
         'submit' => 'تجهيز طلب عرض السعر',
         'website' => 'الموقع الإلكتروني',
         'whatsapp' => 'فتح رسالة واتساب المجهزة',
+        'confirmationReady' => 'سيظهر تأكيد طلب عرض السعر هنا بعد نجاح الإرسال بالبريد الإلكتروني أو فتح رسالة واتساب المجهزة.',
     ]
     : [
         'eyebrow' => 'Quotation request',
@@ -54,6 +55,7 @@ $copy = $isArabic
         'submit' => 'Prepare quote request',
         'website' => 'Website',
         'whatsapp' => 'Open prepared WhatsApp message',
+        'confirmationReady' => 'Quote request confirmation will appear here after a successful email handoff or an opened prepared WhatsApp message.',
     ];
 
 $catalog = function_exists('rosa_quote_request_catalog_payload') ? rosa_quote_request_catalog_payload() : [];
@@ -146,6 +148,14 @@ get_header();
                             aria-label="<?php echo esc_attr($copy['whatsapp']); ?>"
                             hidden
                         ><?php echo esc_html($copy['whatsapp']); ?></a>
+                        <div
+                            class="rosa-quote-request-form__confirmation"
+                            data-rosa-quote-confirmation
+                            role="status"
+                            aria-live="polite"
+                            aria-atomic="true"
+                            hidden
+                        ><?php echo esc_html($copy['confirmationReady']); ?></div>
                     </div>
                 </form>
             </section>
