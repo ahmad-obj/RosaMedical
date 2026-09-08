@@ -46,9 +46,24 @@ async function assertCompactLinkStack(column, expectedCount, label, path, viewpo
   const headingGap = firstBox.y - (headingBox.y + headingBox.height);
 
   assert.ok(
-    headingGap >= -1 && headingGap <= 16,
-    `${path} ${viewport.width}x${viewport.height} ${label} heading-to-first-link gap is ${headingGap.toFixed(1)}px; compact handoff rhythm must stay within 16px`,
+    headingGap >= -1 && headingGap <= 12,
+    `${path} ${viewport.width}x${viewport.height} ${label} heading-to-first-link gap is ${headingGap.toFixed(1)}px; tightened handoff rhythm must stay within 12px`,
   );
+
+  for (let index = 0; index < expectedCount; index += 1) {
+    const box = await visibleBox(links.nth(index), `${label} link ${index + 1}`);
+    if (viewport.width >= 768) {
+      assert.ok(
+        box.height >= 28 && box.height <= 36,
+        `${path} ${viewport.width}x${viewport.height} ${label} link ${index + 1} is ${box.height.toFixed(1)}px tall; desktop/tablet footer links must use compact 28–36px visible rhythm`,
+      );
+    } else {
+      assert.ok(
+        box.height >= 44,
+        `${path} ${viewport.width}x${viewport.height} ${label} link ${index + 1} must preserve a 44px mobile touch target`,
+      );
+    }
+  }
 
   for (let index = 1; index < expectedCount; index += 1) {
     const previous = await visibleBox(links.nth(index - 1), `${label} link ${index}`);
@@ -56,8 +71,8 @@ async function assertCompactLinkStack(column, expectedCount, label, path, viewpo
     const gap = current.y - (previous.y + previous.height);
 
     assert.ok(
-      gap >= -1 && gap <= 4,
-      `${path} ${viewport.width}x${viewport.height} ${label} link gap ${index}→${index + 1} is ${gap.toFixed(1)}px; compact handoff rhythm must stay within 4px`,
+      gap >= -1 && gap <= 3,
+      `${path} ${viewport.width}x${viewport.height} ${label} link gap ${index}→${index + 1} is ${gap.toFixed(1)}px; tightened handoff rhythm must stay within 3px`,
     );
   }
 }
@@ -94,6 +109,33 @@ async function assertFooter(page, path, viewport) {
     1,
     `${path} ${viewport.width}x${viewport.height} footer must preserve the contact email link`,
   );
+
+  const allDirectLinks = footer.locator('.rosa-preview-footer__column > a');
+  for (let index = 0; index < await allDirectLinks.count(); index += 1) {
+    const box = await visibleBox(allDirectLinks.nth(index), `footer direct link ${index + 1}`);
+    if (viewport.width >= 768) {
+      assert.ok(
+        box.height >= 28 && box.height <= 36,
+        `${path} ${viewport.width}x${viewport.height} footer direct link ${index + 1} is ${box.height.toFixed(1)}px tall; all desktop/tablet footer links must share compact rhythm`,
+      );
+    } else {
+      assert.ok(
+        box.height >= 44,
+        `${path} ${viewport.width}x${viewport.height} footer direct link ${index + 1} must preserve a 44px mobile touch target`,
+      );
+    }
+  }
+
+  const contactLinks = contact.locator(':scope > a');
+  if (await contactLinks.count() >= 2) {
+    const first = await visibleBox(contactLinks.nth(0), 'contact first link');
+    const second = await visibleBox(contactLinks.nth(1), 'contact second link');
+    const gap = second.y - (first.y + first.height);
+    assert.ok(
+      gap >= -1 && gap <= 3,
+      `${path} ${viewport.width}x${viewport.height} contact link gap is ${gap.toFixed(1)}px; contact links must use the same tight rhythm`,
+    );
+  }
 
   assert.equal(
     await footer.locator('.rosa-preview-button').count(),
@@ -137,7 +179,7 @@ try {
     }
   }
 
-  process.stdout.write('PASS: footer EN/AR handoff rhythm is compact, preserves business/navigation content, and exposes no footer quote CTA across all handoff viewports\n');
+  process.stdout.write('PASS: footer EN/AR handoff rhythm is visually tight on desktop/tablet, preserves mobile touch targets and business/navigation content, and exposes no footer quote CTA\n');
 } finally {
   await browser.close();
 }
