@@ -72,12 +72,12 @@ body[data-rosa-preview-shell] .rosa-preview-newsletter h2 {
 }
 
 .rosa-preview-newsletter__field input:focus-visible,
-.rosa-preview-newsletter__submit:focus-visible {
+body[data-rosa-preview-shell] .rosa-preview-newsletter__submit:focus-visible {
   outline: 3px solid var(--preview-focus);
   outline-offset: 2px;
 }
 
-.rosa-preview-newsletter__submit {
+body[data-rosa-preview-shell] .rosa-preview-newsletter__submit {
   grid-column: 1 / -1;
   width: 100%;
   min-block-size: 52px;
@@ -97,8 +97,8 @@ body[data-rosa-preview-shell] .rosa-preview-newsletter h2 {
   transition: background-color .2s ease, border-color .2s ease;
 }
 
-.rosa-preview-newsletter__submit:hover,
-.rosa-preview-newsletter__submit:active {
+body[data-rosa-preview-shell] .rosa-preview-newsletter__submit:hover,
+body[data-rosa-preview-shell] .rosa-preview-newsletter__submit:active {
   border-color: var(--preview-accent-dark);
   background: var(--preview-accent-dark);
   color: #fff;
@@ -219,7 +219,7 @@ html[dir="rtl"] .rosa-preview-newsletter__field input {
     gap: .7rem;
   }
 
-  .rosa-preview-newsletter__submit {
+  body[data-rosa-preview-shell] .rosa-preview-newsletter__submit {
     grid-column: auto;
   }
 
