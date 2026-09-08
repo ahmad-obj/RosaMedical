@@ -514,7 +514,7 @@ button.rosa-product-detail__thumbnail[aria-pressed="true"] {
   .rosa-product-elementor-hero > .elementor-widget-rosa-product-summary { grid-column: 1; }
   .rosa-product-detail__topology { grid-template-columns: 1fr; grid-template-areas: "gallery" "summary" "support"; }
   .rosa-product-detail__gallery-main { min-height: 0; aspect-ratio: 1.12 / 1; }
-  .rosa-product-detail__summary { max-width: 44rem; }
+  .rosa-product-detail__summary { max-width: none; }
   .rosa-product-detail__summary h1 { max-width: 16ch; }
   .rosa-product-detail__details-grid { grid-template-columns: 1fr; gap: 2rem; }
   .rosa-product-detail__spec-card { max-width: 34rem; }
@@ -560,7 +560,6 @@ button.rosa-product-detail__thumbnail[aria-pressed="true"] {
 @media (max-width: 27.5rem) {
   .rosa-product-detail__quote-actions,
   .rosa-product-detail__quote-controls { grid-template-columns: 1fr; }
-  .rosa-product-detail__related-grid { grid-template-columns: 1fr; }
 }
 
 /* True RTL mirror: gallery moves to the right of the summary at wide viewports. */
@@ -573,7 +572,7 @@ button.rosa-product-detail__thumbnail[aria-pressed="true"] {
 [dir="rtl"] .rosa-product-detail__meta > div:nth-child(even) { padding-inline-start: 1rem; }
 
 @media (min-width: 64rem) {
-  [dir="rtl"] .rosa-product-elementor-hero > .elementor-widget-rosa-product-gallery { grid-column: 2; }
-  [dir="rtl"] .rosa-product-elementor-hero > .elementor-widget-rosa-product-summary { grid-column: 1; }
-  [dir="rtl"] .rosa-product-detail__topology { grid-template-areas: "summary gallery" "support support"; }
+  [dir="rtl"] .rosa-product-elementor-hero > .elementor-widget-rosa-product-gallery { grid-column: 1; grid-row: 1; }
+  [dir="rtl"] .rosa-product-elementor-hero > .elementor-widget-rosa-product-summary { grid-column: 2; grid-row: 1; }
+  [dir="rtl"] .rosa-product-detail__topology { grid-template-areas: "gallery summary" "support support"; }
 }

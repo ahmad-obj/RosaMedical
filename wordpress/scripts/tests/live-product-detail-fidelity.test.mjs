@@ -47,7 +47,7 @@ async function assertProductDetailTopology(page) {
   const supportSteps = await page.locator('[data-preview-product-support] [data-preview-product-support-step]').count();
   assert.ok(supportSteps >= 3, `${productPath} must expose the numbered procurement-support steps; found ${supportSteps}`);
 
-  const configurations = await page.locator('[data-preview-product-configurations] [data-variation-id]').count();
+  const configurations = await page.locator('[data-preview-product-configurations] article[data-variation-id]').count();
   assert.equal(configurations, 2, `${productPath} must render exactly the two real Woo variations for the representative fixture`);
 
   const order = await page.evaluate(() => {

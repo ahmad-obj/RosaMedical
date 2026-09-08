@@ -198,20 +198,26 @@ final class ProductGalleryWidget extends AbstractRosaProductWidget
                     <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?>
                 <?php endif; ?>
             </div>
-            <?php if ($ids !== []) : ?>
-                <div class="rosa-product-detail__thumbnails" data-preview-product-thumbnails>
-                    <?php foreach (array_slice($ids, 0, 5) as $index => $imageId) :
-                        $thumb = wp_get_attachment_image_url((int) $imageId, 'woocommerce_thumbnail') ?: '';
-                        $full = wp_get_attachment_image_url((int) $imageId, 'large') ?: '';
-                        $srcset = wp_get_attachment_image_srcset((int) $imageId, 'large') ?: '';
-                        $alt = (string) get_post_meta((int) $imageId, '_wp_attachment_image_alt', true);
-                        $alt = $alt !== '' ? $alt : $product->get_name(); ?>
-                        <button class="rosa-product-detail__thumbnail<?php echo $index === 0 ? ' is-active' : ''; ?>" type="button" data-rosa-product-thumb data-full-src="<?php echo esc_url($full); ?>" data-full-srcset="<?php echo esc_attr($srcset); ?>" data-alt="<?php echo esc_attr($alt); ?>" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" aria-label="<?php echo esc_attr(sprintf($this->t('View image %d', 'عرض الصورة %d'), $index + 1)); ?>">
+            <div class="rosa-product-detail__thumbnails" data-preview-product-thumbnails>
+                <?php
+                $thumbCount = max(4, count($ids));
+                for ($index = 0; $index < min(4, $thumbCount); $index++) :
+                    $imageId = (int) ($ids[$index] ?? 0);
+                    $thumb = $imageId > 0 ? (wp_get_attachment_image_url($imageId, 'woocommerce_thumbnail') ?: '') : '';
+                    $full = $imageId > 0 ? (wp_get_attachment_image_url($imageId, 'large') ?: '') : '';
+                    $srcset = $imageId > 0 ? (wp_get_attachment_image_srcset($imageId, 'large') ?: '') : '';
+                    $alt = $imageId > 0 ? (string) get_post_meta($imageId, '_wp_attachment_image_alt', true) : '';
+                    $alt = $alt !== '' ? $alt : $product->get_name();
+                ?>
+                    <button class="rosa-product-detail__thumbnail<?php echo $index === 0 ? ' is-active' : ''; ?>" type="button" data-rosa-product-thumb data-full-src="<?php echo esc_url($full); ?>" data-full-srcset="<?php echo esc_attr($srcset); ?>" data-alt="<?php echo esc_attr($alt); ?>" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" aria-label="<?php echo esc_attr(sprintf($this->t('View image %d', 'عرض الصورة %d'), $index + 1)); ?>">
+                        <?php if ($imageId > 0 && $thumb !== '') : ?>
                             <img src="<?php echo esc_url($thumb); ?>" alt="" loading="lazy">
-                        </button>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+                        <?php elseif (function_exists('get_template_part')) : ?>
+                            <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?>
+                        <?php endif; ?>
+                    </button>
+                <?php endfor; ?>
+            </div>
         </section>
         <?php
     }
