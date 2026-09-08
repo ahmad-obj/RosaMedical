@@ -1,4 +1,26 @@
-/* Quotation-only catalogue controls. No Woo cart/checkout presentation. */
+/* Rosa quotation surfaces plus compact catalogue-card presentation.
+ * Listing cards navigate to Product Detail; quote configuration lives there only.
+ */
+
+.rosa-preview-product {
+  align-self: start;
+}
+
+.rosa-preview-product__body {
+  min-height: 0;
+  padding-block-end: 0;
+}
+
+.rosa-preview-product h3,
+.rosa-live-shop-grid .rosa-preview-product h3 {
+  min-height: 0;
+}
+
+.rosa-preview-product__price {
+  height: auto;
+  min-height: 0;
+}
+
 .rosa-preview-quote-count {
   display: inline-flex;
   min-height: 44px;
@@ -14,26 +36,12 @@
   white-space: nowrap;
 }
 
-.rosa-preview-product__quote,
 .rosa-product-detail__quote-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
   gap: .55rem;
   align-items: center;
-  margin-top: .75rem;
-}
-
-.rosa-preview-product__quote [data-rosa-quote-configuration] {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-height: 44px;
-  border: 1px solid var(--preview-line);
-  border-radius: .25rem;
-  background: #fff;
-  padding: .55rem .65rem;
-  color: var(--preview-ink);
-  font: inherit;
-  font-size: .75rem;
+  margin-top: 1rem;
 }
 
 [data-rosa-quote-quantity],
@@ -50,17 +58,11 @@
   text-align: center;
 }
 
-.rosa-preview-product__quote [data-rosa-add-to-quote],
 .rosa-product-detail__quote-controls [data-rosa-add-to-quote] {
   min-width: 0;
   min-height: 44px;
   padding-inline: .9rem;
   white-space: nowrap;
-}
-
-.rosa-product-detail__quote-controls {
-  grid-template-columns: 4.25rem minmax(0, 1fr);
-  margin-top: 1rem;
 }
 
 .rosa-preview-quote-feedback {
@@ -156,6 +158,7 @@
 
 html[dir="rtl"] .rosa-preview-quote-drawer {
   box-shadow: 18px 0 48px rgb(17 24 39 / .18);
+  text-align: right;
 }
 
 body.rosa-quote-drawer-open {
@@ -280,23 +283,16 @@ body[data-rosa-preview-shell] .rosa-preview-quote-drawer__item h3 {
   display: none;
 }
 
-html[dir="rtl"] .rosa-preview-product__quote [data-rosa-quote-configuration],
-html[dir="rtl"] .rosa-preview-quote-drawer {
-  text-align: right;
-}
-
 @media (max-width: 47.9375rem) {
   .rosa-preview-quote-count {
     min-width: 44px;
     padding-inline: .6rem;
   }
 
-  .rosa-preview-product__quote,
   .rosa-product-detail__quote-controls {
     grid-template-columns: 4.25rem minmax(0, 1fr);
   }
 
-  .rosa-preview-product__quote [data-rosa-add-to-quote],
   .rosa-product-detail__quote-controls [data-rosa-add-to-quote] {
     width: 100%;
   }

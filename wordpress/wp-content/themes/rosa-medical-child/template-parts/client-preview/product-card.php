@@ -5,88 +5,43 @@ $product = $args['product'] ?? null;
 $family = $args['family'] ?? null;
 $mediaSlot = (string) ($args['media_slot'] ?? 'catalogue-product');
 $placeholder = ! empty($args['placeholder']);
-$detailLabel = rosa_preview_content('site', 'view_details', $locale, $locale === 'ar' ? 'عرض التفاصيل' : 'View details');
+$detailLabel = rosa_preview_content('site', 'view_details', $locale, $locale === 'ar' ? 'تفاصيل المنتج' : 'View details');
+
 if ($product instanceof WC_Product) {
     $imageId = $product->get_image_id();
     $name = $product->get_name();
     $url = function_exists('rosa_preview_product_url')
         ? rosa_preview_product_url($product->get_id(), $locale)
         : get_permalink($product->get_id());
-    $terms = wc_get_product_terms($product->get_id(), 'product_cat', ['fields'=>'names']);
+    $terms = wc_get_product_terms($product->get_id(), 'product_cat', ['fields' => 'names']);
     $fallbackInstrument = rosa_preview_content('site', 'medical_instrument', $locale, $locale === 'ar' ? 'أداة طبية' : 'Medical instrument');
     $familyLabel = $terms ? rosa_preview_family_label((string) $terms[0], $locale) : $fallbackInstrument;
-    $addQuoteLabel = $locale === 'ar' ? 'أضف إلى طلب عرض السعر' : 'Add to Quote';
-    $quantityLabel = $locale === 'ar' ? 'الكمية' : 'Quantity';
-    $configurationLabel = $locale === 'ar' ? 'التكوين' : 'Configuration';
-    $quoteOptions = [];
-
-    if ($product instanceof WC_Product_Variable) {
-        foreach ($product->get_children() as $variationId) {
-            $variation = wc_get_product((int) $variationId);
-            if (! ($variation instanceof WC_Product_Variation) || $variation->get_status() !== 'publish') {
-                continue;
-            }
-
-            $sku = trim((string) $variation->get_sku());
-            if ($sku === '') {
-                continue;
-            }
-
-            $parts = [];
-            foreach ($variation->get_attributes() as $taxonomy => $value) {
-                $value = (string) $value;
-                if ($value === '') {
-                    continue;
-                }
-                $term = taxonomy_exists($taxonomy) ? get_term_by('slug', $value, $taxonomy) : false;
-                $parts[] = $term instanceof WP_Term ? $term->name : $value;
-            }
-            $parts[] = $sku;
-
-            $quoteOptions[] = [
-                'variation_id' => (int) $variation->get_id(),
-                'sku' => $sku,
-                'label' => implode(' · ', $parts),
-            ];
-        }
-    } else {
-        $sku = trim((string) $product->get_sku());
-        if ($sku !== '') {
-            $quoteOptions[] = [
-                'variation_id' => 0,
-                'sku' => $sku,
-                'label' => $sku,
-            ];
-        }
-    }
     ?>
     <article class="rosa-preview-product">
       <a class="rosa-preview-product__media" href="<?php echo esc_url($url); ?>"><?php if (! $placeholder && $imageId > 0) { echo wp_get_attachment_image($imageId, 'woocommerce_thumbnail'); } else { get_template_part('template-parts/client-preview/media-slot', null, ['slot' => $mediaSlot, 'label' => $name]); } ?></a>
-      <div class="rosa-preview-product__body"><p class="rosa-preview-product__family"><?php echo esc_html($familyLabel); ?></p><h3><a href="<?php echo esc_url($url); ?>"><?php echo esc_html($name); ?></a></h3><p class="rosa-preview-product__price"><?php echo esc_html(rosa_preview_price_label($locale)); ?></p><a class="rosa-preview-product__action" href="<?php echo esc_url($url); ?>"><?php echo esc_html($detailLabel); ?></a>
-      <?php if ($quoteOptions !== []) : ?>
-        <div class="rosa-preview-product__quote" data-rosa-quote-item>
-          <?php if ($product instanceof WC_Product_Variable) : ?>
-            <label class="screen-reader-text" for="rosa-quote-configuration-<?php echo esc_attr((string) $product->get_id()); ?>"><?php echo esc_html($configurationLabel); ?></label>
-            <select id="rosa-quote-configuration-<?php echo esc_attr((string) $product->get_id()); ?>" data-rosa-quote-configuration>
-              <?php foreach ($quoteOptions as $option) : ?>
-                <option data-variation-id="<?php echo esc_attr((string) $option['variation_id']); ?>" data-sku="<?php echo esc_attr($option['sku']); ?>"><?php echo esc_html($option['label']); ?></option>
-              <?php endforeach; ?>
-            </select>
-          <?php endif; ?>
-          <label class="screen-reader-text" for="rosa-quote-quantity-<?php echo esc_attr((string) $product->get_id()); ?>"><?php echo esc_html($quantityLabel); ?></label>
-          <input id="rosa-quote-quantity-<?php echo esc_attr((string) $product->get_id()); ?>" data-rosa-quote-quantity type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="<?php echo esc_attr($quantityLabel); ?>">
-          <button type="button" class="rosa-preview-button rosa-preview-button--accent" data-rosa-add-to-quote data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>"<?php if (! ($product instanceof WC_Product_Variable)) : ?> data-variation-id="0" data-sku="<?php echo esc_attr($quoteOptions[0]['sku']); ?>"<?php endif; ?>><?php echo esc_html($addQuoteLabel); ?></button>
-        </div>
-      <?php endif; ?>
+      <div class="rosa-preview-product__body">
+        <p class="rosa-preview-product__family"><?php echo esc_html($familyLabel); ?></p>
+        <h3><a href="<?php echo esc_url($url); ?>"><?php echo esc_html($name); ?></a></h3>
+        <p class="rosa-preview-product__price"><?php echo esc_html(rosa_preview_price_label($locale)); ?></p>
+        <a class="rosa-preview-product__action" href="<?php echo esc_url($url); ?>"><?php echo esc_html($detailLabel); ?></a>
       </div>
     </article>
     <?php return;
 }
+
 if (is_array($family)) {
     $label = rosa_preview_family_label((string) ($family['label'] ?? ''), $locale);
     $url = (string) ($family['url'] ?? home_url('/shop/'));
     $familyType = rosa_preview_content('site', 'catalogue_family', $locale, $locale === 'ar' ? 'فئة كتالوج' : 'Catalogue family');
     $browseFamily = rosa_preview_content('site', 'browse_family', $locale, $locale === 'ar' ? 'تصفح الفئة' : 'Browse family');
     ?>
-    <article class="rosa-preview-product rosa-preview-product--family"><a class="rosa-preview-product__media" href="<?php echo esc_url($url); ?>"><?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => $mediaSlot, 'label' => $label]); ?></a><div class="rosa-preview-product__body"><p class="rosa-preview-product__family"><?php echo esc_html($familyType); ?></p><h3><a href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a></h3><p class="rosa-preview-product__price"><?php echo esc_html(rosa_preview_price_label($locale)); ?></p><a class="rosa-preview-product__action" href="<?php echo esc_url($url); ?>"><?php echo esc_html($browseFamily); ?></a></div></article>
+    <article class="rosa-preview-product rosa-preview-product--family">
+      <a class="rosa-preview-product__media" href="<?php echo esc_url($url); ?>"><?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => $mediaSlot, 'label' => $label]); ?></a>
+      <div class="rosa-preview-product__body">
+        <p class="rosa-preview-product__family"><?php echo esc_html($familyType); ?></p>
+        <h3><a href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a></h3>
+        <p class="rosa-preview-product__price"><?php echo esc_html(rosa_preview_price_label($locale)); ?></p>
+        <a class="rosa-preview-product__action" href="<?php echo esc_url($url); ?>"><?php echo esc_html($browseFamily); ?></a>
+      </div>
+    </article>
 <?php }

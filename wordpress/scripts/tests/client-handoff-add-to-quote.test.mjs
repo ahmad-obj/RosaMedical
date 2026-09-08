@@ -15,6 +15,7 @@ if (process.env.ROSA_PLAYWRIGHT_NO_SANDBOX === '1') {
 
 const forbiddenCommerceRequest = /(?:[?&]wc-ajax=add_to_cart\b|\/wp-json\/wc\/store\/v1\/cart(?:\/|\?|$)|\/wp-json\/wc\/v3\/orders(?:\/|\?|$)|\/cart\/?(?:\?|#|$)|\/checkout\/?(?:\?|#|$))/i;
 const forbiddenCommerceUi = '.single_add_to_cart_button, .add_to_cart_button, [name="add-to-cart"], a[href*="/cart/"], a[href*="/checkout/"]';
+const listingQuoteUi = '[data-rosa-add-to-quote], [data-rosa-quote-quantity], [data-rosa-quote-configuration], [data-rosa-quote-item], .rosa-preview-product__quote';
 
 const positiveInteger = (value, label) => {
   const parsed = Number(value);
@@ -84,34 +85,52 @@ async function assertTouchTarget(locator, label) {
   assert.ok(box.width >= 44 && box.height >= 44, `${label} must keep a 44px minimum touch target; got ${box.width}x${box.height}`);
 }
 
-async function shopSelectionIdentity(card, label) {
-  const add = card.locator('[data-rosa-add-to-quote]');
-  const selector = card.locator('[data-rosa-quote-configuration]');
-  const quantity = card.locator('input[data-rosa-quote-quantity]');
+async function assertCatalogueCardsNavigateOnly(page, selector, label) {
+  const cards = page.locator(selector);
+  const count = await cards.count();
+  assert.ok(count > 0, `${label} must expose at least one real Woo product card`);
 
-  assert.equal(await add.count(), 1, `${label} must expose exactly one Add to Quote control`);
-  assert.equal(await add.evaluate((node) => node.tagName), 'BUTTON', `${label} Add to Quote control must be a button, not navigation`);
-  assert.equal(await quantity.count(), 1, `${label} must expose one quotation quantity control`);
-  assert.equal(await quantity.getAttribute('type'), 'number', `${label} quantity control must use type=number`);
-  assert.ok(Number(await quantity.getAttribute('min')) >= 1, `${label} quantity control must enforce a minimum of 1`);
+  for (let index = 0; index < Math.min(count, 8); index += 1) {
+    const card = cards.nth(index);
+    assert.equal(await card.locator(listingQuoteUi).count(), 0, `${label} card ${index + 1} must not expose configuration, quantity or Add to Quote controls`);
 
-  const productId = positiveInteger(await add.getAttribute('data-product-id'), `${label} Add to Quote productId`);
-  let variationId = 0;
-  let sku = '';
+    const media = card.locator('.rosa-preview-product__media[href]');
+    const title = card.locator('h3 a[href]');
+    const action = card.locator('.rosa-preview-product__action[href]');
+    assert.equal(await media.count(), 1, `${label} card ${index + 1} media must navigate to Product Detail`);
+    assert.equal(await title.count(), 1, `${label} card ${index + 1} title must navigate to Product Detail`);
+    assert.equal(await action.count(), 1, `${label} card ${index + 1} action must navigate to Product Detail`);
 
-  if (await selector.count()) {
-    assert.equal(await selector.count(), 1, `${label} must expose at most one configuration selector`);
-    const optionCount = await selector.locator('option').count();
-    assert.ok(optionCount > 0, `${label} configuration selector must expose at least one exact Woo configuration`);
-    const selected = selector.locator('option:checked');
-    variationId = positiveInteger(await selected.getAttribute('data-variation-id'), `${label} selected variationId`);
-    sku = ((await selected.getAttribute('data-sku')) || '').trim();
-  } else {
-    variationId = nonNegativeInteger((await add.getAttribute('data-variation-id')) || '0', `${label} Add to Quote variationId`);
-    sku = ((await add.getAttribute('data-sku')) || '').trim();
+    const hrefs = await Promise.all([media.getAttribute('href'), title.getAttribute('href'), action.getAttribute('href')]);
+    assert.ok(hrefs.every(Boolean), `${label} card ${index + 1} navigation targets must not be empty`);
+    const urls = hrefs.map((href) => new URL(href, page.url()));
+    assert.ok(urls.every((url) => /\/product\//.test(url.pathname)), `${label} card ${index + 1} must route to a dedicated /product/ detail URL`);
+    assert.equal(urls[0].href, urls[1].href, `${label} card ${index + 1} media and title must target the same Product Detail URL`);
+    assert.equal(urls[1].href, urls[2].href, `${label} card ${index + 1} title and View Details action must target the same Product Detail URL`);
   }
+}
 
-  assert.ok(sku.length > 0, `${label} must expose an exact SKU before adding to the quote`);
+async function selectSummaryQuoteIdentity(page, index, label) {
+  const form = page.locator('.rosa-product-detail__quote-form[data-rosa-quote-item]').first();
+  assert.equal(await form.count(), 1, `${label} must expose the Product Detail quote form`);
+  const selector = form.locator('[data-rosa-quote-configuration]');
+  const quantity = form.locator('input[data-rosa-quote-quantity]');
+  const add = form.locator('[data-rosa-add-to-quote]');
+
+  assert.equal(await selector.count(), 1, `${label} must expose one exact Woo configuration selector`);
+  assert.equal(await quantity.count(), 1, `${label} must expose one quotation quantity input`);
+  assert.equal(await add.count(), 1, `${label} must expose one Add to Quote button`);
+  assert.ok(await selector.locator('option').count() >= 2, `${label} representative product must expose at least two Woo configurations`);
+
+  await selector.selectOption({ index });
+  const selected = selector.locator('option:checked');
+  const variationId = positiveInteger(await selected.getAttribute('data-variation-id'), `${label} selected variationId`);
+  const sku = ((await selected.getAttribute('data-sku')) || '').trim();
+  const productId = positiveInteger(await add.getAttribute('data-product-id'), `${label} productId`);
+  assert.ok(sku.length > 0, `${label} selected configuration must expose an exact SKU`);
+  assert.equal(positiveInteger(await add.getAttribute('data-variation-id'), `${label} button variationId`), variationId, `${label} button must track the selected variation`);
+  assert.equal(((await add.getAttribute('data-sku')) || '').trim(), sku, `${label} button must track the selected SKU`);
+
   return { add, quantity, productId, variationId, sku };
 }
 
@@ -130,94 +149,38 @@ page.on('console', (message) => {
 });
 
 try {
-  await load(page, '/shop/', 'Shop EN');
-  assert.equal(await page.evaluate(() => typeof window.RosaQuoteBasket?.add), 'function', 'Shop EN must load the shared RosaQuoteBasket.add API');
+  await load(page, '/', 'Home EN');
+  assert.equal(await page.evaluate(() => typeof window.RosaQuoteBasket?.clear), 'function', 'Home EN must load the shared quote basket shell');
   await page.evaluate(() => window.RosaQuoteBasket.clear());
+  await assertCatalogueCardsNavigateOnly(page, '.rosa-preview-product:not(.rosa-preview-product--family)', 'Home EN');
+  assert.equal(await readCount(page, 'Home EN'), 0, 'Home EN catalogue previews must not mutate quote state');
 
-  const realCards = page.locator('.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)');
-  assert.ok(await realCards.count() > 0, 'Shop EN must expose at least one real Woo product card');
-
-  const familyCards = page.locator('.rosa-preview-shop-grid .rosa-preview-product--family');
-  if (await familyCards.count()) {
-    assert.equal(
-      await familyCards.locator('[data-rosa-add-to-quote]').count(),
-      0,
-      'Shop family-navigation placeholder cards must never expose Add to Quote controls',
-    );
-  }
-
-  const firstCard = realCards.first();
-  assert.equal(
-    await firstCard.locator('[data-rosa-add-to-quote]').count(),
-    1,
-    'Shop EN first real product card must expose exactly one Add to Quote control',
-  );
-  assert.ok(await firstCard.locator('.rosa-preview-product__action[href]').count() > 0, 'Shop EN must preserve View details navigation beside Add to Quote');
+  await load(page, '/shop/', 'Shop EN');
+  await assertCatalogueCardsNavigateOnly(page, '.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)', 'Shop EN');
+  assert.equal(await readCount(page, 'Shop EN'), 0, 'Shop EN catalogue previews must not mutate quote state');
   assert.equal(await page.locator(forbiddenCommerceUi).count(), 0, 'Shop EN must not expose Woo Add to Cart, Cart or Checkout UI');
-
-  const shopSelection = await shopSelectionIdentity(firstCard, 'Shop EN first real product card');
-  await shopSelection.quantity.fill('2');
-  assert.equal(await readCount(page, 'Shop EN'), 0, 'Shop EN quote count must begin at zero after clear()');
-  await shopSelection.add.click();
-  await page.waitForFunction(() => window.RosaQuoteBasket.getState().items.length === 1);
-
-  let state = await page.evaluate(() => window.RosaQuoteBasket.getState());
-  assertQuoteState(state, 'Shop EN after first add');
-  assert.equal(state.items.length, 1, 'Shop EN first Add to Quote action must create one selected line');
-  assert.deepEqual(
-    { productId: state.items[0].productId, variationId: state.items[0].variationId, sku: state.items[0].sku, quantity: state.items[0].quantity },
-    { productId: shopSelection.productId, variationId: shopSelection.variationId, sku: shopSelection.sku, quantity: 2 },
-    'Shop EN must add the exact selected Woo product/configuration/SKU and quantity',
-  );
-  assert.equal(await readCount(page, 'Shop EN after first add'), 2, 'Shop EN quote count must update to total selected quantity');
-  await assertFeedback(page, 'en', 'Shop EN');
-
-  await shopSelection.quantity.fill('1');
-  await shopSelection.add.click();
-  await page.waitForFunction(() => window.RosaQuoteBasket.getState().items[0]?.quantity === 3);
-  state = await page.evaluate(() => window.RosaQuoteBasket.getState());
-  assert.equal(state.items.length, 1, 're-adding the same Shop configuration must not duplicate the quote line');
-  assert.equal(state.items[0].quantity, 3, 're-adding the same Shop configuration must increment quantity');
-  assert.equal(await readCount(page, 'Shop EN after duplicate add'), 3, 'quote count must reflect the incremented quantity');
 
   await load(page, '/ar/shop/', 'Shop AR');
   assert.equal(await page.locator('html').getAttribute('dir'), 'rtl', 'Shop AR must remain RTL');
-  assert.equal(await readCount(page, 'Shop AR'), 3, 'Shop AR must preserve quote-count state from English navigation');
-  state = await page.evaluate(() => window.RosaQuoteBasket.getState());
-  assert.equal(state.items[0]?.quantity, 3, 'Shop AR must preserve the existing quote basket state');
-  const arFirstCard = page.locator('.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)').first();
-  const shopArAddText = ((await arFirstCard.locator('[data-rosa-add-to-quote]').textContent()) || '').trim();
-  assert.match(shopArAddText, /[\u0600-\u06ff]/, 'Shop AR Add to Quote control must expose Arabic copy');
+  await assertCatalogueCardsNavigateOnly(page, '.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)', 'Shop AR');
+  const arDetailsText = ((await page.locator('.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family) .rosa-preview-product__action').first().textContent()) || '').trim();
+  assert.match(arDetailsText, /[\u0600-\u06ff]/, 'Shop AR View Details action must expose Arabic copy');
+  assert.equal(await readCount(page, 'Shop AR'), 0, 'Shop AR catalogue previews must not mutate quote state');
 
   await load(page, `/product/${productSlug}/`, 'Product EN');
   await page.evaluate(() => window.RosaQuoteBasket.clear());
   assert.equal(await page.locator(forbiddenCommerceUi).count(), 0, 'Product EN must not expose Woo Add to Cart, Cart or Checkout UI');
 
-  const configurations = page.locator('.rosa-product-detail__configuration[data-variation-id]');
-  assert.ok(await configurations.count() >= 2, 'representative Product Detail must expose at least two exact configurations for multi-item quote testing');
-
   const selectedConfigurations = [];
   for (const [index, quantityValue] of [[0, 2], [1, 1]]) {
-    const configuration = configurations.nth(index);
-    const variationId = positiveInteger(await configuration.getAttribute('data-variation-id'), `Product EN configuration ${index + 1} variationId`);
-    const add = configuration.locator('[data-rosa-add-to-quote]');
-    const quantity = configuration.locator('input[data-rosa-quote-quantity]');
-    assert.equal(await add.count(), 1, `Product EN configuration ${index + 1} must expose one Add to Quote control`);
-    assert.equal(await quantity.count(), 1, `Product EN configuration ${index + 1} must expose one quantity control`);
-    const productId = positiveInteger(await add.getAttribute('data-product-id'), `Product EN configuration ${index + 1} productId`);
-    assert.equal(positiveInteger(await add.getAttribute('data-variation-id'), `Product EN configuration ${index + 1} button variationId`), variationId, `Product EN configuration ${index + 1} button must preserve exact variation identity`);
-    const sku = ((await add.getAttribute('data-sku')) || '').trim();
-    assert.ok(sku.length > 0, `Product EN configuration ${index + 1} Add to Quote control must expose exact SKU`);
-    const renderedSku = ((await configuration.locator('dl dd').first().textContent()) || '').trim();
-    assert.equal(sku, renderedSku, `Product EN configuration ${index + 1} Add to Quote SKU must match rendered Woo SKU`);
-
-    await quantity.fill(String(quantityValue));
-    await add.click();
-    selectedConfigurations.push({ productId, variationId, sku, quantity: quantityValue });
+    const selection = await selectSummaryQuoteIdentity(page, index, `Product EN configuration ${index + 1}`);
+    await selection.quantity.fill(String(quantityValue));
+    await selection.add.click();
+    selectedConfigurations.push({ productId: selection.productId, variationId: selection.variationId, sku: selection.sku, quantity: quantityValue });
   }
 
   await page.waitForFunction(() => window.RosaQuoteBasket.getState().items.length === 2);
-  state = await page.evaluate(() => window.RosaQuoteBasket.getState());
+  let state = await page.evaluate(() => window.RosaQuoteBasket.getState());
   assertQuoteState(state, 'Product EN multi-configuration state');
   assert.equal(state.items.length, 2, 'Product EN must support two distinct configuration quote lines');
   for (const expected of selectedConfigurations) {
@@ -238,25 +201,28 @@ try {
   assert.equal(await readCount(page, 'Product AR'), 3, 'Product AR must preserve quote-count state across locale navigation');
   state = await page.evaluate(() => window.RosaQuoteBasket.getState());
   assert.equal(state.items.length, 2, 'Product AR must preserve both selected configuration lines');
-  const arConfiguration = page.locator('.rosa-product-detail__configuration[data-variation-id]').first();
-  const arAdd = arConfiguration.locator('[data-rosa-add-to-quote]');
+  const arAdd = page.locator('.rosa-product-detail__quote-form [data-rosa-add-to-quote]').first();
   const productArAddText = ((await arAdd.textContent()) || '').trim();
   assert.match(productArAddText, /[\u0600-\u06ff]/, 'Product AR Add to Quote control must expose Arabic copy');
-  await arAdd.click();
-  await assertFeedback(page, 'ar', 'Product AR');
 
   await page.setViewportSize({ width: 390, height: 844 });
   await load(page, '/shop/', 'Shop EN mobile');
   const mobileCard = page.locator('.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)').first();
-  await assertTouchTarget(mobileCard.locator('[data-rosa-add-to-quote]'), 'Shop EN mobile Add to Quote');
-  await assertTouchTarget(mobileCard.locator('input[data-rosa-quote-quantity]'), 'Shop EN mobile quote quantity');
+  assert.equal(await mobileCard.locator(listingQuoteUi).count(), 0, 'Shop EN mobile cards must remain navigation-only');
+  await assertTouchTarget(mobileCard.locator('.rosa-preview-product__action'), 'Shop EN mobile View Details');
 
-  const storedState = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), storageKey));
-  assertQuoteState(storedState, 'persisted Batch 8 quote state');
-  assert.deepEqual(forbiddenRequests, [], 'Add to Quote interactions must not call Woo Cart, Checkout or Orders endpoints');
-  assert.deepEqual(browserErrors, [], 'Add to Quote interaction contract must not emit browser errors');
+  await load(page, `/product/${productSlug}/`, 'Product EN mobile');
+  const mobileQuoteForm = page.locator('.rosa-product-detail__quote-form[data-rosa-quote-item]').first();
+  await assertTouchTarget(mobileQuoteForm.locator('[data-rosa-add-to-quote]'), 'Product EN mobile Add to Quote');
+  await assertTouchTarget(mobileQuoteForm.locator('input[data-rosa-quote-quantity]'), 'Product EN mobile quote quantity');
 
-  process.stdout.write('PASS: Shop/Product EN/AR expose exact Woo-backed Add to Quote selection, quantity, live count and accessible feedback while preserving multi-configuration state without Woo Cart/Checkout/Orders or pricing dependencies\n');
+  const storedRaw = await page.evaluate((key) => localStorage.getItem(key), storageKey);
+  assert.ok(storedRaw, 'Product Detail quote state must remain persisted');
+  assertQuoteState(JSON.parse(storedRaw), 'persisted Product Detail quote state');
+  assert.deepEqual(forbiddenRequests, [], 'Product Detail Add to Quote interactions must not call Woo Cart, Checkout or Orders endpoints');
+  assert.deepEqual(browserErrors, [], 'Catalogue navigation/Product Detail quote contract must not emit browser errors');
+
+  process.stdout.write('PASS: Home/Shop cards navigate to Product Detail only, while Product Detail retains exact Woo-backed configuration, quantity and Add to Quote behavior without Woo Cart/Checkout/Orders\n');
 } finally {
   await context.close();
   await browser.close();
