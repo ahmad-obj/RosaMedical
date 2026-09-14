@@ -68,6 +68,86 @@ function rosa_preview_media_id(string $key): int {
     $media = get_option(ROSA_PREVIEW_MEDIA_OPTION, []);
     return is_array($media) && isset($media[$key]) ? max(0, (int) $media[$key]) : 0;
 }
+function rosa_preview_curated_media_candidates(string $slot): array {
+    $media = [
+        'home-hero-01-desktop' => [
+            'assets/media/curated/latest-home/hero-01.webp',
+            'assets/media/curated/home-hero-01.webp',
+        ],
+        'home-hero-01-mobile' => [
+            'assets/media/curated/latest-home/hero-01.webp',
+            'assets/media/curated/home-hero-01.webp',
+        ],
+        'home-hero-02-desktop' => [
+            'assets/media/curated/latest-home/hero-02.webp',
+            'assets/media/curated/home-who-01.webp',
+        ],
+        'home-hero-02-mobile' => [
+            'assets/media/curated/latest-home/hero-02.webp',
+            'assets/media/curated/home-who-01.webp',
+        ],
+        'home-hero-03-desktop' => [
+            'assets/media/curated/latest-home/hero-03.webp',
+            'assets/media/curated/home-feature-01.webp',
+        ],
+        'home-hero-03-mobile' => [
+            'assets/media/curated/latest-home/hero-03.webp',
+            'assets/media/curated/home-feature-01.webp',
+        ],
+        'home-hero-04-desktop' => [
+            'assets/media/curated/latest-home/hero-04.webp',
+            'assets/media/curated/home-why-01.webp',
+        ],
+        'home-hero-04-mobile' => [
+            'assets/media/curated/latest-home/hero-04.webp',
+            'assets/media/curated/home-why-01.webp',
+        ],
+        'home-specialty-plastic-surgery' => [
+            'assets/media/curated/latest-home/specialty-plastic-surgery.webp',
+            'assets/media/curated/about-procurement.jpg',
+        ],
+        'home-specialty-orthopedics' => [
+            'assets/media/curated/latest-home/specialty-orthopedics.webp',
+            'assets/media/curated/about-hospitals.jpg',
+        ],
+        'home-specialty-maxillofacial' => [
+            'assets/media/curated/latest-home/specialty-maxillofacial.webp',
+            'assets/media/curated/home-evidence-01.jpg',
+        ],
+        'home-specialty-orthodontics' => [
+            'assets/media/curated/latest-home/specialty-orthodontics.webp',
+            'assets/media/curated/home-promo-04.jpg',
+        ],
+        'home-specialty-spine' => [
+            'assets/media/curated/latest-home/specialty-spine.webp',
+            'assets/media/curated/about-international.webp',
+        ],
+        'home-securing-confidence' => [
+            'assets/media/curated/latest-home/securing-confidence.webp',
+            'assets/media/curated/prefooter-person-01.webp',
+        ],
+    ];
+
+    return $media[$slot] ?? [];
+}
+
+function rosa_preview_curated_media_url(string $slot): string {
+    if (! function_exists('get_stylesheet_directory') || ! function_exists('get_stylesheet_directory_uri')) {
+        return '';
+    }
+
+    $themeDir = trailingslashit(get_stylesheet_directory());
+    $themeUri = trailingslashit(get_stylesheet_directory_uri());
+
+    foreach (rosa_preview_curated_media_candidates($slot) as $path) {
+        $relative = ltrim((string) $path, '/');
+        if ($relative !== '' && is_file($themeDir . $relative)) {
+            return $themeUri . $relative;
+        }
+    }
+
+    return '';
+}
 function rosa_preview_copy(string $key, ?string $locale = null): string {
     $locale = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
     $copy = [
