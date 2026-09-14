@@ -1,0 +1,353 @@
+/* Approved 2026-09-14 visual restoration: old Rosa banners, full-color catalogues, neutral photo overlays. */
+
+.public-hero-carousel,
+.rosa-preview-hero[data-restored-home-hero] {
+  position: relative;
+  min-height: clamp(30rem, 52vw, 42.5rem);
+  overflow: hidden;
+  background: #111317;
+  color: #fff;
+}
+
+.public-hero-carousel__slide,
+.rosa-preview-hero[data-restored-home-hero] [data-rosa-hero-slide] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 560ms ease;
+}
+
+.public-hero-carousel__slide.is-active,
+.rosa-preview-hero[data-restored-home-hero] [data-rosa-hero-slide].is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.public-hero-carousel__media,
+.rosa-restored-hero__media,
+.public-hero-carousel__picture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.public-hero-carousel__media img,
+.rosa-restored-hero__media img,
+.public-hero-carousel__picture img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: var(--hero-desktop-focal, 50% 50%);
+}
+
+.public-hero-carousel__overlay,
+.rosa-restored-hero__overlay {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(10 12 16 / .74) 0%, rgb(10 12 16 / .48) 34%, rgb(10 12 16 / .14) 70%, rgb(10 12 16 / .08) 100%);
+}
+
+.public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__overlay {
+  background: linear-gradient(270deg, rgb(10 12 16 / .74) 0%, rgb(10 12 16 / .48) 34%, rgb(10 12 16 / .14) 70%, rgb(10 12 16 / .08) 100%);
+}
+
+.public-hero-carousel__content,
+.rosa-preview-hero[data-restored-home-hero] .rosa-preview-hero__inner {
+  position: relative;
+  z-index: 3;
+  min-height: inherit;
+}
+
+.public-hero-carousel__content {
+  width: min(calc(100% - 2 * clamp(1.25rem, 4vw, 5rem)), 80rem);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+}
+
+.public-hero-carousel__copy {
+  max-width: 39rem;
+  padding-block: clamp(5rem, 10vw, 8rem);
+}
+
+.public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__content {
+  justify-content: flex-end;
+}
+
+.public-hero-carousel__title {
+  margin: .45rem 0 1rem;
+  color: #fff;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: .98;
+}
+
+.public-hero-carousel__copy-text {
+  max-width: 36rem;
+  margin: 0;
+  color: rgb(255 255 255 / .88);
+}
+
+.public-hero-carousel__dots,
+.rosa-restored-hero__dots {
+  position: absolute;
+  z-index: 5;
+  inset-inline: 0;
+  bottom: clamp(1rem, 2.4vw, 1.75rem);
+  display: flex;
+  justify-content: center;
+  gap: .55rem;
+}
+
+.public-hero-carousel__dot,
+.rosa-restored-hero__dot {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.public-hero-carousel__dot::before,
+.rosa-restored-hero__dot::before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: auto;
+  border-radius: 50%;
+  background: rgb(255 255 255 / .45);
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.public-hero-carousel__dot[aria-current="true"]::before,
+.rosa-restored-hero__dot[aria-current="true"]::before {
+  background: #fff;
+  transform: scale(1.35);
+}
+
+/* Catalogue restoration: the five original covers stay in one row on desktop/tablet and retain full color. */
+.home-family-gallery-shell {
+  position: relative;
+}
+
+.home-family-gallery {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-family-gallery__panel {
+  min-width: 0;
+}
+
+.home-family-gallery__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-family-gallery__media--catalogue-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 560 / 793;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #d7d7d1);
+  background: #fff;
+  box-shadow: 0 .35rem 1.1rem rgb(17 24 39 / .05);
+  transition: border-color 460ms cubic-bezier(.22,.61,.36,1), box-shadow 680ms cubic-bezier(.22,.61,.36,1);
+}
+
+.home-family-gallery__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: none !important;
+  transform: scale(1);
+  transition: transform 680ms cubic-bezier(.16,1,.3,1), filter 480ms ease;
+}
+
+@media (min-width: 40.001rem) {
+  .home-family-gallery {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(.5rem, 1.1vw, 1rem);
+  }
+
+  .home-family-gallery__mobile-controls {
+    display: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .home-family-gallery__link:hover .home-family-gallery__image,
+  .home-family-gallery__link:focus-visible .home-family-gallery__image,
+  .home-family-gallery__link:focus-within .home-family-gallery__image {
+    transform: scale(1.14);
+    filter: contrast(1.035) saturate(.985) !important;
+  }
+
+  .home-family-gallery__link:hover .home-family-gallery__media--catalogue-cover,
+  .home-family-gallery__link:focus-visible .home-family-gallery__media--catalogue-cover,
+  .home-family-gallery__link:focus-within .home-family-gallery__media--catalogue-cover {
+    border-color: #9d9d98;
+    box-shadow: 0 .85rem 2.1rem rgb(17 24 39 / .15);
+  }
+}
+
+/* About + Contact top banners: photograph first, neutral contrast only. */
+.rosa-preview-page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #111317 !important;
+  background-image: none !important;
+}
+
+.rosa-preview-page-hero__media {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rosa-preview-page-hero__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rosa-preview-page-hero:not(.rosa-preview-page-hero--contact) .rosa-preview-page-hero__media img {
+  object-position: 68% 53%;
+}
+
+.rosa-preview-page-hero--contact .rosa-preview-page-hero__media img {
+  object-position: 48% 52%;
+}
+
+.rosa-preview-page-hero::after {
+  position: absolute !important;
+  z-index: 1;
+  inset: 0;
+  content: "" !important;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(10 12 16 / .68), rgb(10 12 16 / .38) 48%, rgb(10 12 16 / .22)) !important;
+}
+
+.rosa-preview-page-hero > .rosa-preview-rail {
+  position: relative;
+  z-index: 2;
+}
+
+/* Remove reddish image washes while preserving readable neutral contrast. */
+.rosa-preview-hero > .rosa-preview-media-slot::after,
+.rosa-preview-feature > .rosa-preview-media-slot::after,
+.rosa-preview-evidence > .rosa-preview-media-slot::after,
+.rosa-preview-about-feature__media::after,
+.rosa-preview-about-evidence__media::after {
+  background: linear-gradient(135deg, rgb(12 14 18 / .72), rgb(12 14 18 / .30)) !important;
+}
+
+/* The catalogue covers are exempt from the site's editorial grayscale language. */
+.home-family-gallery__media--catalogue-cover .rosa-preview-media-slot__image--curated-fallback,
+.home-family-gallery__media--catalogue-cover img {
+  filter: none !important;
+}
+
+@media (max-width: 40rem) {
+  .public-hero-carousel,
+  .rosa-preview-hero[data-restored-home-hero] {
+    min-height: 34rem;
+  }
+
+  .public-hero-carousel__media img,
+  .rosa-restored-hero__media img,
+  .public-hero-carousel__picture img {
+    object-position: var(--hero-mobile-focal, 50% 50%);
+  }
+
+  .public-hero-carousel__overlay,
+  .public-hero-carousel__slide[data-copy-side="right"] .public-hero-carousel__overlay,
+  .rosa-restored-hero__overlay {
+    background: linear-gradient(180deg, rgb(10 12 16 / .58) 0%, rgb(10 12 16 / .22) 34%, rgb(10 12 16 / .70) 100%);
+  }
+
+  .public-hero-carousel__content {
+    align-items: flex-end;
+  }
+
+  .public-hero-carousel__copy {
+    padding-block: 5rem 4.5rem;
+  }
+
+  .home-family-gallery__mobile-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: .45rem;
+    margin-bottom: .6rem;
+  }
+
+  .home-family-gallery__arrow {
+    min-width: 44px;
+    width: 44px;
+    min-height: 44px;
+    height: 44px;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--color-border, #d7d7d1);
+    background: #fff;
+    color: #191917;
+    cursor: pointer;
+  }
+
+  .home-family-gallery {
+    display: flex;
+    gap: .85rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    overscroll-behavior-inline: contain;
+    padding-bottom: .65rem;
+  }
+
+  .home-family-gallery__panel {
+    flex: 0 0 min(72vw, 17rem);
+    scroll-snap-align: start;
+  }
+
+  .rosa-preview-page-hero:not(.rosa-preview-page-hero--contact) .rosa-preview-page-hero__media img {
+    object-position: 78% 52%;
+  }
+
+  .rosa-preview-page-hero--contact .rosa-preview-page-hero__media img {
+    object-position: 50% 52%;
+  }
+
+  .rosa-preview-page-hero::after {
+    background: linear-gradient(180deg, rgb(10 12 16 / .48), rgb(10 12 16 / .64)) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-hero-carousel__slide,
+  .rosa-preview-hero[data-restored-home-hero] [data-rosa-hero-slide],
+  .home-family-gallery__media--catalogue-cover,
+  .home-family-gallery__image {
+    transition: none !important;
+  }
+
+  .home-family-gallery__image {
+    transform: none !important;
+  }
+}
