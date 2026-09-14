@@ -38,15 +38,12 @@ $slides = [
 ?>
 <section class="public-hero public-hero-carousel" data-section="home-hero" data-public-hero-page="home" data-active-slide="precision-instruments" data-latest-rosa-home-hero aria-roledescription="carousel" aria-labelledby="home-title">
     <?php foreach ($slides as $index => $slide) :
-        $slideNumber = str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT);
-        $desktopSlot = 'home-hero-' . $slideNumber . '-desktop';
-        $mobileSlot = 'home-hero-' . $slideNumber . '-mobile';
         $desktopUrl = $slide['desktop'] > 0
             ? wp_get_attachment_image_url($slide['desktop'], 'full')
-            : rosa_preview_curated_media_url($desktopSlot);
+            : rosa_preview_reference_hero_url($index + 1, 'desktop');
         $mobileUrl = $slide['mobile'] > 0
             ? wp_get_attachment_image_url($slide['mobile'], 'full')
-            : rosa_preview_curated_media_url($mobileSlot);
+            : rosa_preview_reference_hero_url($index + 1, 'mobile');
         if (! is_string($mobileUrl) || $mobileUrl === '') {
             $mobileUrl = $desktopUrl;
         }
