@@ -3,14 +3,13 @@ if (! defined('ABSPATH')) { exit; }
 $sectionArgs = isset($args) && is_array($args) ? $args : [];
 $locale = (string)($sectionArgs['locale'] ?? rosa_preview_locale());
 $title = rosa_preview_section_value($sectionArgs, 'home', 'family_title', $locale, $locale === 'ar' ? 'مجموعة منتجاتنا' : 'Our range of products');
-$upload = wp_upload_dir();
-$coverBase = empty($upload['error'])
-    ? trailingslashit((string)$upload['baseurl']) . 'rosa-reference/homepage-covers/'
+$coverBase = function_exists('get_stylesheet_directory_uri')
+    ? trailingslashit(get_stylesheet_directory_uri()) . 'assets/media/homepage-covers/'
     : '';
 $families = [
     ['slug' => 'scissors', 'name' => $locale === 'ar' ? 'المقصات' : 'Scissors', 'cover' => 'scissors-family-cover-full.svg', 'pdf' => 'catalogue-pdf-scissors'],
     ['slug' => 'cutters', 'name' => $locale === 'ar' ? 'القواطع' : 'Cutters', 'cover' => 'cutters-family-cover-full.svg', 'pdf' => 'catalogue-pdf-cutters'],
-    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover.webp', 'pdf' => 'catalogue-pdf-punches'],
+    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover-full.svg', 'pdf' => 'catalogue-pdf-punches'],
     ['slug' => 'chisels', 'name' => $locale === 'ar' ? 'الأزاميل' : 'Chisels', 'cover' => 'chisels-family-cover-full.svg', 'pdf' => 'catalogue-pdf-chisels'],
     ['slug' => 'knives', 'name' => $locale === 'ar' ? 'السكاكين' : 'Knives', 'cover' => 'knives-family-cover-full.svg', 'pdf' => 'catalogue-pdf-knives'],
 ];
