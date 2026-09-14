@@ -9,13 +9,13 @@ $coverBase = function_exists('get_stylesheet_directory_uri')
 $families = [
     ['slug' => 'scissors', 'name' => $locale === 'ar' ? 'المقصات' : 'Scissors', 'cover' => 'scissors-family-cover-full.svg', 'pdf' => 'catalogue-pdf-scissors'],
     ['slug' => 'cutters', 'name' => $locale === 'ar' ? 'القواطع' : 'Cutters', 'cover' => 'cutters-family-cover-full.svg', 'pdf' => 'catalogue-pdf-cutters'],
-    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover-full.svg', 'pdf' => 'catalogue-pdf-punches'],
+    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover.webp', 'pdf' => 'catalogue-pdf-punches'],
     ['slug' => 'chisels', 'name' => $locale === 'ar' ? 'الأزاميل' : 'Chisels', 'cover' => 'chisels-family-cover-full.svg', 'pdf' => 'catalogue-pdf-chisels'],
     ['slug' => 'knives', 'name' => $locale === 'ar' ? 'السكاكين' : 'Knives', 'cover' => 'knives-family-cover-full.svg', 'pdf' => 'catalogue-pdf-knives'],
 ];
 ?>
 <section class="section home-product-range" data-section="family-discovery" aria-labelledby="family-discovery-title">
-    <div class="container container--wide">
+    <div class="rosa-preview-rail home-product-range__rail">
         <h2 id="family-discovery-title" class="home-compact-section-title home-compact-section-title--center"><?php echo esc_html($title); ?></h2>
         <div class="home-family-gallery-shell">
             <div class="home-family-gallery__mobile-controls" aria-label="<?php echo esc_attr($locale === 'ar' ? 'التنقل بين عائلات المنتجات' : 'Product family navigation'); ?>">
@@ -34,7 +34,7 @@ $families = [
                 <li class="home-family-gallery__panel" data-family-panel data-family="<?php echo esc_attr($family['slug']); ?>">
                     <a class="home-family-gallery__link" href="<?php echo esc_url($pdfUrl); ?>" target="_blank" rel="noreferrer" aria-label="<?php echo esc_attr($locale === 'ar' ? 'فتح كتالوج ' . $family['name'] : 'Open ' . $family['name'] . ' catalogue'); ?>">
                         <div class="home-family-gallery__media home-family-gallery__media--catalogue-cover">
-                            <?php if ($coverUrl !== '') : ?><img class="home-family-gallery__image" src="<?php echo esc_url($coverUrl); ?>" alt="<?php echo esc_attr($family['name']); ?>" width="560" height="793" loading="lazy" decoding="async"><?php endif; ?>
+                            <?php if ($coverUrl !== '') : ?><img class="home-family-gallery__image" src="<?php echo esc_url($coverUrl); ?>" alt="<?php echo esc_attr($family['name']); ?>" width="560" height="786" loading="lazy" decoding="async"><?php endif; ?>
                         </div>
                     </a>
                 </li>
