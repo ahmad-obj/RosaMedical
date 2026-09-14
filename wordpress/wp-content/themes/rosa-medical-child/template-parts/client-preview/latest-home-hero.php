@@ -38,8 +38,18 @@ $slides = [
 ?>
 <section class="public-hero public-hero-carousel" data-section="home-hero" data-public-hero-page="home" data-active-slide="precision-instruments" data-latest-rosa-home-hero aria-roledescription="carousel" aria-labelledby="home-title">
     <?php foreach ($slides as $index => $slide) :
-        $desktopUrl = $slide['desktop'] > 0 ? wp_get_attachment_image_url($slide['desktop'], 'full') : '';
-        $mobileUrl = $slide['mobile'] > 0 ? wp_get_attachment_image_url($slide['mobile'], 'full') : $desktopUrl;
+        $slideNumber = str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT);
+        $desktopSlot = 'home-hero-' . $slideNumber . '-desktop';
+        $mobileSlot = 'home-hero-' . $slideNumber . '-mobile';
+        $desktopUrl = $slide['desktop'] > 0
+            ? wp_get_attachment_image_url($slide['desktop'], 'full')
+            : rosa_preview_curated_media_url($desktopSlot);
+        $mobileUrl = $slide['mobile'] > 0
+            ? wp_get_attachment_image_url($slide['mobile'], 'full')
+            : rosa_preview_curated_media_url($mobileSlot);
+        if (! is_string($mobileUrl) || $mobileUrl === '') {
+            $mobileUrl = $desktopUrl;
+        }
         $active = $index === 0;
     ?>
     <div class="public-hero-carousel__slide<?php echo $active ? ' is-active' : ''; ?>" data-rosa-hero-slide data-slide-index="<?php echo esc_attr((string)$index); ?>" data-slide-id="<?php echo esc_attr($slide['id']); ?>" data-copy-side="<?php echo esc_attr($slide['copy_side']); ?>" data-tone="dark" data-mobile-presentation="<?php echo esc_attr($slide['mobile_kind']); ?>" aria-roledescription="slide" aria-label="<?php echo esc_attr(($index + 1) . ' of 4'); ?>" aria-hidden="<?php echo $active ? 'false' : 'true'; ?>" style="--hero-desktop-focal:<?php echo esc_attr($slide['desktop_focal']); ?>;--hero-mobile-focal:<?php echo esc_attr($slide['mobile_focal']); ?>;">
