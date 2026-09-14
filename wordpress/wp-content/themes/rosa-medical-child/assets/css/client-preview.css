@@ -404,3 +404,15 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0ms !important; animation-duration: 0ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* Curated editorial fallbacks: keep the client-requested grey visual language
+   without constraining images explicitly chosen later in WordPress/Elementor. */
+.rosa-preview-media-slot__image--curated-fallback {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  filter: grayscale(.82) saturate(.42) contrast(1.04) brightness(.96);
+}
+

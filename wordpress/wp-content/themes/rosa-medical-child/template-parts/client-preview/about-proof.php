@@ -13,11 +13,11 @@ $proof = [
 <section class="rosa-preview-about-proof-shell" data-preview-family-strip data-preview-proof-role>
   <div class="rosa-preview-about-evidence" data-preview-about-evidence>
     <div class="rosa-preview-about-evidence__media" aria-hidden="true">
-      <?php if ($imageId > 0) : ?>
-        <?php echo wp_get_attachment_image($imageId, 'large'); ?>
-      <?php else : ?>
-        <div class="rosa-preview-media-slot"><span>ROSA</span></div>
-      <?php endif; ?>
+      <?php get_template_part('template-parts/client-preview/media-slot', null, [
+        'slot' => 'about_international',
+        'label' => $locale === 'ar' ? 'دعم التوريد من روزا' : 'Rosa procurement support',
+        'image_id' => $imageId,
+      ]); ?>
     </div>
     <div class="rosa-preview-rail rosa-preview-about-evidence__content">
       <p class="rosa-preview-eyebrow rosa-preview-eyebrow--light"><?php echo esc_html($locale === 'ar' ? 'دعم واضح' : 'Clear support'); ?></p>

@@ -26,6 +26,7 @@ final class MediaField
             'about' => [
                 'about_procurement' => 'Who We Are image',
                 'about_hospitals' => 'Feature banner image',
+                'about_international' => 'Proof image',
             ],
             'site' => [
                 'logo' => 'Header logo',

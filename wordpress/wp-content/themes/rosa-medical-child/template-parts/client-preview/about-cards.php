@@ -31,11 +31,14 @@ $link = home_url($locale==='ar'?'/ar/shop/':'/shop/');
       <article class="rosa-preview-about-cards__card<?php echo $index === 2 ? ' rosa-preview-about-cards__card--accent' : ''; ?>">
         <?php if ($index < 2) : ?>
           <div class="rosa-preview-about-cards__media" aria-hidden="true">
-            <?php if ($imageId > 0) : ?>
-              <?php echo wp_get_attachment_image($imageId, 'large'); ?>
-            <?php else : ?>
-              <div class="rosa-preview-media-slot"><span>ROSA</span></div>
-            <?php endif; ?>
+            <?php
+              $mediaSlot = $index === 0 ? 'about_hospitals' : 'about_international';
+              get_template_part('template-parts/client-preview/media-slot', null, [
+                  'slot' => $mediaSlot,
+                  'label' => $title,
+                  'image_id' => $imageId,
+              ]);
+            ?>
           </div>
         <?php endif; ?>
         <div class="rosa-preview-about-cards__body">
