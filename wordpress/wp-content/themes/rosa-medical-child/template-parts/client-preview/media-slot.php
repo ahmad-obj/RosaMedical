@@ -27,5 +27,9 @@ $fallbackMedia = [
 $fallbackUrl = isset($fallbackMedia[$slot]) && function_exists('get_stylesheet_directory_uri')
     ? trailingslashit(get_stylesheet_directory_uri()) . $fallbackMedia[$slot]
     : '';
+
+if ($fallbackUrl === '' && function_exists('rosa_preview_curated_media_url')) {
+    $fallbackUrl = rosa_preview_curated_media_url($slot);
+}
 ?>
 <div class="rosa-preview-media-slot<?php echo $class !== '' ? ' ' . esc_attr($class) : ''; ?>" data-media-slot="<?php echo esc_attr($slot); ?>" role="img" aria-label="<?php echo esc_attr($label); ?>"><?php if ($imageId > 0) : ?><?php echo wp_get_attachment_image($imageId, 'full', false, ['class' => 'rosa-preview-media-slot__image', 'alt' => '']); ?><?php elseif ($fallbackUrl !== '') : ?><img class="rosa-preview-media-slot__image rosa-preview-media-slot__image--curated-fallback" src="<?php echo esc_url($fallbackUrl); ?>" alt="" loading="<?php echo $slot === 'home-hero-01' ? 'eager' : 'lazy'; ?>" decoding="async"<?php echo $slot === 'home-hero-01' ? ' fetchpriority="high"' : ''; ?>><?php else : ?><span aria-hidden="true">ROSA</span><?php endif; ?></div>
