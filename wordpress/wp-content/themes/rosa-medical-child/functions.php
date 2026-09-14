@@ -83,6 +83,12 @@ add_action('wp_enqueue_scripts', static function (): void {
     if ($isPreviewPage || $isPreviewCatalogue) {
         wp_enqueue_style('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/css/client-preview.css', ['rosa-medical-base'], $version);
         wp_enqueue_style('rosa-live-visual-recovery', get_stylesheet_directory_uri() . '/assets/css/live-visual-recovery.css', ['rosa-client-preview'], $version);
+        wp_enqueue_style(
+            'rosa-home-visual-restoration',
+            get_stylesheet_directory_uri() . '/assets/css/home-visual-restoration.css',
+            ['rosa-live-visual-recovery'],
+            $version
+        );
         wp_add_inline_style(
             'rosa-live-visual-recovery',
             '.rosa-preview-contact__message-card .rosa-preview-contact-form input:focus-visible,'
@@ -210,6 +216,13 @@ add_action('wp_enqueue_scripts', static function (): void {
         wp_enqueue_script('rosa-quote-basket', get_stylesheet_directory_uri() . '/assets/js/quote-basket.js', [], $version, true);
         wp_enqueue_script('rosa-quote-selection', get_stylesheet_directory_uri() . '/assets/js/quote-selection.js', ['rosa-quote-basket'], $version, true);
         wp_enqueue_script('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/js/client-preview.js', [], $version, true);
+        wp_enqueue_script(
+            'rosa-home-visual-restoration-js',
+            get_stylesheet_directory_uri() . '/assets/js/home-visual-restoration.js',
+            ['rosa-client-preview'],
+            $version,
+            true
+        );
     }
 });
 
