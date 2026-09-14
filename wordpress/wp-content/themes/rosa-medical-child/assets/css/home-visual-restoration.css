@@ -455,41 +455,6 @@
     padding-block: 5rem 4.5rem;
   }
 
-  .home-family-gallery__mobile-controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: .45rem;
-    margin-bottom: .6rem;
-  }
-
-  .home-family-gallery__arrow {
-    min-width: 44px;
-    width: 44px;
-    min-height: 44px;
-    height: 44px;
-    display: inline-grid;
-    place-items: center;
-    border: 1px solid var(--color-border, #d7d7d1);
-    background: #fff;
-    color: #191917;
-    cursor: pointer;
-  }
-
-  .home-family-gallery {
-    display: flex;
-    gap: .85rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
-    overscroll-behavior-inline: contain;
-    padding-bottom: .65rem;
-  }
-
-  .home-family-gallery__panel {
-    flex: 0 0 min(72vw, 17rem);
-    scroll-snap-align: start;
-  }
-
   .rosa-preview-page-hero:not(.rosa-preview-page-hero--contact) .rosa-preview-page-hero__media img {
     object-position: 78% 52%;
   }
