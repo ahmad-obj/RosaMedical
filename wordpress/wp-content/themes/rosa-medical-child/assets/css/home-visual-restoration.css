@@ -264,6 +264,10 @@
 }
 
 /* Remove reddish image washes while preserving readable neutral contrast. */
+.rosa-preview-media-slot::after {
+  background: linear-gradient(135deg, rgb(31 41 55 / .08), rgb(31 41 55 / .02)) !important;
+}
+
 .rosa-preview-hero > .rosa-preview-media-slot::after,
 .rosa-preview-feature > .rosa-preview-media-slot::after,
 .rosa-preview-evidence > .rosa-preview-media-slot::after,
