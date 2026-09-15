@@ -9,30 +9,32 @@ $cards = [
         $c('card_1_body','Five focused catalogue families for instrument discovery.','خمس فئات كتالوج رئيسية لاكتشاف الأدوات.'),
         $c('card_1_cta','Browse products','تصفح المنتجات'),
         rosa_preview_media_id('about_hospitals'),
+        'about-product-families',
     ],
     [
         $c('card_2_title','Catalogue Support','دعم الكتالوج'),
         $c('card_2_body','Use family catalogues and product references to identify requirements.','استخدم الكتالوجات والمراجع لتحديد المتطلبات.'),
         $c('card_2_cta','View shop','عرض المنتجات'),
         rosa_preview_media_id('about_international'),
+        'about-catalogue-support',
     ],
     [
         $c('card_3_title','Quotation Support','دعم عروض الأسعار'),
         $c('card_3_body','Contact Rosa with the required instrument/reference for procurement assistance.','تواصل مع روزا بالمراجع المطلوبة للحصول على مساعدة التوريد.'),
         $c('card_3_cta','Contact us','اتصل بنا'),
         0,
+        '',
     ],
 ];
 $link = home_url($locale==='ar'?'/ar/shop/':'/shop/');
 ?>
 <section class="rosa-preview-about-cards" data-preview-about-cards>
   <div class="rosa-preview-rail rosa-preview-about-cards__grid">
-    <?php foreach($cards as $index => [$title,$body,$cta,$imageId]): ?>
+    <?php foreach($cards as $index => [$title,$body,$cta,$imageId,$mediaSlot]): ?>
       <article class="rosa-preview-about-cards__card<?php echo $index === 2 ? ' rosa-preview-about-cards__card--accent' : ''; ?>">
-        <?php if ($index < 2) : ?>
+        <?php if ($mediaSlot !== '') : ?>
           <div class="rosa-preview-about-cards__media" aria-hidden="true">
             <?php
-              $mediaSlot = $index === 0 ? 'about_hospitals' : 'about_international';
               get_template_part('template-parts/client-preview/media-slot', null, [
                   'slot' => $mediaSlot,
                   'label' => $title,
