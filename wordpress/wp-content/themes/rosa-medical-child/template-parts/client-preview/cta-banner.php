@@ -23,8 +23,5 @@ $submitLabel = $content('newsletter_submit_label', 'Sign Up', 'اشترك');
             </label>
             <button class="rosa-preview-newsletter__submit" type="submit"><span aria-hidden="true">✉</span><span><?php echo esc_html($submitLabel); ?></span></button>
         </form>
-        <div class="rosa-preview-newsletter__media">
-            <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'prefooter-person-01', 'label' => $content('newsletter_media_label', 'Rosa Medical updates', 'تحديثات روزا ميديكال')]); ?>
-        </div>
     </div>
 </section>
