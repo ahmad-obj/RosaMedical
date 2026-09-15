@@ -10,6 +10,8 @@ $files = [
     'hero' => $theme . '/template-parts/client-preview/hero.php',
     'latest_hero' => $theme . '/template-parts/client-preview/latest-home-hero.php',
     'page_hero' => $theme . '/template-parts/client-preview/page-hero.php',
+    'latest_comprehensive' => $theme . '/template-parts/client-preview/latest-home-comprehensive.php',
+    'latest_confidence' => $theme . '/template-parts/client-preview/latest-home-confidence.php',
     'about_who' => $theme . '/template-parts/client-preview/about-who.php',
     'about_cards' => $theme . '/template-parts/client-preview/about-cards.php',
     'about_feature' => $theme . '/template-parts/client-preview/about-feature.php',
@@ -65,6 +67,30 @@ if (strpos($source['page_hero'], "'avif'") === false
     || strpos($source['page_hero'], '--page-hero-mobile-focal') === false) {
     fwrite(STDERR, "About/Contact hero does not preserve responsive source and focal metadata\n");
     exit(1);
+}
+
+/* WordPress-selected imagery must not fall back to raw full-size URLs with
+   misleading MIME hints. The shared attachment-data path provides responsive
+   srcset plus intrinsic dimensions, while specialty media uses WordPress image
+   markup directly. */
+if (strpos($source['helpers'], 'function rosa_preview_attachment_image_data') === false) {
+    fwrite(STDERR, "Missing safe responsive attachment-image helper\n");
+    exit(1);
+}
+foreach (['hero', 'latest_hero'] as $name) {
+    if (strpos($source[$name], 'rosa_preview_attachment_image_data') === false
+        || strpos($source[$name], 'srcset=') === false
+        || strpos($source[$name], 'sizes=') === false) {
+        fwrite(STDERR, "Responsive client-selected hero contract missing from {$name}\n");
+        exit(1);
+    }
+}
+foreach (['latest_comprehensive', 'latest_confidence'] as $name) {
+    if (strpos($source[$name], 'wp_get_attachment_image(') === false
+        || strpos($source[$name], "'large'") === false) {
+        fwrite(STDERR, "Responsive WordPress attachment rendering missing from {$name}\n");
+        exit(1);
+    }
 }
 
 /* Known historical stock/temporary attachment IDs must be rejected at render time
