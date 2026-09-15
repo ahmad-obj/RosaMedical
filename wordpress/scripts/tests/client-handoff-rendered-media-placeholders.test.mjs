@@ -15,14 +15,24 @@ const unsafeBrandPattern = /(preview\.themeforest|fullkit\.moxcreative|unsplash|
 const unsafeFilenamePattern = /(home-hero-surgical-instruments|about-procurement|about-hospitals|about-international-buyers|procurement-support|plastic-surgery|orthopedics|maxillofacial|orthodontics|spine|securing-confidence)\.(?:jpe?g|png|webp|gif|svg)/i;
 
 const routes = [
-  { path: '/', expectedNeutralSlots: ['home-hero-01'] },
-  { path: '/ar/', expectedNeutralSlots: ['home-hero-01'] },
-  { path: '/about/', expectedNeutralSlots: ['about_procurement', 'about_hospitals'] },
-  { path: '/ar/about/', expectedNeutralSlots: ['about_procurement', 'about_hospitals'] },
+  { path: '/', requiredImageSelector: '.rosa-preview-hero picture img, [data-latest-rosa-home-hero] picture img' },
+  { path: '/ar/', requiredImageSelector: '.rosa-preview-hero picture img, [data-latest-rosa-home-hero] picture img' },
+  { path: '/about/', requiredImageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img' },
+  { path: '/ar/about/', requiredImageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img' },
+  { path: '/contact/', requiredImageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img' },
+  { path: '/ar/contact/', requiredImageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img' },
   { path: '/shop/' },
   { path: '/ar/shop/' },
   { path: '/product/rosa-foundation-stevens-scissors-regular/' },
   { path: '/ar/product/rosa-foundation-stevens-scissors-regular/' },
+];
+
+const viewports = [
+  { width: 1440, height: 900 },
+  { width: 1024, height: 768 },
+  { width: 768, height: 1024 },
+  { width: 431, height: 932 },
+  { width: 390, height: 844 },
 ];
 
 const browser = await chromium.launch(launchOptions);
@@ -45,7 +55,7 @@ async function inspectRoute(route, viewport) {
   assert.deepEqual(pageErrors, [], `${route.path} raised page errors: ${pageErrors.join(' | ')}`);
   assert.deepEqual(consoleErrors, [], `${route.path} raised console errors: ${consoleErrors.join(' | ')}`);
 
-  const state = await page.evaluate(({ expectedNeutralSlots, requireAnyMediaSlot }) => {
+  const state = await page.evaluate(({ requiredImageSelector }) => {
     const origin = window.location.origin;
     const remoteImages = [];
     const brokenImages = [];
@@ -64,11 +74,12 @@ async function inspectRoute(route, viewport) {
       } catch {
         remoteImages.push(raw);
       }
+
       if (!image.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0) {
         brokenImages.push(resolved);
       }
-      if (/(preview\.themeforest|fullkit\.moxcreative|unsplash|pexels|pixabay|freepik|shutterstock|istock|weberaise)/i.test(resolved)
-          || /(home-hero-surgical-instruments|about-procurement|about-hospitals|about-international-buyers|procurement-support|plastic-surgery|orthopedics|maxillofacial|orthodontics|spine|securing-confidence)\.(?:jpe?g|png|webp|gif|svg)/i.test(resolved)) {
+
+      if (unsafeBrandPattern.test(resolved) || unsafeFilenamePattern.test(resolved)) {
         unsafeImageRefs.push(resolved);
       }
     }
@@ -85,8 +96,7 @@ async function inspectRoute(route, viewport) {
           if (!['data:', 'blob:'].includes(parsed.protocol) && parsed.origin !== origin) {
             remoteBackgrounds.push(parsed.href);
           }
-          if (/(preview\.themeforest|fullkit\.moxcreative|unsplash|pexels|pixabay|freepik|shutterstock|istock|weberaise)/i.test(parsed.href)
-              || /(home-hero-surgical-instruments|about-procurement|about-hospitals|about-international-buyers|procurement-support|plastic-surgery|orthopedics|maxillofacial|orthodontics|spine|securing-confidence)\.(?:jpe?g|png|webp|gif|svg)/i.test(parsed.href)) {
+          if (unsafeBrandPattern.test(parsed.href) || unsafeFilenamePattern.test(parsed.href)) {
             unsafeBackgrounds.push(parsed.href);
           }
         } catch {
@@ -112,18 +122,31 @@ async function inspectRoute(route, viewport) {
           opacity: Number.parseFloat(style.opacity || '1'),
           innerImageCount: element.querySelectorAll('img').length,
           innerImageAlts: [...element.querySelectorAll('img')].map((img) => img.getAttribute('alt') ?? ''),
-          text: (element.textContent || '').trim(),
         };
       })
-      .filter((slot) => slot.display !== 'none' && slot.visibility !== 'hidden' && slot.opacity > 0 && slot.width > 0 && slot.height > 0);
+      .filter((slot) => slot.display !== 'none'
+        && slot.visibility !== 'hidden'
+        && slot.opacity > 0
+        && slot.width > 0
+        && slot.height > 0);
 
-    const neutralSlots = {};
-    for (const slotName of expectedNeutralSlots) {
-      const element = document.querySelector(`[data-media-slot="${CSS.escape(slotName)}"]`);
-      neutralSlots[slotName] = element ? {
-        innerImageCount: element.querySelectorAll('img').length,
-        text: (element.textContent || '').trim(),
-      } : null;
+    let requiredImage = null;
+    if (requiredImageSelector) {
+      const image = document.querySelector(requiredImageSelector);
+      if (image instanceof HTMLImageElement) {
+        const rect = image.getBoundingClientRect();
+        const style = getComputedStyle(image);
+        requiredImage = {
+          complete: image.complete,
+          naturalWidth: image.naturalWidth,
+          naturalHeight: image.naturalHeight,
+          width: rect.width,
+          height: rect.height,
+          objectFit: style.objectFit,
+          objectPosition: style.objectPosition,
+          source: image.currentSrc || image.src,
+        };
+      }
     }
 
     return {
@@ -133,16 +156,14 @@ async function inspectRoute(route, viewport) {
       remoteBackgrounds,
       unsafeBackgrounds,
       visibleSlots,
-      neutralSlots,
-      anyMediaSlotCount: document.querySelectorAll('[data-media-slot]').length,
-      requireAnyMediaSlot,
+      requiredImage,
       overflow: {
         clientWidth: document.documentElement.clientWidth,
         scrollWidth: document.documentElement.scrollWidth,
       },
       brandingText: (document.body.innerText || '').match(/preview\.themeforest|fullkit\.moxcreative|unsplash|pexels|pixabay|freepik|shutterstock|istock|weberaise/ig) || [],
     };
-  }, { expectedNeutralSlots: route.expectedNeutralSlots || [], requireAnyMediaSlot: Boolean(route.requireAnyMediaSlot) });
+  }, { requiredImageSelector: route.requiredImageSelector || '' });
 
   assert.deepEqual(state.remoteImages, [], `${route.path} contains remote <img> sources: ${state.remoteImages.join(', ')}`);
   assert.deepEqual(state.brokenImages, [], `${route.path} contains broken images: ${state.brokenImages.join(', ')}`);
@@ -153,24 +174,31 @@ async function inspectRoute(route, viewport) {
   assert.ok(state.overflow.scrollWidth <= state.overflow.clientWidth + 1,
     `${route.path} overflows horizontally at ${viewport.width}px: ${state.overflow.scrollWidth} > ${state.overflow.clientWidth}`);
 
-  if (route.requireAnyMediaSlot) {
-    assert.ok(state.anyMediaSlotCount > 0, `${route.path} must expose at least one neutral/client-replaceable [data-media-slot] surface`);
-  }
-
-  for (const [slotName, neutral] of Object.entries(state.neutralSlots)) {
-    assert.ok(neutral, `${route.path} must render classified neutral media slot ${slotName}`);
-    assert.equal(neutral.innerImageCount, 0, `${route.path} neutral slot ${slotName} must not render an attachment image`);
-    assert.match(neutral.text, /ROSA/i, `${route.path} neutral slot ${slotName} must expose the restrained Rosa fallback`);
+  if (route.requiredImageSelector) {
+    assert.ok(state.requiredImage, `${route.path} is missing required prominent image ${route.requiredImageSelector}`);
+    assert.ok(state.requiredImage.complete
+      && state.requiredImage.naturalWidth > 0
+      && state.requiredImage.naturalHeight > 0,
+    `${route.path} prominent image did not load: ${state.requiredImage.source}`);
+    assert.ok(state.requiredImage.width > 0 && state.requiredImage.height > 0,
+      `${route.path} prominent image has collapsed rendered geometry`);
+    assert.equal(state.requiredImage.objectFit, 'cover',
+      `${route.path} prominent image must use deliberate cover cropping; got ${state.requiredImage.objectFit}`);
   }
 
   for (const slot of state.visibleSlots) {
-    assert.equal(slot.role, 'img', `${route.path} media slot ${slot.slot} must expose image semantics`);
-    assert.ok(slot.label.trim().length > 0, `${route.path} media slot ${slot.slot} must have a meaningful aria-label`);
+    /* Hero-carousel media uses data-media-slot for choreography but is not the
+       shared role=img media-slot component. Only enforce wrapper semantics when
+       the stable slot wrapper actually declares them. */
+    if (slot.role !== '') {
+      assert.equal(slot.role, 'img', `${route.path} media slot ${slot.slot} must expose image semantics`);
+      assert.ok(slot.label.trim().length > 0, `${route.path} media slot ${slot.slot} must have a meaningful aria-label`);
+    }
     assert.ok(slot.width >= 40 && slot.height >= 40,
       `${route.path} media slot ${slot.slot} must retain stable geometry; got ${slot.width.toFixed(1)}x${slot.height.toFixed(1)}`);
     assert.ok(slot.right >= -1 && slot.left <= viewport.width + 1,
       `${route.path} media slot ${slot.slot} must not sit wholly outside the viewport`);
-    if (slot.innerImageCount > 0) {
+    if (slot.role === 'img' && slot.innerImageCount > 0) {
       assert.ok(slot.innerImageAlts.every((alt) => alt === ''),
         `${route.path} wrapper-labelled media slot ${slot.slot} must keep child image alt text empty to avoid duplicate announcements`);
     }
@@ -180,16 +208,13 @@ async function inspectRoute(route, viewport) {
 }
 
 try {
-  for (const viewport of [
-    { width: 1440, height: 900 },
-    { width: 390, height: 844 },
-  ]) {
+  for (const viewport of viewports) {
     for (const route of routes) {
       await inspectRoute(route, viewport);
     }
   }
 
-  process.stdout.write('PASS: rendered handoff media uses local, accessible, stable neutral Rosa placeholders across bilingual routes\n');
+  process.stdout.write('PASS: rendered website imagery is local, loadable, responsive, overflow-safe and free of classified third-party media across bilingual routes\n');
 } finally {
   await browser.close();
 }
