@@ -191,9 +191,12 @@ final class ProductGalleryWidget extends AbstractRosaProductWidget
         <section class="rosa-product-detail__gallery" data-preview-product-gallery aria-label="<?php echo esc_attr($this->setting($settings, 'label', 'Product gallery', 'معرض المنتج')); ?>">
             <div class="rosa-product-detail__gallery-main">
                 <?php if ($primary > 0) :
-                    $src = wp_get_attachment_image_url($primary, 'large') ?: '';
+                    $primaryImage = wp_get_attachment_image_src($primary, 'large');
+                    $src = is_array($primaryImage) ? (string) ($primaryImage[0] ?? '') : '';
+                    $primaryWidth = is_array($primaryImage) ? max(0, (int) ($primaryImage[1] ?? 0)) : 0;
+                    $primaryHeight = is_array($primaryImage) ? max(0, (int) ($primaryImage[2] ?? 0)) : 0;
                     $srcset = wp_get_attachment_image_srcset($primary, 'large') ?: ''; ?>
-                    <img data-rosa-product-main-image src="<?php echo esc_url($src); ?>" <?php echo $srcset !== '' ? 'srcset="' . esc_attr($srcset) . '"' : ''; ?> sizes="(max-width: 900px) 100vw, 52vw" alt="<?php echo esc_attr($product->get_name()); ?>">
+                    <img data-rosa-product-main-image src="<?php echo esc_url($src); ?>" <?php echo $srcset !== '' ? 'srcset="' . esc_attr($srcset) . '"' : ''; ?> sizes="(max-width: 900px) 100vw, 52vw"<?php echo $primaryWidth > 0 ? ' width="' . esc_attr((string) $primaryWidth) . '"' : ''; ?><?php echo $primaryHeight > 0 ? ' height="' . esc_attr((string) $primaryHeight) . '"' : ''; ?> alt="<?php echo esc_attr($product->get_name()); ?>" decoding="async" fetchpriority="high">
                 <?php elseif (function_exists('get_template_part')) : ?>
                     <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?>
                 <?php endif; ?>
