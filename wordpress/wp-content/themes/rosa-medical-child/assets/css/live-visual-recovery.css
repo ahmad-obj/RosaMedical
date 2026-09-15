@@ -21,7 +21,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(90deg, rgb(26 29 35 / .08), transparent 42%, rgb(224 8 21 / .035));
+  background: linear-gradient(90deg, rgb(26 29 35 / .12), transparent 58%);
   content: "";
 }
 
@@ -596,7 +596,7 @@ html[dir="rtl"] .rosa-preview-contact-form label {
 .rosa-preview-about-feature__media::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgb(31 41 55 / .90), rgb(224 8 21 / .70));
+  background: linear-gradient(135deg, rgb(12 14 18 / .72), rgb(12 14 18 / .30));
   content: "";
 }
 
@@ -707,7 +707,7 @@ html[dir="rtl"] .rosa-preview-contact-form label {
 .rosa-preview-about-evidence__media::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgb(224 8 21 / .86), rgb(31 41 55 / .88));
+  background: linear-gradient(135deg, rgb(12 14 18 / .74), rgb(31 41 55 / .78));
   content: "";
 }
 
