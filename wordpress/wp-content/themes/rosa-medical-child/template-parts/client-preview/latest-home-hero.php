@@ -40,10 +40,13 @@ $slides = [
     <?php foreach ($slides as $index => $slide) :
         $desktopUrl = $slide['desktop'] > 0
             ? wp_get_attachment_image_url($slide['desktop'], 'full')
-            : rosa_preview_reference_hero_url($index + 1, 'desktop');
+            : rosa_preview_reference_hero_url($index + 1, 'desktop', 'webp');
+        $desktopAvifUrl = $slide['desktop'] > 0
+            ? ''
+            : rosa_preview_reference_hero_url($index + 1, 'desktop', 'avif');
         $mobileUrl = $slide['mobile'] > 0
             ? wp_get_attachment_image_url($slide['mobile'], 'full')
-            : rosa_preview_reference_hero_url($index + 1, 'mobile');
+            : rosa_preview_reference_hero_url($index + 1, 'mobile', 'webp');
         if (! is_string($mobileUrl) || $mobileUrl === '') {
             $mobileUrl = $desktopUrl;
         }
@@ -52,8 +55,9 @@ $slides = [
     <div class="public-hero-carousel__slide<?php echo $active ? ' is-active' : ''; ?>" data-rosa-hero-slide data-slide-index="<?php echo esc_attr((string)$index); ?>" data-slide-id="<?php echo esc_attr($slide['id']); ?>" data-copy-side="<?php echo esc_attr($slide['copy_side']); ?>" data-tone="dark" data-mobile-presentation="<?php echo esc_attr($slide['mobile_kind']); ?>" aria-roledescription="slide" aria-label="<?php echo esc_attr(($index + 1) . ' of 4'); ?>" aria-hidden="<?php echo $active ? 'false' : 'true'; ?>" style="--hero-desktop-focal:<?php echo esc_attr($slide['desktop_focal']); ?>;--hero-mobile-focal:<?php echo esc_attr($slide['mobile_focal']); ?>;">
         <div class="public-hero-carousel__media" data-media-slot="public-hero-active" data-entry-motion="slide-settle">
             <picture class="public-hero-carousel__picture">
-                <?php if ($mobileUrl !== '') : ?><source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>"><?php endif; ?>
-                <?php if ($desktopUrl !== '') : ?><img src="<?php echo esc_url($desktopUrl); ?>" alt="<?php echo esc_attr($slide['alt']); ?>" decoding="async" <?php echo $active ? 'fetchpriority="high"' : ''; ?>><?php endif; ?>
+                <?php if ($mobileUrl !== '') : ?><source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="image/webp"><?php endif; ?>
+                <?php if ($desktopAvifUrl !== '') : ?><source srcset="<?php echo esc_url($desktopAvifUrl); ?>" type="image/avif"><?php endif; ?>
+                <?php if ($desktopUrl !== '') : ?><img src="<?php echo esc_url($desktopUrl); ?>" alt="<?php echo esc_attr($slide['alt']); ?>" decoding="async" <?php echo $active ? 'fetchpriority="high"' : 'loading="lazy"'; ?>><?php endif; ?>
             </picture>
             <?php if ($slide['mobile_kind'] === 'composed' && $desktopUrl !== '') : ?>
                 <div class="public-hero-carousel__mobile-composition" data-mobile-hero-composition aria-hidden="true">
