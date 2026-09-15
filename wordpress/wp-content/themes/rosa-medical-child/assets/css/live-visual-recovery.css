@@ -384,8 +384,8 @@ html[dir="rtl"] .rosa-preview-contact-form label {
   padding: 0;
   overflow: hidden;
   background:
-    linear-gradient(112deg, rgb(31 41 55 / .84), rgb(96 82 87 / .72) 54%, rgb(224 8 21 / .52)),
-    #77747a;
+    linear-gradient(112deg, rgb(31 41 55 / .86), rgb(44 47 52 / .76) 54%, rgb(12 14 18 / .64)),
+    #27292d;
   color: rgb(255 255 255 / .92);
   text-align: center;
 }
