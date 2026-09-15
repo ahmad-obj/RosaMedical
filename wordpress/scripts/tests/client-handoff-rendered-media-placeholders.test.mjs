@@ -25,6 +25,8 @@ const routes = [
   { path: '/ar/shop/' },
   { path: '/product/rosa-foundation-stevens-scissors-regular/' },
   { path: '/ar/product/rosa-foundation-stevens-scissors-regular/' },
+  { path: '/quote-request/' },
+  { path: '/ar/quote-request/' },
 ];
 
 const viewports = [
