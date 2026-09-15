@@ -33,7 +33,16 @@ export async function settlePageMedia(page, { scrollDelayMs = 75 } = {}) {
     { timeout: 15000 },
   );
   await page.evaluate(async () => {
-    await Promise.all(Array.from(document.images, (image) => image.decode().catch(() => undefined)));
+    const renderedImages = Array.from(document.images).filter((image) => {
+      const bounds = image.getBoundingClientRect();
+      const isRendered = typeof image.checkVisibility === 'function'
+        ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+        : getComputedStyle(image).visibility !== 'hidden';
+
+      return isRendered && bounds.width > 0 && bounds.height > 0;
+    });
+
+    await Promise.all(renderedImages.map((image) => image.decode().catch(() => undefined)));
     if (document.fonts?.ready) {
       await document.fonts.ready;
     }
