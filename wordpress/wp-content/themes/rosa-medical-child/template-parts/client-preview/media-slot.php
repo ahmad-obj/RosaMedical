@@ -7,6 +7,9 @@ $class = trim((string) ($args['class'] ?? ''));
 $imageId = isset($args['image_id']) && is_scalar($args['image_id'])
     ? max(0, (int) $args['image_id'])
     : (function_exists('rosa_preview_media_id') ? rosa_preview_media_id($slot) : 0);
+if ($imageId > 0 && function_exists('rosa_preview_is_safe_media_id') && ! rosa_preview_is_safe_media_id($imageId)) {
+    $imageId = 0;
+}
 
 $fallbackMedia = [
     'home-hero-01' => 'assets/media/home-hero/client-v5/hero-01-desktop.webp',
