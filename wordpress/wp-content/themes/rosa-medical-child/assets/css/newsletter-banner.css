@@ -10,7 +10,7 @@
 .rosa-preview-newsletter__layout {
   min-height: 214px;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(23rem, .9fr) minmax(10rem, .38fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(23rem, .95fr);
   gap: clamp(1.25rem, 2.5vw, 2.75rem);
   align-items: center;
   padding-block: 1.5rem;
@@ -188,18 +188,6 @@ html[dir="rtl"] .rosa-preview-newsletter__field input {
     gap: 1.35rem 1.5rem;
     padding-block: 1.75rem;
   }
-
-  .rosa-preview-newsletter__media {
-    grid-column: 1 / -1;
-    width: min(100%, 17rem);
-    height: 132px;
-    justify-self: end;
-    border-radius: .5rem;
-  }
-
-  html[dir="rtl"] .rosa-preview-newsletter__media {
-    justify-self: start;
-  }
 }
 
 @media (max-width: 47.9375rem) {
@@ -221,15 +209,6 @@ html[dir="rtl"] .rosa-preview-newsletter__field input {
 
   body[data-rosa-preview-shell] .rosa-preview-newsletter__submit {
     grid-column: auto;
-  }
-
-  .rosa-preview-newsletter__media,
-  html[dir="rtl"] .rosa-preview-newsletter__media {
-    grid-column: auto;
-    width: 100%;
-    height: 132px;
-    justify-self: stretch;
-    border-radius: .5rem .5rem 0 0;
   }
 
   .rosa-preview-footer {
