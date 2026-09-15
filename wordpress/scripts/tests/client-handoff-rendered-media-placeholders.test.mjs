@@ -43,10 +43,18 @@ async function inspectRoute(route, viewport) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const consoleErrors = [];
   const pageErrors = [];
+  const failedRequests = [];
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('requestfailed', (request) => {
+    failedRequests.push({
+      url: request.url(),
+      resourceType: request.resourceType(),
+      error: request.failure()?.errorText || 'request failed',
+    });
+  });
 
   const response = await page.goto(new URL(route.path, baseUrl).href, { waitUntil: 'load', timeout: 60_000 });
   assert.ok(response?.ok(), `${route.path} returned ${response?.status() ?? 'no response'}`);
@@ -55,7 +63,11 @@ async function inspectRoute(route, viewport) {
   await page.evaluate(() => window.scrollTo(0, 0));
 
   assert.deepEqual(pageErrors, [], `${route.path} raised page errors: ${pageErrors.join(' | ')}`);
-  assert.deepEqual(consoleErrors, [], `${route.path} raised console errors: ${consoleErrors.join(' | ')}`);
+  assert.deepEqual(
+    consoleErrors,
+    [],
+    `${route.path} raised console errors: ${consoleErrors.join(' | ')}; failed requests: ${failedRequests.map((request) => `${request.resourceType} ${request.url} -> ${request.error}`).join(' | ')}`,
+  );
 
   const state = await page.evaluate(({ requiredImageSelector }) => {
     const origin = window.location.origin;
