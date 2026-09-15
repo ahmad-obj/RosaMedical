@@ -65,6 +65,27 @@ if (strpos($source['page_hero'], "'avif'") === false
     exit(1);
 }
 
+/* Known historical stock/temporary attachment IDs must be rejected at render time
+   without mutating client-selected provenanced media. */
+foreach ([
+    'function rosa_preview_is_safe_media_id',
+    'home-hero-surgical-instruments.jpg',
+    'about-procurement.jpg',
+    'about-hospitals.jpg',
+    'about-international-buyers.webp',
+    'procurement-support.jpg',
+    'home-specialties/',
+] as $needle) {
+    if (strpos($source['helpers'], $needle) === false) {
+        fwrite(STDERR, "Runtime unsafe-media guard missing: {$needle}\n");
+        exit(1);
+    }
+}
+if (strpos($source['media'], 'rosa_preview_is_safe_media_id') === false) {
+    fwrite(STDERR, "Shared media renderer does not enforce unsafe-media guard\n");
+    exit(1);
+}
+
 /* Shop family-navigation cards must never degrade to a ROSA text placeholder. */
 foreach (['knives', 'scissors', 'punches', 'chisels', 'cutters'] as $slug) {
     if (strpos($source['media'], "'catalogue-family-{$slug}'") === false) {
