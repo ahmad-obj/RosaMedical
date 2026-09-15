@@ -25,20 +25,25 @@ export async function settlePageMedia(page, { scrollDelayMs = 75 } = {}) {
 
     for (const scroller of horizontalScrollers) {
       const originalScrollLeft = scroller.scrollLeft;
+      const originalScrollBehavior = scroller.style.scrollBehavior;
       const maxScrollLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
       const horizontalStep = Math.max(1, scroller.clientWidth - 32);
+      const direction = getComputedStyle(scroller).direction;
+      const sign = direction === 'rtl' ? -1 : 1;
 
+      scroller.style.scrollBehavior = 'auto';
       scroller.scrollIntoView({ block: 'center', inline: 'nearest' });
       await pause();
 
-      for (let left = 0; left < maxScrollLeft; left += horizontalStep) {
-        scroller.scrollLeft = left;
+      for (let offset = 0; offset < maxScrollLeft; offset += horizontalStep) {
+        scroller.scrollLeft = sign * offset;
         await pause();
       }
 
-      scroller.scrollLeft = maxScrollLeft;
+      scroller.scrollLeft = sign * maxScrollLeft;
       await pause();
       scroller.scrollLeft = originalScrollLeft;
+      scroller.style.scrollBehavior = originalScrollBehavior;
       await pause();
     }
 
