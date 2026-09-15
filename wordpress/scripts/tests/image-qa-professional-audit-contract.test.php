@@ -15,6 +15,7 @@ $files = [
     'about_feature' => $theme . '/template-parts/client-preview/about-feature.php',
     'about_proof' => $theme . '/template-parts/client-preview/about-proof.php',
     'css' => $theme . '/assets/css/home-visual-restoration.css',
+    'cta' => $theme . '/template-parts/client-preview/cta-banner.php',
     'product_widgets' => $core . '/src/Elementor/Widgets/ProductWidgets.php',
 ];
 
@@ -70,6 +71,25 @@ foreach (['knives', 'scissors', 'punches', 'chisels', 'cutters'] as $slug) {
         fwrite(STDERR, "Missing catalogue-family image fallback for {$slug}\n");
         exit(1);
     }
+}
+
+/* Dormant/latest-home fallbacks must also avoid the old unprovenanced stock family. */
+foreach ([
+    'assets/media/curated/about-procurement.jpg',
+    'assets/media/curated/about-hospitals.jpg',
+    'assets/media/curated/about-international.webp',
+] as $unsafeCandidate) {
+    if (strpos($source['helpers'], $unsafeCandidate) !== false) {
+        fwrite(STDERR, "Unsafe historical stock remains in curated candidate chain: {$unsafeCandidate}\n");
+        exit(1);
+    }
+}
+
+/* The newsletter image was a 3:1 banner forced into a near-portrait frame.
+   It is intentionally removed rather than preserving a destructive crop. */
+if (strpos($source['cta'], 'prefooter-person-01') !== false) {
+    fwrite(STDERR, "Newsletter still renders the unsuitable prefooter image\n");
+    exit(1);
 }
 
 /* Generic historical About stock should not be the default fallback anymore. */
