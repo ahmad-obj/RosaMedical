@@ -16,6 +16,32 @@ export async function settlePageMedia(page, { scrollDelayMs = 75 } = {}) {
       position += viewportStep;
     }
 
+    const horizontalScrollers = Array.from(document.querySelectorAll('body *')).filter((element) => {
+      const style = getComputedStyle(element);
+      return ['auto', 'scroll'].includes(style.overflowX)
+        && element.clientWidth > 0
+        && element.scrollWidth > element.clientWidth + 1;
+    });
+
+    for (const scroller of horizontalScrollers) {
+      const originalScrollLeft = scroller.scrollLeft;
+      const maxScrollLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      const horizontalStep = Math.max(1, scroller.clientWidth - 32);
+
+      scroller.scrollIntoView({ block: 'center', inline: 'nearest' });
+      await pause();
+
+      for (let left = 0; left < maxScrollLeft; left += horizontalStep) {
+        scroller.scrollLeft = left;
+        await pause();
+      }
+
+      scroller.scrollLeft = maxScrollLeft;
+      await pause();
+      scroller.scrollLeft = originalScrollLeft;
+      await pause();
+    }
+
     window.scrollTo(0, document.documentElement.scrollHeight);
     await pause();
   }, scrollDelayMs);
