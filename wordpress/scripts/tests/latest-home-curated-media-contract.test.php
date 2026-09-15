@@ -17,11 +17,11 @@ $mediaSlot = (string) file_get_contents($mediaSlotPath);
 $hero = (string) file_get_contents($heroPath);
 
 $specialties = [
-    'home-specialty-plastic-surgery' => 'assets/media/curated/about-procurement.jpg',
-    'home-specialty-orthopedics' => 'assets/media/curated/about-hospitals.jpg',
+    'home-specialty-plastic-surgery' => 'assets/media/home-hero/v1/home-hero-01-desktop.webp',
+    'home-specialty-orthopedics' => 'assets/media/curated/home-evidence-01.jpg',
     'home-specialty-maxillofacial' => 'assets/media/curated/home-evidence-01.jpg',
     'home-specialty-orthodontics' => 'assets/media/curated/home-promo-04.jpg',
-    'home-specialty-spine' => 'assets/media/curated/about-international.webp',
+    'home-specialty-spine' => 'assets/media/home-hero/v1/home-hero-04-desktop.webp',
     'home-securing-confidence' => 'assets/media/curated/prefooter-person-01.webp',
 ];
 
@@ -38,8 +38,9 @@ if (strpos($mediaSlot, 'rosa_preview_curated_media_url($slot)') === false) {
 }
 
 foreach ([
-    "rosa_preview_reference_hero_url(\$index + 1, 'desktop')",
-    "rosa_preview_reference_hero_url(\$index + 1, 'mobile')",
+    "rosa_preview_reference_hero_url(\$index + 1, 'desktop', 'webp')",
+    "rosa_preview_reference_hero_url(\$index + 1, 'desktop', 'avif')",
+    "rosa_preview_reference_hero_url(\$index + 1, 'mobile', 'webp')",
 ] as $needle) {
     if (strpos($hero, $needle) === false) {
         fwrite(STDERR, "Latest homepage hero does not use the restored old banner source: {$needle}\n");
@@ -47,4 +48,4 @@ foreach ([
     }
 }
 
-echo "PASS: latest-home specialties retain curated fallbacks and hero uses restored original banners\n";
+echo "PASS: latest-home specialties retain curated fallbacks and hero uses approved client-v5 banners\n";
