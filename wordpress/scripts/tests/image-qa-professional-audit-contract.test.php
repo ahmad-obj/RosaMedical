@@ -85,6 +85,10 @@ foreach (['hero', 'latest_hero'] as $name) {
         exit(1);
     }
 }
+if (strpos($source['latest_hero'], 'data-mobile-hero-composition') !== false) {
+    fwrite(STDERR, "Latest hero still emits hidden duplicate mobile-composition images\n");
+    exit(1);
+}
 foreach (['latest_comprehensive', 'latest_confidence'] as $name) {
     if (strpos($source[$name], 'wp_get_attachment_image(') === false
         || strpos($source[$name], "'large'") === false) {
