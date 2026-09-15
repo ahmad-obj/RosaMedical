@@ -109,21 +109,22 @@ if (strpos($helpers, 'function rosa_preview_reference_hero_url') === false) {
     exit(1);
 }
 for ($slide = 1; $slide <= 4; $slide++) {
-    foreach (['desktop', 'mobile'] as $kind) {
-        $name = sprintf('home-hero-%02d-%s.webp', $slide, $kind);
-        $asset = $theme . '/assets/media/home-hero/v1/' . $name;
+    foreach (['desktop.webp', 'desktop.avif', 'mobile.webp'] as $suffix) {
+        $name = sprintf('hero-%02d-%s', $slide, $suffix);
+        $asset = $theme . '/assets/media/home-hero/client-v5/' . $name;
         if (! is_file($asset) || filesize($asset) <= 0) {
-            fwrite(STDERR, "Missing old hero asset: {$name}\n");
+            fwrite(STDERR, "Missing approved client hero asset: {$name}\n");
             exit(1);
         }
     }
 }
 foreach ([
-    'rosa_preview_reference_hero_url($index + 1, \'desktop\')',
-    'rosa_preview_reference_hero_url($index + 1, \'mobile\')',
+    "rosa_preview_reference_hero_url(\$index + 1, 'desktop', 'webp')",
+    "rosa_preview_reference_hero_url(\$index + 1, 'desktop', 'avif')",
+    "rosa_preview_reference_hero_url(\$index + 1, 'mobile', 'webp')",
 ] as $needle) {
     if (strpos($hero, $needle) === false) {
-        fwrite(STDERR, "Latest hero does not use exact old banner defaults: {$needle}\n");
+        fwrite(STDERR, "Latest hero does not use approved client-v5 banner defaults: {$needle}\n");
         exit(1);
     }
 }
@@ -138,8 +139,9 @@ if (strpos($js, 'const HERO_AUTOPLAY_MS = 4750;') === false
     exit(1);
 }
 if (strpos($pageHero, '$heroSlide = $isContact ? 4 : 2;') === false
-    || strpos($pageHero, 'rosa_preview_reference_hero_url($heroSlide, \'desktop\')') === false
-    || strpos($pageHero, 'rosa_preview_reference_hero_url($heroSlide, \'mobile\')') === false) {
+    || strpos($pageHero, "rosa_preview_reference_hero_url(\$heroSlide, 'desktop', 'webp')") === false
+    || strpos($pageHero, "rosa_preview_reference_hero_url(\$heroSlide, 'desktop', 'avif')") === false
+    || strpos($pageHero, "rosa_preview_reference_hero_url(\$heroSlide, 'mobile', 'webp')") === false) {
     fwrite(STDERR, "About/Contact fixed hero mapping is incomplete\n");
     exit(1);
 }
