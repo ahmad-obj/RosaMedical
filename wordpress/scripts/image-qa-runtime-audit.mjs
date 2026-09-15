@@ -1,7 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { chromium } from 'playwright';
+import { createRequire } from 'node:module';
+import { settlePageMedia } from './client-preview-capture.mjs';
+
+const require = createRequire(new URL('../../apps/web/package.json', import.meta.url));
+const { chromium } = require('@playwright/test');
 
 const ROUTES = [
   ['en-home', '/'],
@@ -36,26 +40,6 @@ function arg(name, fallback) {
 const base = new URL(arg('--base', 'http://localhost:8088/'));
 const outDir = path.resolve(arg('--out', 'wordpress/.client-preview-artifacts/image-qa-2026-09-15'));
 fs.mkdirSync(outDir, { recursive: true });
-
-async function settleMedia(page) {
-  await page.evaluate(async () => {
-    if (document.fonts?.ready) await document.fonts.ready;
-    const step = Math.max(240, Math.floor(window.innerHeight * 0.75));
-    for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
-      window.scrollTo(0, y);
-      await new Promise((resolve) => setTimeout(resolve, 20));
-    }
-    window.scrollTo(0, 0);
-    await Promise.all(Array.from(document.images).map((image) => {
-      if (image.complete) return Promise.resolve();
-      return new Promise((resolve) => {
-        image.addEventListener('load', resolve, { once: true });
-        image.addEventListener('error', resolve, { once: true });
-      });
-    }));
-  });
-  await page.waitForTimeout(120);
-}
 
 async function collectImageEvidence(page) {
   return page.evaluate(() => {
@@ -172,7 +156,7 @@ try {
         const response = await page.goto(url, { waitUntil: 'load', timeout: 60_000 });
         if (!response?.ok()) throw new Error(`${key} returned ${response?.status() ?? 'no response'} from ${url}`);
 
-        await settleMedia(page);
+        await settlePageMedia(page, { scrollDelayMs: 20 });
         const evidence = await collectImageEvidence(page);
         const label = `${key}-${viewport.width}x${viewport.height}`;
         const screenshot = path.join(outDir, `${label}.png`);
