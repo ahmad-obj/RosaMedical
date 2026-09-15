@@ -79,7 +79,15 @@ async function inspectRoute(route, viewport) {
         remoteImages.push(raw);
       }
 
-      if (!image.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0) {
+      const bounds = image.getBoundingClientRect();
+      const isRendered = typeof image.checkVisibility === 'function'
+        ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+        : getComputedStyle(image).visibility !== 'hidden';
+
+      if (isRendered
+        && bounds.width > 0
+        && bounds.height > 0
+        && (!image.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0)) {
         brokenImages.push(resolved);
       }
 
