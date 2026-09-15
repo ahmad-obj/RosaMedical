@@ -140,62 +140,20 @@ function rosa_preview_reference_hero_url(int $slide, string $kind = 'desktop', s
 }
 function rosa_preview_curated_media_candidates(string $slot): array {
     $media = [
-        'home-hero-01-desktop' => [
-            'assets/media/curated/latest-home/hero-01.webp',
-            'assets/media/curated/home-hero-01.webp',
-        ],
-        'home-hero-01-mobile' => [
-            'assets/media/curated/latest-home/hero-01.webp',
-            'assets/media/curated/home-hero-01.webp',
-        ],
-        'home-hero-02-desktop' => [
-            'assets/media/curated/latest-home/hero-02.webp',
-            'assets/media/curated/home-who-01.webp',
-        ],
-        'home-hero-02-mobile' => [
-            'assets/media/curated/latest-home/hero-02.webp',
-            'assets/media/curated/home-who-01.webp',
-        ],
-        'home-hero-03-desktop' => [
-            'assets/media/curated/latest-home/hero-03.webp',
-            'assets/media/curated/home-feature-01.webp',
-        ],
-        'home-hero-03-mobile' => [
-            'assets/media/curated/latest-home/hero-03.webp',
-            'assets/media/curated/home-feature-01.webp',
-        ],
-        'home-hero-04-desktop' => [
-            'assets/media/curated/latest-home/hero-04.webp',
-            'assets/media/curated/home-why-01.webp',
-        ],
-        'home-hero-04-mobile' => [
-            'assets/media/curated/latest-home/hero-04.webp',
-            'assets/media/curated/home-why-01.webp',
-        ],
-        'home-specialty-plastic-surgery' => [
-            'assets/media/curated/latest-home/specialty-plastic-surgery.webp',
-            'assets/media/home-hero/v1/home-hero-01-desktop.webp',
-        ],
-        'home-specialty-orthopedics' => [
-            'assets/media/curated/latest-home/specialty-orthopedics.webp',
-            'assets/media/curated/home-evidence-01.jpg',
-        ],
-        'home-specialty-maxillofacial' => [
-            'assets/media/curated/latest-home/specialty-maxillofacial.webp',
-            'assets/media/curated/home-evidence-01.jpg',
-        ],
-        'home-specialty-orthodontics' => [
-            'assets/media/curated/latest-home/specialty-orthodontics.webp',
-            'assets/media/curated/home-promo-04.jpg',
-        ],
-        'home-specialty-spine' => [
-            'assets/media/curated/latest-home/specialty-spine.webp',
-            'assets/media/home-hero/v1/home-hero-04-desktop.webp',
-        ],
-        'home-securing-confidence' => [
-            'assets/media/curated/latest-home/securing-confidence.webp',
-            'assets/media/curated/prefooter-person-01.webp',
-        ],
+        'home-hero-01-desktop' => ['assets/media/curated/home-hero-01.webp'],
+        'home-hero-01-mobile' => ['assets/media/curated/home-hero-01.webp'],
+        'home-hero-02-desktop' => ['assets/media/curated/home-who-01.webp'],
+        'home-hero-02-mobile' => ['assets/media/curated/home-who-01.webp'],
+        'home-hero-03-desktop' => ['assets/media/curated/home-feature-01.webp'],
+        'home-hero-03-mobile' => ['assets/media/curated/home-feature-01.webp'],
+        'home-hero-04-desktop' => ['assets/media/curated/home-why-01.webp'],
+        'home-hero-04-mobile' => ['assets/media/curated/home-why-01.webp'],
+        'home-specialty-plastic-surgery' => ['assets/media/home-hero/v1/home-hero-01-desktop.webp'],
+        'home-specialty-orthopedics' => ['assets/media/curated/home-evidence-01.jpg'],
+        'home-specialty-maxillofacial' => ['assets/media/curated/home-evidence-01.jpg'],
+        'home-specialty-orthodontics' => ['assets/media/curated/home-promo-04.jpg'],
+        'home-specialty-spine' => ['assets/media/home-hero/v1/home-hero-04-desktop.webp'],
+        'home-securing-confidence' => ['assets/media/curated/prefooter-person-01.webp'],
     ];
 
     return $media[$slot] ?? [];
