@@ -101,8 +101,6 @@ export async function settlePageMedia(page, { scrollDelayMs = 75 } = {}) {
   
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForFunction(() => window.scrollY === 0);
-  }
-  
   } finally {
     if (!page.isClosed()) {
       await page.emulateMedia({
