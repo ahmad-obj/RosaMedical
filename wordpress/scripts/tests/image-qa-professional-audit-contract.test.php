@@ -210,6 +210,32 @@ foreach (['.rosa-preview-about-feature__media::after', '.rosa-preview-about-evid
     }
 }
 
+/* The About hero's source fallback must also be neutral. Otherwise users can
+   see a red flash while the photograph decodes or if its source is unavailable. */
+$aboutHeroPosition = strpos($source['live_preview_css'], '.rosa-preview-page-hero:not(.rosa-preview-page-hero--contact)');
+if ($aboutHeroPosition === false) {
+    fwrite(STDERR, "Missing About hero base styling\n");
+    exit(1);
+}
+$aboutHeroSnippet = substr($source['live_preview_css'], $aboutHeroPosition, 520);
+if (strpos($aboutHeroSnippet, '224 8 21') !== false) {
+    fwrite(STDERR, "About hero base fallback still carries Rosa-red tint\n");
+    exit(1);
+}
+
+/* Classified generic About stock is no longer used anywhere and should not
+   remain in the shipped theme as multi-megabyte dead media. */
+foreach ([
+    'assets/media/curated/about-procurement.jpg',
+    'assets/media/curated/about-hospitals.jpg',
+    'assets/media/curated/about-international.webp',
+] as $retiredAsset) {
+    if (is_file($theme . '/' . $retiredAsset)) {
+        fwrite(STDERR, "Retired generic About stock still ships in theme: {$retiredAsset}\n");
+        exit(1);
+    }
+}
+
 /* Product-detail LCP image should have explicit decoding/fetch priority. */
 if (strpos($source['product_widgets'], 'fetchpriority="high"') === false
     || strpos($source['product_widgets'], 'decoding="async"') === false) {
