@@ -628,7 +628,7 @@ Before committing, check:
 - every defect has a focused RED contract;
 - every recommended replacement contains all eleven specification fields;
 - every repeated image is either explicitly accepted or defected;
-- no `TBD`, `TODO`, `FIXME`, “review later”, or speculative correction appears.
+- no unresolved placeholder markers, deferred-review phrases, or speculative correction appears.
 
 Run:
 
