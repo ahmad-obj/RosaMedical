@@ -138,6 +138,27 @@ foreach ([
     }
 }
 
+/* Every hard-coded curated candidate must exist. The abandoned generated
+   latest-home paths are not valid preferred candidates until real approved
+   assets are actually committed. */
+foreach ([
+    'assets/media/curated/latest-home/hero-01.webp',
+    'assets/media/curated/latest-home/hero-02.webp',
+    'assets/media/curated/latest-home/hero-03.webp',
+    'assets/media/curated/latest-home/hero-04.webp',
+    'assets/media/curated/latest-home/specialty-plastic-surgery.webp',
+    'assets/media/curated/latest-home/specialty-orthopedics.webp',
+    'assets/media/curated/latest-home/specialty-maxillofacial.webp',
+    'assets/media/curated/latest-home/specialty-orthodontics.webp',
+    'assets/media/curated/latest-home/specialty-spine.webp',
+    'assets/media/curated/latest-home/securing-confidence.webp',
+] as $missingCandidate) {
+    if (strpos($source['helpers'], $missingCandidate) !== false) {
+        fwrite(STDERR, "Missing generated media remains in active candidate chain: {$missingCandidate}\n");
+        exit(1);
+    }
+}
+
 /* The newsletter image was a 3:1 banner forced into a near-portrait frame.
    It is intentionally removed rather than preserving a destructive crop. */
 if (strpos($source['cta'], 'prefooter-person-01') !== false) {
