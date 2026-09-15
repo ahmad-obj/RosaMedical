@@ -59,7 +59,39 @@ async function inspectRoute(route, viewport) {
   const response = await page.goto(new URL(route.path, baseUrl).href, { waitUntil: 'load', timeout: 60_000 });
   assert.ok(response?.ok(), `${route.path} returned ${response?.status() ?? 'no response'}`);
   await page.evaluate(async () => { if (document.fonts?.ready) await document.fonts.ready; });
-  await settlePageMedia(page, { scrollDelayMs: 10 });
+  try {
+    await settlePageMedia(page, { scrollDelayMs: 10 });
+  } catch (error) {
+    const pendingImages = await page.locator('img').evaluateAll((images) => images
+      .map((image) => {
+        const bounds = image.getBoundingClientRect();
+        const isRendered = typeof image.checkVisibility === 'function'
+          ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+          : getComputedStyle(image).visibility !== 'hidden';
+
+        return {
+          source: image.currentSrc || image.src || image.alt || '(unknown image)',
+          complete: image.complete,
+          naturalWidth: image.naturalWidth,
+          naturalHeight: image.naturalHeight,
+          rendered: isRendered && bounds.width > 0 && bounds.height > 0,
+          width: bounds.width,
+          height: bounds.height,
+          loading: image.loading || '',
+        };
+      })
+      .filter((image) => image.rendered && !image.complete));
+
+    const requestEvidence = failedRequests
+      .map((request) => `${request.resourceType} ${request.url} -> ${request.error}`)
+      .join(' | ');
+
+    throw new Error(
+      `${route.path} @ ${viewport.width}x${viewport.height} failed while settling media: ${error.message}; `
+      + `pending rendered images: ${JSON.stringify(pendingImages)}; failed requests: ${requestEvidence || '(none recorded yet)'}`,
+      { cause: error },
+    );
+  }
   await page.evaluate(() => window.scrollTo(0, 0));
 
   assert.deepEqual(pageErrors, [], `${route.path} raised page errors: ${pageErrors.join(' | ')}`);
