@@ -388,12 +388,8 @@
   object-fit: cover;
 }
 
-.rosa-preview-page-hero:not(.rosa-preview-page-hero--contact) .rosa-preview-page-hero__media img {
-  object-position: 68% 53%;
-}
-
-.rosa-preview-page-hero--contact .rosa-preview-page-hero__media img {
-  object-position: 48% 52%;
+.rosa-preview-page-hero__media img {
+  object-position: var(--page-hero-desktop-focal, 50% 50%);
 }
 
 .rosa-preview-page-hero::after {
@@ -429,6 +425,59 @@
   filter: none !important;
 }
 
+
+/* Audited fallback crops: preserve each image's actual instrument focal point.
+   Client/Elementor-selected images are intentionally not forced through these rules. */
+[data-media-slot="home-who-01"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 62% 50%;
+}
+
+[data-media-slot="home-feature-01"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 63% 49%;
+}
+
+[data-media-slot="home-why-01"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 46% 50%;
+}
+
+[data-media-slot="home-evidence-01"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 61% 58%;
+}
+
+[data-media-slot="about-who-instruments"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 62% 50%;
+}
+
+[data-media-slot="about-product-families"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 46% 50%;
+}
+
+[data-media-slot="about-feature-instruments"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 58% 50%;
+}
+
+[data-media-slot="about-proof-instruments"] .rosa-preview-media-slot__image--curated-fallback {
+  object-position: 61% 58%;
+}
+
+[data-media-slot="about-catalogue-support"],
+[data-media-slot^="catalogue-family-"] {
+  background: #fff;
+}
+
+[data-media-slot="about-catalogue-support"]::after,
+[data-media-slot^="catalogue-family-"]::after {
+  display: none;
+}
+
+[data-media-slot="about-catalogue-support"] .rosa-preview-media-slot__image--curated-fallback,
+[data-media-slot^="catalogue-family-"] .rosa-preview-media-slot__image--curated-fallback {
+  object-fit: contain !important;
+  object-position: 50% 50%;
+  filter: none !important;
+  padding: clamp(.3rem, .8vw, .65rem);
+}
+
 @media (max-width: 40rem) {
   .public-hero-carousel,
   .rosa-preview-hero[data-restored-home-hero] {
@@ -455,12 +504,20 @@
     padding-block: 5rem 4.5rem;
   }
 
-  .rosa-preview-page-hero:not(.rosa-preview-page-hero--contact) .rosa-preview-page-hero__media img {
-    object-position: 78% 52%;
+  .rosa-preview-page-hero__media img {
+    object-position: var(--page-hero-mobile-focal, 50% 50%);
   }
 
-  .rosa-preview-page-hero--contact .rosa-preview-page-hero__media img {
-    object-position: 50% 52%;
+  [data-media-slot="home-who-01"] .rosa-preview-media-slot__image--curated-fallback {
+    object-position: 54% 48%;
+  }
+
+  [data-media-slot="home-feature-01"] .rosa-preview-media-slot__image--curated-fallback {
+    object-position: 50% 48%;
+  }
+
+  [data-media-slot="home-why-01"] .rosa-preview-media-slot__image--curated-fallback {
+    object-position: 50% 48%;
   }
 
   .rosa-preview-page-hero::after {
