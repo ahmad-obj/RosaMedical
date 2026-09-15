@@ -122,11 +122,11 @@ function rosa_preview_curated_media_candidates(string $slot): array {
         ],
         'home-specialty-plastic-surgery' => [
             'assets/media/curated/latest-home/specialty-plastic-surgery.webp',
-            'assets/media/curated/about-procurement.jpg',
+            'assets/media/home-hero/v1/home-hero-01-desktop.webp',
         ],
         'home-specialty-orthopedics' => [
             'assets/media/curated/latest-home/specialty-orthopedics.webp',
-            'assets/media/curated/about-hospitals.jpg',
+            'assets/media/curated/home-evidence-01.jpg',
         ],
         'home-specialty-maxillofacial' => [
             'assets/media/curated/latest-home/specialty-maxillofacial.webp',
@@ -138,7 +138,7 @@ function rosa_preview_curated_media_candidates(string $slot): array {
         ],
         'home-specialty-spine' => [
             'assets/media/curated/latest-home/specialty-spine.webp',
-            'assets/media/curated/about-international.webp',
+            'assets/media/home-hero/v1/home-hero-04-desktop.webp',
         ],
         'home-securing-confidence' => [
             'assets/media/curated/latest-home/securing-confidence.webp',
