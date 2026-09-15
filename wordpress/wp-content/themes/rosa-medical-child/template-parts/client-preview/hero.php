@@ -11,7 +11,7 @@ $body = isset($sectionArgs['body']) && is_scalar($sectionArgs['body'])
 $eyebrow = rosa_preview_section_value($sectionArgs, 'home', 'hero_eyebrow', $locale, $locale === 'ar' ? 'روزا ميديكال' : 'Rosa Medical');
 $button = rosa_preview_section_value($sectionArgs, 'home', 'hero_button', $locale, $locale === 'ar' ? 'تصفح المنتجات' : 'Browse products');
 $imageId = rosa_preview_section_media_id($sectionArgs, 'image', 'home-hero-01');
-$overrideUrl = $imageId > 0 ? wp_get_attachment_image_url($imageId, 'full') : '';
+$overrideImage = rosa_preview_attachment_image_data($imageId, 'full');
 
 $slides = [
     ['left', '58% 50%', '50% 46%', $locale === 'ar' ? 'يد مرتدية قفازًا تختار أداة جراحية من مجموعة مرتبة' : 'Gloved hand selecting a surgical instrument from an arranged set'],
@@ -22,18 +22,26 @@ $slides = [
 ?>
 <section class="rosa-preview-hero public-hero-carousel" data-home-section="hero" data-restored-home-hero aria-roledescription="carousel" aria-label="<?php echo esc_attr($locale === 'ar' ? 'لافتات الصفحة الرئيسية' : 'Homepage banners'); ?>">
     <?php foreach ($slides as $index => [$copySide, $desktopFocal, $mobileFocal, $alt]) :
-        $hasOverride = $index === 0 && is_string($overrideUrl) && $overrideUrl !== '';
-        $desktopUrl = $hasOverride ? $overrideUrl : rosa_preview_reference_hero_url($index + 1, 'desktop', 'webp');
+        $hasOverride = $index === 0 && $overrideImage['url'] !== '';
+        $desktopUrl = $hasOverride ? $overrideImage['url'] : rosa_preview_reference_hero_url($index + 1, 'desktop', 'webp');
         $desktopAvifUrl = $hasOverride ? '' : rosa_preview_reference_hero_url($index + 1, 'desktop', 'avif');
-        $mobileUrl = $hasOverride ? $overrideUrl : rosa_preview_reference_hero_url($index + 1, 'mobile', 'webp');
+        $mobileUrl = $hasOverride ? '' : rosa_preview_reference_hero_url($index + 1, 'mobile', 'webp');
         $active = $index === 0;
     ?>
     <div class="public-hero-carousel__slide<?php echo $active ? ' is-active' : ''; ?>" data-rosa-hero-slide data-slide-index="<?php echo esc_attr((string)$index); ?>" data-copy-side="<?php echo esc_attr($copySide); ?>" aria-roledescription="slide" aria-label="<?php echo esc_attr(($index + 1) . ' of 4'); ?>" aria-hidden="<?php echo $active ? 'false' : 'true'; ?>" style="--hero-desktop-focal:<?php echo esc_attr($desktopFocal); ?>;--hero-mobile-focal:<?php echo esc_attr($mobileFocal); ?>;">
         <div class="rosa-restored-hero__media">
             <picture>
-                <source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="image/webp">
+                <?php if (! $hasOverride && $mobileUrl !== '') : ?><source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="image/webp"><?php endif; ?>
                 <?php if ($desktopAvifUrl !== '') : ?><source srcset="<?php echo esc_url($desktopAvifUrl); ?>" type="image/avif"><?php endif; ?>
-                <img src="<?php echo esc_url($desktopUrl); ?>" alt="<?php echo esc_attr($alt); ?>" decoding="async" <?php echo $active ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
+                <img
+                    src="<?php echo esc_url($desktopUrl); ?>"
+                    <?php if ($hasOverride && $overrideImage['srcset'] !== '') : ?>srcset="<?php echo esc_attr($overrideImage['srcset']); ?>" sizes="100vw"<?php endif; ?>
+                    <?php echo $hasOverride && $overrideImage['width'] > 0 ? 'width="' . esc_attr((string) $overrideImage['width']) . '"' : ''; ?>
+                    <?php echo $hasOverride && $overrideImage['height'] > 0 ? 'height="' . esc_attr((string) $overrideImage['height']) . '"' : ''; ?>
+                    alt="<?php echo esc_attr($alt); ?>"
+                    decoding="async"
+                    <?php echo $active ? 'fetchpriority="high"' : 'loading="lazy"'; ?>
+                >
             </picture>
         </div>
     </div>
