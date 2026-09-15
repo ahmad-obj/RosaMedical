@@ -95,6 +95,31 @@ function rosa_preview_is_safe_media_id(int $imageId): bool {
 
     return ! str_starts_with($source, 'apps/web/public/media/editorial/home-specialties/');
 }
+/**
+ * @return array{url:string,srcset:string,width:int,height:int}
+ */
+function rosa_preview_attachment_image_data(int $imageId, string $size = 'full'): array {
+    $empty = ['url' => '', 'srcset' => '', 'width' => 0, 'height' => 0];
+    if ($imageId <= 0 || ! rosa_preview_is_safe_media_id($imageId)
+        || ! function_exists('wp_get_attachment_image_src')) {
+        return $empty;
+    }
+
+    $image = wp_get_attachment_image_src($imageId, $size);
+    if (! is_array($image) || ! isset($image[0])) {
+        return $empty;
+    }
+
+    return [
+        'url' => (string) $image[0],
+        'srcset' => function_exists('wp_get_attachment_image_srcset')
+            ? (string) (wp_get_attachment_image_srcset($imageId, $size) ?: '')
+            : '',
+        'width' => max(0, (int) ($image[1] ?? 0)),
+        'height' => max(0, (int) ($image[2] ?? 0)),
+    ];
+}
+
 function rosa_preview_reference_hero_url(int $slide, string $kind = 'desktop', string $format = 'webp'): string {
     $slide = min(4, max(1, $slide));
     $kind = $kind === 'mobile' ? 'mobile' : 'desktop';
