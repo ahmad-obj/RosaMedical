@@ -12,26 +12,32 @@ $eyebrow = rosa_preview_section_value($sectionArgs, 'home', 'hero_eyebrow', $loc
 $button = rosa_preview_section_value($sectionArgs, 'home', 'hero_button', $locale, $locale === 'ar' ? 'تصفح المنتجات' : 'Browse products');
 $imageId = rosa_preview_section_media_id($sectionArgs, 'image', 'home-hero-01');
 $overrideUrl = $imageId > 0 ? wp_get_attachment_image_url($imageId, 'full') : '';
+
+$slides = [
+    ['left', '58% 50%', '50% 46%', $locale === 'ar' ? 'يد مرتدية قفازًا تختار أداة جراحية من مجموعة مرتبة' : 'Gloved hand selecting a surgical instrument from an arranged set'],
+    ['left', '63% 49%', '50% 48%', $locale === 'ar' ? 'يد مرتدية قفازًا تمسك ملقطًا جراحيًا بحلقات بجوار أدوات أخرى' : 'Gloved hand holding ring-handled surgical forceps beside other instruments'],
+    ['left', '62% 50%', '54% 48%', $locale === 'ar' ? 'يدان مرتديتان قفازات تفحصان مقصًا جراحيًا' : 'Gloved hands examining a surgical scissors instrument'],
+    ['right', '46% 50%', '50% 48%', $locale === 'ar' ? 'أدوات جراحية داكنة مرتبة على سطح طبي منسوج' : 'Dark surgical instruments arranged on a textured sterile surface'],
+];
 ?>
 <section class="rosa-preview-hero public-hero-carousel" data-home-section="hero" data-restored-home-hero aria-roledescription="carousel" aria-label="<?php echo esc_attr($locale === 'ar' ? 'لافتات الصفحة الرئيسية' : 'Homepage banners'); ?>">
-    <?php for ($index = 0; $index < 4; $index++) :
-        $desktopUrl = is_string($overrideUrl) && $overrideUrl !== ''
-            ? $overrideUrl
-            : rosa_preview_reference_hero_url($index + 1, 'desktop');
-        $mobileUrl = is_string($overrideUrl) && $overrideUrl !== ''
-            ? $overrideUrl
-            : rosa_preview_reference_hero_url($index + 1, 'mobile');
+    <?php foreach ($slides as $index => [$copySide, $desktopFocal, $mobileFocal, $alt]) :
+        $hasOverride = $index === 0 && is_string($overrideUrl) && $overrideUrl !== '';
+        $desktopUrl = $hasOverride ? $overrideUrl : rosa_preview_reference_hero_url($index + 1, 'desktop', 'webp');
+        $desktopAvifUrl = $hasOverride ? '' : rosa_preview_reference_hero_url($index + 1, 'desktop', 'avif');
+        $mobileUrl = $hasOverride ? $overrideUrl : rosa_preview_reference_hero_url($index + 1, 'mobile', 'webp');
         $active = $index === 0;
     ?>
-    <div class="public-hero-carousel__slide<?php echo $active ? ' is-active' : ''; ?>" data-rosa-hero-slide data-slide-index="<?php echo esc_attr((string)$index); ?>" aria-roledescription="slide" aria-label="<?php echo esc_attr(($index + 1) . ' of 4'); ?>" aria-hidden="<?php echo $active ? 'false' : 'true'; ?>">
+    <div class="public-hero-carousel__slide<?php echo $active ? ' is-active' : ''; ?>" data-rosa-hero-slide data-slide-index="<?php echo esc_attr((string)$index); ?>" data-copy-side="<?php echo esc_attr($copySide); ?>" aria-roledescription="slide" aria-label="<?php echo esc_attr(($index + 1) . ' of 4'); ?>" aria-hidden="<?php echo $active ? 'false' : 'true'; ?>" style="--hero-desktop-focal:<?php echo esc_attr($desktopFocal); ?>;--hero-mobile-focal:<?php echo esc_attr($mobileFocal); ?>;">
         <div class="rosa-restored-hero__media">
             <picture>
-                <source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>">
-                <img src="<?php echo esc_url($desktopUrl); ?>" alt="<?php echo esc_attr($locale === 'ar' ? 'أدوات روزا الطبية والجراحية' : 'Rosa medical and surgical instruments'); ?>" decoding="async" <?php echo $active ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
+                <source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="image/webp">
+                <?php if ($desktopAvifUrl !== '') : ?><source srcset="<?php echo esc_url($desktopAvifUrl); ?>" type="image/avif"><?php endif; ?>
+                <img src="<?php echo esc_url($desktopUrl); ?>" alt="<?php echo esc_attr($alt); ?>" decoding="async" <?php echo $active ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
             </picture>
         </div>
     </div>
-    <?php endfor; ?>
+    <?php endforeach; ?>
     <span class="rosa-restored-hero__overlay" aria-hidden="true"></span>
     <div class="rosa-preview-rail rosa-preview-hero__inner">
         <div class="rosa-preview-hero__copy">
