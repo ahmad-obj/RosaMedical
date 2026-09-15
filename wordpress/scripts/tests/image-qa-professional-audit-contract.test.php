@@ -15,6 +15,8 @@ $files = [
     'about_feature' => $theme . '/template-parts/client-preview/about-feature.php',
     'about_proof' => $theme . '/template-parts/client-preview/about-proof.php',
     'css' => $theme . '/assets/css/home-visual-restoration.css',
+    'base_preview_css' => $theme . '/assets/css/client-preview.css',
+    'live_preview_css' => $theme . '/assets/css/live-visual-recovery.css',
     'cta' => $theme . '/template-parts/client-preview/cta-banner.php',
     'product_widgets' => $core . '/src/Elementor/Widgets/ProductWidgets.php',
 ];
@@ -172,6 +174,38 @@ foreach ([
 ] as $selector) {
     if (strpos($source['css'], $selector) === false) {
         fwrite(STDERR, "Missing audited focal/fit selector: {$selector}\n");
+        exit(1);
+    }
+}
+
+/* Red brand washes may exist on non-photo UI, but photographic pseudo-overlays
+   are neutralized at their source rather than depending on cascade accidents. */
+foreach ([
+    '.rosa-preview-media-slot::after',
+    '.rosa-preview-hero > .rosa-preview-media-slot::after',
+    '.rosa-preview-feature > .rosa-preview-media-slot::after',
+    '.rosa-preview-evidence > .rosa-preview-media-slot::after',
+] as $selector) {
+    $position = strpos($source['base_preview_css'], $selector);
+    if ($position === false) {
+        fwrite(STDERR, "Missing base photo-overlay selector: {$selector}\n");
+        exit(1);
+    }
+    $snippet = substr($source['base_preview_css'], $position, 260);
+    if (strpos($snippet, '224 8 21') !== false) {
+        fwrite(STDERR, "Base photo overlay still carries Rosa-red tint: {$selector}\n");
+        exit(1);
+    }
+}
+foreach (['.rosa-preview-about-feature__media::after', '.rosa-preview-about-evidence__media::after'] as $selector) {
+    $position = strpos($source['live_preview_css'], $selector);
+    if ($position === false) {
+        fwrite(STDERR, "Missing live photo-overlay selector: {$selector}\n");
+        exit(1);
+    }
+    $snippet = substr($source['live_preview_css'], $position, 300);
+    if (strpos($snippet, '224 8 21') !== false) {
+        fwrite(STDERR, "About photo overlay still carries Rosa-red tint: {$selector}\n");
         exit(1);
     }
 }
