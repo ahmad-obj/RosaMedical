@@ -68,6 +68,33 @@ function rosa_preview_media_id(string $key): int {
     $media = get_option(ROSA_PREVIEW_MEDIA_OPTION, []);
     return is_array($media) && isset($media[$key]) ? max(0, (int) $media[$key]) : 0;
 }
+function rosa_preview_is_safe_media_id(int $imageId): bool {
+    if ($imageId <= 0) {
+        return false;
+    }
+    if (! function_exists('get_post_meta')) {
+        return true;
+    }
+
+    $source = (string) get_post_meta($imageId, '_rosa_preview_source_path', true);
+    $source = ltrim(str_replace('\\', '/', trim($source)), '/');
+    if ($source === '') {
+        return true;
+    }
+
+    $blocked = [
+        'apps/web/public/media/editorial/home-hero-surgical-instruments.jpg',
+        'apps/web/public/media/editorial/about-procurement.jpg',
+        'apps/web/public/media/editorial/about-hospitals.jpg',
+        'apps/web/public/media/editorial/about-international-buyers.webp',
+        'apps/web/public/media/editorial/procurement-support.jpg',
+    ];
+    if (in_array($source, $blocked, true)) {
+        return false;
+    }
+
+    return ! str_starts_with($source, 'apps/web/public/media/editorial/home-specialties/');
+}
 function rosa_preview_reference_hero_url(int $slide, string $kind = 'desktop', string $format = 'webp'): string {
     $slide = min(4, max(1, $slide));
     $kind = $kind === 'mobile' ? 'mobile' : 'desktop';
@@ -220,13 +247,15 @@ function rosa_preview_section_value(array $args, string $section, string $key, s
 function rosa_preview_section_media_id(array $args, string $settingKey, string $legacySlot): int {
     $media = isset($args['media']) && is_array($args['media']) ? $args['media'] : [];
     $value = $media[$settingKey] ?? null;
+    $imageId = 0;
     if (is_array($value) && isset($value['id'])) {
-        return max(0, (int) $value['id']);
+        $imageId = max(0, (int) $value['id']);
+    } elseif (is_scalar($value)) {
+        $imageId = max(0, (int) $value);
+    } else {
+        $imageId = rosa_preview_media_id($legacySlot);
     }
-    if (is_scalar($value)) {
-        return max(0, (int) $value);
-    }
-    return rosa_preview_media_id($legacySlot);
+    return rosa_preview_is_safe_media_id($imageId) ? $imageId : 0;
 }
 function rosa_preview_price_label(?string $locale = null): string {
     $resolved = $locale === 'ar' ? 'ar' : ($locale === 'en' ? 'en' : rosa_preview_locale());
