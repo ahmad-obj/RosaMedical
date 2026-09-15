@@ -57,6 +57,8 @@ async function inspectRoute(route, viewport) {
 
   const state = await page.evaluate(({ requiredImageSelector }) => {
     const origin = window.location.origin;
+    const unsafeBrandPattern = /(preview\\.themeforest|fullkit\\.moxcreative|unsplash|pexels|pixabay|freepik|shutterstock|istock|weberaise)/i;
+    const unsafeFilenamePattern = /(home-hero-surgical-instruments|about-procurement|about-hospitals|about-international-buyers|procurement-support|plastic-surgery|orthopedics|maxillofacial|orthodontics|spine|securing-confidence)\\.(?:jpe?g|png|webp|gif|svg)/i;
     const remoteImages = [];
     const brokenImages = [];
     const unsafeImageRefs = [];
