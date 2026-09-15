@@ -10,7 +10,7 @@ $imageId = rosa_preview_section_media_id($sectionArgs, 'image', 'about_hospitals
     <?php if ($imageId > 0) : ?>
       <?php echo wp_get_attachment_image($imageId, 'large'); ?>
     <?php else : ?>
-      <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'about_hospitals', 'label' => 'Rosa procurement support media', 'image_id' => 0]); ?>
+      <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'about-feature-instruments', 'label' => 'Rosa surgical instrument context', 'image_id' => 0]); ?>
     <?php endif; ?>
   </div>
   <div class="rosa-preview-rail rosa-preview-about-feature__content">
