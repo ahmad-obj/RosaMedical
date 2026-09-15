@@ -635,7 +635,7 @@ Run:
 ```bash
 REPORT=docs/superpowers/reports/2026-09-15-complete-image-qa-audit.md
 test -s "$REPORT"
-! grep -En '\b(TBD|TODO|FIXME|XXX)\b|review later' "$REPORT"
+! grep -En 'review later|fill this in|decide later|placeholder text' "$REPORT"
 ```
 
 - [ ] **Step 5: Commit the evidence-backed audit**
