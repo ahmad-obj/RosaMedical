@@ -21,7 +21,14 @@ export async function settlePageMedia(page, { scrollDelayMs = 75 } = {}) {
   }, scrollDelayMs);
 
   await page.waitForFunction(
-    () => Array.from(document.images).every((image) => image.complete),
+    () => Array.from(document.images).every((image) => {
+      const bounds = image.getBoundingClientRect();
+      const isRendered = typeof image.checkVisibility === 'function'
+        ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+        : getComputedStyle(image).visibility !== 'hidden';
+
+      return !isRendered || bounds.width <= 0 || bounds.height <= 0 || image.complete;
+    }),
     undefined,
     { timeout: 15000 },
   );
