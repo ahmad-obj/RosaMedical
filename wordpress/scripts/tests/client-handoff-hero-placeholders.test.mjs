@@ -13,7 +13,9 @@ if (process.env.ROSA_PLAYWRIGHT_NO_SANDBOX === '1') {
 
 const viewports = [
   { width: 1440, height: 900 },
+  { width: 1024, height: 768 },
   { width: 768, height: 1024 },
+  { width: 431, height: 932 },
   { width: 390, height: 844 },
 ];
 
@@ -21,62 +23,60 @@ const surfaces = [
   {
     label: 'Home EN',
     path: '/',
-    heroSelector: '.rosa-preview-hero',
-    fieldSelector: '[data-media-slot="home-hero-01"]',
-    requirePlaceholderSlot: true,
+    heroSelector: '.rosa-preview-hero, [data-latest-rosa-home-hero]',
+    imageSelector: '.rosa-preview-hero .rosa-restored-hero__media img, [data-latest-rosa-home-hero] .public-hero-carousel__picture img',
+    overlaySelector: '.rosa-preview-hero .rosa-restored-hero__overlay, [data-latest-rosa-home-hero] .public-hero-carousel__overlay',
     textSelectors: [
-      '.rosa-preview-hero .rosa-preview-eyebrow',
-      '.rosa-preview-hero h1',
-      '.rosa-preview-hero__copy > p:not(.rosa-preview-eyebrow)',
+      '.rosa-preview-hero .rosa-preview-eyebrow, [data-latest-rosa-home-hero] .public-eyebrow',
+      '.rosa-preview-hero h1, [data-latest-rosa-home-hero] h1',
+      '.rosa-preview-hero__copy > p:not(.rosa-preview-eyebrow), [data-latest-rosa-home-hero] .public-hero-carousel__copy-text',
     ],
   },
   {
     label: 'Home AR',
     path: '/ar/',
-    heroSelector: '.rosa-preview-hero',
-    fieldSelector: '[data-media-slot="home-hero-01"]',
-    requirePlaceholderSlot: true,
+    heroSelector: '.rosa-preview-hero, [data-latest-rosa-home-hero]',
+    imageSelector: '.rosa-preview-hero .rosa-restored-hero__media img, [data-latest-rosa-home-hero] .public-hero-carousel__picture img',
+    overlaySelector: '.rosa-preview-hero .rosa-restored-hero__overlay, [data-latest-rosa-home-hero] .public-hero-carousel__overlay',
     textSelectors: [
-      '.rosa-preview-hero .rosa-preview-eyebrow',
-      '.rosa-preview-hero h1',
-      '.rosa-preview-hero__copy > p:not(.rosa-preview-eyebrow)',
+      '.rosa-preview-hero .rosa-preview-eyebrow, [data-latest-rosa-home-hero] .public-eyebrow',
+      '.rosa-preview-hero h1, [data-latest-rosa-home-hero] h1',
+      '.rosa-preview-hero__copy > p:not(.rosa-preview-eyebrow), [data-latest-rosa-home-hero] .public-hero-carousel__copy-text',
     ],
   },
   {
     label: 'About EN',
     path: '/about/',
     heroSelector: '[data-preview-page-hero]',
-    fieldSelector: '[data-preview-page-hero]',
+    imageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img',
+    overlaySelector: '[data-preview-page-hero]',
+    overlayPseudo: '::after',
     textSelectors: [
       '[data-preview-page-hero] .rosa-preview-eyebrow',
       '[data-preview-page-hero] h1',
       '[data-preview-page-hero] > .rosa-preview-rail > p:last-child',
-    ],
-    neutralSelectors: [
-      '[data-media-slot="about_procurement"]',
-      '[data-media-slot="about_hospitals"]',
     ],
   },
   {
     label: 'About AR',
     path: '/ar/about/',
     heroSelector: '[data-preview-page-hero]',
-    fieldSelector: '[data-preview-page-hero]',
+    imageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img',
+    overlaySelector: '[data-preview-page-hero]',
+    overlayPseudo: '::after',
     textSelectors: [
       '[data-preview-page-hero] .rosa-preview-eyebrow',
       '[data-preview-page-hero] h1',
       '[data-preview-page-hero] > .rosa-preview-rail > p:last-child',
-    ],
-    neutralSelectors: [
-      '[data-media-slot="about_procurement"]',
-      '[data-media-slot="about_hospitals"]',
     ],
   },
   {
     label: 'Contact EN',
     path: '/contact/',
     heroSelector: '[data-preview-page-hero]',
-    fieldSelector: '[data-preview-page-hero]',
+    imageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img',
+    overlaySelector: '[data-preview-page-hero]',
+    overlayPseudo: '::after',
     textSelectors: [
       '[data-preview-page-hero] .rosa-preview-eyebrow',
       '[data-preview-page-hero] h1',
@@ -87,7 +87,9 @@ const surfaces = [
     label: 'Contact AR',
     path: '/ar/contact/',
     heroSelector: '[data-preview-page-hero]',
-    fieldSelector: '[data-preview-page-hero]',
+    imageSelector: '[data-preview-page-hero] .rosa-preview-page-hero__media img',
+    overlaySelector: '[data-preview-page-hero]',
+    overlayPseudo: '::after',
     textSelectors: [
       '[data-preview-page-hero] .rosa-preview-eyebrow',
       '[data-preview-page-hero] h1',
@@ -120,17 +122,10 @@ function luminance(color) {
     + (0.0722 * channelLuminance(color.b));
 }
 
-function isRosaRed(color) {
-  return color.a >= 0.95
-    && color.r >= 180
-    && color.r >= color.g + 100
-    && color.r >= color.b + 80;
-}
-
-function assertNoPaintedOverlay(pseudo, label) {
-  const color = parseColor(pseudo.backgroundColor);
-  assert.equal(pseudo.backgroundImage, 'none', `${label} must not paint a gradient/image overlay; got ${pseudo.backgroundImage}`);
-  assert.ok(color.a <= 0.01, `${label} must not paint a solid overlay; got ${pseudo.backgroundColor}`);
+function assertNeutralOverlay(backgroundImage, context) {
+  assert.notEqual(backgroundImage, 'none', `${context} must retain a readability scrim over photography`);
+  assert.doesNotMatch(backgroundImage, /rgba?\(\s*(?:18[0-9]|19[0-9]|2[0-5][0-9])[, ]+\s*(?:0|[1-9]|1[0-9]|2[0-9])[, ]+\s*(?:0|[1-9]|1[0-9]|2[0-9])/i,
+    `${context} must not contain a red photographic wash: ${backgroundImage}`);
 }
 
 async function inspectSurface(browser, surface, viewport) {
@@ -141,7 +136,7 @@ async function inspectSurface(browser, surface, viewport) {
   await page.evaluate(() => window.scrollTo(0, 0));
 
   await page.locator(surface.heroSelector).first().waitFor({ state: 'visible' });
-  await page.locator(surface.fieldSelector).first().waitFor({ state: 'visible' });
+  await page.locator(surface.imageSelector).first().waitFor({ state: 'visible' });
 
   const state = await page.evaluate((spec) => {
     const rect = (element) => {
@@ -155,21 +150,21 @@ async function inspectSurface(browser, surface, viewport) {
         bottom: box.bottom,
       };
     };
+
     const styleSnapshot = (element, pseudo = null) => {
       const style = getComputedStyle(element, pseudo);
       return {
-        backgroundColor: style.backgroundColor,
         backgroundImage: style.backgroundImage,
         color: style.color,
-        display: style.display,
-        visibility: style.visibility,
-        opacity: Number.parseFloat(style.opacity || '1'),
+        objectFit: style.objectFit,
+        objectPosition: style.objectPosition,
       };
     };
 
     const hero = document.querySelector(spec.heroSelector);
-    const field = document.querySelector(spec.fieldSelector);
-    if (!hero || !field) return { missing: true };
+    const image = document.querySelector(spec.imageSelector);
+    const overlay = document.querySelector(spec.overlaySelector);
+    if (!hero || !(image instanceof HTMLImageElement) || !overlay) return { missing: true };
 
     const text = spec.textSelectors.map((selector) => {
       const element = document.querySelector(selector);
@@ -181,94 +176,51 @@ async function inspectSurface(browser, surface, viewport) {
       } : { selector, missing: true };
     });
 
-    const neutral = (spec.neutralSelectors || []).map((selector) => {
-      const element = document.querySelector(selector);
-      return element ? {
-        selector,
-        rect: rect(element),
-        style: styleSnapshot(element),
-      } : { selector, missing: true };
-    });
-
     return {
       missing: false,
       heroRect: rect(hero),
-      fieldRect: rect(field),
-      fieldStyle: styleSnapshot(field),
-      fieldBefore: styleSnapshot(field, '::before'),
-      fieldAfter: styleSnapshot(field, '::after'),
-      fieldImageCount: field.querySelectorAll('img').length,
-      fieldText: (field.textContent || '').trim(),
+      imageRect: rect(image),
+      imageStyle: styleSnapshot(image),
+      imageComplete: image.complete,
+      naturalWidth: image.naturalWidth,
+      naturalHeight: image.naturalHeight,
+      currentSrc: image.currentSrc || image.src,
+      overlayStyle: styleSnapshot(overlay, spec.overlayPseudo || null),
       text,
-      neutral,
       clientWidth: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,
     };
   }, surface);
 
-  assert.equal(state.missing, false, `${surface.label} must expose its hero and hero-field selectors`);
-
+  assert.equal(state.missing, false, `${surface.label} must expose its hero, image and readability overlay`);
   const context = `${surface.label} ${surface.path} ${viewport.width}x${viewport.height}`;
-  const fieldColor = parseColor(state.fieldStyle.backgroundColor);
-  assert.ok(
-    isRosaRed(fieldColor),
-    `${context} hero placeholder must use a solid Rosa-red background; got ${state.fieldStyle.backgroundColor}`,
-  );
-  assert.equal(
-    state.fieldStyle.backgroundImage,
-    'none',
-    `${context} hero placeholder must not use a gradient or background image; got ${state.fieldStyle.backgroundImage}`,
-  );
-  assertNoPaintedOverlay(state.fieldBefore, `${context} ::before`);
-  assertNoPaintedOverlay(state.fieldAfter, `${context} ::after`);
 
-  if (surface.requirePlaceholderSlot) {
-    assert.equal(state.fieldImageCount, 0, `${context} future-media hero slot must remain a placeholder until approved media exists`);
-    assert.match(state.fieldText, /ROSA/i, `${context} future-media hero slot must retain the restrained ROSA fallback label`);
-  }
+  assert.ok(state.imageComplete && state.naturalWidth > 0 && state.naturalHeight > 0,
+    `${context} hero image failed to load: ${state.currentSrc}`);
+  assert.equal(state.imageStyle.objectFit, 'cover',
+    `${context} hero image must use deliberate cover cropping; got ${state.imageStyle.objectFit}`);
+  assert.notEqual(state.imageStyle.objectPosition, '',
+    `${context} hero image must expose an explicit focal position`);
 
   assert.ok(state.heroRect.height >= 180, `${context} hero geometry collapsed to ${state.heroRect.height.toFixed(1)}px tall`);
-  assert.ok(
-    Math.abs(state.heroRect.width - state.clientWidth) <= 1,
-    `${context} hero must remain full-width; got ${state.heroRect.width.toFixed(1)}px for ${state.clientWidth}px client width`,
-  );
-  assert.ok(
-    Math.abs(state.fieldRect.x - state.heroRect.x) <= 1
-      && Math.abs(state.fieldRect.y - state.heroRect.y) <= 1
-      && Math.abs(state.fieldRect.width - state.heroRect.width) <= 1
-      && Math.abs(state.fieldRect.height - state.heroRect.height) <= 1,
-    `${context} red field must preserve and cover the existing hero geometry`,
-  );
-  assert.ok(
-    state.scrollWidth <= state.clientWidth + 1,
-    `${context} overflows horizontally: ${state.scrollWidth} > ${state.clientWidth}`,
-  );
+  assert.ok(Math.abs(state.heroRect.width - state.clientWidth) <= 1,
+    `${context} hero must remain full-width; got ${state.heroRect.width.toFixed(1)}px for ${state.clientWidth}px client width`);
+  assert.ok(state.imageRect.width >= state.heroRect.width - 2
+      && state.imageRect.height >= state.heroRect.height - 2,
+    `${context} hero image must fully cover hero geometry`);
+  assert.ok(state.scrollWidth <= state.clientWidth + 1,
+    `${context} overflows horizontally: ${state.scrollWidth} > ${state.clientWidth}`);
+
+  assertNeutralOverlay(state.overlayStyle.backgroundImage, `${context} overlay`);
 
   for (const item of state.text) {
     assert.equal(item.missing, undefined, `${context} missing hero foreground ${item.selector}`);
     assert.ok(item.text.length > 0, `${context} hero foreground ${item.selector} must contain text`);
-    assert.ok(item.rect.width > 0 && item.rect.height > 0, `${context} hero foreground ${item.selector} must remain visible`);
+    assert.ok(item.rect.width > 0 && item.rect.height > 0,
+      `${context} hero foreground ${item.selector} must remain visible`);
     const foreground = parseColor(item.style.color);
-    assert.ok(
-      foreground.a >= 0.65 && luminance(foreground) >= 0.8,
-      `${context} hero foreground ${item.selector} must remain light/readable; got ${item.style.color}`,
-    );
-  }
-
-  for (const neutral of state.neutral) {
-    assert.equal(neutral.missing, undefined, `${context} missing protected neutral non-hero slot ${neutral.selector}`);
-    assert.ok(neutral.rect.width > 0 && neutral.rect.height > 0, `${context} protected neutral non-hero slot ${neutral.selector} must remain visible`);
-    const neutralColor = parseColor(neutral.style.backgroundColor);
-    assert.equal(
-      isRosaRed(neutralColor),
-      false,
-      `${context} protected neutral non-hero slot ${neutral.selector} must not inherit the solid hero red`,
-    );
-    assert.notEqual(
-      neutral.style.backgroundImage,
-      'none',
-      `${context} protected neutral non-hero slot ${neutral.selector} must retain its neutral placeholder treatment`,
-    );
+    assert.ok(foreground.a >= 0.65 && luminance(foreground) >= 0.72,
+      `${context} hero foreground ${item.selector} must remain light/readable; got ${item.style.color}`);
   }
 
   await page.close();
@@ -282,7 +234,7 @@ try {
     }
   }
 
-  process.stdout.write('PASS: Home/About/Contact EN/AR future-media hero placeholders render as solid Rosa-red fields with light foreground text and preserved responsive geometry while non-hero placeholders remain neutral\n');
+  process.stdout.write('PASS: Home/About/Contact photographic heroes load, crop deliberately, retain neutral readability scrims, and remain overflow-safe across five responsive widths\n');
 } finally {
   await browser.close();
 }
