@@ -14,7 +14,7 @@ $proof = [
   <div class="rosa-preview-about-evidence" data-preview-about-evidence>
     <div class="rosa-preview-about-evidence__media" aria-hidden="true">
       <?php get_template_part('template-parts/client-preview/media-slot', null, [
-        'slot' => 'about_international',
+        'slot' => 'about-proof-instruments',
         'label' => $locale === 'ar' ? 'دعم التوريد من روزا' : 'Rosa procurement support',
         'image_id' => $imageId,
       ]); ?>
