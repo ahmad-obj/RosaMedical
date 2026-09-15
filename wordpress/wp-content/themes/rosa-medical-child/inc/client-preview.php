@@ -68,16 +68,21 @@ function rosa_preview_media_id(string $key): int {
     $media = get_option(ROSA_PREVIEW_MEDIA_OPTION, []);
     return is_array($media) && isset($media[$key]) ? max(0, (int) $media[$key]) : 0;
 }
-function rosa_preview_reference_hero_url(int $slide, string $kind = 'desktop'): string {
+function rosa_preview_reference_hero_url(int $slide, string $kind = 'desktop', string $format = 'webp'): string {
     $slide = min(4, max(1, $slide));
     $kind = $kind === 'mobile' ? 'mobile' : 'desktop';
+    $format = in_array($format, ['webp', 'avif'], true) ? $format : 'webp';
+    if ($kind === 'mobile') {
+        $format = 'webp';
+    }
     if (! function_exists('get_stylesheet_directory_uri')) {
         return '';
     }
     $file = sprintf(
-        'assets/media/home-hero/v1/home-hero-%02d-%s.webp',
+        'assets/media/home-hero/client-v5/hero-%02d-%s.%s',
         $slide,
-        $kind
+        $kind,
+        $format
     );
     return trailingslashit(get_stylesheet_directory_uri()) . $file;
 }
