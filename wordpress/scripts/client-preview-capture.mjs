@@ -5,97 +5,112 @@ const require = createRequire(new URL('../../apps/web/package.json', import.meta
 const { chromium } = require('@playwright/test');
 
 export async function settlePageMedia(page, { scrollDelayMs = 75 } = {}) {
-  await page.evaluate(async (delay) => {
-    const pause = () => new Promise((resolve) => setTimeout(resolve, delay));
-    const viewportStep = Math.max(1, window.innerHeight - 96);
-    let position = 0;
+  const originallyReducedMotion = await page.evaluate(
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
 
-    while (position < document.documentElement.scrollHeight) {
-      window.scrollTo(0, position);
-      await pause();
-      position += viewportStep;
-    }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
 
-    const horizontalScrollers = Array.from(document.querySelectorAll('body *')).filter((element) => {
-      const style = getComputedStyle(element);
-      return ['auto', 'scroll'].includes(style.overflowX)
-        && element.clientWidth > 0
-        && element.scrollWidth > element.clientWidth + 1;
-    });
-
-    for (const scroller of horizontalScrollers) {
-      const originalScrollLeft = scroller.scrollLeft;
-      const originalScrollBehavior = scroller.style.scrollBehavior;
-      const maxScrollLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
-      const horizontalStep = Math.max(1, scroller.clientWidth - 32);
-      const direction = getComputedStyle(scroller).direction;
-      const sign = direction === 'rtl' ? -1 : 1;
-
-      scroller.style.scrollBehavior = 'auto';
-      scroller.scrollIntoView({ block: 'center', inline: 'nearest' });
-      await pause();
-
-      for (let offset = 0; offset < maxScrollLeft; offset += horizontalStep) {
-        scroller.scrollLeft = sign * offset;
+  try {
+    await page.evaluate(async (delay) => {
+      const pause = () => new Promise((resolve) => setTimeout(resolve, delay));
+      const viewportStep = Math.max(1, window.innerHeight - 96);
+      let position = 0;
+  
+      while (position < document.documentElement.scrollHeight) {
+        window.scrollTo(0, position);
+        await pause();
+        position += viewportStep;
+      }
+  
+      const horizontalScrollers = Array.from(document.querySelectorAll('body *')).filter((element) => {
+        const style = getComputedStyle(element);
+        return ['auto', 'scroll'].includes(style.overflowX)
+          && element.clientWidth > 0
+          && element.scrollWidth > element.clientWidth + 1;
+      });
+  
+      for (const scroller of horizontalScrollers) {
+        const originalScrollLeft = scroller.scrollLeft;
+        const originalScrollBehavior = scroller.style.scrollBehavior;
+        const maxScrollLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+        const horizontalStep = Math.max(1, scroller.clientWidth - 32);
+        const direction = getComputedStyle(scroller).direction;
+        const sign = direction === 'rtl' ? -1 : 1;
+  
+        scroller.style.scrollBehavior = 'auto';
+        scroller.scrollIntoView({ block: 'center', inline: 'nearest' });
+        await pause();
+  
+        for (let offset = 0; offset < maxScrollLeft; offset += horizontalStep) {
+          scroller.scrollLeft = sign * offset;
+          await pause();
+        }
+  
+        scroller.scrollLeft = sign * maxScrollLeft;
+        await pause();
+        scroller.scrollLeft = originalScrollLeft;
+        scroller.style.scrollBehavior = originalScrollBehavior;
         await pause();
       }
-
-      scroller.scrollLeft = sign * maxScrollLeft;
+  
+      window.scrollTo(0, document.documentElement.scrollHeight);
       await pause();
-      scroller.scrollLeft = originalScrollLeft;
-      scroller.style.scrollBehavior = originalScrollBehavior;
-      await pause();
-    }
-
-    window.scrollTo(0, document.documentElement.scrollHeight);
-    await pause();
-  }, scrollDelayMs);
-
-  await page.waitForFunction(
-    () => Array.from(document.images).every((image) => {
-      const bounds = image.getBoundingClientRect();
-      const isRendered = typeof image.checkVisibility === 'function'
-        ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
-        : getComputedStyle(image).visibility !== 'hidden';
-
-      return !isRendered || bounds.width <= 0 || bounds.height <= 0 || image.complete;
-    }),
-    undefined,
-    { timeout: 15000 },
-  );
-  await page.evaluate(async () => {
-    const renderedImages = Array.from(document.images).filter((image) => {
-      const bounds = image.getBoundingClientRect();
-      const isRendered = typeof image.checkVisibility === 'function'
-        ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
-        : getComputedStyle(image).visibility !== 'hidden';
-
-      return isRendered && bounds.width > 0 && bounds.height > 0;
+    }, scrollDelayMs);
+  
+    await page.waitForFunction(
+      () => Array.from(document.images).every((image) => {
+        const bounds = image.getBoundingClientRect();
+        const isRendered = typeof image.checkVisibility === 'function'
+          ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+          : getComputedStyle(image).visibility !== 'hidden';
+  
+        return !isRendered || bounds.width <= 0 || bounds.height <= 0 || image.complete;
+      }),
+      undefined,
+      { timeout: 15000 },
+    );
+    await page.evaluate(async () => {
+      const renderedImages = Array.from(document.images).filter((image) => {
+        const bounds = image.getBoundingClientRect();
+        const isRendered = typeof image.checkVisibility === 'function'
+          ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+          : getComputedStyle(image).visibility !== 'hidden';
+  
+        return isRendered && bounds.width > 0 && bounds.height > 0;
+      });
+  
+      await Promise.all(renderedImages.map((image) => image.decode().catch(() => undefined)));
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
     });
-
-    await Promise.all(renderedImages.map((image) => image.decode().catch(() => undefined)));
-    if (document.fonts?.ready) {
-      await document.fonts.ready;
+  
+    const failedImages = await page.locator('img').evaluateAll((images) => images
+      .filter((image) => {
+        const bounds = image.getBoundingClientRect();
+        const isRendered = typeof image.checkVisibility === 'function'
+          ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
+          : getComputedStyle(image).visibility !== 'hidden';
+        return image.naturalWidth === 0 && isRendered && bounds.width > 0 && bounds.height > 0;
+      })
+      .map((image) => image.currentSrc || image.src || image.alt || '(unknown image)'));
+    if (failedImages.length > 0) {
+      throw new Error(`Images failed to load: ${failedImages.join(', ')}`);
     }
-  });
-
-  const failedImages = await page.locator('img').evaluateAll((images) => images
-    .filter((image) => {
-      const bounds = image.getBoundingClientRect();
-      const isRendered = typeof image.checkVisibility === 'function'
-        ? image.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
-        : getComputedStyle(image).visibility !== 'hidden';
-      return image.naturalWidth === 0 && isRendered && bounds.width > 0 && bounds.height > 0;
-    })
-    .map((image) => image.currentSrc || image.src || image.alt || '(unknown image)'));
-  if (failedImages.length > 0) {
-    throw new Error(`Images failed to load: ${failedImages.join(', ')}`);
+  
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForFunction(() => window.scrollY === 0);
   }
-
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForFunction(() => window.scrollY === 0);
+  
+  } finally {
+    if (!page.isClosed()) {
+      await page.emulateMedia({
+        reducedMotion: originallyReducedMotion ? 'reduce' : 'no-preference',
+      });
+    }
+  }
 }
-
 async function capture(url, output, width, height) {
   const browser = await chromium.launch({ headless: true });
   try {
