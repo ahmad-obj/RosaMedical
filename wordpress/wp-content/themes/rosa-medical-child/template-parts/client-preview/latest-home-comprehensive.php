@@ -12,7 +12,7 @@ $specialties = [
 ];
 $leadSlot = 'home-specialty-plastic-surgery';
 $leadId = $m('lead_image', $leadSlot);
-$leadUrl = $leadId > 0 ? wp_get_attachment_image_url($leadId, 'full') : '';
+$leadLabel = $c('comprehensive_lead_specialty');
 ?>
 <section class="section home-comprehensive" data-section="comprehensive-plans" aria-labelledby="home-comprehensive-title">
     <div class="container container--wide">
@@ -20,25 +20,39 @@ $leadUrl = $leadId > 0 ? wp_get_attachment_image_url($leadId, 'full') : '';
         <div class="home-comprehensive__lead">
             <figure class="home-specialty home-specialty--lead">
                 <div class="home-clinical-media home-clinical-media--landscape">
-                    <?php if (is_string($leadUrl) && $leadUrl !== '') : ?>
-                        <img class="home-clinical-media__image" src="<?php echo esc_url($leadUrl); ?>" alt="<?php echo esc_attr($c('comprehensive_lead_specialty')); ?>" loading="lazy" decoding="async" style="object-position:50% 44%">
+                    <?php if ($leadId > 0) : ?>
+                        <?php echo wp_get_attachment_image($leadId, 'large', false, [
+                            'class' => 'home-clinical-media__image',
+                            'alt' => $leadLabel,
+                            'loading' => 'lazy',
+                            'decoding' => 'async',
+                            'sizes' => '(max-width: 40rem) 100vw, 55vw',
+                            'style' => 'object-position:50% 44%',
+                        ]); ?>
                     <?php else : ?>
-                        <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => $leadSlot, 'label' => 'Rosa specialty media', 'class' => 'home-clinical-media__placeholder', 'image_id' => 0]); ?>
+                        <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => $leadSlot, 'label' => $leadLabel, 'class' => 'home-clinical-media__placeholder', 'image_id' => 0]); ?>
                     <?php endif; ?>
                 </div>
-                <figcaption><?php echo esc_html($c('comprehensive_lead_specialty')); ?></figcaption>
+                <figcaption><?php echo esc_html($leadLabel); ?></figcaption>
             </figure>
             <p class="home-editorial-copy"><?php echo esc_html($c('comprehensive_body')); ?></p>
         </div>
         <ul class="home-comprehensive__specialties" aria-label="<?php echo esc_attr($c('comprehensive_title')); ?>">
-            <?php foreach ($specialties as [$label, $mediaId, $focal, $slot]) : $url = $mediaId > 0 ? wp_get_attachment_image_url($mediaId, 'full') : ''; ?>
+            <?php foreach ($specialties as [$label, $mediaId, $focal, $slot]) : ?>
             <li>
                 <figure class="home-specialty">
                     <div class="home-clinical-media home-clinical-media--landscape">
-                        <?php if (is_string($url) && $url !== '') : ?>
-                            <img class="home-clinical-media__image" src="<?php echo esc_url($url); ?>" alt="<?php echo esc_attr($label); ?>" loading="lazy" decoding="async" style="object-position:<?php echo esc_attr($focal); ?>">
+                        <?php if ($mediaId > 0) : ?>
+                            <?php echo wp_get_attachment_image($mediaId, 'large', false, [
+                                'class' => 'home-clinical-media__image',
+                                'alt' => $label,
+                                'loading' => 'lazy',
+                                'decoding' => 'async',
+                                'sizes' => '(max-width: 40rem) 48vw, (max-width: 64rem) 24vw, 20vw',
+                                'style' => 'object-position:' . $focal,
+                            ]); ?>
                         <?php else : ?>
-                            <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => $slot, 'label' => 'Rosa specialty media', 'class' => 'home-clinical-media__placeholder', 'image_id' => 0]); ?>
+                            <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => $slot, 'label' => $label, 'class' => 'home-clinical-media__placeholder', 'image_id' => 0]); ?>
                         <?php endif; ?>
                     </div>
                     <figcaption><?php echo esc_html($label); ?></figcaption>
