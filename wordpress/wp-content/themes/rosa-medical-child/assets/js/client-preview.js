@@ -17,7 +17,27 @@
   const inertTargets = [announcement, headerInner, main, footer].filter((node) => node instanceof HTMLElement);
   const setInert = (value) => inertTargets.forEach((node) => { node.inert = value; });
 
+  const syncMenuGeometry = () => {
+    const header = trigger.closest('.rosa-preview-header');
+    const headerBottom = header instanceof HTMLElement
+      ? Math.max(0, Math.min(window.innerHeight, header.getBoundingClientRect().bottom))
+      : 0;
+    const triggerTop = Math.max(
+      0,
+      Math.min(window.innerHeight - 44, trigger.getBoundingClientRect().top),
+    );
+
+    document.documentElement.style.setProperty('--rosa-preview-menu-top', `${headerBottom}px`);
+    document.documentElement.style.setProperty('--rosa-preview-menu-close-top', `${triggerTop}px`);
+  };
+
+  const clearMenuGeometry = () => {
+    document.documentElement.style.removeProperty('--rosa-preview-menu-top');
+    document.documentElement.style.removeProperty('--rosa-preview-menu-close-top');
+  };
+
   const open = () => {
+    syncMenuGeometry();
     trigger.setAttribute('aria-expanded', 'true');
     drawer.hidden = false;
     overlay.hidden = false;
@@ -32,6 +52,7 @@
     overlay.hidden = true;
     document.documentElement.classList.remove('rosa-preview-menu-open');
     setInert(false);
+    clearMenuGeometry();
     if (restore) trigger.focus();
   };
 
@@ -40,6 +61,10 @@
   overlay.addEventListener('click', () => close());
   drawer.addEventListener('click', (event) => {
     if (event.target instanceof Element && event.target.closest('a[href]')) close(false);
+  });
+
+  window.addEventListener('resize', () => {
+    if (trigger.getAttribute('aria-expanded') === 'true') syncMenuGeometry();
   });
 
   document.addEventListener('keydown', (event) => {
