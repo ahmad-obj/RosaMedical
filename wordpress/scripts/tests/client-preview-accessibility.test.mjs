@@ -97,15 +97,22 @@ try {
   await load(page, '/');
   const trigger = page.locator('[data-rosa-preview-menu-trigger]');
   await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+  const sequentialFocusCandidateCount = await page.locator(
+    'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
+  ).count();
   let keyboardReachedTrigger = false;
-  for (let index = 0; index < 20; index += 1) {
+  for (let index = 0; index <= sequentialFocusCandidateCount; index += 1) {
     await page.keyboard.press('Tab');
     if (await trigger.evaluate((element) => document.activeElement === element)) {
       keyboardReachedTrigger = true;
       break;
     }
   }
-  assert.equal(keyboardReachedTrigger, true, 'mobile Menu trigger is not keyboard reachable');
+  assert.equal(
+    keyboardReachedTrigger,
+    true,
+    `mobile Menu trigger is not keyboard reachable within a full sequential-focus cycle (${sequentialFocusCandidateCount + 1} Tab presses)`,
+  );
   await page.keyboard.press('Enter');
   assert.equal(await trigger.getAttribute('aria-expanded'), 'true', 'drawer aria-expanded did not become true');
   const drawer = page.locator('[data-rosa-preview-menu-drawer]');
