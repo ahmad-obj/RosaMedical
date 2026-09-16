@@ -56,7 +56,7 @@ $announcement = rosa_preview_content(
 </div>
 <header class="rosa-preview-header">
     <div class="rosa-preview-rail rosa-preview-header__inner">
-        <button class="rosa-preview-menu-trigger" type="button" aria-expanded="false" aria-controls="rosa-preview-menu" data-rosa-preview-menu-trigger>
+        <button class="rosa-preview-menu-trigger" type="button" tabindex="0" aria-expanded="false" aria-controls="rosa-preview-menu" data-rosa-preview-menu-trigger>
             <span class="rosa-preview-menu-trigger__icon" aria-hidden="true"></span>
             <span class="screen-reader-text"><?php echo esc_html($previewLocale === 'ar' ? 'القائمة' : 'Menu'); ?></span>
         </button>
