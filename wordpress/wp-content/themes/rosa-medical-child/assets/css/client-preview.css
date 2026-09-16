@@ -58,12 +58,12 @@ body[data-rosa-preview-shell] .rosa-preview-menu-trigger { display: none; width:
 .rosa-preview-menu-trigger__icon::before { position: absolute; inset-block-start: -6px; }
 .rosa-preview-menu-trigger__icon::after { position: absolute; inset-block-start: 6px; }
 .rosa-preview-menu, .rosa-preview-menu-overlay { position: fixed; inset-inline: 0; z-index: 110; }
-.rosa-preview-menu { inset-block-start: 105px; width: 100%; background: #fff; box-shadow: 0 1rem 2rem rgb(0 0 0 / .12); }
+.rosa-preview-menu { inset-block-start: var(--rosa-preview-menu-top, 105px); width: 100%; background: #fff; box-shadow: 0 1rem 2rem rgb(0 0 0 / .12); }
 .rosa-preview-menu nav { display: grid; }
 .rosa-preview-menu nav a { min-block-size: 41px; display: flex; align-items: center; padding-inline: max(1.25rem, calc((100vw - min(calc(100vw - 2 * clamp(1.25rem, 4vw, 3rem)), 80rem)) / 2)); border-block-end: 1px solid var(--preview-border); color: var(--preview-ink); font-size: .875rem; text-decoration: none; }
 .rosa-preview-menu nav a:first-child { background: var(--preview-accent); color: #fff; }
-.rosa-preview-menu__close { position: fixed; inset-block-start: 52px; inset-inline-start: max(1.25rem, calc((100vw - min(calc(100vw - 2 * clamp(1.25rem, 4vw, 3rem)), 80rem)) / 2)); width: 44px; height: 44px; z-index: 115; border: 0; background: #fff; color: var(--preview-ink); font-size: 1.8rem; }
-.rosa-preview-menu-overlay { inset-block: 105px 0; background: rgb(0 0 0 / .25); z-index: 100; }
+.rosa-preview-menu__close { position: fixed; inset-block-start: var(--rosa-preview-menu-close-top, 52px); inset-inline-start: max(1.25rem, calc((100vw - min(calc(100vw - 2 * clamp(1.25rem, 4vw, 3rem)), 80rem)) / 2)); width: 44px; height: 44px; z-index: 115; border: 0; background: #fff; color: var(--preview-ink); font-size: 1.8rem; }
+.rosa-preview-menu-overlay { inset-block: var(--rosa-preview-menu-top, 105px) 0; background: rgb(0 0 0 / .25); z-index: 100; }
 .rosa-preview-menu-open { overflow: hidden; }
 
 /* Home 1: overlay hero */
@@ -288,9 +288,9 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-announcement, .rosa-preview-announcement__inner { height: 41px; }
   .rosa-preview-announcement__inner > span { display: none; }
   .rosa-preview-announcement__contacts { width: 100%; justify-content: center; gap: 1rem; font-size: .6875rem; }
-  .rosa-preview-menu { inset-block-start: 103px; }
-  .rosa-preview-menu-overlay { inset-block-start: 103px; }
-  .rosa-preview-menu__close { inset-block-start: 50px; }
+  .rosa-preview-menu { inset-block-start: var(--rosa-preview-menu-top, 103px); }
+  .rosa-preview-menu-overlay { inset-block-start: var(--rosa-preview-menu-top, 103px); }
+  .rosa-preview-menu__close { inset-block-start: var(--rosa-preview-menu-close-top, 50px); }
   .rosa-preview-hero { height: 456px; }
   .rosa-preview-hero h1 { font-size: 32.35px; }
   .rosa-preview-hero__copy > p:not(.rosa-preview-eyebrow) { width: 330px; }
