@@ -10,6 +10,14 @@ if (! defined('ABSPATH')) {
 require_once __DIR__ . '/inc/client-preview.php';
 require_once __DIR__ . '/inc/client-preview-navigation.php';
 
+/*
+ * Rosa public pages must not depend on third-party Google Font requests.
+ * Elementor can otherwise enqueue Roboto/Roboto Slab from fonts.googleapis.com,
+ * which adds a render-time network/privacy dependency and breaks deterministic
+ * offline/local acceptance. The theme already provides explicit system fallbacks.
+ */
+add_filter('elementor/frontend/print_google_fonts', '__return_false');
+
 function rosa_is_latest_home_page(?int $postId = null): bool
 {
     $postId = $postId ?? (int) get_queried_object_id();
