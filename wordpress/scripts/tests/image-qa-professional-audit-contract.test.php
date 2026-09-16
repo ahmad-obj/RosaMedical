@@ -21,6 +21,7 @@ $files = [
     'live_preview_css' => $theme . '/assets/css/live-visual-recovery.css',
     'cta' => $theme . '/template-parts/client-preview/cta-banner.php',
     'product_widgets' => $core . '/src/Elementor/Widgets/ProductWidgets.php',
+    'theme_functions' => $theme . '/functions.php',
 ];
 
 foreach ($files as $name => $path) {
@@ -285,6 +286,16 @@ foreach ([
         fwrite(STDERR, "Retired generic About stock still ships in theme: {$retiredAsset}\n");
         exit(1);
     }
+}
+
+/* Public Elementor rendering must remain self-contained. External Google Fonts
+   introduce a network/privacy dependency and make local/browser acceptance
+   nondeterministic; Rosa typography intentionally falls back to the theme/system
+   font stacks instead. */
+if (strpos($source['theme_functions'], "elementor/frontend/print_google_fonts") === false
+    || strpos($source['theme_functions'], "__return_false") === false) {
+    fwrite(STDERR, "Elementor Google Fonts are not disabled on the public frontend\n");
+    exit(1);
 }
 
 /* Product-detail LCP image should have explicit decoding/fetch priority. */
