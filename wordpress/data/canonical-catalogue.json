@@ -1,0 +1,4765 @@
+{
+  "families": [
+    {
+      "slug": "knives",
+      "sequence": "01",
+      "name": "Knives",
+      "introduction": "Precision cutting instruments presented with clear product codes, stated sizes and available variants for quotation preparation.",
+      "catalogueLabel": "Knives catalogue"
+    },
+    {
+      "slug": "scissors",
+      "sequence": "02",
+      "name": "Scissors",
+      "introduction": "Surgical scissors organised by product code, length, direction and listed variant.",
+      "catalogueLabel": "Scissors catalogue"
+    },
+    {
+      "slug": "punches",
+      "sequence": "03",
+      "name": "Punches",
+      "introduction": "Punch instruments organised by jaw pattern, shaft length and catalogue reference.",
+      "catalogueLabel": "Punches catalogue"
+    },
+    {
+      "slug": "chisels",
+      "sequence": "04",
+      "name": "Chisels",
+      "introduction": "Chisels and osteotomes organised by pattern, width, length and listed direction.",
+      "catalogueLabel": "Chisels catalogue"
+    },
+    {
+      "slug": "cutters",
+      "sequence": "05",
+      "name": "Cutters",
+      "introduction": "Cutting instruments organised by named pattern, length and listed direction or profile.",
+      "catalogueLabel": "Cutters catalogue"
+    }
+  ],
+  "products": [
+    {
+      "id": "product-knives-number-3",
+      "familySlug": "knives",
+      "slug": "number-3",
+      "name": "Scalpel Handle No. 3",
+      "code": "18-0103",
+      "description": "Catalogue-listed Scalpel Handle No. 3. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "12.0 cm"
+      ],
+      "variants": [
+        "No. 3"
+      ],
+      "directions": [],
+      "primaryOption": "No. 3",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Scalpel Handle No. 3, No. 3",
+      "catalogueCodes": [
+        {
+          "code": "18-0103",
+          "size": "12.0 cm"
+        },
+        {
+          "code": "18-0103S",
+          "size": "12.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-number-3",
+      "mediaPath": "/media/catalogue-preview/knives/knives-number-3.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-number-3.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-number-4",
+      "familySlug": "knives",
+      "slug": "number-4",
+      "name": "Scalpel Handle No. 4",
+      "code": "18-0104",
+      "description": "Catalogue-listed Scalpel Handle No. 4. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "13.0 cm"
+      ],
+      "variants": [
+        "No. 4"
+      ],
+      "directions": [],
+      "primaryOption": "No. 4",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Scalpel Handle No. 4, No. 4",
+      "catalogueCodes": [
+        {
+          "code": "18-0104",
+          "size": "13.0 cm"
+        },
+        {
+          "code": "18-0104S",
+          "size": "13.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-number-4",
+      "mediaPath": "/media/catalogue-preview/knives/knives-number-4.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-number-4.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-number-7",
+      "familySlug": "knives",
+      "slug": "number-7",
+      "name": "Scalpel Handle No. 7",
+      "code": "18-0107",
+      "description": "Catalogue-listed Scalpel Handle No. 7. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "16.0 cm"
+      ],
+      "variants": [
+        "No. 7"
+      ],
+      "directions": [],
+      "primaryOption": "No. 7",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Scalpel Handle No. 7, No. 7",
+      "catalogueCodes": [
+        {
+          "code": "18-0107",
+          "size": "16.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-number-7",
+      "mediaPath": "/media/catalogue-preview/knives/knives-number-7.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-number-7.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-micro-surgery-handle",
+      "familySlug": "knives",
+      "slug": "micro-surgery-handle",
+      "name": "Micro Surgery Handle",
+      "code": "18-0202",
+      "description": "Catalogue-listed Micro Surgery Handle. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "15.5 cm"
+      ],
+      "variants": [
+        "Micro surgery"
+      ],
+      "directions": [],
+      "primaryOption": "Micro surgery",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Micro Surgery Handle, Micro surgery",
+      "catalogueCodes": [
+        {
+          "code": "18-0202",
+          "size": "15.5 cm"
+        }
+      ],
+      "mediaAssetId": "knives-micro-surgery-handle",
+      "mediaPath": "/media/catalogue-preview/knives/knives-micro-surgery-handle.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-micro-surgery-handle.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-number-3-long",
+      "familySlug": "knives",
+      "slug": "number-3-long",
+      "name": "Scalpel Handle No. 3 Long",
+      "code": "18-0103L",
+      "description": "Catalogue-listed Scalpel Handle No. 3 Long. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "21.0 cm"
+      ],
+      "variants": [
+        "Long"
+      ],
+      "directions": [],
+      "primaryOption": "Long",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Scalpel Handle No. 3 Long, Long",
+      "catalogueCodes": [
+        {
+          "code": "18-0103L",
+          "size": "21.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-number-3-long",
+      "mediaPath": "/media/catalogue-preview/knives/knives-number-3-long.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-number-3-long.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-number-3-long-curved",
+      "familySlug": "knives",
+      "slug": "number-3-long-curved",
+      "name": "Scalpel Handle No. 3 Long Curved",
+      "code": "18-0113L",
+      "description": "Catalogue-listed Scalpel Handle No. 3 Long Curved. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "20.5 cm"
+      ],
+      "variants": [
+        "Long curved"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Long curved",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Scalpel Handle No. 3 Long Curved, Long curved",
+      "catalogueCodes": [
+        {
+          "code": "18-0113L",
+          "size": "20.5 cm"
+        }
+      ],
+      "mediaAssetId": "knives-number-3-long-curved",
+      "mediaPath": "/media/catalogue-preview/knives/knives-number-3-long-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-number-3-long-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-number-4-long",
+      "familySlug": "knives",
+      "slug": "number-4-long",
+      "name": "Scalpel Handle No. 4 Long",
+      "code": "18-0104L",
+      "description": "Catalogue-listed Scalpel Handle No. 4 Long. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "21.0 cm"
+      ],
+      "variants": [
+        "Long"
+      ],
+      "directions": [],
+      "primaryOption": "Long",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Scalpel Handle No. 4 Long, Long",
+      "catalogueCodes": [
+        {
+          "code": "18-0104L",
+          "size": "21.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-number-4-long",
+      "mediaPath": "/media/catalogue-preview/knives/knives-number-4-long.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-number-4-long.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-liston",
+      "familySlug": "knives",
+      "slug": "liston",
+      "name": "Liston Knife",
+      "code": "18-0401",
+      "description": "Catalogue-listed Liston Knife. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "13.0 cm",
+        "16.0 cm",
+        "19.0 cm",
+        "21.5 cm"
+      ],
+      "variants": [
+        "Liston"
+      ],
+      "directions": [],
+      "primaryOption": "Liston",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "1"
+      },
+      "mediaLabel": "Liston Knife, Liston",
+      "catalogueCodes": [
+        {
+          "code": "18-0401",
+          "size": "13.0 cm"
+        },
+        {
+          "code": "18-0402",
+          "size": "16.0 cm"
+        },
+        {
+          "code": "18-0403",
+          "size": "19.0 cm"
+        },
+        {
+          "code": "18-0404",
+          "size": "21.5 cm"
+        }
+      ],
+      "mediaAssetId": "knives-liston",
+      "mediaPath": "/media/catalogue-preview/knives/knives-liston.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-liston.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-number-9",
+      "familySlug": "knives",
+      "slug": "number-9",
+      "name": "Scalpel Handle No. 9",
+      "code": "18-0109",
+      "description": "Catalogue-listed Scalpel Handle No. 9. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "12.0 cm"
+      ],
+      "variants": [
+        "No. 9"
+      ],
+      "directions": [],
+      "primaryOption": "No. 9",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "2"
+      },
+      "mediaLabel": "Scalpel Handle No. 9, No. 9",
+      "catalogueCodes": [
+        {
+          "code": "18-0109",
+          "size": "12.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-number-9",
+      "mediaPath": "/media/catalogue-preview/knives/knives-number-9.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-number-9.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-hexagonal",
+      "familySlug": "knives",
+      "slug": "hexagonal",
+      "name": "Hexagonal Scalpel Handle",
+      "code": "18-0646",
+      "description": "Catalogue-listed Hexagonal Scalpel Handle. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "16.0 cm"
+      ],
+      "variants": [
+        "Hexagonal"
+      ],
+      "directions": [],
+      "primaryOption": "Hexagonal",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "2"
+      },
+      "mediaLabel": "Hexagonal Scalpel Handle, Hexagonal",
+      "catalogueCodes": [
+        {
+          "code": "18-0646",
+          "size": "16.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-hexagonal",
+      "mediaPath": "/media/catalogue-preview/knives/knives-hexagonal.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-hexagonal.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-round-straight",
+      "familySlug": "knives",
+      "slug": "round-straight",
+      "name": "Round Scalpel Handle",
+      "code": "18-0644",
+      "description": "Catalogue-listed Round Scalpel Handle. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "14.5 cm"
+      ],
+      "variants": [
+        "Straight"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Straight",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "2"
+      },
+      "mediaLabel": "Round Scalpel Handle, Straight",
+      "catalogueCodes": [
+        {
+          "code": "18-0644",
+          "size": "14.5 cm"
+        }
+      ],
+      "mediaAssetId": "knives-round-straight",
+      "mediaPath": "/media/catalogue-preview/knives/knives-round-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-round-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-round-curved",
+      "familySlug": "knives",
+      "slug": "round-curved",
+      "name": "Round Scalpel Handle",
+      "code": "18-0645",
+      "description": "Catalogue-listed Round Scalpel Handle. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "14.5 cm"
+      ],
+      "variants": [
+        "Curved"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Curved",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "2"
+      },
+      "mediaLabel": "Round Scalpel Handle, Curved",
+      "catalogueCodes": [
+        {
+          "code": "18-0645",
+          "size": "14.5 cm"
+        }
+      ],
+      "mediaAssetId": "knives-round-curved",
+      "mediaPath": "/media/catalogue-preview/knives/knives-round-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-round-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-long-handle",
+      "familySlug": "knives",
+      "slug": "long-handle",
+      "name": "Adjustable Scalpel Handle",
+      "code": "18-0647",
+      "description": "Catalogue-listed Adjustable Scalpel Handle. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "16.0 cm"
+      ],
+      "variants": [
+        "Long handle"
+      ],
+      "directions": [],
+      "primaryOption": "Long handle",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "2"
+      },
+      "mediaLabel": "Adjustable Scalpel Handle, Long handle",
+      "catalogueCodes": [
+        {
+          "code": "18-0647",
+          "size": "16.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-long-handle",
+      "mediaPath": "/media/catalogue-preview/knives/knives-long-handle.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-long-handle.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-short-handle",
+      "familySlug": "knives",
+      "slug": "short-handle",
+      "name": "Adjustable Scalpel Handle",
+      "code": "18-0648",
+      "description": "Catalogue-listed Adjustable Scalpel Handle. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "10.0 cm"
+      ],
+      "variants": [
+        "Short handle"
+      ],
+      "directions": [],
+      "primaryOption": "Short handle",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "2"
+      },
+      "mediaLabel": "Adjustable Scalpel Handle, Short handle",
+      "catalogueCodes": [
+        {
+          "code": "18-0648",
+          "size": "10.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-short-handle",
+      "mediaPath": "/media/catalogue-preview/knives/knives-short-handle.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-short-handle.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-saalfeld-comedo-extractor",
+      "familySlug": "knives",
+      "slug": "saalfeld-comedo-extractor",
+      "name": "Saalfeld Comedo Extractor",
+      "code": "19-0400",
+      "description": "Catalogue-listed Saalfeld Comedo Extractor. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "14.0 cm"
+      ],
+      "variants": [
+        "Saalfeld"
+      ],
+      "directions": [],
+      "primaryOption": "Saalfeld",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "3"
+      },
+      "mediaLabel": "Saalfeld Comedo Extractor, Saalfeld",
+      "catalogueCodes": [
+        {
+          "code": "19-0400",
+          "size": "14.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-saalfeld-comedo-extractor",
+      "mediaPath": "/media/catalogue-preview/knives/knives-saalfeld-comedo-extractor.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-saalfeld-comedo-extractor.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-fox-lupus-curettes",
+      "familySlug": "knives",
+      "slug": "fox-lupus-curettes",
+      "name": "Fox Lupus Curettes",
+      "code": "19-0503",
+      "description": "Catalogue-listed Fox Lupus Curettes. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "3 mm",
+        "4 mm",
+        "5 mm",
+        "6 mm"
+      ],
+      "variants": [
+        "Fox"
+      ],
+      "directions": [],
+      "primaryOption": "Fox",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "3"
+      },
+      "mediaLabel": "Fox Lupus Curettes, Fox",
+      "catalogueCodes": [
+        {
+          "code": "19-0503",
+          "size": "3 mm"
+        },
+        {
+          "code": "19-0504",
+          "size": "4 mm"
+        },
+        {
+          "code": "19-0505",
+          "size": "5 mm"
+        },
+        {
+          "code": "19-0506",
+          "size": "6 mm"
+        }
+      ],
+      "mediaAssetId": "knives-fox-lupus-curettes",
+      "mediaPath": "/media/catalogue-preview/knives/knives-fox-lupus-curettes.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-fox-lupus-curettes.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-keyes-dermal-punches",
+      "familySlug": "knives",
+      "slug": "keyes-dermal-punches",
+      "name": "Keyes Dermal Punches",
+      "code": "19-0702",
+      "description": "Catalogue-listed Keyes Dermal Punches. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "2 mm",
+        "3 mm",
+        "4 mm",
+        "5 mm",
+        "6 mm",
+        "7 mm",
+        "8 mm"
+      ],
+      "variants": [
+        "Individual punches"
+      ],
+      "directions": [],
+      "primaryOption": "Individual punches",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "3"
+      },
+      "mediaLabel": "Keyes Dermal Punches, Individual punches",
+      "catalogueCodes": [
+        {
+          "code": "19-0702",
+          "size": "2 mm"
+        },
+        {
+          "code": "19-0703",
+          "size": "3 mm"
+        },
+        {
+          "code": "19-0704",
+          "size": "4 mm"
+        },
+        {
+          "code": "19-0705",
+          "size": "5 mm"
+        },
+        {
+          "code": "19-0706",
+          "size": "6 mm"
+        },
+        {
+          "code": "19-0707",
+          "size": "7 mm"
+        },
+        {
+          "code": "19-0708",
+          "size": "8 mm"
+        }
+      ],
+      "mediaAssetId": "knives-keyes-dermal-punches",
+      "mediaPath": "/media/catalogue-preview/knives/knives-keyes-dermal-punches.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-keyes-dermal-punches.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-knives-keyes-dermal-punch-set",
+      "familySlug": "knives",
+      "slug": "keyes-dermal-punch-set",
+      "name": "Keyes Dermal Punch Set",
+      "code": "19-0800",
+      "description": "Catalogue-listed Keyes Dermal Punch Set. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
+      "sizes": [
+        "19.0 cm"
+      ],
+      "variants": [
+        "Six interchangeable tips with handle and rack"
+      ],
+      "directions": [],
+      "primaryOption": "Six interchangeable tips with handle and rack",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "3"
+      },
+      "mediaLabel": "Keyes Dermal Punch Set, Six interchangeable tips with handle and rack",
+      "catalogueCodes": [
+        {
+          "code": "19-0800",
+          "size": "19.0 cm"
+        }
+      ],
+      "mediaAssetId": "knives-keyes-dermal-punch-set",
+      "mediaPath": "/media/catalogue-preview/knives/knives-keyes-dermal-punch-set.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/knives/knives-keyes-dermal-punch-set.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/knives-image-batch-01/docs/review/catalogue-media/knives-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product_scalpel_handle_3",
+      "familySlug": "knives",
+      "slug": "scalpel-handle-no-3",
+      "name": "Scalpel Handle No. 3",
+      "code": "18-0644",
+      "description": "Catalogue-listed Scalpel Handle No. 3 presented with the stated dimensions and option for quotation review.",
+      "sizes": [
+        "14.5 cm"
+      ],
+      "variants": [
+        "Standard"
+      ],
+      "directions": [],
+      "primaryOption": "14.5 cm",
+      "catalogueReference": {
+        "family": "Knives",
+        "page": "6"
+      },
+      "mediaLabel": "Scalpel Handle No. 3",
+      "mediaPath": "/media/catalogue-preview/knives/owner-scalpel-handle-no-3.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-knives-catalogue.pdf#page=3",
+      "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · Code 18-0644 is listed beside the extracted handle configuration."
+    },
+    {
+      "id": "product_bard_parker_handle",
+      "familySlug": "knives",
+      "slug": "bard-parker-handle",
+      "name": "Bard Parker Handle",
+      "code": "18-0650",
+      "description": "Catalogue-listed Bard Parker Handle presented with the stated dimensions and option for quotation review.",
+      "sizes": [
+        "14.5 cm"
+      ],
+      "variants": [
+        "Standard"
+      ],
+      "directions": [],
+      "primaryOption": "14.5 cm",
+      "catalogueReference": {
+        "family": "Knives"
+      },
+      "mediaLabel": "Bard Parker Handle",
+      "mediaPath": "/media/catalogue-preview/knives/owner-bard-parker-handle.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-knives-catalogue.pdf#page=3",
+      "mediaReviewNote": "acceptable-similar · owner-supplied catalogue · transparent · approved · Catalogue handle selected as the closest safe visual for this legacy record."
+    },
+    {
+      "id": "product_amputation_knife",
+      "familySlug": "knives",
+      "slug": "amputation-knife",
+      "name": "Amputation Knife",
+      "code": "18-1202",
+      "description": "Catalogue-listed Amputation Knife presented with the stated dimensions and option for quotation review.",
+      "sizes": [
+        "14.5 cm"
+      ],
+      "variants": [
+        "Standard"
+      ],
+      "directions": [],
+      "primaryOption": "14.5 cm",
+      "catalogueReference": {
+        "family": "Knives"
+      },
+      "mediaLabel": "Amputation Knife",
+      "mediaPath": "/media/catalogue-preview/knives/owner-amputation-knife.png",
+      "mediaSourceUrl": "https://medicalinst.net/product/amputation-knife-19cm-blade/",
+      "mediaReviewNote": "strong-match · manufacturer product page · transparent · approved · Background-only extraction from the referenced product photograph."
+    },
+    {
+      "id": "product_resection_knife",
+      "familySlug": "knives",
+      "slug": "resection-knife",
+      "name": "Resection Knife",
+      "code": "18-1404",
+      "description": "Catalogue-listed Resection Knife presented with the stated dimensions and option for quotation review.",
+      "sizes": [
+        "14.5 cm"
+      ],
+      "variants": [
+        "Standard"
+      ],
+      "directions": [],
+      "primaryOption": "14.5 cm",
+      "catalogueReference": {
+        "family": "Knives"
+      },
+      "mediaLabel": "Resection Knife",
+      "mediaPath": "/media/catalogue-preview/knives/owner-resection-knife.png",
+      "mediaSourceUrl": "https://www.surgical-design.com/products/resection-knife",
+      "mediaReviewNote": "strong-match · manufacturer product page · transparent · approved · Background-only extraction from the referenced product photograph."
+    },
+    {
+      "id": "product-scissors-iris-regular-straight",
+      "familySlug": "scissors",
+      "slug": "iris-scissors-regular-straight",
+      "name": "Iris Scissors",
+      "code": "04-0901",
+      "description": "Catalogue-listed Iris Scissors in Regular, straight, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "10.5 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Regular · Straight · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Iris Scissors, Regular, Straight, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "04-0901",
+          "size": "10.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-iris-regular-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-regular-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-regular-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-iris-regular-curved",
+      "familySlug": "scissors",
+      "slug": "iris-scissors-regular-curved",
+      "name": "Iris Scissors",
+      "code": "04-0911",
+      "description": "Catalogue-listed Iris Scissors in Regular, curved, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "10.5 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Regular · Curved · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Iris Scissors, Regular, Curved, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "04-0911",
+          "size": "10.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-iris-regular-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-regular-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-regular-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-iris-super-cut-straight",
+      "familySlug": "scissors",
+      "slug": "iris-scissors-super-cut-straight",
+      "name": "Iris Scissors",
+      "code": "05-0901",
+      "description": "Catalogue-listed Iris Scissors in Super Cut, straight, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "10.5 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Super Cut · Straight · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Iris Scissors, Super Cut, Straight, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "05-0901",
+          "size": "10.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-iris-super-cut-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-super-cut-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-super-cut-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-iris-super-cut-curved",
+      "familySlug": "scissors",
+      "slug": "iris-scissors-super-cut-curved",
+      "name": "Iris Scissors",
+      "code": "05-0911",
+      "description": "Catalogue-listed Iris Scissors in Super Cut, curved, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "10.5 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Super Cut · Curved · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Iris Scissors, Super Cut, Curved, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "05-0911",
+          "size": "10.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-iris-super-cut-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-super-cut-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-super-cut-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-iris-tungsten-carbide-straight",
+      "familySlug": "scissors",
+      "slug": "iris-scissors-tungsten-carbide-straight",
+      "name": "Iris Scissors",
+      "code": "06-0901",
+      "description": "Catalogue-listed Iris Scissors in Tungsten Carbide, straight, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "10.5 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Tungsten Carbide · Straight · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Iris Scissors, Tungsten Carbide, Straight, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "06-0901",
+          "size": "10.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-iris-tungsten-carbide-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-tungsten-carbide-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-tungsten-carbide-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-iris-tungsten-carbide-curved",
+      "familySlug": "scissors",
+      "slug": "iris-scissors-tungsten-carbide-curved",
+      "name": "Iris Scissors",
+      "code": "06-0911",
+      "description": "Catalogue-listed Iris Scissors in Tungsten Carbide, curved, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "10.5 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Tungsten Carbide · Curved · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Iris Scissors, Tungsten Carbide, Curved, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "06-0911",
+          "size": "10.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-iris-tungsten-carbide-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-tungsten-carbide-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-tungsten-carbide-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-stevens-regular-straight",
+      "familySlug": "scissors",
+      "slug": "stevens-scissors-regular-straight",
+      "name": "Stevens Scissors",
+      "code": "04-0800",
+      "description": "Catalogue-listed Stevens Scissors in Regular, straight, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "9.5 cm",
+        "11.5 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Regular · Straight · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Stevens Scissors, Regular, Straight, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "04-0800",
+          "size": "9.5 cm"
+        },
+        {
+          "code": "04-0802",
+          "size": "11.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-stevens-regular-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-stevens-regular-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-stevens-regular-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-stevens-regular-curved",
+      "familySlug": "scissors",
+      "slug": "stevens-scissors-regular-curved",
+      "name": "Stevens Scissors",
+      "code": "04-0810",
+      "description": "Catalogue-listed Stevens Scissors in Regular, curved, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "9.5 cm",
+        "11.5 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Regular · Curved · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Stevens Scissors, Regular, Curved, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "04-0810",
+          "size": "9.5 cm"
+        },
+        {
+          "code": "04-0812",
+          "size": "11.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-stevens-regular-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-stevens-regular-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-stevens-regular-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-stevens-super-cut-straight",
+      "familySlug": "scissors",
+      "slug": "stevens-scissors-super-cut-straight",
+      "name": "Stevens Scissors",
+      "code": "05-0800",
+      "description": "Catalogue-listed Stevens Scissors in Super Cut, straight, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "9.5 cm",
+        "11.5 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Super Cut · Straight · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Stevens Scissors, Super Cut, Straight, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "05-0800",
+          "size": "9.5 cm"
+        },
+        {
+          "code": "05-0802",
+          "size": "11.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-stevens-super-cut-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-stevens-super-cut-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-stevens-super-cut-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-stevens-super-cut-curved",
+      "familySlug": "scissors",
+      "slug": "stevens-scissors-super-cut-curved",
+      "name": "Stevens Scissors",
+      "code": "05-0810",
+      "description": "Catalogue-listed Stevens Scissors in Super Cut, curved, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "9.5 cm",
+        "11.5 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Super Cut · Curved · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Stevens Scissors, Super Cut, Curved, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "05-0810",
+          "size": "9.5 cm"
+        },
+        {
+          "code": "05-0812",
+          "size": "11.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-stevens-super-cut-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-stevens-super-cut-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-stevens-super-cut-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-stevens-tungsten-carbide-straight",
+      "familySlug": "scissors",
+      "slug": "stevens-scissors-tungsten-carbide-straight",
+      "name": "Stevens Scissors",
+      "code": "06-0800",
+      "description": "Catalogue-listed Stevens Scissors in Tungsten Carbide, straight, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "9.5 cm",
+        "11.5 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Tungsten Carbide · Straight · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Stevens Scissors, Tungsten Carbide, Straight, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "06-0800",
+          "size": "9.5 cm"
+        },
+        {
+          "code": "06-0802",
+          "size": "11.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-stevens-tungsten-carbide-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-stevens-tungsten-carbide-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-stevens-tungsten-carbide-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-stevens-tungsten-carbide-curved",
+      "familySlug": "scissors",
+      "slug": "stevens-scissors-tungsten-carbide-curved",
+      "name": "Stevens Scissors",
+      "code": "06-0810",
+      "description": "Catalogue-listed Stevens Scissors in Tungsten Carbide, curved, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "9.5 cm",
+        "11.5 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Tungsten Carbide · Curved · Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "1"
+      },
+      "mediaLabel": "Stevens Scissors, Tungsten Carbide, Curved, Sharp",
+      "catalogueCodes": [
+        {
+          "code": "06-0810",
+          "size": "9.5 cm"
+        },
+        {
+          "code": "06-0812",
+          "size": "11.5 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-stevens-tungsten-carbide-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-stevens-tungsten-carbide-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-stevens-tungsten-carbide-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-regular-straight-sharp-sharp",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-regular-straight-sharp-sharp",
+      "name": "Operating Scissors",
+      "code": "04-0121",
+      "description": "Catalogue-listed Operating Scissors in Regular, straight, sharp/sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp/Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Regular · Straight · Sharp/Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Regular, Straight, Sharp/Sharp",
+      "catalogueCodes": [
+        {
+          "code": "04-0121",
+          "size": "12 cm"
+        },
+        {
+          "code": "04-0101",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-0102",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-regular-straight-sharp-sharp",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-regular-straight-sharp-sharp.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-regular-straight-sharp-sharp.webp",
+      "mediaSourceUrl": "https://www.mpmmedicalsupply.com/products/operating-scissors",
+      "mediaReviewNote": "strong-match · supplier-fallback · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-regular-curved-sharp-sharp",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-regular-curved-sharp-sharp",
+      "name": "Operating Scissors",
+      "code": "04-0131",
+      "description": "Catalogue-listed Operating Scissors in Regular, curved, sharp/sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp/Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Regular · Curved · Sharp/Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Regular, Curved, Sharp/Sharp",
+      "catalogueCodes": [
+        {
+          "code": "04-0131",
+          "size": "12 cm"
+        },
+        {
+          "code": "04-0111",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-0112",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-regular-curved-sharp-sharp",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-regular-curved-sharp-sharp.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-regular-curved-sharp-sharp.webp",
+      "mediaSourceUrl": "https://www.mpmmedicalsupply.com/products/operating-scissors",
+      "mediaReviewNote": "strong-match · supplier-fallback · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-regular-straight-sharp-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-regular-straight-sharp-blunt",
+      "name": "Operating Scissors",
+      "code": "04-0221",
+      "description": "Catalogue-listed Operating Scissors in Regular, straight, sharp/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp/Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Regular · Straight · Sharp/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Regular, Straight, Sharp/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-0221",
+          "size": "12 cm"
+        },
+        {
+          "code": "04-0201",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-0202",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-regular-straight-sharp-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-regular-straight-sharp-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-regular-straight-sharp-blunt.webp",
+      "mediaSourceUrl": "https://www.mpmmedicalsupply.com/products/operating-scissors",
+      "mediaReviewNote": "strong-match · supplier-fallback · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-regular-curved-sharp-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-regular-curved-sharp-blunt",
+      "name": "Operating Scissors",
+      "code": "04-0231",
+      "description": "Catalogue-listed Operating Scissors in Regular, curved, sharp/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Sharp/Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Regular · Curved · Sharp/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Regular, Curved, Sharp/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-0231",
+          "size": "12 cm"
+        },
+        {
+          "code": "04-0211",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-0212",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-regular-curved-sharp-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-regular-curved-sharp-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-regular-curved-sharp-blunt.webp",
+      "mediaSourceUrl": "https://www.mpmmedicalsupply.com/products/operating-scissors",
+      "mediaReviewNote": "strong-match · supplier-fallback · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-regular-straight-blunt-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-regular-straight-blunt-blunt",
+      "name": "Operating Scissors",
+      "code": "04-0321",
+      "description": "Catalogue-listed Operating Scissors in Regular, straight, blunt/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Blunt/Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Regular · Straight · Blunt/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Regular, Straight, Blunt/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-0321",
+          "size": "12 cm"
+        },
+        {
+          "code": "04-0301",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-0302",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-regular-straight-blunt-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-regular-straight-blunt-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-regular-straight-blunt-blunt.webp",
+      "mediaSourceUrl": "https://www.mpmmedicalsupply.com/products/operating-scissors",
+      "mediaReviewNote": "strong-match · supplier-fallback · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-regular-curved-blunt-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-regular-curved-blunt-blunt",
+      "name": "Operating Scissors",
+      "code": "04-0331",
+      "description": "Catalogue-listed Operating Scissors in Regular, curved, blunt/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Blunt/Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Regular · Curved · Blunt/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Regular, Curved, Blunt/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-0331",
+          "size": "12 cm"
+        },
+        {
+          "code": "04-0311",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-0312",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-regular-curved-blunt-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-regular-curved-blunt-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-regular-curved-blunt-blunt.webp",
+      "mediaSourceUrl": "https://www.mpmmedicalsupply.com/products/operating-scissors",
+      "mediaReviewNote": "strong-match · supplier-fallback · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-super-cut-straight-sharp-sharp",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-super-cut-straight-sharp-sharp",
+      "name": "Operating Scissors",
+      "code": "05-0121",
+      "description": "Catalogue-listed Operating Scissors in Super Cut, straight, sharp/sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp/Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Super Cut · Straight · Sharp/Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Super Cut, Straight, Sharp/Sharp",
+      "catalogueCodes": [
+        {
+          "code": "05-0121",
+          "size": "12 cm"
+        },
+        {
+          "code": "05-0101",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-0102",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-super-cut-straight-sharp-sharp",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-straight-sharp-sharp.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-straight-sharp-sharp.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-super-cut-curved-sharp-sharp",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-super-cut-curved-sharp-sharp",
+      "name": "Operating Scissors",
+      "code": "05-0131",
+      "description": "Catalogue-listed Operating Scissors in Super Cut, curved, sharp/sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp/Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Super Cut · Curved · Sharp/Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Super Cut, Curved, Sharp/Sharp",
+      "catalogueCodes": [
+        {
+          "code": "05-0131",
+          "size": "12 cm"
+        },
+        {
+          "code": "05-0111",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-0112",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-super-cut-curved-sharp-sharp",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-curved-sharp-sharp.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-curved-sharp-sharp.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-super-cut-straight-sharp-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-super-cut-straight-sharp-blunt",
+      "name": "Operating Scissors",
+      "code": "05-0221",
+      "description": "Catalogue-listed Operating Scissors in Super Cut, straight, sharp/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp/Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Super Cut · Straight · Sharp/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Super Cut, Straight, Sharp/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-0221",
+          "size": "12 cm"
+        },
+        {
+          "code": "05-0201",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-0202",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-super-cut-straight-sharp-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-straight-sharp-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-straight-sharp-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-super-cut-curved-sharp-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-super-cut-curved-sharp-blunt",
+      "name": "Operating Scissors",
+      "code": "05-0231",
+      "description": "Catalogue-listed Operating Scissors in Super Cut, curved, sharp/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Sharp/Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Super Cut · Curved · Sharp/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Super Cut, Curved, Sharp/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-0231",
+          "size": "12 cm"
+        },
+        {
+          "code": "05-0211",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-0212",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-super-cut-curved-sharp-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-curved-sharp-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-curved-sharp-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-super-cut-straight-blunt-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-super-cut-straight-blunt-blunt",
+      "name": "Operating Scissors",
+      "code": "05-0321",
+      "description": "Catalogue-listed Operating Scissors in Super Cut, straight, blunt/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Blunt/Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Super Cut · Straight · Blunt/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Super Cut, Straight, Blunt/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-0321",
+          "size": "12 cm"
+        },
+        {
+          "code": "05-0301",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-0302",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-super-cut-straight-blunt-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-straight-blunt-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-straight-blunt-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-super-cut-curved-blunt-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-super-cut-curved-blunt-blunt",
+      "name": "Operating Scissors",
+      "code": "05-0331",
+      "description": "Catalogue-listed Operating Scissors in Super Cut, curved, blunt/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Blunt/Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Super Cut · Curved · Blunt/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Super Cut, Curved, Blunt/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-0331",
+          "size": "12 cm"
+        },
+        {
+          "code": "05-0311",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-0312",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-super-cut-curved-blunt-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-curved-blunt-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-super-cut-curved-blunt-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-tungsten-carbide-straight-sharp-sharp",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-tungsten-carbide-straight-sharp-sharp",
+      "name": "Operating Scissors",
+      "code": "06-0121",
+      "description": "Catalogue-listed Operating Scissors in Tungsten Carbide, straight, sharp/sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp/Sharp"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Tungsten Carbide · Straight · Sharp/Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Tungsten Carbide, Straight, Sharp/Sharp",
+      "catalogueCodes": [
+        {
+          "code": "06-0121",
+          "size": "12 cm"
+        },
+        {
+          "code": "06-0101",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-0102",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-tungsten-carbide-straight-sharp-sharp",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-straight-sharp-sharp.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-straight-sharp-sharp.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-tungsten-carbide-curved-sharp-sharp",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-tungsten-carbide-curved-sharp-sharp",
+      "name": "Operating Scissors",
+      "code": "06-0131",
+      "description": "Catalogue-listed Operating Scissors in Tungsten Carbide, curved, sharp/sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp/Sharp"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Tungsten Carbide · Curved · Sharp/Sharp",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Tungsten Carbide, Curved, Sharp/Sharp",
+      "catalogueCodes": [
+        {
+          "code": "06-0131",
+          "size": "12 cm"
+        },
+        {
+          "code": "06-0111",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-0112",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-tungsten-carbide-curved-sharp-sharp",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-curved-sharp-sharp.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-curved-sharp-sharp.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-tungsten-carbide-straight-sharp-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-tungsten-carbide-straight-sharp-blunt",
+      "name": "Operating Scissors",
+      "code": "06-0221",
+      "description": "Catalogue-listed Operating Scissors in Tungsten Carbide, straight, sharp/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp/Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Tungsten Carbide · Straight · Sharp/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Tungsten Carbide, Straight, Sharp/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-0221",
+          "size": "12 cm"
+        },
+        {
+          "code": "06-0201",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-0202",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-tungsten-carbide-straight-sharp-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-straight-sharp-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-straight-sharp-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-tungsten-carbide-curved-sharp-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-tungsten-carbide-curved-sharp-blunt",
+      "name": "Operating Scissors",
+      "code": "06-0231",
+      "description": "Catalogue-listed Operating Scissors in Tungsten Carbide, curved, sharp/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Sharp/Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Tungsten Carbide · Curved · Sharp/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Tungsten Carbide, Curved, Sharp/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-0231",
+          "size": "12 cm"
+        },
+        {
+          "code": "06-0211",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-0212",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-tungsten-carbide-curved-sharp-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-curved-sharp-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-curved-sharp-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-tungsten-carbide-straight-blunt-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-tungsten-carbide-straight-blunt-blunt",
+      "name": "Operating Scissors",
+      "code": "06-0321",
+      "description": "Catalogue-listed Operating Scissors in Tungsten Carbide, straight, blunt/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Blunt/Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Tungsten Carbide · Straight · Blunt/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Tungsten Carbide, Straight, Blunt/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-0321",
+          "size": "12 cm"
+        },
+        {
+          "code": "06-0301",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-0302",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-tungsten-carbide-straight-blunt-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-straight-blunt-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-straight-blunt-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-operating-tungsten-carbide-curved-blunt-blunt",
+      "familySlug": "scissors",
+      "slug": "operating-scissors-tungsten-carbide-curved-blunt-blunt",
+      "name": "Operating Scissors",
+      "code": "06-0331",
+      "description": "Catalogue-listed Operating Scissors in Tungsten Carbide, curved, blunt/blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "12 cm",
+        "14 cm",
+        "17 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Blunt/Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Tungsten Carbide · Curved · Blunt/Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "2"
+      },
+      "mediaLabel": "Operating Scissors, Tungsten Carbide, Curved, Blunt/Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-0331",
+          "size": "12 cm"
+        },
+        {
+          "code": "06-0311",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-0312",
+          "size": "17 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-operating-tungsten-carbide-curved-blunt-blunt",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-curved-blunt-blunt.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-operating-tungsten-carbide-curved-blunt-blunt.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-wave3-operating.md#client-catalogue-page-2-operating",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-mayo-regular-straight",
+      "familySlug": "scissors",
+      "slug": "mayo-scissors",
+      "name": "Mayo Scissors",
+      "code": "04-0401",
+      "description": "Catalogue-listed Mayo Scissors in Regular, straight, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "14.5 cm",
+        "17 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Regular · Straight · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Mayo Scissors, Regular, Straight, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-0401",
+          "size": "14.5 cm"
+        },
+        {
+          "code": "04-0402",
+          "size": "17 cm"
+        },
+        {
+          "code": "04-0403",
+          "size": "20 cm"
+        },
+        {
+          "code": "04-0404",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-mayo-regular-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-mayo-regular-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-mayo-regular-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-mayo-regular-curved",
+      "familySlug": "scissors",
+      "slug": "mayo-scissors-regular-curved",
+      "name": "Mayo Scissors",
+      "code": "04-0411",
+      "description": "Catalogue-listed Mayo Scissors in Regular, curved, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "14.5 cm",
+        "17 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Regular · Curved · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Mayo Scissors, Regular, Curved, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-0411",
+          "size": "14.5 cm"
+        },
+        {
+          "code": "04-0412",
+          "size": "17 cm"
+        },
+        {
+          "code": "04-0413",
+          "size": "20 cm"
+        },
+        {
+          "code": "04-0414",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-mayo-regular-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-mayo-regular-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-mayo-regular-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-mayo-super-cut-straight",
+      "familySlug": "scissors",
+      "slug": "mayo-scissors-super-cut-straight",
+      "name": "Mayo Scissors",
+      "code": "05-0401",
+      "description": "Catalogue-listed Mayo Scissors in Super Cut, straight, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "14.5 cm",
+        "17 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Super Cut · Straight · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Mayo Scissors, Super Cut, Straight, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-0401",
+          "size": "14.5 cm"
+        },
+        {
+          "code": "05-0402",
+          "size": "17 cm"
+        },
+        {
+          "code": "05-0403",
+          "size": "20 cm"
+        },
+        {
+          "code": "05-0404",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-mayo-super-cut-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-mayo-super-cut-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-mayo-super-cut-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-mayo-super-cut-curved",
+      "familySlug": "scissors",
+      "slug": "mayo-scissors-super-cut-curved",
+      "name": "Mayo Scissors",
+      "code": "05-0411",
+      "description": "Catalogue-listed Mayo Scissors in Super Cut, curved, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "14.5 cm",
+        "17 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Super Cut · Curved · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Mayo Scissors, Super Cut, Curved, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-0411",
+          "size": "14.5 cm"
+        },
+        {
+          "code": "05-0412",
+          "size": "17 cm"
+        },
+        {
+          "code": "05-0413",
+          "size": "20 cm"
+        },
+        {
+          "code": "05-0414",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-mayo-super-cut-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-mayo-super-cut-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-mayo-super-cut-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-mayo-tungsten-carbide-straight",
+      "familySlug": "scissors",
+      "slug": "mayo-scissors-tungsten-carbide-straight",
+      "name": "Mayo Scissors",
+      "code": "06-0401",
+      "description": "Catalogue-listed Mayo Scissors in Tungsten Carbide, straight, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "14.5 cm",
+        "17 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Tungsten Carbide · Straight · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Mayo Scissors, Tungsten Carbide, Straight, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-0401",
+          "size": "14.5 cm"
+        },
+        {
+          "code": "06-0402",
+          "size": "17 cm"
+        },
+        {
+          "code": "06-0403",
+          "size": "20 cm"
+        },
+        {
+          "code": "06-0404",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-mayo-tungsten-carbide-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-mayo-tungsten-carbide-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-mayo-tungsten-carbide-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-mayo-tungsten-carbide-curved",
+      "familySlug": "scissors",
+      "slug": "mayo-scissors-tungsten-carbide-curved",
+      "name": "Mayo Scissors",
+      "code": "06-0411",
+      "description": "Catalogue-listed Mayo Scissors in Tungsten Carbide, curved, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "14.5 cm",
+        "17 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Tungsten Carbide · Curved · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Mayo Scissors, Tungsten Carbide, Curved, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-0411",
+          "size": "14.5 cm"
+        },
+        {
+          "code": "06-0412",
+          "size": "17 cm"
+        },
+        {
+          "code": "06-0413",
+          "size": "20 cm"
+        },
+        {
+          "code": "06-0414",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-mayo-tungsten-carbide-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-mayo-tungsten-carbide-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-mayo-tungsten-carbide-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-metzenbaum-regular-straight",
+      "familySlug": "scissors",
+      "slug": "metzenbaum-scissors-regular-straight",
+      "name": "Metzenbaum Scissors",
+      "code": "04-1901",
+      "description": "Catalogue-listed Metzenbaum Scissors in Regular, straight, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "11 cm",
+        "14 cm",
+        "16 cm",
+        "18 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Regular · Straight · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Metzenbaum Scissors, Regular, Straight, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-1901",
+          "size": "11 cm"
+        },
+        {
+          "code": "04-1902",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-1909",
+          "size": "16 cm"
+        },
+        {
+          "code": "04-1903",
+          "size": "18 cm"
+        },
+        {
+          "code": "04-1904",
+          "size": "20 cm"
+        },
+        {
+          "code": "04-1905",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-metzenbaum-regular-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-regular-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-regular-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-metzenbaum-regular-curved",
+      "familySlug": "scissors",
+      "slug": "metzenbaum-scissors-regular-curved",
+      "name": "Metzenbaum Scissors",
+      "code": "04-1911",
+      "description": "Catalogue-listed Metzenbaum Scissors in Regular, curved, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "11 cm",
+        "14 cm",
+        "16 cm",
+        "18 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Regular",
+        "Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Regular · Curved · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Metzenbaum Scissors, Regular, Curved, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "04-1911",
+          "size": "11 cm"
+        },
+        {
+          "code": "04-1912",
+          "size": "14 cm"
+        },
+        {
+          "code": "04-1919",
+          "size": "16 cm"
+        },
+        {
+          "code": "04-1913",
+          "size": "18 cm"
+        },
+        {
+          "code": "04-1914",
+          "size": "20 cm"
+        },
+        {
+          "code": "04-1915",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-metzenbaum-regular-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-regular-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-regular-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-metzenbaum-super-cut-straight",
+      "familySlug": "scissors",
+      "slug": "metzenbaum-scissors-super-cut-straight",
+      "name": "Metzenbaum Scissors",
+      "code": "05-1901",
+      "description": "Catalogue-listed Metzenbaum Scissors in Super Cut, straight, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "11 cm",
+        "14 cm",
+        "16 cm",
+        "18 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Super Cut · Straight · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Metzenbaum Scissors, Super Cut, Straight, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-1901",
+          "size": "11 cm"
+        },
+        {
+          "code": "05-1902",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-1909",
+          "size": "16 cm"
+        },
+        {
+          "code": "05-1903",
+          "size": "18 cm"
+        },
+        {
+          "code": "05-1904",
+          "size": "20 cm"
+        },
+        {
+          "code": "05-1905",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-metzenbaum-super-cut-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-super-cut-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-super-cut-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-metzenbaum-super-cut-curved",
+      "familySlug": "scissors",
+      "slug": "metzenbaum-scissors-super-cut-curved",
+      "name": "Metzenbaum Scissors",
+      "code": "05-1911",
+      "description": "Catalogue-listed Metzenbaum Scissors in Super Cut, curved, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "11 cm",
+        "14 cm",
+        "16 cm",
+        "18 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Super Cut",
+        "Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Super Cut · Curved · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Metzenbaum Scissors, Super Cut, Curved, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "05-1911",
+          "size": "11 cm"
+        },
+        {
+          "code": "05-1912",
+          "size": "14 cm"
+        },
+        {
+          "code": "05-1919",
+          "size": "16 cm"
+        },
+        {
+          "code": "05-1913",
+          "size": "18 cm"
+        },
+        {
+          "code": "05-1914",
+          "size": "20 cm"
+        },
+        {
+          "code": "05-1915",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-metzenbaum-super-cut-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-super-cut-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-super-cut-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-metzenbaum-tungsten-carbide-straight",
+      "familySlug": "scissors",
+      "slug": "metzenbaum-scissors-tungsten-carbide-straight",
+      "name": "Metzenbaum Scissors",
+      "code": "06-1901",
+      "description": "Catalogue-listed Metzenbaum Scissors in Tungsten Carbide, straight, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "11 cm",
+        "14 cm",
+        "16 cm",
+        "18 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Blunt"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Tungsten Carbide · Straight · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Metzenbaum Scissors, Tungsten Carbide, Straight, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-1901",
+          "size": "11 cm"
+        },
+        {
+          "code": "06-1902",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-1909",
+          "size": "16 cm"
+        },
+        {
+          "code": "06-1903",
+          "size": "18 cm"
+        },
+        {
+          "code": "06-1904",
+          "size": "20 cm"
+        },
+        {
+          "code": "06-1905",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-metzenbaum-tungsten-carbide-straight",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-tungsten-carbide-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-tungsten-carbide-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-scissors-metzenbaum-tungsten-carbide-curved",
+      "familySlug": "scissors",
+      "slug": "metzenbaum-scissors-tungsten-carbide-curved",
+      "name": "Metzenbaum Scissors",
+      "code": "06-1911",
+      "description": "Catalogue-listed Metzenbaum Scissors in Tungsten Carbide, curved, blunt configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
+      "sizes": [
+        "11 cm",
+        "14 cm",
+        "16 cm",
+        "18 cm",
+        "20 cm",
+        "23 cm"
+      ],
+      "variants": [
+        "Tungsten Carbide",
+        "Blunt"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Tungsten Carbide · Curved · Blunt",
+      "catalogueReference": {
+        "family": "Scissors",
+        "page": "3"
+      },
+      "mediaLabel": "Metzenbaum Scissors, Tungsten Carbide, Curved, Blunt",
+      "catalogueCodes": [
+        {
+          "code": "06-1911",
+          "size": "11 cm"
+        },
+        {
+          "code": "06-1912",
+          "size": "14 cm"
+        },
+        {
+          "code": "06-1919",
+          "size": "16 cm"
+        },
+        {
+          "code": "06-1913",
+          "size": "18 cm"
+        },
+        {
+          "code": "06-1914",
+          "size": "20 cm"
+        },
+        {
+          "code": "06-1915",
+          "size": "23 cm"
+        }
+      ],
+      "mediaAssetId": "scissors-metzenbaum-tungsten-carbide-curved",
+      "mediaPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-tungsten-carbide-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-metzenbaum-tungsten-carbide-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-pages-2-and-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product_yeoman",
+      "familySlug": "punches",
+      "slug": "yeoman",
+      "name": "Yeoman Punch",
+      "code": "21-1001",
+      "description": "Catalogue-listed Yeoman Punch. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "42.0 cm"
+      ],
+      "variants": [
+        "Code group 21-10xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-10xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "1"
+      },
+      "mediaLabel": "Yeoman Punch, Code group 21-10xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1001",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1002",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1003",
+          "size": "42.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-yeoman-21-10",
+      "mediaPath": "/media/catalogue-preview/punches/punches-yeoman-21-10.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-yeoman-21-10.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product_yeoman_perforated",
+      "familySlug": "punches",
+      "slug": "yeoman-perforated",
+      "name": "Yeoman Punch",
+      "code": "21-1101",
+      "description": "Catalogue-listed Yeoman Punch. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "42.0 cm"
+      ],
+      "variants": [
+        "Code group 21-11xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-11xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "1"
+      },
+      "mediaLabel": "Yeoman Punch, Code group 21-11xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1101",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1102",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1103",
+          "size": "42.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-yeoman-21-11",
+      "mediaPath": "/media/catalogue-preview/punches/punches-yeoman-21-11.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-yeoman-21-11.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product_yeoman_rectangular",
+      "familySlug": "punches",
+      "slug": "yeoman-rectangular",
+      "name": "Yeoman Punch",
+      "code": "21-1201",
+      "description": "Catalogue-listed Yeoman Punch. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "42.0 cm"
+      ],
+      "variants": [
+        "Code group 21-12xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-12xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "1"
+      },
+      "mediaLabel": "Yeoman Punch, Code group 21-12xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1201",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1202",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1203",
+          "size": "42.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-yeoman-21-12",
+      "mediaPath": "/media/catalogue-preview/punches/punches-yeoman-21-12.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-yeoman-21-12.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-yeoman-21-13",
+      "familySlug": "punches",
+      "slug": "yeoman-21-13",
+      "name": "Yeoman Punch",
+      "code": "21-1301",
+      "description": "Catalogue-listed Yeoman Punch. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "42.0 cm"
+      ],
+      "variants": [
+        "Code group 21-13xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-13xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "1"
+      },
+      "mediaLabel": "Yeoman Punch, Code group 21-13xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1301",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1302",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1303",
+          "size": "42.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-yeoman-21-13",
+      "mediaPath": "/media/catalogue-preview/punches/punches-yeoman-21-13.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-yeoman-21-13.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-yeoman-21-14",
+      "familySlug": "punches",
+      "slug": "yeoman-21-14",
+      "name": "Yeoman Punch, 360° Turnable",
+      "code": "21-1401",
+      "description": "Catalogue-listed Yeoman Punch, 360° Turnable. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "40.0 cm"
+      ],
+      "variants": [
+        "Code group 21-14xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-14xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "2"
+      },
+      "mediaLabel": "Yeoman Punch, 360° Turnable, Code group 21-14xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1401",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1402",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1403",
+          "size": "40.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-yeoman-21-14",
+      "mediaPath": "/media/catalogue-preview/punches/punches-yeoman-21-14.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-yeoman-21-14.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-yeoman-21-15",
+      "familySlug": "punches",
+      "slug": "yeoman-21-15",
+      "name": "Yeoman Punch, 360° Turnable",
+      "code": "21-1501",
+      "description": "Catalogue-listed Yeoman Punch, 360° Turnable. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "40.0 cm"
+      ],
+      "variants": [
+        "Code group 21-15xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-15xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "2"
+      },
+      "mediaLabel": "Yeoman Punch, 360° Turnable, Code group 21-15xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1501",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1502",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1503",
+          "size": "40.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-yeoman-21-15",
+      "mediaPath": "/media/catalogue-preview/punches/punches-yeoman-21-15.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-yeoman-21-15.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-turrel-21-16",
+      "familySlug": "punches",
+      "slug": "turrel-21-16",
+      "name": "Turrel Punch, 360° Turnable",
+      "code": "21-1601",
+      "description": "Catalogue-listed Turrel Punch, 360° Turnable. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "40.0 cm"
+      ],
+      "variants": [
+        "Code group 21-16xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-16xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "2"
+      },
+      "mediaLabel": "Turrel Punch, 360° Turnable, Code group 21-16xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1601",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1602",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1603",
+          "size": "40.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-turrel-21-16",
+      "mediaPath": "/media/catalogue-preview/punches/punches-turrel-21-16.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-turrel-21-16.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-turrel-21-17",
+      "familySlug": "punches",
+      "slug": "turrel-21-17",
+      "name": "Turrel Punch, 360° Turnable",
+      "code": "21-1701",
+      "description": "Catalogue-listed Turrel Punch, 360° Turnable. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "28.0 cm",
+        "35.0 cm",
+        "40.0 cm"
+      ],
+      "variants": [
+        "Code group 21-17xx"
+      ],
+      "directions": [],
+      "primaryOption": "Code group 21-17xx",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "2"
+      },
+      "mediaLabel": "Turrel Punch, 360° Turnable, Code group 21-17xx",
+      "catalogueCodes": [
+        {
+          "code": "21-1701",
+          "size": "28.0 cm"
+        },
+        {
+          "code": "21-1702",
+          "size": "35.0 cm"
+        },
+        {
+          "code": "21-1703",
+          "size": "40.0 cm"
+        }
+      ],
+      "mediaAssetId": "punches-turrel-21-17",
+      "mediaPath": "/media/catalogue-preview/punches/punches-turrel-21-17.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-turrel-21-17.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-fahlbusch",
+      "familySlug": "punches",
+      "slug": "fahlbusch-micro-scissors-horizontal-cutting",
+      "name": "Fahlbusch Micro Scissors",
+      "code": "38-2401",
+      "description": "Catalogue-listed Fahlbusch Micro Scissors. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "16.5 cm"
+      ],
+      "variants": [
+        "Horizontal cutting"
+      ],
+      "directions": [],
+      "primaryOption": "Horizontal cutting",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "3"
+      },
+      "mediaLabel": "Fahlbusch Micro Scissors, Horizontal cutting",
+      "catalogueCodes": [
+        {
+          "code": "38-2401",
+          "size": "16.5 cm"
+        }
+      ],
+      "mediaAssetId": "punches-fahlbusch",
+      "mediaPath": "/media/catalogue-preview/punches/punches-fahlbusch.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-fahlbusch.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-nicola-spoon-shaped",
+      "familySlug": "punches",
+      "slug": "nicola-forceps-spoon-shaped",
+      "name": "Nicola Forceps",
+      "code": "38-2410",
+      "description": "Catalogue-listed Nicola Forceps. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "16.5 cm"
+      ],
+      "variants": [
+        "Spoon-shaped"
+      ],
+      "directions": [],
+      "primaryOption": "Spoon-shaped",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "3"
+      },
+      "mediaLabel": "Nicola Forceps, Spoon-shaped",
+      "catalogueCodes": [
+        {
+          "code": "38-2410",
+          "size": "16.5 cm"
+        }
+      ],
+      "mediaAssetId": "punches-nicola-spoon-shaped",
+      "mediaPath": "/media/catalogue-preview/punches/punches-nicola-spoon-shaped.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-nicola-spoon-shaped.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-nicola-biopsy-straight",
+      "familySlug": "punches",
+      "slug": "nicola-forceps-biopsy-straight",
+      "name": "Nicola Forceps Scissors",
+      "code": "38-2402",
+      "description": "Catalogue-listed Nicola Forceps Scissors. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "16.5 cm"
+      ],
+      "variants": [
+        "Biopsy, straight"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Biopsy, straight",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "3"
+      },
+      "mediaLabel": "Nicola Forceps Scissors, Biopsy, straight",
+      "catalogueCodes": [
+        {
+          "code": "38-2402",
+          "size": "16.5 cm"
+        }
+      ],
+      "mediaAssetId": "punches-nicola-biopsy-straight",
+      "mediaPath": "/media/catalogue-preview/punches/punches-nicola-biopsy-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-nicola-biopsy-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-yasargil-nicola",
+      "familySlug": "punches",
+      "slug": "yasargil-nicola-forceps",
+      "name": "Yasargil-Nicola Forceps",
+      "code": "038-2420",
+      "description": "Catalogue-listed Yasargil-Nicola Forceps. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "16.5 cm"
+      ],
+      "variants": [
+        "Forceps"
+      ],
+      "directions": [],
+      "primaryOption": "Forceps",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "3"
+      },
+      "mediaLabel": "Yasargil-Nicola Forceps, Forceps",
+      "catalogueCodes": [
+        {
+          "code": "038-2420",
+          "size": "16.5 cm"
+        }
+      ],
+      "mediaAssetId": "punches-yasargil-nicola",
+      "mediaPath": "/media/catalogue-preview/punches/punches-yasargil-nicola.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-yasargil-nicola.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-citelly",
+      "familySlug": "punches",
+      "slug": "citelly-laminectomy-punches",
+      "name": "Citelly Laminectomy Punches",
+      "code": "38-2501",
+      "description": "Catalogue-listed Citelly Laminectomy Punches. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "1.0 mm",
+        "2.0 mm",
+        "3.0 mm"
+      ],
+      "variants": [
+        "8.0 cm shaft"
+      ],
+      "directions": [],
+      "primaryOption": "8.0 cm shaft",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "3"
+      },
+      "mediaLabel": "Citelly Laminectomy Punches, 8.0 cm shaft",
+      "catalogueCodes": [
+        {
+          "code": "38-2501",
+          "size": "1.0 mm"
+        },
+        {
+          "code": "38-2502",
+          "size": "2.0 mm"
+        },
+        {
+          "code": "38-2503",
+          "size": "3.0 mm"
+        }
+      ],
+      "mediaAssetId": "punches-citelly",
+      "mediaPath": "/media/catalogue-preview/punches/punches-citelly.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-citelly.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product-punches-beyer",
+      "familySlug": "punches",
+      "slug": "beyer-laminectomy-punch",
+      "name": "Beyer Laminectomy Punch",
+      "code": "38-2510",
+      "description": "Catalogue-listed Beyer Laminectomy Punch. Codes remain grouped only where the catalogue presents one unchanged visible configuration with shaft-length or opening-size variants.",
+      "sizes": [
+        "1.5 mm"
+      ],
+      "variants": [
+        "9.5 cm shaft, 1.5 mm opening"
+      ],
+      "directions": [],
+      "primaryOption": "9.5 cm shaft, 1.5 mm opening",
+      "catalogueReference": {
+        "family": "Punches",
+        "page": "3"
+      },
+      "mediaLabel": "Beyer Laminectomy Punch, 9.5 cm shaft, 1.5 mm opening",
+      "catalogueCodes": [
+        {
+          "code": "38-2510",
+          "size": "1.5 mm"
+        }
+      ],
+      "mediaAssetId": "punches-beyer",
+      "mediaPath": "/media/catalogue-preview/punches/punches-beyer.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/punches/punches-beyer.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/punches-image-batch-01/docs/review/catalogue-media/punches-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · candidate"
+    },
+    {
+      "id": "product_biopsy_punch",
+      "familySlug": "punches",
+      "slug": "biopsy-punch",
+      "name": "Biopsy Punch",
+      "code": "23-1204",
+      "description": "Catalogue-listed Biopsy Punch presented with the stated diameter.",
+      "sizes": [
+        "4 mm"
+      ],
+      "variants": [],
+      "directions": [],
+      "primaryOption": "4 mm",
+      "catalogueReference": {
+        "family": "Punches"
+      },
+      "mediaLabel": "Biopsy Punch",
+      "mediaPath": "/media/catalogue-preview/punches/owner-biopsy-punch.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-punches-catalogue.pdf#page=24",
+      "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · Complete Biopsy Instruments configuration retained with its catalogue tip details."
+    },
+    {
+      "id": "product-chisels-osteotomes-13-5cm",
+      "familySlug": "chisels",
+      "slug": "osteotomes-13-5cm",
+      "name": "Osteotomes",
+      "code": "36-6301",
+      "description": "Catalogue-listed Osteotomes. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "13.5 cm · 4 mm",
+        "13.5 cm · 6 mm",
+        "13.5 cm · 8 mm",
+        "13.5 cm · 10 mm",
+        "13.5 cm · 12 mm"
+      ],
+      "variants": [
+        "Osteotome"
+      ],
+      "directions": [],
+      "primaryOption": "Osteotome",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "1"
+      },
+      "mediaLabel": "Osteotomes",
+      "catalogueCodes": [
+        {
+          "code": "36-6301",
+          "size": "13.5 cm · 4 mm"
+        },
+        {
+          "code": "36-6302",
+          "size": "13.5 cm · 6 mm"
+        },
+        {
+          "code": "36-6303",
+          "size": "13.5 cm · 8 mm"
+        },
+        {
+          "code": "36-6304",
+          "size": "13.5 cm · 10 mm"
+        },
+        {
+          "code": "36-6305",
+          "size": "13.5 cm · 12 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-osteotomes-13-5cm",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-osteotomes-13-5cm.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-osteotomes-13-5cm.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-chisels-13-5cm",
+      "familySlug": "chisels",
+      "slug": "chisels-13-5cm",
+      "name": "Chisels",
+      "code": "36-6321",
+      "description": "Catalogue-listed Chisels. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "13.5 cm · 4 mm",
+        "13.5 cm · 6 mm",
+        "13.5 cm · 8 mm",
+        "13.5 cm · 10 mm",
+        "13.5 cm · 12 mm"
+      ],
+      "variants": [
+        "Chisel"
+      ],
+      "directions": [],
+      "primaryOption": "Chisel",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "1"
+      },
+      "mediaLabel": "Chisels",
+      "catalogueCodes": [
+        {
+          "code": "36-6321",
+          "size": "13.5 cm · 4 mm"
+        },
+        {
+          "code": "36-6322",
+          "size": "13.5 cm · 6 mm"
+        },
+        {
+          "code": "36-6323",
+          "size": "13.5 cm · 8 mm"
+        },
+        {
+          "code": "36-6324",
+          "size": "13.5 cm · 10 mm"
+        },
+        {
+          "code": "36-6325",
+          "size": "13.5 cm · 12 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-chisels-13-5cm",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-chisels-13-5cm.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-chisels-13-5cm.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-gouges-13-5cm",
+      "familySlug": "chisels",
+      "slug": "gouges-13-5cm",
+      "name": "Gouges",
+      "code": "36-6331",
+      "description": "Catalogue-listed Gouges. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "13.5 cm · 4 mm",
+        "13.5 cm · 6 mm",
+        "13.5 cm · 8 mm",
+        "13.5 cm · 10 mm",
+        "13.5 cm · 12 mm"
+      ],
+      "variants": [
+        "Gouge"
+      ],
+      "directions": [],
+      "primaryOption": "Gouge",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "1"
+      },
+      "mediaLabel": "Gouges",
+      "catalogueCodes": [
+        {
+          "code": "36-6331",
+          "size": "13.5 cm · 4 mm"
+        },
+        {
+          "code": "36-6332",
+          "size": "13.5 cm · 6 mm"
+        },
+        {
+          "code": "36-6333",
+          "size": "13.5 cm · 8 mm"
+        },
+        {
+          "code": "36-6334",
+          "size": "13.5 cm · 10 mm"
+        },
+        {
+          "code": "36-6335",
+          "size": "13.5 cm · 12 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-gouges-13-5cm",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-gouges-13-5cm.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-gouges-13-5cm.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-hoke-osteotomes-straight",
+      "familySlug": "chisels",
+      "slug": "hoke-osteotomes-straight",
+      "name": "Hoke Osteotomes",
+      "code": "36-6401",
+      "description": "Catalogue-listed Hoke Osteotomes in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "14 cm · 2 mm",
+        "14 cm · 3 mm",
+        "14 cm · 4 mm",
+        "14 cm · 5 mm",
+        "14 cm · 6 mm",
+        "14 cm · 7 mm",
+        "14 cm · 8 mm"
+      ],
+      "variants": [
+        "Osteotome"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Osteotome · Straight",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "1"
+      },
+      "mediaLabel": "Hoke Osteotomes, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-6401",
+          "size": "14 cm · 2 mm"
+        },
+        {
+          "code": "36-6402",
+          "size": "14 cm · 3 mm"
+        },
+        {
+          "code": "36-6403",
+          "size": "14 cm · 4 mm"
+        },
+        {
+          "code": "36-6404",
+          "size": "14 cm · 5 mm"
+        },
+        {
+          "code": "36-6405",
+          "size": "14 cm · 6 mm"
+        },
+        {
+          "code": "36-6406",
+          "size": "14 cm · 7 mm"
+        },
+        {
+          "code": "36-6407",
+          "size": "14 cm · 8 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-hoke-osteotomes-straight",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-hoke-osteotomes-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-hoke-osteotomes-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-hoke-osteotomes-curved",
+      "familySlug": "chisels",
+      "slug": "hoke-osteotomes-curved",
+      "name": "Hoke Osteotomes",
+      "code": "36-6411",
+      "description": "Catalogue-listed Hoke Osteotomes in curved form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "14 cm · 2 mm",
+        "14 cm · 3 mm",
+        "14 cm · 4 mm",
+        "14 cm · 5 mm",
+        "14 cm · 6 mm",
+        "14 cm · 7 mm",
+        "14 cm · 8 mm"
+      ],
+      "variants": [
+        "Osteotome"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Osteotome · Curved",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "1"
+      },
+      "mediaLabel": "Hoke Osteotomes, Curved",
+      "catalogueCodes": [
+        {
+          "code": "36-6411",
+          "size": "14 cm · 2 mm"
+        },
+        {
+          "code": "36-6412",
+          "size": "14 cm · 3 mm"
+        },
+        {
+          "code": "36-6413",
+          "size": "14 cm · 4 mm"
+        },
+        {
+          "code": "36-6414",
+          "size": "14 cm · 5 mm"
+        },
+        {
+          "code": "36-6415",
+          "size": "14 cm · 6 mm"
+        },
+        {
+          "code": "36-6416",
+          "size": "14 cm · 7 mm"
+        },
+        {
+          "code": "36-6417",
+          "size": "14 cm · 8 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-hoke-osteotomes-curved",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-hoke-osteotomes-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-hoke-osteotomes-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-round-handle-gouges",
+      "familySlug": "chisels",
+      "slug": "round-handle-gouges",
+      "name": "Round Handle Gouges",
+      "code": "36-6500",
+      "description": "Catalogue-listed Round Handle Gouges. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "14 cm · 6 mm"
+      ],
+      "variants": [
+        "Gouge"
+      ],
+      "directions": [],
+      "primaryOption": "Gouge",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "1"
+      },
+      "mediaLabel": "Round Handle Gouges",
+      "catalogueCodes": [
+        {
+          "code": "36-6500",
+          "size": "14 cm · 6 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-round-handle-gouges",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-round-handle-gouges.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-round-handle-gouges.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-west-chisel",
+      "familySlug": "chisels",
+      "slug": "west-chisel",
+      "name": "West Chisel",
+      "code": "36-6601",
+      "description": "Catalogue-listed West Chisel. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "19 cm · 6 mm"
+      ],
+      "variants": [
+        "Chisel"
+      ],
+      "directions": [],
+      "primaryOption": "Chisel",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "2"
+      },
+      "mediaLabel": "West Chisel",
+      "catalogueCodes": [
+        {
+          "code": "36-6601",
+          "size": "19 cm · 6 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-west-chisel",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-west-chisel.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-west-chisel.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-west-gouge",
+      "familySlug": "chisels",
+      "slug": "west-gouge",
+      "name": "West Gouge",
+      "code": "36-6621",
+      "description": "Catalogue-listed West Gouge. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "19 cm · 6 mm"
+      ],
+      "variants": [
+        "Gouge"
+      ],
+      "directions": [],
+      "primaryOption": "Gouge",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "2"
+      },
+      "mediaLabel": "West Gouge",
+      "catalogueCodes": [
+        {
+          "code": "36-6621",
+          "size": "19 cm · 6 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-west-gouge",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-west-gouge.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-west-gouge.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-andrews-gouge",
+      "familySlug": "chisels",
+      "slug": "andrews-gouge",
+      "name": "Andrews Gouge",
+      "code": "36-6701",
+      "description": "Catalogue-listed Andrews Gouge. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "16 cm · 4 mm",
+        "16 cm · 6 mm",
+        "16 cm · 8 mm",
+        "16 cm · 10 mm",
+        "16 cm · 12 mm"
+      ],
+      "variants": [
+        "Gouge"
+      ],
+      "directions": [],
+      "primaryOption": "Gouge",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "2"
+      },
+      "mediaLabel": "Andrews Gouge",
+      "catalogueCodes": [
+        {
+          "code": "36-6701",
+          "size": "16 cm · 4 mm"
+        },
+        {
+          "code": "36-6702",
+          "size": "16 cm · 6 mm"
+        },
+        {
+          "code": "36-6703",
+          "size": "16 cm · 8 mm"
+        },
+        {
+          "code": "36-6704",
+          "size": "16 cm · 10 mm"
+        },
+        {
+          "code": "36-6705",
+          "size": "16 cm · 12 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-andrews-gouge",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-andrews-gouge.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-andrews-gouge.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-alexander-osteotome",
+      "familySlug": "chisels",
+      "slug": "alexander-osteotome",
+      "name": "Alexander Osteotome",
+      "code": "36-6801",
+      "description": "Catalogue-listed Alexander Osteotome. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "17.5 cm · 4 mm",
+        "17.5 cm · 6 mm",
+        "17.5 cm · 8 mm",
+        "17.5 cm · 10 mm",
+        "17.5 cm · 12 mm",
+        "17.5 cm · 14 mm"
+      ],
+      "variants": [
+        "Osteotome"
+      ],
+      "directions": [],
+      "primaryOption": "Osteotome",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "2"
+      },
+      "mediaLabel": "Alexander Osteotome",
+      "catalogueCodes": [
+        {
+          "code": "36-6801",
+          "size": "17.5 cm · 4 mm"
+        },
+        {
+          "code": "36-6802",
+          "size": "17.5 cm · 6 mm"
+        },
+        {
+          "code": "36-6803",
+          "size": "17.5 cm · 8 mm"
+        },
+        {
+          "code": "36-6804",
+          "size": "17.5 cm · 10 mm"
+        },
+        {
+          "code": "36-6805",
+          "size": "17.5 cm · 12 mm"
+        },
+        {
+          "code": "36-6806",
+          "size": "17.5 cm · 14 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-alexander-osteotome",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-alexander-osteotome.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-alexander-osteotome.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-alexander-gouge",
+      "familySlug": "chisels",
+      "slug": "alexander-gouge",
+      "name": "Alexander Gouge",
+      "code": "36-6821",
+      "description": "Catalogue-listed Alexander Gouge. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "17.5 cm · 4 mm",
+        "17.5 cm · 6 mm",
+        "17.5 cm · 8 mm",
+        "17.5 cm · 10 mm",
+        "17.5 cm · 12 mm",
+        "17.5 cm · 14 mm"
+      ],
+      "variants": [
+        "Gouge"
+      ],
+      "directions": [],
+      "primaryOption": "Gouge",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "2"
+      },
+      "mediaLabel": "Alexander Gouge",
+      "catalogueCodes": [
+        {
+          "code": "36-6821",
+          "size": "17.5 cm · 4 mm"
+        },
+        {
+          "code": "36-6822",
+          "size": "17.5 cm · 6 mm"
+        },
+        {
+          "code": "36-6823",
+          "size": "17.5 cm · 8 mm"
+        },
+        {
+          "code": "36-6824",
+          "size": "17.5 cm · 10 mm"
+        },
+        {
+          "code": "36-6825",
+          "size": "17.5 cm · 12 mm"
+        },
+        {
+          "code": "36-6826",
+          "size": "17.5 cm · 14 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-alexander-gouge",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-alexander-gouge.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-alexander-gouge.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-alexander-chisel",
+      "familySlug": "chisels",
+      "slug": "alexander-chisel",
+      "name": "Alexander Chisel",
+      "code": "36-6831",
+      "description": "Catalogue-listed Alexander Chisel. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "17.5 cm · 4 mm",
+        "17.5 cm · 6 mm",
+        "17.5 cm · 8 mm",
+        "17.5 cm · 10 mm",
+        "17.5 cm · 12 mm",
+        "17.5 cm · 14 mm"
+      ],
+      "variants": [
+        "Chisel"
+      ],
+      "directions": [],
+      "primaryOption": "Chisel",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "2"
+      },
+      "mediaLabel": "Alexander Chisel",
+      "catalogueCodes": [
+        {
+          "code": "36-6831",
+          "size": "17.5 cm · 4 mm"
+        },
+        {
+          "code": "36-6832",
+          "size": "17.5 cm · 6 mm"
+        },
+        {
+          "code": "36-6833",
+          "size": "17.5 cm · 8 mm"
+        },
+        {
+          "code": "36-6834",
+          "size": "17.5 cm · 10 mm"
+        },
+        {
+          "code": "36-6835",
+          "size": "17.5 cm · 12 mm"
+        },
+        {
+          "code": "36-6836",
+          "size": "17.5 cm · 14 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-alexander-chisel",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-alexander-chisel.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-alexander-chisel.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-stille-osteotomes-straight",
+      "familySlug": "chisels",
+      "slug": "stille-osteotomes-straight",
+      "name": "Stille Osteotomes",
+      "code": "36-6901",
+      "description": "Catalogue-listed Stille Osteotomes in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "20 cm / 8 in · 10 mm",
+        "20 cm / 8 in · 12 mm",
+        "20 cm / 8 in · 15 mm",
+        "20 cm / 8 in · 20 mm",
+        "20 cm / 8 in · 25 mm",
+        "23 cm / 9 in · 4 mm",
+        "23 cm / 9 in · 6 mm",
+        "23 cm / 9 in · 8 mm",
+        "23 cm / 9 in · 10 mm",
+        "23 cm / 9 in · 12 mm",
+        "23 cm / 9 in · 15 mm",
+        "23 cm / 9 in · 20 mm",
+        "23 cm / 9 in · 25 mm",
+        "23 cm / 9 in · 30 mm",
+        "23 cm / 9 in · 40 mm"
+      ],
+      "variants": [
+        "Osteotome"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Osteotome · Straight",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "3"
+      },
+      "mediaLabel": "Stille Osteotomes, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-6901",
+          "size": "20 cm / 8 in · 10 mm"
+        },
+        {
+          "code": "36-6902",
+          "size": "20 cm / 8 in · 12 mm"
+        },
+        {
+          "code": "36-6903",
+          "size": "20 cm / 8 in · 15 mm"
+        },
+        {
+          "code": "36-6904",
+          "size": "20 cm / 8 in · 20 mm"
+        },
+        {
+          "code": "36-6905",
+          "size": "20 cm / 8 in · 25 mm"
+        },
+        {
+          "code": "36-6940",
+          "size": "23 cm / 9 in · 4 mm"
+        },
+        {
+          "code": "36-6941",
+          "size": "23 cm / 9 in · 6 mm"
+        },
+        {
+          "code": "36-6942",
+          "size": "23 cm / 9 in · 8 mm"
+        },
+        {
+          "code": "36-6943",
+          "size": "23 cm / 9 in · 10 mm"
+        },
+        {
+          "code": "36-6944",
+          "size": "23 cm / 9 in · 12 mm"
+        },
+        {
+          "code": "36-6945",
+          "size": "23 cm / 9 in · 15 mm"
+        },
+        {
+          "code": "36-6946",
+          "size": "23 cm / 9 in · 20 mm"
+        },
+        {
+          "code": "36-6947",
+          "size": "23 cm / 9 in · 25 mm"
+        },
+        {
+          "code": "36-6948",
+          "size": "23 cm / 9 in · 30 mm"
+        },
+        {
+          "code": "36-6949",
+          "size": "23 cm / 9 in · 40 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-stille-osteotomes-straight",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-stille-osteotomes-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-stille-osteotomes-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-stille-osteotomes-curved",
+      "familySlug": "chisels",
+      "slug": "stille-osteotomes-curved",
+      "name": "Stille Osteotomes",
+      "code": "36-6911",
+      "description": "Catalogue-listed Stille Osteotomes in curved form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "20 cm / 8 in · 10 mm",
+        "20 cm / 8 in · 12 mm",
+        "20 cm / 8 in · 15 mm",
+        "20 cm / 8 in · 20 mm",
+        "20 cm / 8 in · 25 mm"
+      ],
+      "variants": [
+        "Osteotome"
+      ],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Osteotome · Curved",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "3"
+      },
+      "mediaLabel": "Stille Osteotomes, Curved",
+      "catalogueCodes": [
+        {
+          "code": "36-6911",
+          "size": "20 cm / 8 in · 10 mm"
+        },
+        {
+          "code": "36-6912",
+          "size": "20 cm / 8 in · 12 mm"
+        },
+        {
+          "code": "36-6913",
+          "size": "20 cm / 8 in · 15 mm"
+        },
+        {
+          "code": "36-6914",
+          "size": "20 cm / 8 in · 20 mm"
+        },
+        {
+          "code": "36-6915",
+          "size": "20 cm / 8 in · 25 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-stille-osteotomes-curved",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-stille-osteotomes-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-stille-osteotomes-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-stille-gouges-straight",
+      "familySlug": "chisels",
+      "slug": "stille-gouges-straight",
+      "name": "Stille Gouges",
+      "code": "36-6921",
+      "description": "Catalogue-listed Stille Gouges in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "20 cm / 8 in · 10 mm",
+        "20 cm / 8 in · 12 mm",
+        "20 cm / 8 in · 15 mm",
+        "20 cm / 8 in · 20 mm",
+        "20 cm / 8 in · 25 mm",
+        "23 cm / 9 in · 4 mm",
+        "23 cm / 9 in · 6 mm",
+        "23 cm / 9 in · 8 mm",
+        "23 cm / 9 in · 10 mm",
+        "23 cm / 9 in · 12 mm",
+        "23 cm / 9 in · 15 mm",
+        "23 cm / 9 in · 20 mm",
+        "23 cm / 9 in · 25 mm",
+        "23 cm / 9 in · 30 mm",
+        "23 cm / 9 in · 40 mm"
+      ],
+      "variants": [
+        "Gouge"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Gouge · Straight",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "3"
+      },
+      "mediaLabel": "Stille Gouges, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-6921",
+          "size": "20 cm / 8 in · 10 mm"
+        },
+        {
+          "code": "36-6922",
+          "size": "20 cm / 8 in · 12 mm"
+        },
+        {
+          "code": "36-6923",
+          "size": "20 cm / 8 in · 15 mm"
+        },
+        {
+          "code": "36-6924",
+          "size": "20 cm / 8 in · 20 mm"
+        },
+        {
+          "code": "36-6925",
+          "size": "20 cm / 8 in · 25 mm"
+        },
+        {
+          "code": "36-6950",
+          "size": "23 cm / 9 in · 4 mm"
+        },
+        {
+          "code": "36-6951",
+          "size": "23 cm / 9 in · 6 mm"
+        },
+        {
+          "code": "36-6952",
+          "size": "23 cm / 9 in · 8 mm"
+        },
+        {
+          "code": "36-6953",
+          "size": "23 cm / 9 in · 10 mm"
+        },
+        {
+          "code": "36-6954",
+          "size": "23 cm / 9 in · 12 mm"
+        },
+        {
+          "code": "36-6955",
+          "size": "23 cm / 9 in · 15 mm"
+        },
+        {
+          "code": "36-6956",
+          "size": "23 cm / 9 in · 20 mm"
+        },
+        {
+          "code": "36-6957",
+          "size": "23 cm / 9 in · 25 mm"
+        },
+        {
+          "code": "36-6958",
+          "size": "23 cm / 9 in · 30 mm"
+        },
+        {
+          "code": "36-6959",
+          "size": "23 cm / 9 in · 40 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-stille-gouges-straight",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-stille-gouges-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-stille-gouges-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-chisels-stille-chisels-straight",
+      "familySlug": "chisels",
+      "slug": "stille-chisels-straight",
+      "name": "Stille Chisels",
+      "code": "36-6931",
+      "description": "Catalogue-listed Stille Chisels in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "20 cm / 8 in · 10 mm",
+        "20 cm / 8 in · 12 mm",
+        "20 cm / 8 in · 15 mm",
+        "20 cm / 8 in · 20 mm",
+        "20 cm / 8 in · 25 mm"
+      ],
+      "variants": [
+        "Chisel"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Chisel · Straight",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "3"
+      },
+      "mediaLabel": "Stille Chisels, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-6931",
+          "size": "20 cm / 8 in · 10 mm"
+        },
+        {
+          "code": "36-6932",
+          "size": "20 cm / 8 in · 12 mm"
+        },
+        {
+          "code": "36-6933",
+          "size": "20 cm / 8 in · 15 mm"
+        },
+        {
+          "code": "36-6934",
+          "size": "20 cm / 8 in · 20 mm"
+        },
+        {
+          "code": "36-6935",
+          "size": "20 cm / 8 in · 25 mm"
+        }
+      ],
+      "mediaAssetId": "chisels-stille-chisels-straight",
+      "mediaPath": "/media/catalogue-preview/chisels/chisels-stille-chisels-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/chisels/chisels-stille-chisels-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/chisels-image-batch-01/docs/review/catalogue-media/chisels-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product_codman",
+      "familySlug": "chisels",
+      "slug": "codman",
+      "name": "Codman",
+      "code": "36-7101",
+      "description": "Catalogue-listed Codman pattern presented with the stated length and direction.",
+      "sizes": [
+        "28 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "28 cm",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "5"
+      },
+      "mediaLabel": "Codman",
+      "mediaPath": "/media/catalogue-preview/chisels/owner-codman.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-chisels-catalogue.pdf#page=6",
+      "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · Codman straight and curved profiles are retained as printed."
+    },
+    {
+      "id": "product_lambotte",
+      "familySlug": "chisels",
+      "slug": "lambotte",
+      "name": "Lambotte",
+      "code": "36-7201",
+      "description": "Catalogue-listed Lambotte pattern presented with the stated length, width and direction.",
+      "sizes": [
+        "25.0 cm",
+        "4 mm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "4 mm",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "5"
+      },
+      "mediaLabel": "Lambotte",
+      "mediaPath": "/media/catalogue-preview/chisels/owner-lambotte.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-chisels-catalogue.pdf#page=6",
+      "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · Complete straight Lambotte instrument is retained."
+    },
+    {
+      "id": "product_mini_lambotte",
+      "familySlug": "chisels",
+      "slug": "mini-lambotte",
+      "name": "Mini Lambotte",
+      "code": "36-7214",
+      "description": "Catalogue-listed Mini Lambotte pattern presented with the stated length, width and direction.",
+      "sizes": [
+        "12.5 cm",
+        "2 mm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "2 mm",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "6"
+      },
+      "mediaLabel": "Mini Lambotte",
+      "mediaPath": "/media/catalogue-preview/chisels/owner-mini-lambotte.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-chisels-catalogue.pdf#page=7",
+      "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · Mini Lambotte straight profile is retained."
+    },
+    {
+      "id": "product_farabeuf",
+      "familySlug": "chisels",
+      "slug": "farabeuf",
+      "name": "Farabeuf",
+      "code": "37-0701",
+      "description": "Catalogue-listed Farabeuf pattern presented with the stated length and direction.",
+      "sizes": [
+        "15.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "15.0 cm",
+      "catalogueReference": {
+        "family": "Chisels",
+        "page": "10"
+      },
+      "mediaLabel": "Farabeuf",
+      "mediaPath": "/media/catalogue-preview/chisels/owner-farabeuf.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-chisels-catalogue.pdf#page=11",
+      "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · Farabeuf straight and curved catalogue presentation is retained."
+    },
+    {
+      "id": "product-cutters-liston-straight",
+      "familySlug": "cutters",
+      "slug": "liston",
+      "name": "Liston",
+      "code": "36-5101",
+      "description": "Catalogue-listed Liston in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "14.0 cm",
+        "17.0 cm",
+        "19.0 cm",
+        "22.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Straight",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "1"
+      },
+      "mediaLabel": "Liston, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-5101",
+          "size": "14.0 cm"
+        },
+        {
+          "code": "36-5102",
+          "size": "17.0 cm"
+        },
+        {
+          "code": "36-5103",
+          "size": "19.0 cm"
+        },
+        {
+          "code": "36-5104",
+          "size": "22.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-liston-straight",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-liston-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-liston-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-liston-curved",
+      "familySlug": "cutters",
+      "slug": "liston-curved",
+      "name": "Liston",
+      "code": "36-5111",
+      "description": "Catalogue-listed Liston in curved form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "14.0 cm",
+        "17.0 cm",
+        "19.0 cm",
+        "22.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Curved",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "1"
+      },
+      "mediaLabel": "Liston, Curved",
+      "catalogueCodes": [
+        {
+          "code": "36-5111",
+          "size": "14.0 cm"
+        },
+        {
+          "code": "36-5112",
+          "size": "17.0 cm"
+        },
+        {
+          "code": "36-5113",
+          "size": "19.0 cm"
+        },
+        {
+          "code": "36-5114",
+          "size": "22.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-liston-curved",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-liston-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-liston-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-cleveland",
+      "familySlug": "cutters",
+      "slug": "cleveland",
+      "name": "Cleveland",
+      "code": "36-5401",
+      "description": "Catalogue-listed Cleveland. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "15.0 cm",
+        "17.0 cm"
+      ],
+      "variants": [],
+      "directions": [],
+      "primaryOption": "15.0 cm",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "1"
+      },
+      "mediaLabel": "Cleveland",
+      "catalogueCodes": [
+        {
+          "code": "36-5401",
+          "size": "15.0 cm"
+        },
+        {
+          "code": "36-5402",
+          "size": "17.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-cleveland",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-cleveland.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-cleveland.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-bohler-straight",
+      "familySlug": "cutters",
+      "slug": "bohler",
+      "name": "Bohler",
+      "code": "36-5501",
+      "description": "Catalogue-listed Bohler in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "15.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Straight",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "1"
+      },
+      "mediaLabel": "Bohler, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-5501",
+          "size": "15.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-bohler-straight",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-bohler-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-bohler-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-bohler-curved",
+      "familySlug": "cutters",
+      "slug": "bohler-curved",
+      "name": "Bohler",
+      "code": "36-5511",
+      "description": "Catalogue-listed Bohler in curved form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "15.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Curved",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "1"
+      },
+      "mediaLabel": "Bohler, Curved",
+      "catalogueCodes": [
+        {
+          "code": "36-5511",
+          "size": "15.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-bohler-curved",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-bohler-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-bohler-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-1",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-mc-indoe",
+      "familySlug": "cutters",
+      "slug": "mc-indoe",
+      "name": "Mc Indoe",
+      "code": "36-5600",
+      "description": "Catalogue-listed Mc Indoe. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "17.5 cm"
+      ],
+      "variants": [],
+      "directions": [],
+      "primaryOption": "17.5 cm",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "2"
+      },
+      "mediaLabel": "Mc Indoe",
+      "catalogueCodes": [
+        {
+          "code": "36-5600",
+          "size": "17.5 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-mc-indoe",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-mc-indoe.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-mc-indoe.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-ruskin-liston-straight",
+      "familySlug": "cutters",
+      "slug": "ruskin-liston-straight",
+      "name": "Ruskin-Liston",
+      "code": "36-5701",
+      "description": "Catalogue-listed Ruskin-Liston in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "18.5 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Straight",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "2"
+      },
+      "mediaLabel": "Ruskin-Liston, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-5701",
+          "size": "18.5 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-ruskin-liston-straight",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-ruskin-liston-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-ruskin-liston-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-ruskin-liston-curved",
+      "familySlug": "cutters",
+      "slug": "ruskin-liston-curved",
+      "name": "Ruskin-Liston",
+      "code": "36-5711",
+      "description": "Catalogue-listed Ruskin-Liston in curved form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "18.5 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Curved",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "2"
+      },
+      "mediaLabel": "Ruskin-Liston, Curved",
+      "catalogueCodes": [
+        {
+          "code": "36-5711",
+          "size": "18.5 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-ruskin-liston-curved",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-ruskin-liston-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-ruskin-liston-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-ruskin-rowland-straight",
+      "familySlug": "cutters",
+      "slug": "ruskin-rowland-straight",
+      "name": "Ruskin-Rowland",
+      "code": "36-5801",
+      "description": "Catalogue-listed Ruskin-Rowland in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "17.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Straight",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "2"
+      },
+      "mediaLabel": "Ruskin-Rowland, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-5801",
+          "size": "17.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-ruskin-rowland-straight",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-ruskin-rowland-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-ruskin-rowland-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-ruskin-rowland-angled",
+      "familySlug": "cutters",
+      "slug": "ruskin-rowland-angled-to-side",
+      "name": "Ruskin-Rowland",
+      "code": "36-5811",
+      "description": "Catalogue-listed Ruskin-Rowland in angled to side form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "17.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Angled to side"
+      ],
+      "primaryOption": "Angled to side",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "2"
+      },
+      "mediaLabel": "Ruskin-Rowland, Angled to side",
+      "catalogueCodes": [
+        {
+          "code": "36-5811",
+          "size": "17.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-ruskin-rowland-angled-to-side",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-ruskin-rowland-angled-to-side.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-ruskin-rowland-angled-to-side.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-2",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-stille-liston-straight",
+      "familySlug": "cutters",
+      "slug": "stille-liston-straight",
+      "name": "Stille-Liston",
+      "code": "36-5901",
+      "description": "Catalogue-listed Stille-Liston in straight form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "23.0 cm",
+        "27.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "Straight",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "3"
+      },
+      "mediaLabel": "Stille-Liston, Straight",
+      "catalogueCodes": [
+        {
+          "code": "36-5901",
+          "size": "23.0 cm"
+        },
+        {
+          "code": "36-5902",
+          "size": "27.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-stille-liston-straight",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-stille-liston-straight.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-stille-liston-straight.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-stille-liston-curved",
+      "familySlug": "cutters",
+      "slug": "stille-liston-curved",
+      "name": "Stille-Liston",
+      "code": "36-5911",
+      "description": "Catalogue-listed Stille-Liston in curved form. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "23.0 cm",
+        "27.0 cm"
+      ],
+      "variants": [],
+      "directions": [
+        "Curved"
+      ],
+      "primaryOption": "Curved",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "3"
+      },
+      "mediaLabel": "Stille-Liston, Curved",
+      "catalogueCodes": [
+        {
+          "code": "36-5911",
+          "size": "23.0 cm"
+        },
+        {
+          "code": "36-5912",
+          "size": "27.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-stille-liston-curved",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-stille-liston-curved.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-stille-liston-curved.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product-cutters-stille-liston-36-6000",
+      "familySlug": "cutters",
+      "slug": "stille-liston-36-6000",
+      "name": "Stille-Liston",
+      "code": "36-6000",
+      "description": "Catalogue-listed Stille-Liston. Size-only code variants remain grouped where the visible instrument configuration is unchanged.",
+      "sizes": [
+        "27.0 cm"
+      ],
+      "variants": [],
+      "directions": [],
+      "primaryOption": "27.0 cm",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "3"
+      },
+      "mediaLabel": "Stille-Liston",
+      "catalogueCodes": [
+        {
+          "code": "36-6000",
+          "size": "27.0 cm"
+        }
+      ],
+      "mediaAssetId": "cutters-stille-liston-36-6000",
+      "mediaPath": "/media/catalogue-preview/cutters/cutters-stille-liston-36-6000.avif",
+      "mediaFallbackPath": "/media/catalogue-preview/cutters/cutters-stille-liston-36-6000.webp",
+      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/cutters-image-batch-01/docs/review/catalogue-media/cutters-batch-01-sources.md#client-catalogue-page-3",
+      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
+    },
+    {
+      "id": "product_sc_01t",
+      "familySlug": "cutters",
+      "slug": "sc-01t",
+      "name": "SC-01T",
+      "code": "SC-01T",
+      "description": "Catalogue-listed SC-01T pattern presented with the stated length, point and direction.",
+      "sizes": [
+        "12.5 cm"
+      ],
+      "variants": [
+        "Fine point"
+      ],
+      "directions": [
+        "Straight"
+      ],
+      "primaryOption": "12.5 cm",
+      "catalogueReference": {
+        "family": "Cutters",
+        "page": "10"
+      },
+      "mediaLabel": "SC-01T",
+      "mediaPath": "/media/catalogue-preview/cutters/owner-sc-01t.png",
+      "mediaSourceUrl": "/media/catalogues/pdf/rosa-cutters-catalogue.pdf#page=11",
+      "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · First printed cutter configuration corresponds to SC-01T."
+    }
+  ],
+  "productCount": 113,
+  "familyCount": 5
+}
