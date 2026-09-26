@@ -14,38 +14,82 @@ if (($locale === 'en' && trim($heroTitle) === 'Shop') || ($locale === 'ar' && tr
     $heroTitle = $locale === 'ar' ? 'اعثر على المنتج' : 'Find Product';
 }
 
-$productQueryArgs = [
-    'post_type' => 'product',
-    'post_status' => 'publish',
-    'posts_per_page' => 18,
-    'orderby' => [
-        'menu_order' => 'ASC',
-        'title' => 'ASC',
-    ],
-];
-if ($search !== '') {
-    $productQueryArgs['s'] = $search;
-}
-$productQuery = new WP_Query($productQueryArgs);
+// Retrieve dynamic families via FamilyService
+$familyService = class_exists(\RosaMedical\Core\Catalogue\FamilyService::class)
+    ? new \RosaMedical\Core\Catalogue\FamilyService()
+    : null;
 
-$families = [
-    ['slug' => 'knives', 'label' => 'Knives'],
-    ['slug' => 'scissors', 'label' => 'Scissors'],
-    ['slug' => 'punches', 'label' => 'Punches'],
-    ['slug' => 'chisels', 'label' => 'Chisels'],
-    ['slug' => 'cutters', 'label' => 'Cutters'],
-];
+$allFamilies = $familyService ? $familyService->getFamilies(false, $locale) : [];
 
-$familyUrl = static function (string $slug) use ($locale, $shopUrl): string {
-    $term = get_term_by('slug', $slug, 'product_cat');
-    if ($term instanceof WP_Term) {
-        $url = get_term_link($term);
-        if (! is_wp_error($url)) {
-            return (string) $url;
+// If no families found through service (e.g. plugin inactive fallback), query terms directly
+if (empty($allFamilies) && taxonomy_exists('product_cat')) {
+    $terms = get_terms([
+        'taxonomy' => 'product_cat',
+        'hide_empty' => false,
+        'exclude' => [get_option('default_product_cat', 0)],
+    ]);
+    if (! is_wp_error($terms) && is_array($terms)) {
+        foreach ($terms as $term) {
+            $allFamilies[] = (object) [
+                'id' => (int) $term->term_id,
+                'name' => (string) $term->name,
+                'slug' => (string) $term->slug,
+                'description' => (string) $term->description,
+                'pdfUrl' => '',
+                'coverUrl' => '',
+                'productCount' => (int) $term->count,
+            ];
         }
     }
-    return add_query_arg('family', $slug, $shopUrl);
-};
+}
+
+// Query products grouped by family
+$activeFamilySections = [];
+$totalProductsFound = 0;
+
+foreach ($allFamilies as $family) {
+    $queryArgs = [
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => 100,
+        'tax_query' => [
+            [
+                'taxonomy' => 'product_cat',
+                'field' => 'term_id',
+                'terms' => $family->id,
+            ],
+        ],
+        'orderby' => [
+            'menu_order' => 'ASC',
+            'title' => 'ASC',
+        ],
+    ];
+
+    if ($search !== '') {
+        $queryArgs['s'] = $search;
+    }
+
+    $q = new WP_Query($queryArgs);
+    $products = [];
+    if ($q->have_posts()) {
+        while ($q->have_posts()) {
+            $q->the_post();
+            $product = wc_get_product(get_the_ID());
+            if ($product instanceof WC_Product) {
+                $products[] = $product;
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    if (! empty($products)) {
+        $activeFamilySections[] = [
+            'family' => $family,
+            'products' => $products,
+        ];
+        $totalProductsFound += count($products);
+    }
+}
 
 $workflow = $locale === 'ar'
     ? [
@@ -73,57 +117,102 @@ $workflow = $locale === 'ar'
   </div>
 </section>
 
-<section class="rosa-live-shop-catalogue" aria-labelledby="rosa-live-shop-catalogue-title">
+<?php if (! empty($activeFamilySections)) : ?>
+  <!-- Compact Sticky Family Navigation -->
+  <nav class="rosa-catalogue-anchor-nav" aria-label="<?php echo esc_attr($locale === 'ar' ? 'التنقل بين عائلات الكتالوج' : 'Catalogue family navigation'); ?>">
+    <div class="rosa-preview-rail rosa-catalogue-anchor-nav__inner">
+      <ul class="rosa-catalogue-anchor-nav__list">
+        <?php foreach ($activeFamilySections as $section) :
+            $f = $section['family'];
+            $navLabel = $f instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $f->getDisplayName($locale) : $f->name;
+        ?>
+          <li>
+            <a href="#family-<?php echo esc_attr($f->slug); ?>" class="rosa-catalogue-anchor-nav__link">
+              <?php echo esc_html($navLabel); ?>
+              <span class="rosa-catalogue-anchor-nav__count">(<?php echo count($section['products']); ?>)</span>
+            </a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  </nav>
+<?php endif; ?>
+
+<div class="rosa-live-shop-catalogue" aria-labelledby="rosa-live-shop-catalogue-title">
   <div class="rosa-preview-rail">
     <div class="rosa-live-shop-heading">
       <div>
         <p class="rosa-preview-eyebrow"><?php echo esc_html($locale === 'ar' ? 'كتالوج روزا' : 'ROSA CATALOGUE'); ?></p>
-        <h2 id="rosa-live-shop-catalogue-title"><?php echo esc_html($locale === 'ar' ? 'استكشف الأدوات حسب الفئة والمرجع' : 'Explore instruments by family and reference'); ?></h2>
+        <h2 id="rosa-live-shop-catalogue-title">
+          <?php
+          if ($search !== '') {
+              echo esc_html(sprintf(
+                  $locale === 'ar' ? 'نتائج البحث عن: "%s" (%d منتج)' : 'Search results for: "%s" (%d products)',
+                  $search,
+                  $totalProductsFound
+              ));
+          } else {
+              echo esc_html($locale === 'ar' ? 'استكشف الأدوات حسب الفئة والمرجع' : 'Explore instruments by family and reference');
+          }
+          ?>
+        </h2>
       </div>
       <p><?php echo esc_html($locale === 'ar' ? 'استخدم اسم الأداة أو مرجع الكتالوج للوصول إلى التكوين المطلوب.' : 'Use the instrument name or catalogue reference to find the configuration you need.'); ?></p>
     </div>
 
-    <div class="rosa-preview-shop-grid rosa-live-shop-grid" data-preview-shop-grid>
-      <?php
-      $rendered = 0;
-      if ($productQuery->have_posts()) :
-          while ($productQuery->have_posts()) :
-              $productQuery->the_post();
-              $product = wc_get_product(get_the_ID());
-              if (! $product instanceof WC_Product) {
-                  continue;
-              }
-              get_template_part('template-parts/client-preview/product-card', null, ['product' => $product, 'locale' => $locale]);
-              $rendered++;
-          endwhile;
-          wp_reset_postdata();
-      endif;
+    <?php if (empty($activeFamilySections)) : ?>
+      <div class="rosa-preview-shop-empty-wrap" style="padding: 4rem 1rem; text-align: center;">
+        <p class="rosa-preview-shop-empty">
+          <?php echo esc_html($search !== ''
+              ? ($locale === 'ar' ? 'لم يتم العثور على أي منتجات مطابقة لبحثك.' : 'No products matched your search.')
+              : $c('empty_state', 'No products matched this view.', 'لا توجد منتجات متاحة في هذه المعاينة.')
+          ); ?>
+        </p>
+        <?php if ($search !== '') : ?>
+          <a href="<?php echo esc_url($shopUrl); ?>" class="rosa-preview-button rosa-preview-button--secondary" style="margin-top: 1rem; display: inline-block;">
+            <?php echo esc_html($locale === 'ar' ? 'عرض الكتالوج بالكامل' : 'View Full Catalogue'); ?>
+          </a>
+        <?php endif; ?>
+      </div>
+    <?php else : ?>
+      <?php foreach ($activeFamilySections as $section) :
+          $family = $section['family'];
+          $products = $section['products'];
+          $displayName = $family instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $family->getDisplayName($locale) : $family->name;
+          $displayDesc = $family instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $family->getDescription($locale) : $family->description;
+      ?>
+        <section class="rosa-catalogue-family-section" id="family-<?php echo esc_attr($family->slug); ?>" data-family="<?php echo esc_attr($family->slug); ?>">
+          <div class="rosa-catalogue-family-header">
+            <div class="rosa-catalogue-family-header__info">
+              <p class="rosa-preview-eyebrow"><?php echo esc_html($locale === 'ar' ? 'عائلة الأدوات' : 'INSTRUMENT FAMILY'); ?></p>
+              <h3 class="rosa-catalogue-family-title"><?php echo esc_html($displayName); ?></h3>
+              <?php if (! empty($displayDesc)) : ?>
+                <p class="rosa-catalogue-family-desc"><?php echo esc_html($displayDesc); ?></p>
+              <?php endif; ?>
+            </div>
+            <?php if (! empty($family->pdfUrl)) : ?>
+              <div class="rosa-catalogue-family-header__actions">
+                <a href="<?php echo esc_url($family->pdfUrl); ?>" target="_blank" rel="noopener noreferrer" class="rosa-preview-button rosa-preview-button--secondary rosa-catalogue-pdf-button">
+                  <span class="dashicons dashicons-pdf" aria-hidden="true" style="vertical-align: text-bottom; margin-inline-end: 4px;"></span>
+                  <?php echo esc_html(sprintf(
+                      $locale === 'ar' ? 'تحميل كتالوج %s (PDF)' : 'Download %s Catalogue (PDF)',
+                      $displayName
+                  )); ?>
+                </a>
+              </div>
+            <?php endif; ?>
+          </div>
 
-      // The frozen public Shop has a dense catalogue surface. In representative
-      // local datasets, supplement the real Woo products with family-navigation
-      // cards only; product truth itself remains exclusively in WooCommerce.
-      $familySequence = [0, 1, 2, 3, 4, 0, 2, 3, 4, 1, 2, 0];
-      $familyCursor = 0;
-      while ($rendered < 18) :
-          $family = $families[$familySequence[$familyCursor % count($familySequence)]];
-          get_template_part('template-parts/client-preview/product-card', null, [
-              'family' => [
-                  'label' => $family['label'],
-                  'url' => $familyUrl($family['slug']),
-              ],
-              'locale' => $locale,
-              'media_slot' => 'catalogue-family-' . $family['slug'],
-          ]);
-          $rendered++;
-          $familyCursor++;
-      endwhile;
-
-      if ($rendered === 0) : ?>
-        <p class="rosa-preview-shop-empty"><?php echo esc_html($c('empty_state', 'No products matched this view.', 'لا توجد منتجات متاحة في هذه المعاينة.')); ?></p>
-      <?php endif; ?>
-    </div>
+          <div class="rosa-preview-shop-grid rosa-live-shop-grid" data-preview-shop-grid>
+            <?php foreach ($products as $product) : ?>
+              <?php get_template_part('template-parts/client-preview/product-card', null, ['product' => $product, 'locale' => $locale]); ?>
+            <?php endforeach; ?>
+          </div>
+        </section>
+      <?php endforeach; ?>
+    <?php endif; ?>
   </div>
-</section>
+</div>
 
 <section class="rosa-live-shop-workflow" data-preview-shop-workflow>
   <div class="rosa-preview-rail rosa-live-shop-workflow__layout">

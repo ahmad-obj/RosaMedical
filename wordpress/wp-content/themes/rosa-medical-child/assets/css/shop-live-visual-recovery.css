@@ -390,3 +390,130 @@ html[dir="rtl"] .rosa-live-shop-families__grid b { transform: scaleX(-1); }
     padding: .55rem .08rem .2rem;
   }
 }
+
+/* ==========================================================================
+   Dynamic Catalogue Family Sections & Anchor Navigation
+   ========================================================================== */
+
+/* Remove artificial mockup truncation for dynamic family sections */
+.rosa-catalogue-family-section .rosa-live-shop-grid .rosa-preview-product {
+  display: flex !important;
+  flex-direction: column;
+}
+
+/* Compact Sticky Anchor Navigation Rail */
+.rosa-catalogue-anchor-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.rosa-catalogue-anchor-nav__inner {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-block: 0.65rem;
+  scrollbar-width: none;
+}
+
+.rosa-catalogue-anchor-nav__inner::-webkit-scrollbar {
+  display: none;
+}
+
+.rosa-catalogue-anchor-nav__list {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.rosa-catalogue-anchor-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  background: #f3f4f6;
+  color: var(--preview-ink, #252a31);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.rosa-catalogue-anchor-nav__link:hover,
+.rosa-catalogue-anchor-nav__link:focus {
+  background: var(--preview-accent, #912a35);
+  color: #fff;
+}
+
+.rosa-catalogue-anchor-nav__count {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+/* Dynamic Family Section */
+.rosa-catalogue-family-section {
+  padding-block: clamp(2.5rem, 4vw, 4rem);
+  border-bottom: 1px solid #f0f0f1;
+  scroll-margin-top: 4.5rem;
+}
+
+.rosa-catalogue-family-section:last-of-type {
+  border-bottom: none;
+}
+
+.rosa-catalogue-family-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.rosa-catalogue-family-header__info {
+  max-width: 44rem;
+}
+
+.rosa-catalogue-family-title {
+  margin: 0.15rem 0 0.5rem;
+  font-size: clamp(1.75rem, 2.8vw, 2.5rem);
+  font-weight: 600;
+  color: var(--preview-ink, #252a31);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+.rosa-catalogue-family-desc {
+  margin: 0;
+  color: var(--preview-muted, #5f6368);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.rosa-catalogue-pdf-button {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--preview-border, #d1d5db);
+  background: #fff;
+  color: var(--preview-ink, #252a31);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.rosa-catalogue-pdf-button:hover {
+  background: #f9fafb;
+  border-color: var(--preview-accent, #912a35);
+  color: var(--preview-accent, #912a35);
+}
