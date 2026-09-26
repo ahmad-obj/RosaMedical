@@ -282,7 +282,7 @@ if ($q->have_posts()) {
     </div>
 
     <!-- Product Grid: 4-Columns on Desktop -->
-    <div class="rosa-shop-products-grid" data-rosa-products-grid>
+    <div class="rosa-shop-products-grid" data-rosa-products-grid data-preview-shop-grid>
       <?php foreach ($allProducts as $item) :
         $prod = $item['product'];
       ?>
