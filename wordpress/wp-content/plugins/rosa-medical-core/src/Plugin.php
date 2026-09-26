@@ -39,6 +39,7 @@ final class Plugin
         add_action('admin_menu', [RosaAdmin::class, 'register']);
         add_action('admin_enqueue_scripts', [RosaAdmin::class, 'enqueue']);
         \RosaMedical\Core\Admin\ProductAdminHelper::init();
+        \RosaMedical\Core\Catalogue\SearchAutocompleteController::init();
         ElementorIntegration::register();
         ProductTemplate::register();
 
