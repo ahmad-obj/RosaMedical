@@ -108,7 +108,7 @@ $workflow = $locale === 'ar'
     <p class="rosa-preview-eyebrow"><?php echo esc_html($c('hero_eyebrow', 'ROSA', 'ROSA')); ?></p>
     <h1><?php echo esc_html($heroTitle); ?></h1>
     <p><?php echo esc_html($c('hero_body', 'Search Rosa instrument families and catalogue references.', 'ابحث في فئات أدوات روزا ومراجع الكتالوج.')); ?></p>
-    <form class="rosa-live-shop-search" role="search" method="get" action="<?php echo esc_url($shopUrl); ?>">
+    <form class="rosa-live-shop-search rosa-preview-shop-search" role="search" method="get" action="<?php echo esc_url($shopUrl); ?>">
       <label class="screen-reader-text" for="rosa-live-shop-search"><?php echo esc_html($c('search_label', 'Search products', 'البحث في المنتجات')); ?></label>
       <input id="rosa-live-shop-search" name="s" type="search" value="<?php echo esc_attr($search); ?>" placeholder="<?php echo esc_attr($c('search_label', 'Search products', 'البحث في المنتجات')); ?>">
       <?php if ($locale === 'en') : ?><input type="hidden" name="post_type" value="product"><?php endif; ?>

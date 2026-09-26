@@ -14,23 +14,22 @@ $familyService = class_exists(\RosaMedical\Core\Catalogue\FamilyService::class)
 
 $families = $familyService ? $familyService->getFamilies(false, $locale) : [];
 
-if (empty($families) && taxonomy_exists('product_cat')) {
-    $terms = get_terms([
-        'taxonomy' => 'product_cat',
-        'hide_empty' => false,
-        'exclude' => [get_option('default_product_cat', 0)],
-    ]);
-    if (! is_wp_error($terms) && is_array($terms)) {
-        foreach ($terms as $term) {
-            $families[] = (object) [
-                'id' => (int) $term->term_id,
-                'name' => (string) $term->name,
-                'slug' => (string) $term->slug,
-                'coverUrl' => '',
-                'pdfUrl' => '',
-            ];
-        }
-    }
+$fallbackFamilies = [
+    ['slug' => 'scissors', 'name' => $locale === 'ar' ? 'المقصات' : 'Scissors', 'cover' => 'scissors-family-cover-full.svg', 'pdf' => 'catalogue-pdf-scissors'],
+    ['slug' => 'cutters', 'name' => $locale === 'ar' ? 'القواطع' : 'Cutters', 'cover' => 'cutters-family-cover-full.svg', 'pdf' => 'catalogue-pdf-cutters'],
+    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover.webp', 'pdf' => 'catalogue-pdf-punches'],
+    ['slug' => 'chisels', 'name' => $locale === 'ar' ? 'الأزاميل' : 'Chisels', 'cover' => 'chisels-family-cover-full.svg', 'pdf' => 'catalogue-pdf-chisels'],
+    ['slug' => 'knives', 'name' => $locale === 'ar' ? 'السكاكين' : 'Knives', 'cover' => 'knives-family-cover-full.svg', 'pdf' => 'catalogue-pdf-knives'],
+];
+
+if (empty($families)) {
+    $families = array_map(static fn($f) => (object) [
+        'id' => 0,
+        'name' => $f['name'],
+        'slug' => $f['slug'],
+        'coverUrl' => $coverBase . $f['cover'],
+        'pdfUrl' => '',
+    ], $fallbackFamilies);
 }
 ?>
 <section class="section home-product-range" data-section="family-discovery" aria-labelledby="family-discovery-title">
