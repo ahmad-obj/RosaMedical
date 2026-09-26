@@ -31,16 +31,20 @@ if (empty($families)) {
         'pdfUrl' => '',
     ], $fallbackFamilies);
 }
+$isScrollable = count($families) > 5;
+$shellClasses = 'home-family-gallery-shell' . ($isScrollable ? ' home-family-gallery-shell--scrollable' : '');
+$galleryClasses = 'home-family-gallery' . ($isScrollable ? ' home-family-gallery--scrollable' : '');
+$controlsClasses = 'home-family-gallery__controls home-family-gallery__mobile-controls' . ($isScrollable ? ' home-family-gallery__controls--visible' : '');
 ?>
-<section class="section home-product-range" data-section="family-discovery" aria-labelledby="family-discovery-title">
+<section class="section home-product-range" data-section="family-discovery" data-home-section="promos" aria-labelledby="family-discovery-title">
     <div class="rosa-preview-rail home-product-range__rail">
         <h2 id="family-discovery-title" class="home-compact-section-title home-compact-section-title--center"><?php echo esc_html($title); ?></h2>
-        <div class="home-family-gallery-shell">
-            <div class="home-family-gallery__mobile-controls" aria-label="<?php echo esc_attr($locale === 'ar' ? 'التنقل بين عائلات المنتجات' : 'Product family navigation'); ?>">
+        <div class="<?php echo esc_attr($shellClasses); ?>">
+            <div class="<?php echo esc_attr($controlsClasses); ?>" aria-label="<?php echo esc_attr($locale === 'ar' ? 'التنقل بين عائلات المنتجات' : 'Product family navigation'); ?>">
                 <button type="button" class="home-family-gallery__arrow" data-family-gallery-prev aria-label="<?php echo esc_attr($locale === 'ar' ? 'العائلة السابقة' : 'Previous family'); ?>"><span aria-hidden="true">←</span></button>
                 <button type="button" class="home-family-gallery__arrow" data-family-gallery-next aria-label="<?php echo esc_attr($locale === 'ar' ? 'العائلة التالية' : 'Next family'); ?>"><span aria-hidden="true">→</span></button>
             </div>
-            <ul class="home-family-gallery" data-home-family-gallery aria-label="<?php echo esc_attr($locale === 'ar' ? 'منتجات روزا' : 'ROSA products'); ?>">
+            <ul class="<?php echo esc_attr($galleryClasses); ?>" data-home-family-gallery aria-label="<?php echo esc_attr($locale === 'ar' ? 'منتجات روزا' : 'ROSA products'); ?>">
                 <?php foreach ($families as $family) :
                     $slug = (string) $family->slug;
                     $name = $family instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $family->getDisplayName($locale) : (string) $family->name;

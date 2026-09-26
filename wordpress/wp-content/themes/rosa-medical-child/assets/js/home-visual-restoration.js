@@ -117,11 +117,31 @@
       const gallery = shell?.querySelector('.home-family-gallery');
       const panel = gallery?.querySelector('.home-family-gallery__panel');
       if (!(gallery instanceof HTMLElement) || !(panel instanceof HTMLElement)) return;
-      const distance = panel.getBoundingClientRect().width + 14;
+      const style = window.getComputedStyle(gallery);
+      const gap = parseFloat(style.columnGap || style.gap || '14') || 14;
+      const distance = panel.getBoundingClientRect().width + gap;
       const direction = button.hasAttribute('data-family-gallery-next') ? 1 : -1;
       const rtl = getComputedStyle(gallery).direction === 'rtl' ? -1 : 1;
       gallery.scrollBy({ left: distance * direction * rtl, behavior: reducedMotionSafe() ? 'auto' : 'smooth' });
     });
+  });
+
+  document.querySelectorAll('.home-family-gallery-shell').forEach((shell) => {
+    const gallery = shell.querySelector('.home-family-gallery');
+    if (!(gallery instanceof HTMLElement)) return;
+    const checkOverflow = () => {
+      const hasOverflow = gallery.scrollWidth > gallery.clientWidth + 2;
+      if (hasOverflow) {
+        shell.classList.add('home-family-gallery-shell--scrollable');
+        gallery.classList.add('home-family-gallery--scrollable');
+        const controls = shell.querySelector('.home-family-gallery__controls, .home-family-gallery__mobile-controls');
+        if (controls instanceof HTMLElement) {
+          controls.classList.add('home-family-gallery__controls--visible');
+        }
+      }
+    };
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow, { passive: true });
   });
 
   function reducedMotionSafe() {
