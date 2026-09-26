@@ -36,6 +36,7 @@ require_once __DIR__ . '/src/Admin/CatalogueDashboardPage.php';
 require_once __DIR__ . '/src/Admin/FamilyEditorPage.php';
 require_once __DIR__ . '/src/Admin/ProductTemplatePage.php';
 require_once __DIR__ . '/src/Admin/RosaAdmin.php';
+require_once __DIR__ . '/includes/ProductAdminHelper.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 use RosaMedical\Core\Plugin;
