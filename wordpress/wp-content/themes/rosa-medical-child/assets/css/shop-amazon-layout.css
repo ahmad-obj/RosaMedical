@@ -242,11 +242,14 @@
    ========================================================================== */
 
 .rosa-search-autocomplete {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  grid-column: 1 / -1 !important;
   background: #fff;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
@@ -412,7 +415,7 @@
 
 /* Mobile Filter Toggle */
 .rosa-shop-filter-toggle {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 1024px) {
@@ -422,7 +425,7 @@
   }
 
   .rosa-shop-filter-toggle {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
@@ -430,9 +433,9 @@
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--preview-ink, #191917);
-    background: #fff;
-    border: 1px solid #cbd5e1;
+    color: var(--preview-ink, #191917) !important;
+    background: #fff !important;
+    border: 1px solid #cbd5e1 !important;
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
@@ -516,19 +519,19 @@
 }
 
 .rosa-shop-sidebar__close {
-  display: none;
-  background: none;
-  border: none;
+  display: none !important;
+  background: none !important;
+  border: none !important;
   font-size: 1.5rem;
   line-height: 1;
-  color: #64748b;
+  color: #64748b !important;
   cursor: pointer;
   padding: 0.25rem;
 }
 
 @media (max-width: 1024px) {
   .rosa-shop-sidebar__close {
-    display: block;
+    display: block !important;
   }
 }
 
@@ -558,12 +561,12 @@
 }
 
 .rosa-clear-all-btn {
-  background: none;
-  border: none;
+  background: none !important;
+  border: none !important;
   padding: 0;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--preview-red, #b71920);
+  color: var(--preview-red, #b71920) !important;
   cursor: pointer;
   text-decoration: underline;
 }
@@ -589,11 +592,11 @@
 }
 
 .rosa-filter-chip__remove {
-  background: none;
-  border: none;
+  background: none !important;
+  border: none !important;
   padding: 0;
   margin: 0;
-  color: #94a3b8;
+  color: #94a3b8 !important;
   font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
@@ -603,7 +606,7 @@
 }
 
 .rosa-filter-chip__remove:hover {
-  color: var(--preview-red, #b71920);
+  color: var(--preview-red, #b71920) !important;
 }
 
 /* Filter Groups */
