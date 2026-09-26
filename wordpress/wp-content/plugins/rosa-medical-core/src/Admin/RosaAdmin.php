@@ -17,9 +17,52 @@ final class RosaAdmin
             __('Rosa Medical', 'rosa-medical'),
             Capabilities::MANAGE_CONTENT,
             self::ROOT_SLUG,
-            static fn(): mixed => ElementorShortcutPage::render('home', 'Homepage'),
+            [CatalogueDashboardPage::class, 'render'],
             'dashicons-heart',
             56
+        );
+
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Rosa Medical — Catalogue', 'rosa-medical'),
+            __('Catalogue', 'rosa-medical'),
+            Capabilities::MANAGE_CONTENT,
+            'rosa-medical-catalogue',
+            [CatalogueDashboardPage::class, 'render']
+        );
+
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Rosa Medical — Catalogue Families', 'rosa-medical'),
+            __('Families', 'rosa-medical'),
+            Capabilities::MANAGE_CONTENT,
+            'rosa-medical-families',
+            static fn(): mixed => FamilyEditorPage::render()
+        );
+
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Products', 'rosa-medical'),
+            __('Products', 'rosa-medical'),
+            Capabilities::MANAGE_CONTENT,
+            'edit.php?post_type=product'
+        );
+
+        add_submenu_page(
+            self::ROOT_SLUG,
+            __('Add Product', 'rosa-medical'),
+            __('Add Product', 'rosa-medical'),
+            Capabilities::MANAGE_CONTENT,
+            'post-new.php?post_type=product'
+        );
+
+        add_submenu_page(
+            null,
+            __('Edit Family', 'rosa-medical'),
+            __('Edit Family', 'rosa-medical'),
+            Capabilities::MANAGE_CONTENT,
+            'rosa-medical-family-edit',
+            static fn(): mixed => FamilyEditorPage::render()
         );
 
         add_submenu_page(
@@ -27,7 +70,7 @@ final class RosaAdmin
             __('Rosa Medical — Homepage', 'rosa-medical'),
             __('Homepage', 'rosa-medical'),
             Capabilities::MANAGE_CONTENT,
-            self::ROOT_SLUG,
+            'rosa-medical-home',
             static fn(): mixed => ElementorShortcutPage::render('home', 'Homepage')
         );
 
