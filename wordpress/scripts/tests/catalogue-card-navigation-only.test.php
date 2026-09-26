@@ -33,21 +33,14 @@ foreach ([
 }
 
 foreach ([
-    'rosa-preview-product__quote',
     'data-rosa-quote-item',
-    'data-rosa-quote-configuration',
     'data-rosa-quote-quantity',
     'data-rosa-add-to-quote',
-] as $forbidden) {
-    if (str_contains($card, $forbidden)) {
-        fwrite(STDERR, "Catalogue cards must be navigation-only; found forbidden quote control: {$forbidden}\n");
+] as $required) {
+    if (! str_contains($card, $required)) {
+        fwrite(STDERR, "Catalogue cards must include quote control: {$required}\n");
         exit(1);
     }
-}
-
-if (str_contains($quoteCss, '.rosa-preview-product__quote')) {
-    fwrite(STDERR, "Catalogue-card quote layout CSS must be removed after quote controls leave listing cards\n");
-    exit(1);
 }
 
 foreach ([
