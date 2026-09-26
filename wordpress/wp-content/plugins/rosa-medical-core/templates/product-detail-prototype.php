@@ -131,18 +131,20 @@ get_header();
                         <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?>
                     <?php endif; ?>
                 </div>
+                <?php if (count($imageIds) > 1) : ?>
                 <div class="rosa-product-detail__thumbnails" data-preview-product-thumbnails>
-                    <?php for ($thumbnailIndex = 0; $thumbnailIndex < 4; $thumbnailIndex++) :
-                        $thumbnailImageId = (int) ($imageIds[$thumbnailIndex] ?? 0); ?>
+                    <?php foreach ($imageIds as $thumbnailImageId) :
+                        $thumbnailImageId = (int) $thumbnailImageId;
+                        if ($thumbnailImageId <= 0) {
+                            continue;
+                        }
+                    ?>
                         <span class="rosa-product-detail__thumbnail">
-                            <?php if ($thumbnailImageId > 0) : ?>
-                                <?php echo wp_get_attachment_image($thumbnailImageId, 'woocommerce_thumbnail', false, ['alt' => $product->get_name()]); ?>
-                            <?php else : ?>
-                                <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'catalogue-product', 'label' => $product->get_name()]); ?>
-                            <?php endif; ?>
+                            <?php echo wp_get_attachment_image($thumbnailImageId, 'woocommerce_thumbnail', false, ['alt' => $product->get_name()]); ?>
                         </span>
-                    <?php endfor; ?>
+                    <?php endforeach; ?>
                 </div>
+                <?php endif; ?>
             </section>
 
             <section class="rosa-product-detail__summary" data-preview-product-summary>
