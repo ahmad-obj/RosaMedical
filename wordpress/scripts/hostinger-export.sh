@@ -145,6 +145,11 @@ active_theme="$(wp theme list --status=active --field=name 2>/dev/null | head -n
 active_plugins="$(wp plugin list --status=active --field=name 2>/dev/null | paste -sd, - || true)"
 branch="$(git -C "$ROOT_DIR" branch --show-current 2>/dev/null || true)"
 head="$(git -C "$ROOT_DIR" rev-parse HEAD 2>/dev/null || true)"
+worktree_state='clean'
+if [[ -n "$(git -C "$ROOT_DIR" status --porcelain --untracked-files=normal 2>/dev/null || true)" ]]; then
+  worktree_state='dirty-included-in-archive'
+fi
+theme_css_sha256="$(sha256sum "$ROOT_DIR/wordpress/wp-content/themes/rosa-medical-child/assets/css/home-visual-restoration.css" | awk '{print $1}')"
 files_bytes="$(stat -c '%s' "$FILES_ARCHIVE" 2>/dev/null || wc -c <"$FILES_ARCHIVE")"
 db_bytes="$(stat -c '%s' "$DB_SQL" 2>/dev/null || wc -c <"$DB_SQL")"
 db_gz_bytes="$(stat -c '%s' "$DB_GZ" 2>/dev/null || wc -c <"$DB_GZ")"
@@ -155,6 +160,8 @@ Rosa Medical Hostinger Migration Manifest
 generated_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 branch=${branch:-unknown}
 head=${head:-unknown}
+worktree_state=$worktree_state
+theme_home_visual_css_sha256=$theme_css_sha256
 source_url=${source_url:-unknown}
 wordpress_version=${wordpress_version:-unknown}
 php_version=${php_version:-unknown}

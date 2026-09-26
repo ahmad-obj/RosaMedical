@@ -22,13 +22,13 @@ $slides = [
         'id' => 'surgical-instrument-selection', 'copy_side' => 'left', 'desktop_focal' => '62% 50%', 'mobile_focal' => '54% 48%',
         'eyebrow' => $c('hero_3_eyebrow'), 'title' => $c('hero_3_title'), 'body' => $c('hero_3_body'),
         'desktop' => $m('desktop_3', 'home-hero-03-desktop'), 'mobile' => $m('mobile_3', 'home-hero-03-mobile'),
-        'alt' => $locale === 'ar' ? 'يدان مرتديتان قفازات تفحصان مقصًا جراحيًا' : 'Gloved hands examining a surgical scissors instrument',
+        'alt' => $locale === 'ar' ? 'أدوات جراحية ومعدات أسنان دقيقة من الفولاذ المقاوم للصدأ' : 'Precision stainless-steel surgical and dental instruments',
     ],
     [
-        'id' => 'catalogue-to-quotation', 'copy_side' => 'right', 'desktop_focal' => '46% 50%', 'mobile_focal' => '50% 48%',
+        'id' => 'catalogue-to-quotation', 'copy_side' => 'right', 'desktop_focal' => '50% 50%', 'mobile_focal' => '54% 52%',
         'eyebrow' => $c('hero_4_eyebrow'), 'title' => $c('hero_4_title'), 'body' => $c('hero_4_body'),
         'desktop' => $m('desktop_4', 'home-hero-04-desktop'), 'mobile' => $m('mobile_4', 'home-hero-04-mobile'),
-        'alt' => $locale === 'ar' ? 'أدوات جراحية داكنة مرتبة على سطح طبي منسوج' : 'Dark surgical instruments arranged on a textured sterile surface',
+        'alt' => $locale === 'ar' ? 'يدان مرتديتان قفازات ترتبان أدوات جراحية على صينية' : 'Gloved hands arranging surgical instruments on a tray',
     ],
 ];
 ?>
@@ -57,7 +57,7 @@ $slides = [
         <div class="public-hero-carousel__media" data-media-slot="public-hero-active" data-entry-motion="slide-settle">
             <picture class="public-hero-carousel__picture">
                 <?php if ($mobileUrl !== '') : ?>
-                    <source media="(max-width: 40rem)" srcset="<?php echo $mobileOverride ? esc_attr($mobileSrcset) : esc_url($mobileUrl); ?>"<?php echo $mobileOverride ? ' sizes="100vw"' : ' type="image/webp"'; ?>>
+                    <source media="(max-width: 40rem)" srcset="<?php echo $mobileOverride ? esc_attr($mobileSrcset) : esc_url($mobileUrl); ?>"<?php echo $mobileOverride ? ' sizes="100vw"' : ' type="' . (in_array($index, [2, 3], true) ? 'image/jpeg' : 'image/webp') . '"'; ?>>
                 <?php endif; ?>
                 <?php if ($desktopAvifUrl !== '') : ?><source srcset="<?php echo esc_url($desktopAvifUrl); ?>" type="image/avif"><?php endif; ?>
                 <?php if ($desktopUrl !== '') : ?>

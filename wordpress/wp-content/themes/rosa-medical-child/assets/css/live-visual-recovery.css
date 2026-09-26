@@ -17,6 +17,11 @@
   text-align: center;
 }
 
+.rosa-preview-page-hero--contact .rosa-preview-page-hero__media img {
+  height: 100% !important;
+  filter: saturate(.48) contrast(1.04);
+}
+
 .rosa-preview-page-hero--contact::after {
   position: absolute;
   inset: 0;

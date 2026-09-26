@@ -88,6 +88,9 @@ function rosa_preview_is_safe_media_id(int $imageId): bool {
         'apps/web/public/media/editorial/about-hospitals.jpg',
         'apps/web/public/media/editorial/about-international-buyers.webp',
         'apps/web/public/media/editorial/procurement-support.jpg',
+        'apps/web/public/media/editorial/home-hero/client-v5/hero-03-mobile.webp',
+        'apps/web/public/media/editorial/home-hero/client-v5/hero-04-desktop.webp',
+        'apps/web/public/media/editorial/home-hero/client-v5/hero-04-mobile.webp',
     ];
     if (in_array($source, $blocked, true)) {
         return false;
@@ -129,6 +132,14 @@ function rosa_preview_reference_hero_url(int $slide, string $kind = 'desktop', s
     }
     if (! function_exists('get_stylesheet_directory_uri')) {
         return '';
+    }
+    if ($slide === 3 && $kind === 'mobile') {
+        return trailingslashit(get_stylesheet_directory_uri()) . 'assets/media/curated/dental-instrument-stand-pexels-6528777.jpg';
+    }
+    if ($slide === 4) {
+        return $format === 'avif'
+            ? ''
+            : trailingslashit(get_stylesheet_directory_uri()) . 'assets/media/curated/surgical-tool-selection-pexels-14751430.jpg';
     }
     $file = sprintf(
         'assets/media/home-hero/client-v5/hero-%02d-%s.%s',

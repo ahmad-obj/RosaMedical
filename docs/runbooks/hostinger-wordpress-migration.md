@@ -1,7 +1,7 @@
 # Rosa Medical WordPress → Hostinger Migration Runbook
 
-Date: 2026-09-01  
-Scope: `wordpress/client-preview-medicashop-recreation`
+Updated: 2026-09-16
+Scope: current Rosa Medical local WordPress checkout
 
 ## Purpose
 
@@ -60,6 +60,8 @@ Never commit Hostinger credentials to Git.
 ## Recommended path — Hostinger “Upload Backup Files”
 
 This is the first method to try because the source is an offline/local WordPress site and the export script already creates the two things Hostinger asks for: one compressed site-root archive and a standalone `.sql` database.
+
+Hostinger's [current migration instructions](https://www.hostinger.com/support/4455931-how-to-migrate-a-website-to-hostinger/) specify a single compressed archive containing the site root and `.htaccess`, plus a separate `.sql` database for **Upload Backup Files**. The generated `migration-manifest.txt` records whether local uncommitted theme changes were included and a CSS hash for checking the exact candidate.
 
 1. Sign in to Hostinger hPanel.
 2. Open **Websites → Migrations**.

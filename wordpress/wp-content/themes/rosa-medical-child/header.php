@@ -63,7 +63,9 @@ $announcement = rosa_preview_content(
         <a class="rosa-preview-brand" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/' : '/')); ?>" aria-label="ROSA">
             <?php if ($logoId > 0) : ?>
                 <?php echo wp_get_attachment_image($logoId, 'full', false, ['class' => 'rosa-preview-brand__image', 'alt' => 'ROSA']); ?>
-            <?php endif; ?><span class="rosa-preview-brand__wordmark">ROSA<small>MEDICAL</small></span>
+            <?php else : ?>
+                <span class="rosa-preview-brand__wordmark">ROSA</span>
+            <?php endif; ?>
         </a>
         <nav class="rosa-preview-nav" aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'التنقل الرئيسي' : 'Primary navigation'); ?>">
             <?php foreach ($navItems as $item) : ?>
@@ -72,7 +74,7 @@ $announcement = rosa_preview_content(
         </nav>
         <div class="rosa-preview-header__actions">
             <a class="rosa-preview-language rosa-preview-header-action" href="<?php echo esc_url($pairUrl); ?>" hreflang="<?php echo esc_attr($previewLocale === 'ar' ? 'en' : 'ar'); ?>" aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'English' : 'العربية'); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'EN' : 'AR'); ?></a>
-            <a class="rosa-preview-button rosa-preview-header-action rosa-preview-header-action--inquiry" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/contact/#inquiry' : '/contact/#inquiry')); ?>" aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'الاستفسار' : 'Inquiry'); ?>">?</a>
+            <a class="rosa-preview-button rosa-preview-header-action rosa-preview-header-action--inquiry" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/quote-request/' : '/quote-request/')); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'اطلب عرض سعر' : 'Request a quote'); ?></a>
         </div>
     </div>
     <div class="rosa-preview-menu-overlay" hidden data-rosa-preview-menu-overlay></div>

@@ -10,17 +10,18 @@ $bodyFallback = $isContact
     ? ($locale === 'ar' ? 'تواصل معنا وأخبرنا كيف يمكننا مساعدتك.' : 'Get in touch and let us know how we can help.')
     : ($locale === 'ar' ? 'تعرف على نهج روزا في دعم اكتشاف الأدوات الطبية والتوريد.' : 'Learn about Rosa’s approach to medical-instrument discovery and procurement support.');
 $classes = 'rosa-preview-page-hero' . ($isContact ? ' rosa-preview-page-hero--contact' : '');
-$heroSlide = $isContact ? 4 : 2;
-$desktopUrl = rosa_preview_reference_hero_url($heroSlide, 'desktop', 'webp');
-$desktopAvifUrl = rosa_preview_reference_hero_url($heroSlide, 'desktop', 'avif');
-$mobileUrl = rosa_preview_reference_hero_url($heroSlide, 'mobile', 'webp');
-$desktopFocal = $isContact ? '46% 50%' : '63% 49%';
-$mobileFocal = $isContact ? '50% 48%' : '50% 48%';
+$heroSlide = 2;
+$contactUrl = trailingslashit(get_stylesheet_directory_uri()) . 'assets/media/curated/dental-tool-selection-pexels-3884083.jpg';
+$desktopUrl = $isContact ? $contactUrl : rosa_preview_reference_hero_url($heroSlide, 'desktop', 'webp');
+$desktopAvifUrl = $isContact ? '' : rosa_preview_reference_hero_url($heroSlide, 'desktop', 'avif');
+$mobileUrl = $isContact ? $contactUrl : rosa_preview_reference_hero_url($heroSlide, 'mobile', 'webp');
+$desktopFocal = $isContact ? '50% 78%' : '63% 49%';
+$mobileFocal = $isContact ? '50% 76%' : '50% 48%';
 ?>
 <section class="<?php echo esc_attr($classes); ?>" data-preview-page-hero style="--page-hero-desktop-focal:<?php echo esc_attr($desktopFocal); ?>;--page-hero-mobile-focal:<?php echo esc_attr($mobileFocal); ?>;">
     <picture class="rosa-preview-page-hero__media" aria-hidden="true">
-        <source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="image/webp">
-        <source srcset="<?php echo esc_url($desktopAvifUrl); ?>" type="image/avif">
+        <source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="<?php echo $isContact ? 'image/jpeg' : 'image/webp'; ?>">
+        <?php if ($desktopAvifUrl !== '') : ?><source srcset="<?php echo esc_url($desktopAvifUrl); ?>" type="image/avif"><?php endif; ?>
         <img src="<?php echo esc_url($desktopUrl); ?>" alt="" decoding="async" fetchpriority="high">
     </picture>
     <div class="rosa-preview-rail">

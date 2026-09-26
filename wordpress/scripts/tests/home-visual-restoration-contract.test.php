@@ -138,7 +138,8 @@ if (strpos($js, 'const HERO_AUTOPLAY_MS = 4750;') === false
     fwrite(STDERR, "Restored hero interaction contract is incomplete\n");
     exit(1);
 }
-if (strpos($pageHero, '$heroSlide = $isContact ? 4 : 2;') === false
+if (strpos($pageHero, '$heroSlide = 2;') === false
+    || strpos($pageHero, 'dental-tool-selection-pexels-3884083.jpg') === false
     || strpos($pageHero, "rosa_preview_reference_hero_url(\$heroSlide, 'desktop', 'webp')") === false
     || strpos($pageHero, "rosa_preview_reference_hero_url(\$heroSlide, 'desktop', 'avif')") === false
     || strpos($pageHero, "rosa_preview_reference_hero_url(\$heroSlide, 'mobile', 'webp')") === false) {

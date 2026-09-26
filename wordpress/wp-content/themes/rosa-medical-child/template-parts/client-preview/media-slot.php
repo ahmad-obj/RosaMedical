@@ -13,8 +13,8 @@ if ($imageId > 0 && function_exists('rosa_preview_is_safe_media_id') && ! rosa_p
 
 $fallbackMedia = [
     'home-hero-01' => 'assets/media/home-hero/client-v5/hero-01-desktop.webp',
-    'home-who-01' => 'assets/media/home-hero/v1/home-hero-03-desktop.webp',
-    'home-feature-01' => 'assets/media/home-hero/v1/home-hero-02-desktop.webp',
+    'home-who-01' => 'assets/media/curated/dental-instrument-reference-pexels-4270967.jpg',
+    'home-feature-01' => 'assets/media/curated/surgical-instrument-processing-pexels-24022931.jpg',
     'home-promo-01' => 'assets/media/homepage-covers/knives-family-cover-full.svg',
     'home-promo-02' => 'assets/media/homepage-covers/scissors-family-cover-full.svg',
     'home-promo-03' => 'assets/media/homepage-covers/punches-family-cover.webp',
@@ -24,16 +24,16 @@ $fallbackMedia = [
     'prefooter-person-01' => 'assets/media/curated/prefooter-person-01.webp',
 
     // Audited About defaults: instrument/catalogue-led instead of generic stock.
-    'about-who-instruments' => 'assets/media/home-hero/v1/home-hero-03-desktop.webp',
+    'about-who-instruments' => 'assets/media/curated/about-instrument-still-life-generated.webp',
     'about-product-families' => 'assets/media/home-hero/v1/home-hero-04-desktop.webp',
-    'about-catalogue-support' => 'assets/media/homepage-covers/scissors-family-cover-full.svg',
+    'about-catalogue-support' => 'assets/media/curated/about-catalogue-reference-generated.webp',
     'about-feature-instruments' => 'assets/media/home-hero/v1/home-hero-01-desktop.webp',
-    'about-proof-instruments' => 'assets/media/curated/home-evidence-01.jpg',
+    'about-proof-instruments' => 'assets/media/curated/dental-instrument-trays-pexels-6627726.jpg',
 
     // Backward-compatible old slot names now resolve to audited instrument-led defaults.
-    'about_procurement' => 'assets/media/home-hero/v1/home-hero-03-desktop.webp',
+    'about_procurement' => 'assets/media/curated/dental-instrument-stand-pexels-6528777.jpg',
     'about_hospitals' => 'assets/media/home-hero/v1/home-hero-01-desktop.webp',
-    'about_international' => 'assets/media/curated/home-evidence-01.jpg',
+    'about_international' => 'assets/media/curated/dental-instrument-trays-pexels-6627726.jpg',
 
     // Shop family-navigation cards must never fall through to a text placeholder.
     'catalogue-family-knives' => 'assets/media/homepage-covers/knives-family-cover-full.svg',

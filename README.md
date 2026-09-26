@@ -362,6 +362,46 @@ The frontend will first create a minimal navigable layout and typed mock boundar
 
 ---
 
+### 2026-09-16 20:37 PKT — Frontend AI → Backend AI
+
+- Branch: `audit/complete-image-qa-2026-09-15` (local working tree).
+- Completed: Audited 27 non-product image contexts across EN/AR public routes and five viewport widths, replaced six weak editorial sources with locally stored licensed photographs, corrected hero and banner crops, restored the official wide logo and the local-only red “Request a quote” header CTA.
+- Changed shared files/contracts: WordPress child-theme image fallbacks, page templates, header CSS/PHP, one matching contract assertion, and the image decision report. No API, catalogue data, SKU images, quotation persistence or backend contract changed.
+- Verification run and result: 60 browser route/viewport captures, focused PHP contracts and PHP lint; see `docs/superpowers/reports/2026-09-16-complete-image-visual-decision-audit.md` for visual decisions and source provenance.
+- Ready integration gate: Owner visual review of the local WordPress site and report.
+- Blockers: None for local review.
+- Decision or response needed: None.
+
+### 2026-09-16 20:54 PKT — Frontend AI → Backend AI
+
+- Branch: `audit/complete-image-qa-2026-09-15` (local working tree).
+- Completed: Owner-requested image refinement on Home and About, including two original theme-local About assets, complete frame coverage in Home/About slots, muted fourth hero, and a darker Find Product gradient.
+- Changed shared files/contracts: WordPress child-theme media fallbacks, scoped CSS, About image description, and image audit report only; no backend, Woo product media or quotation persistence changes.
+- Verification run and result: EN/AR section screenshots at 1440, 768 and 390 px confirmed the primary crops and gradient; focused PHP contracts, PHP lint and `git diff --check` pass. The last minor mobile focal/padding/Search-button refinements await a fresh browser capture.
+- Ready integration gate: Browser recapture after tool access is restored, then owner visual review.
+- Blockers: Automatic approval review rejected final browser recapture because the tool usage limit was reached.
+- Decision or response needed: None for implementation; post-fix rendered verification remains pending.
+
+### 2026-09-16 21:03 PKT — Frontend AI → Backend AI
+
+- Branch: `audit/complete-image-qa-2026-09-15` (local working tree).
+- Completed: Extended frame-cover correction to Home feature/support/evidence, About banners, Shop support and page heroes after the owner identified more mobile top/bottom gaps.
+- Changed shared files/contracts: Scoped editorial CSS and image audit report only; no catalogue cover, SKU image or backend change.
+- Verification run and result: Earlier mobile DOM evidence identified source-height/frame-height mismatches; focused PHP contracts and `git diff --check` pass. New rendered captures remain pending.
+- Ready integration gate: EN/AR mobile browser recapture once tool access is restored.
+- Blockers: Automatic approval review usage limit still prevents the browser verification action.
+- Decision or response needed: None for the code change; final visual confirmation remains outstanding.
+
+### 2026-09-16 21:19 PKT — Frontend AI → Backend AI
+
+- Branch: `audit/complete-image-qa-2026-09-15` (local working tree).
+- Completed: Rebuilt the Hostinger offline WordPress migration package from the running Docker document root and current database; the manifest records that current uncommitted theme changes are included.
+- Changed shared files/contracts: Hostinger export manifest metadata and migration runbook. No Hostinger account, live website, DNS or database was changed.
+- Verification run and result: Migration preflight `GO` with zero blockers, 28/28 attachments present, required plugins active, EN/AR route checks passed; archive and SQL checksums passed; archived theme CSS hash matches the working tree.
+- Ready integration gate: Upload the `.tar.gz` site-root archive and standalone `.sql` via Hostinger **Upload Backup Files**, then verify the migrated site before changing DNS.
+- Blockers: No packaging blocker. Prior image-pass final browser verification remains outstanding.
+- Decision or response needed: Destination-domain and Hostinger account actions remain with the owner during upload.
+
 ## 14. Required update format
 
 Use this format after meaningful work:

@@ -16,8 +16,8 @@ $overrideImage = rosa_preview_attachment_image_data($imageId, 'full');
 $slides = [
     ['left', '58% 50%', '50% 46%', $locale === 'ar' ? 'يد مرتدية قفازًا تختار أداة جراحية من مجموعة مرتبة' : 'Gloved hand selecting a surgical instrument from an arranged set'],
     ['left', '63% 49%', '50% 48%', $locale === 'ar' ? 'يد مرتدية قفازًا تمسك ملقطًا جراحيًا بحلقات بجوار أدوات أخرى' : 'Gloved hand holding ring-handled surgical forceps beside other instruments'],
-    ['left', '62% 50%', '54% 48%', $locale === 'ar' ? 'يدان مرتديتان قفازات تفحصان مقصًا جراحيًا' : 'Gloved hands examining a surgical scissors instrument'],
-    ['right', '46% 50%', '50% 48%', $locale === 'ar' ? 'أدوات جراحية داكنة مرتبة على سطح طبي منسوج' : 'Dark surgical instruments arranged on a textured sterile surface'],
+    ['left', '62% 50%', '50% 67%', $locale === 'ar' ? 'أدوات جراحية ومعدات أسنان دقيقة من الفولاذ المقاوم للصدأ' : 'Precision stainless-steel surgical and dental instruments'],
+    ['right', '50% 50%', '54% 52%', $locale === 'ar' ? 'يدان مرتديتان قفازات ترتبان أدوات جراحية على صينية' : 'Gloved hands arranging surgical instruments on a tray'],
 ];
 ?>
 <section class="rosa-preview-hero public-hero-carousel" data-home-section="hero" data-restored-home-hero aria-roledescription="carousel" aria-label="<?php echo esc_attr($locale === 'ar' ? 'لافتات الصفحة الرئيسية' : 'Homepage banners'); ?>">
@@ -31,7 +31,7 @@ $slides = [
     <div class="public-hero-carousel__slide<?php echo $active ? ' is-active' : ''; ?>" data-rosa-hero-slide data-slide-index="<?php echo esc_attr((string)$index); ?>" data-copy-side="<?php echo esc_attr($copySide); ?>" aria-roledescription="slide" aria-label="<?php echo esc_attr(($index + 1) . ' of 4'); ?>" aria-hidden="<?php echo $active ? 'false' : 'true'; ?>" style="--hero-desktop-focal:<?php echo esc_attr($desktopFocal); ?>;--hero-mobile-focal:<?php echo esc_attr($mobileFocal); ?>;">
         <div class="rosa-restored-hero__media">
             <picture>
-                <?php if (! $hasOverride && $mobileUrl !== '') : ?><source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="image/webp"><?php endif; ?>
+                <?php if (! $hasOverride && $mobileUrl !== '') : ?><source media="(max-width: 40rem)" srcset="<?php echo esc_url($mobileUrl); ?>" type="<?php echo in_array($index, [2, 3], true) ? 'image/jpeg' : 'image/webp'; ?>"><?php endif; ?>
                 <?php if ($desktopAvifUrl !== '') : ?><source srcset="<?php echo esc_url($desktopAvifUrl); ?>" type="image/avif"><?php endif; ?>
                 <img
                     src="<?php echo esc_url($desktopUrl); ?>"

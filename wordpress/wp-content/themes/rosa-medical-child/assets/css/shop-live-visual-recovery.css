@@ -4,7 +4,7 @@
   position: relative;
   overflow: hidden;
   padding-block: clamp(3.4rem, 5.4vw, 5rem);
-  background: linear-gradient(112deg, #c7838c 0%, #d9949d 54%, #e5a0a8 100%);
+  background: radial-gradient(circle at 82% 15%, rgb(145 42 53 / .38), transparent 48%), linear-gradient(125deg, #252a31 0%, #3a3e45 54%, #59272f 100%);
   color: #fff;
   text-align: center;
 }
@@ -46,6 +46,8 @@
   outline: 0;
 }
 .rosa-live-shop-search .rosa-preview-button { min-width: 6.75rem; border: 0; }
+.rosa-live-shop-search button.rosa-preview-button--accent { background: var(--preview-accent) !important; color: #fff !important; }
+.rosa-live-shop-search button.rosa-preview-button--accent:hover { background: var(--preview-accent-dark) !important; }
 
 .rosa-live-shop-catalogue,
 .rosa-live-shop-support,
