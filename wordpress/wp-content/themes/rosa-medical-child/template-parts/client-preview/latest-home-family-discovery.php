@@ -1,18 +1,37 @@
 <?php
 if (! defined('ABSPATH')) { exit; }
+
 $sectionArgs = isset($args) && is_array($args) ? $args : [];
-$locale = (string)($sectionArgs['locale'] ?? rosa_preview_locale());
+$locale = (string) ($sectionArgs['locale'] ?? rosa_preview_locale());
 $title = rosa_preview_section_value($sectionArgs, 'home', 'family_title', $locale, $locale === 'ar' ? 'مجموعة منتجاتنا' : 'Our range of products');
 $coverBase = function_exists('get_stylesheet_directory_uri')
     ? trailingslashit(get_stylesheet_directory_uri()) . 'assets/media/homepage-covers/'
     : '';
-$families = [
-    ['slug' => 'scissors', 'name' => $locale === 'ar' ? 'المقصات' : 'Scissors', 'cover' => 'scissors-family-cover-full.svg', 'pdf' => 'catalogue-pdf-scissors'],
-    ['slug' => 'cutters', 'name' => $locale === 'ar' ? 'القواطع' : 'Cutters', 'cover' => 'cutters-family-cover-full.svg', 'pdf' => 'catalogue-pdf-cutters'],
-    ['slug' => 'punches', 'name' => $locale === 'ar' ? 'المثاقب' : 'Punches', 'cover' => 'punches-family-cover.webp', 'pdf' => 'catalogue-pdf-punches'],
-    ['slug' => 'chisels', 'name' => $locale === 'ar' ? 'الأزاميل' : 'Chisels', 'cover' => 'chisels-family-cover-full.svg', 'pdf' => 'catalogue-pdf-chisels'],
-    ['slug' => 'knives', 'name' => $locale === 'ar' ? 'السكاكين' : 'Knives', 'cover' => 'knives-family-cover-full.svg', 'pdf' => 'catalogue-pdf-knives'],
-];
+
+$familyService = class_exists(\RosaMedical\Core\Catalogue\FamilyService::class)
+    ? new \RosaMedical\Core\Catalogue\FamilyService()
+    : null;
+
+$families = $familyService ? $familyService->getFamilies(false, $locale) : [];
+
+if (empty($families) && taxonomy_exists('product_cat')) {
+    $terms = get_terms([
+        'taxonomy' => 'product_cat',
+        'hide_empty' => false,
+        'exclude' => [get_option('default_product_cat', 0)],
+    ]);
+    if (! is_wp_error($terms) && is_array($terms)) {
+        foreach ($terms as $term) {
+            $families[] = (object) [
+                'id' => (int) $term->term_id,
+                'name' => (string) $term->name,
+                'slug' => (string) $term->slug,
+                'coverUrl' => '',
+                'pdfUrl' => '',
+            ];
+        }
+    }
+}
 ?>
 <section class="section home-product-range" data-section="family-discovery" aria-labelledby="family-discovery-title">
     <div class="rosa-preview-rail home-product-range__rail">
@@ -24,17 +43,30 @@ $families = [
             </div>
             <ul class="home-family-gallery" data-home-family-gallery aria-label="<?php echo esc_attr($locale === 'ar' ? 'منتجات روزا' : 'ROSA products'); ?>">
                 <?php foreach ($families as $family) :
-                    $pdfId = rosa_preview_media_id($family['pdf']);
-                    $pdfUrl = $pdfId > 0 ? wp_get_attachment_url($pdfId) : '';
-                    if (! is_string($pdfUrl) || $pdfUrl === '') {
-                        $pdfUrl = home_url('/shop/');
+                    $slug = (string) $family->slug;
+                    $name = $family instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $family->getDisplayName($locale) : (string) $family->name;
+
+                    $pdfUrl = ! empty($family->pdfUrl) ? $family->pdfUrl : '';
+                    if ($pdfUrl === '' && function_exists('rosa_preview_media_id')) {
+                        $pdfId = rosa_preview_media_id('catalogue-pdf-' . $slug);
+                        if ($pdfId > 0) {
+                            $pdfUrl = wp_get_attachment_url($pdfId) ?: '';
+                        }
                     }
-                    $coverUrl = $coverBase !== '' ? $coverBase . $family['cover'] : '';
+                    if (! is_string($pdfUrl) || $pdfUrl === '') {
+                        $pdfUrl = home_url('/shop/#family-' . $slug);
+                    }
+
+                    $coverUrl = ! empty($family->coverUrl) ? $family->coverUrl : '';
+                    if ($coverUrl === '' && $coverBase !== '') {
+                        $coverFilename = $slug === 'punches' ? 'punches-family-cover.webp' : "{$slug}-family-cover-full.svg";
+                        $coverUrl = $coverBase . $coverFilename;
+                    }
                 ?>
-                <li class="home-family-gallery__panel" data-family-panel data-family="<?php echo esc_attr($family['slug']); ?>">
-                    <a class="home-family-gallery__link" href="<?php echo esc_url($pdfUrl); ?>" target="_blank" rel="noreferrer" aria-label="<?php echo esc_attr($locale === 'ar' ? 'فتح كتالوج ' . $family['name'] : 'Open ' . $family['name'] . ' catalogue'); ?>">
+                <li class="home-family-gallery__panel" data-family-panel data-family="<?php echo esc_attr($slug); ?>">
+                    <a class="home-family-gallery__link" href="<?php echo esc_url($pdfUrl); ?>" target="_blank" rel="noreferrer" aria-label="<?php echo esc_attr($locale === 'ar' ? 'فتح كتالوج ' . $name : 'Open ' . $name . ' catalogue'); ?>">
                         <div class="home-family-gallery__media home-family-gallery__media--catalogue-cover">
-                            <?php if ($coverUrl !== '') : ?><img class="home-family-gallery__image" src="<?php echo esc_url($coverUrl); ?>" alt="<?php echo esc_attr($family['name']); ?>" width="560" height="786" loading="lazy" decoding="async"><?php endif; ?>
+                            <?php if ($coverUrl !== '') : ?><img class="home-family-gallery__image" src="<?php echo esc_url($coverUrl); ?>" alt="<?php echo esc_attr($name); ?>" width="560" height="786" loading="lazy" decoding="async"><?php endif; ?>
                         </div>
                     </a>
                 </li>
