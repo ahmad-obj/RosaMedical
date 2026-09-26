@@ -223,6 +223,19 @@ add_action('wp_enqueue_scripts', static function (): void {
         );
         wp_enqueue_script('rosa-quote-basket', get_stylesheet_directory_uri() . '/assets/js/quote-basket.js', [], $version, true);
         wp_enqueue_script('rosa-quote-selection', get_stylesheet_directory_uri() . '/assets/js/quote-selection.js', ['rosa-quote-basket'], $version, true);
+        wp_enqueue_style(
+            'rosa-shop-amazon-layout',
+            get_stylesheet_directory_uri() . '/assets/css/shop-amazon-layout.css',
+            ['rosa-live-visual-recovery'],
+            $version
+        );
+        wp_enqueue_script(
+            'rosa-shop-filters-autocomplete',
+            get_stylesheet_directory_uri() . '/assets/js/shop-filters-autocomplete.js',
+            ['rosa-quote-selection'],
+            $version,
+            true
+        );
         wp_enqueue_script('rosa-client-preview', get_stylesheet_directory_uri() . '/assets/js/client-preview.js', [], $version, true);
         wp_enqueue_script(
             'rosa-home-visual-restoration-js',

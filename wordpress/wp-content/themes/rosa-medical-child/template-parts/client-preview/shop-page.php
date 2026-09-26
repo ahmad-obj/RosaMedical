@@ -21,7 +21,6 @@ $familyService = class_exists(\RosaMedical\Core\Catalogue\FamilyService::class)
 
 $allFamilies = $familyService ? $familyService->getFamilies(false, $locale) : [];
 
-// If no families found through service (e.g. plugin inactive fallback), query terms directly
 if (empty($allFamilies) && taxonomy_exists('product_cat')) {
     $terms = get_terms([
         'taxonomy' => 'product_cat',
@@ -43,65 +42,88 @@ if (empty($allFamilies) && taxonomy_exists('product_cat')) {
     }
 }
 
-// Query products grouped by family
-$activeFamilySections = [];
-$totalProductsFound = 0;
-
-foreach ($allFamilies as $family) {
-    $queryArgs = [
-        'post_type' => 'product',
-        'post_status' => 'publish',
-        'posts_per_page' => 100,
-        'tax_query' => [
-            [
-                'taxonomy' => 'product_cat',
-                'field' => 'term_id',
-                'terms' => $family->id,
-            ],
-        ],
-        'orderby' => [
-            'menu_order' => 'ASC',
-            'title' => 'ASC',
-        ],
-    ];
-
-    if ($search !== '') {
-        $queryArgs['s'] = $search;
-    }
-
-    $q = new WP_Query($queryArgs);
-    $products = [];
-    if ($q->have_posts()) {
-        while ($q->have_posts()) {
-            $q->the_post();
-            $product = wc_get_product(get_the_ID());
-            if ($product instanceof WC_Product) {
-                $products[] = $product;
-            }
-        }
-        wp_reset_postdata();
-    }
-
-    if (! empty($products)) {
-        $activeFamilySections[] = [
-            'family' => $family,
-            'products' => $products,
-        ];
-        $totalProductsFound += count($products);
-    }
+// Query all published products
+$queryArgs = [
+    'post_type' => 'product',
+    'post_status' => 'publish',
+    'posts_per_page' => 250,
+    'orderby' => [
+        'menu_order' => 'ASC',
+        'title' => 'ASC',
+    ],
+];
+if ($search !== '') {
+    $queryArgs['s'] = $search;
 }
 
-$workflow = $locale === 'ar'
-    ? [
-        ['01', 'حدد فئة الأداة', 'ابدأ بنوع الأداة أو الفئة التي تحتاجها.'],
-        ['02', 'شارك المرجع', 'أرسل رمز الكتالوج أو التكوين المتاح لديك.'],
-        ['03', 'اطلب عرض سعر', 'تواصل مع روزا للحصول على دعم التوريد.'],
-    ]
-    : [
-        ['01', 'Identify the family', 'Start with the instrument type or family you need.'],
-        ['02', 'Share the reference', 'Send the catalogue code or configuration you already have.'],
-        ['03', 'Request a quotation', 'Contact Rosa for clear procurement support.'],
-    ];
+$q = new WP_Query($queryArgs);
+$allProducts = [];
+$familyCounts = [];
+$profileCounts = ['straight' => 0, 'curved' => 0, 'angled' => 0];
+$gradeCounts = ['standard' => 0, 'tc' => 0, 'supercut' => 0];
+$lengthCounts = ['small' => 0, 'medium' => 0, 'large' => 0, 'xlarge' => 0];
+
+if ($q->have_posts()) {
+    while ($q->have_posts()) {
+        $q->the_post();
+        $p = wc_get_product(get_the_ID());
+        if (! $p instanceof WC_Product) {
+            continue;
+        }
+
+        $pTitle = strtolower($p->get_name());
+        $pSku = strtolower((string) $p->get_sku());
+        $pDesc = strtolower($p->get_short_description() . ' ' . $p->get_description());
+
+        // Extract family slug
+        $pTerms = wc_get_product_terms($p->get_id(), 'product_cat');
+        $pFamilySlug = (! empty($pTerms) && ! is_wp_error($pTerms)) ? $pTerms[0]->slug : 'other';
+        $familyCounts[$pFamilySlug] = ($familyCounts[$pFamilySlug] ?? 0) + 1;
+
+        // Profile / Curvature
+        if (str_contains($pTitle, 'curv') || str_contains($pDesc, 'curv') || str_contains($pTitle, 'منحن')) {
+            $pProfile = 'curved';
+        } elseif (str_contains($pTitle, 'angle') || str_contains($pDesc, 'angle') || str_contains($pTitle, 'زاو')) {
+            $pProfile = 'angled';
+        } else {
+            $pProfile = 'straight';
+        }
+        $profileCounts[$pProfile]++;
+
+        // Grade / Material
+        if (str_contains($pTitle, 'tc') || str_contains($pSku, 'tc') || str_contains($pDesc, 'tungsten') || str_contains($pTitle, 'كربيد')) {
+            $pGrade = 'tc';
+        } elseif (str_contains($pTitle, 'supercut') || str_contains($pSku, 'sc') || str_contains($pTitle, 'سوبر')) {
+            $pGrade = 'supercut';
+        } else {
+            $pGrade = 'standard';
+        }
+        $gradeCounts[$pGrade]++;
+
+        // Length / Reach
+        preg_match('/(\d+(?:\.\d+)?)\s*(?:cm|سم)/iu', $pTitle . ' ' . $pDesc, $matches);
+        $lengthVal = ! empty($matches[1]) ? (float) $matches[1] : 14.0;
+        if ($lengthVal < 12.0) {
+            $pLength = 'small';
+        } elseif ($lengthVal <= 16.0) {
+            $pLength = 'medium';
+        } elseif ($lengthVal <= 20.0) {
+            $pLength = 'large';
+        } else {
+            $pLength = 'xlarge';
+        }
+        $lengthCounts[$pLength]++;
+
+        $allProducts[] = [
+            'product' => $p,
+            'family' => $pFamilySlug,
+            'profile' => $pProfile,
+            'grade' => $pGrade,
+            'length' => $pLength,
+        ];
+    }
+    wp_reset_postdata();
+}
 ?>
 <section class="rosa-preview-shop-hero rosa-live-shop-hero" data-preview-shop-hero>
   <div class="rosa-preview-rail rosa-live-shop-hero__inner">
@@ -110,136 +132,184 @@ $workflow = $locale === 'ar'
     <p><?php echo esc_html($c('hero_body', 'Search Rosa instrument families and catalogue references.', 'ابحث في فئات أدوات روزا ومراجع الكتالوج.')); ?></p>
     <form class="rosa-live-shop-search rosa-preview-shop-search" role="search" method="get" action="<?php echo esc_url($shopUrl); ?>">
       <label class="screen-reader-text" for="rosa-live-shop-search"><?php echo esc_html($c('search_label', 'Search products', 'البحث في المنتجات')); ?></label>
-      <input id="rosa-live-shop-search" name="s" type="search" value="<?php echo esc_attr($search); ?>" placeholder="<?php echo esc_attr($c('search_label', 'Search products', 'البحث في المنتجات')); ?>">
+      <input id="rosa-live-shop-search" name="s" type="search" value="<?php echo esc_attr($search); ?>" placeholder="<?php echo esc_attr($c('search_label', 'Search products', 'البحث في المنتجات')); ?>" autocomplete="off">
       <?php if ($locale === 'en') : ?><input type="hidden" name="post_type" value="product"><?php endif; ?>
       <button type="submit" class="rosa-preview-button rosa-preview-button--accent"><?php echo esc_html($c('search_button', 'Search', 'بحث')); ?></button>
     </form>
   </div>
 </section>
 
-<?php if (! empty($activeFamilySections)) : ?>
-  <!-- Compact Sticky Family Navigation -->
-  <nav class="rosa-catalogue-anchor-nav" aria-label="<?php echo esc_attr($locale === 'ar' ? 'التنقل بين عائلات الكتالوج' : 'Catalogue family navigation'); ?>">
-    <div class="rosa-preview-rail rosa-catalogue-anchor-nav__inner">
-      <ul class="rosa-catalogue-anchor-nav__list">
-        <?php foreach ($activeFamilySections as $section) :
-            $f = $section['family'];
-            $navLabel = $f instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $f->getDisplayName($locale) : $f->name;
+<!-- Amazon-Style 2-Column Catalogue Layout -->
+<div class="rosa-shop-container rosa-preview-rail">
+
+  <!-- Mobile Filter Toggle Button -->
+  <button type="button" class="rosa-shop-filter-toggle" data-rosa-filter-toggle aria-expanded="false">
+    <span class="rosa-shop-filter-toggle__icon" aria-hidden="true">⚙️</span>
+    <span><?php echo esc_html($locale === 'ar' ? 'تصفية وترتيب الأدوات' : 'Filter & Sort'); ?></span>
+    <span class="rosa-filter-count-badge" data-rosa-active-count hidden>0</span>
+  </button>
+
+  <!-- Left Sidebar Filters -->
+  <aside class="rosa-shop-sidebar" data-rosa-shop-sidebar>
+    <div class="rosa-shop-sidebar__header">
+      <h3><?php echo esc_html($locale === 'ar' ? 'تصفية الكتالوج' : 'Filter Catalogue'); ?></h3>
+      <button type="button" class="rosa-shop-sidebar__close" data-rosa-filter-close aria-label="<?php echo esc_attr($locale === 'ar' ? 'إغلاق الفلاتر' : 'Close filters'); ?>">×</button>
+    </div>
+
+    <!-- Active Filter Chips -->
+    <div class="rosa-active-filters" data-rosa-active-filters hidden>
+      <div class="rosa-active-filters__header">
+        <span><?php echo esc_html($locale === 'ar' ? 'الفلاتر النشطة' : 'Active Filters'); ?></span>
+        <button type="button" class="rosa-clear-all-btn" data-rosa-clear-filters><?php echo esc_html($locale === 'ar' ? 'مسح الكل' : 'Clear All'); ?></button>
+      </div>
+      <div class="rosa-active-filters__chips" data-rosa-filter-chips></div>
+    </div>
+
+    <!-- Filter Group 1: Families -->
+    <div class="rosa-filter-group" data-filter-group="family">
+      <h4 class="rosa-filter-group__title"><?php echo esc_html($locale === 'ar' ? 'فئات الأدوات' : 'Instrument Family'); ?></h4>
+      <div class="rosa-filter-group__options">
+        <label class="rosa-filter-option">
+          <input type="radio" name="filter_family" value="all" checked data-filter="family">
+          <span class="rosa-filter-option__name"><?php echo esc_html($locale === 'ar' ? 'جميع الفئات' : 'All Families'); ?></span>
+          <span class="rosa-filter-option__count">(<?php echo count($allProducts); ?>)</span>
+        </label>
+        <?php foreach ($allFamilies as $f) :
+          $navLabel = $f instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $f->getDisplayName($locale) : $f->name;
+          $count = $familyCounts[$f->slug] ?? 0;
         ?>
-          <li>
-            <a href="#family-<?php echo esc_attr($f->slug); ?>" class="rosa-catalogue-anchor-nav__link">
-              <?php echo esc_html($navLabel); ?>
-              <span class="rosa-catalogue-anchor-nav__count">(<?php echo count($section['products']); ?>)</span>
-            </a>
-          </li>
+          <label class="rosa-filter-option" data-family-option="<?php echo esc_attr($f->slug); ?>">
+            <input type="radio" name="filter_family" value="<?php echo esc_attr($f->slug); ?>" data-filter="family">
+            <span class="rosa-filter-option__name"><?php echo esc_html($navLabel); ?></span>
+            <span class="rosa-filter-option__count" data-count-family="<?php echo esc_attr($f->slug); ?>">(<?php echo $count; ?>)</span>
+          </label>
         <?php endforeach; ?>
-      </ul>
-    </div>
-  </nav>
-<?php endif; ?>
-
-<div class="rosa-live-shop-catalogue" aria-labelledby="rosa-live-shop-catalogue-title">
-  <div class="rosa-preview-rail">
-    <div class="rosa-live-shop-heading">
-      <div>
-        <p class="rosa-preview-eyebrow"><?php echo esc_html($locale === 'ar' ? 'كتالوج روزا' : 'ROSA CATALOGUE'); ?></p>
-        <h2 id="rosa-live-shop-catalogue-title">
-          <?php
-          if ($search !== '') {
-              echo esc_html(sprintf(
-                  $locale === 'ar' ? 'نتائج البحث عن: "%s" (%d منتج)' : 'Search results for: "%s" (%d products)',
-                  $search,
-                  $totalProductsFound
-              ));
-          } else {
-              echo esc_html($locale === 'ar' ? 'استكشف الأدوات حسب الفئة والمرجع' : 'Explore instruments by family and reference');
-          }
-          ?>
-        </h2>
       </div>
-      <p><?php echo esc_html($locale === 'ar' ? 'استخدم اسم الأداة أو مرجع الكتالوج للوصول إلى التكوين المطلوب.' : 'Use the instrument name or catalogue reference to find the configuration you need.'); ?></p>
     </div>
 
-    <?php if (empty($activeFamilySections)) : ?>
-      <div class="rosa-preview-shop-empty-wrap" style="padding: 4rem 1rem; text-align: center;">
-        <p class="rosa-preview-shop-empty">
-          <?php echo esc_html($search !== ''
-              ? ($locale === 'ar' ? 'لم يتم العثور على أي منتجات مطابقة لبحثك.' : 'No products matched your search.')
-              : $c('empty_state', 'No products matched this view.', 'لا توجد منتجات متاحة في هذه المعاينة.')
-          ); ?>
-        </p>
-        <?php if ($search !== '') : ?>
-          <a href="<?php echo esc_url($shopUrl); ?>" class="rosa-preview-button rosa-preview-button--secondary" style="margin-top: 1rem; display: inline-block;">
-            <?php echo esc_html($locale === 'ar' ? 'عرض الكتالوج بالكامل' : 'View Full Catalogue'); ?>
-          </a>
-        <?php endif; ?>
+    <!-- Filter Group 2: Profile / Curvature -->
+    <div class="rosa-filter-group" data-filter-group="profile">
+      <h4 class="rosa-filter-group__title"><?php echo esc_html($locale === 'ar' ? 'انحناء وشكل الشفرة' : 'Profile / Curvature'); ?></h4>
+      <div class="rosa-filter-group__options">
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_profile" value="straight" data-filter="profile">
+          <span class="rosa-filter-option__name"><?php echo esc_html($locale === 'ar' ? 'مستقيم (Straight)' : 'Straight'); ?></span>
+          <span class="rosa-filter-option__count" data-count-profile="straight">(<?php echo $profileCounts['straight']; ?>)</span>
+        </label>
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_profile" value="curved" data-filter="profile">
+          <span class="rosa-filter-option__name"><?php echo esc_html($locale === 'ar' ? 'منحني (Curved)' : 'Curved'); ?></span>
+          <span class="rosa-filter-option__count" data-count-profile="curved">(<?php echo $profileCounts['curved']; ?>)</span>
+        </label>
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_profile" value="angled" data-filter="profile">
+          <span class="rosa-filter-option__name"><?php echo esc_html($locale === 'ar' ? 'بزاوية (Angled)' : 'Angled'); ?></span>
+          <span class="rosa-filter-option__count" data-count-profile="angled">(<?php echo $profileCounts['angled']; ?>)</span>
+        </label>
       </div>
-    <?php else : ?>
-      <?php foreach ($activeFamilySections as $section) :
-          $family = $section['family'];
-          $products = $section['products'];
-          $displayName = $family instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $family->getDisplayName($locale) : $family->name;
-          $displayDesc = $family instanceof \RosaMedical\Core\Catalogue\FamilyModel ? $family->getDescription($locale) : $family->description;
+    </div>
+
+    <!-- Filter Group 3: Grade / Feature -->
+    <div class="rosa-filter-group" data-filter-group="grade">
+      <h4 class="rosa-filter-group__title"><?php echo esc_html($locale === 'ar' ? 'مواصفات وخامات الأداة' : 'Feature / Grade'); ?></h4>
+      <div class="rosa-filter-group__options">
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_grade" value="standard" data-filter="grade">
+          <span class="rosa-filter-option__name"><?php echo esc_html($locale === 'ar' ? 'فولاذ قياسي (Standard)' : 'Standard Surgical Steel'); ?></span>
+          <span class="rosa-filter-option__count" data-count-grade="standard">(<?php echo $gradeCounts['standard']; ?>)</span>
+        </label>
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_grade" value="tc" data-filter="grade">
+          <span class="rosa-filter-option__name"><?php echo esc_html($locale === 'ar' ? 'تنجستن كاربايد (TC / Gold)' : 'Tungsten Carbide (TC)'); ?></span>
+          <span class="rosa-filter-option__count" data-count-grade="tc">(<?php echo $gradeCounts['tc']; ?>)</span>
+        </label>
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_grade" value="supercut" data-filter="grade">
+          <span class="rosa-filter-option__name"><?php echo esc_html($locale === 'ar' ? 'سوبركت فائق الحدة (Supercut)' : 'Supercut (Black Handles)'); ?></span>
+          <span class="rosa-filter-option__count" data-count-grade="supercut">(<?php echo $gradeCounts['supercut']; ?>)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Filter Group 4: Length / Reach -->
+    <div class="rosa-filter-group" data-filter-group="length">
+      <h4 class="rosa-filter-group__title"><?php echo esc_html($locale === 'ar' ? 'الطول والمدى' : 'Length / Reach'); ?></h4>
+      <div class="rosa-filter-group__options">
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_length" value="small" data-filter="length">
+          <span class="rosa-filter-option__name">< 12 cm</span>
+          <span class="rosa-filter-option__count" data-count-length="small">(<?php echo $lengthCounts['small']; ?>)</span>
+        </label>
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_length" value="medium" data-filter="length">
+          <span class="rosa-filter-option__name">12 – 16 cm</span>
+          <span class="rosa-filter-option__count" data-count-length="medium">(<?php echo $lengthCounts['medium']; ?>)</span>
+        </label>
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_length" value="large" data-filter="length">
+          <span class="rosa-filter-option__name">17 – 20 cm</span>
+          <span class="rosa-filter-option__count" data-count-length="large">(<?php echo $lengthCounts['large']; ?>)</span>
+        </label>
+        <label class="rosa-filter-option">
+          <input type="checkbox" name="filter_length" value="xlarge" data-filter="length">
+          <span class="rosa-filter-option__name">> 20 cm</span>
+          <span class="rosa-filter-option__count" data-count-length="xlarge">(<?php echo $lengthCounts['xlarge']; ?>)</span>
+        </label>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Main Products Area -->
+  <main class="rosa-shop-main">
+    <div class="rosa-shop-toolbar">
+      <div class="rosa-shop-results-info">
+        <span class="rosa-shop-count-label" data-rosa-results-count>
+          <?php echo esc_html(sprintf(
+            $locale === 'ar' ? 'عرض %d منتج' : 'Showing %d instruments',
+            count($allProducts)
+          )); ?>
+        </span>
+      </div>
+      <div class="rosa-shop-sort-wrap">
+        <label for="rosa-shop-sort" class="screen-reader-text"><?php echo esc_html($locale === 'ar' ? 'ترتيب حسب' : 'Sort by'); ?></label>
+        <select id="rosa-shop-sort" class="rosa-shop-sort-select" data-rosa-sort aria-label="<?php echo esc_attr($locale === 'ar' ? 'ترتيب حسب' : 'Sort by'); ?>">
+          <option value="featured"><?php echo esc_html($locale === 'ar' ? 'الترتيب الافتراضي' : 'Featured Catalogue Order'); ?></option>
+          <option value="alpha-asc"><?php echo esc_html($locale === 'ar' ? 'الاسم: أ إلى ي' : 'Name: A to Z'); ?></option>
+          <option value="alpha-desc"><?php echo esc_html($locale === 'ar' ? 'الاسم: ي إلى أ' : 'Name: Z to A'); ?></option>
+          <option value="sku"><?php echo esc_html($locale === 'ar' ? 'رمز الكتالوج / SKU' : 'Catalogue Reference / SKU'); ?></option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Product Grid: 4-Columns on Desktop -->
+    <div class="rosa-shop-products-grid" data-rosa-products-grid>
+      <?php foreach ($allProducts as $item) :
+        $prod = $item['product'];
       ?>
-        <section class="rosa-catalogue-family-section" id="family-<?php echo esc_attr($family->slug); ?>" data-family="<?php echo esc_attr($family->slug); ?>">
-          <div class="rosa-catalogue-family-header">
-            <div class="rosa-catalogue-family-header__info">
-              <p class="rosa-preview-eyebrow"><?php echo esc_html($locale === 'ar' ? 'عائلة الأدوات' : 'INSTRUMENT FAMILY'); ?></p>
-              <h3 class="rosa-catalogue-family-title"><?php echo esc_html($displayName); ?></h3>
-              <?php if (! empty($displayDesc)) : ?>
-                <p class="rosa-catalogue-family-desc"><?php echo esc_html($displayDesc); ?></p>
-              <?php endif; ?>
-            </div>
-            <?php if (! empty($family->pdfUrl)) : ?>
-              <div class="rosa-catalogue-family-header__actions">
-                <a href="<?php echo esc_url($family->pdfUrl); ?>" target="_blank" rel="noopener noreferrer" class="rosa-preview-button rosa-preview-button--secondary rosa-catalogue-pdf-button">
-                  <span class="dashicons dashicons-pdf" aria-hidden="true" style="vertical-align: text-bottom; margin-inline-end: 4px;"></span>
-                  <?php echo esc_html(sprintf(
-                      $locale === 'ar' ? 'تحميل كتالوج %s (PDF)' : 'Download %s Catalogue (PDF)',
-                      $displayName
-                  )); ?>
-                </a>
-              </div>
-            <?php endif; ?>
-          </div>
-
-          <div class="rosa-preview-shop-grid rosa-live-shop-grid" data-preview-shop-grid>
-            <?php foreach ($products as $product) : ?>
-              <?php get_template_part('template-parts/client-preview/product-card', null, ['product' => $product, 'locale' => $locale]); ?>
-            <?php endforeach; ?>
-          </div>
-        </section>
+        <div class="rosa-shop-grid-item"
+             data-product-card-wrap
+             data-family="<?php echo esc_attr($item['family']); ?>"
+             data-profile="<?php echo esc_attr($item['profile']); ?>"
+             data-grade="<?php echo esc_attr($item['grade']); ?>"
+             data-length="<?php echo esc_attr($item['length']); ?>"
+             data-name="<?php echo esc_attr(strtolower($prod->get_name())); ?>"
+             data-sku="<?php echo esc_attr(strtolower((string) $prod->get_sku())); ?>">
+          <?php get_template_part('template-parts/client-preview/product-card', null, [
+            'product' => $prod,
+            'locale' => $locale,
+          ]); ?>
+        </div>
       <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="rosa-shop-empty" data-rosa-empty-state <?php echo count($allProducts) > 0 ? 'hidden' : ''; ?>>
+      <div class="rosa-shop-empty__card">
+        <p class="rosa-shop-empty__msg"><?php echo esc_html($locale === 'ar' ? 'لا توجد أدوات تطابق الفلاتر المحددة.' : 'No instruments match the selected filters.'); ?></p>
+        <button type="button" class="rosa-preview-button rosa-preview-button--secondary" data-rosa-clear-filters>
+          <?php echo esc_html($locale === 'ar' ? 'إعادة تعيين الفلاتر' : 'Clear All Filters'); ?>
+        </button>
+      </div>
+    </div>
+  </main>
 </div>
-
-<section class="rosa-live-shop-workflow" data-preview-shop-workflow>
-  <div class="rosa-preview-rail rosa-live-shop-workflow__layout">
-    <div class="rosa-live-shop-workflow__intro">
-      <p class="rosa-preview-eyebrow" style="color:#fff"><?php echo esc_html($locale === 'ar' ? 'مسار واضح' : 'A CLEAR WORKFLOW'); ?></p>
-      <h2 style="color:#fff"><?php echo esc_html($locale === 'ar' ? 'حوّل احتياجك للأداة إلى طلب توريد واضح.' : 'Turn an instrument need into a clear procurement request.'); ?></h2>
-      <p style="color:#fff"><?php echo esc_html($locale === 'ar' ? 'ثلاث خطوات تساعد فريق روزا على فهم ما تحتاجه بسرعة.' : 'Three simple steps help the Rosa team understand exactly what you need.'); ?></p>
-    </div>
-    <div class="rosa-live-shop-workflow__steps">
-      <?php foreach ($workflow as [$number, $title, $body]) : ?>
-        <article><span><?php echo esc_html($number); ?></span><div><h3><?php echo esc_html($title); ?></h3><p><?php echo esc_html($body); ?></p></div></article>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-
-<section class="rosa-live-shop-support" data-preview-shop-support>
-  <div class="rosa-preview-rail rosa-live-shop-support__layout">
-    <div class="rosa-live-shop-support__intro">
-      <p class="rosa-preview-eyebrow"><?php echo esc_html($locale === 'ar' ? 'دعم التوريد' : 'PROCUREMENT SUPPORT'); ?></p>
-      <h2><?php echo esc_html($locale === 'ar' ? 'دعم واضح من الكتالوج إلى طلب عرض السعر' : 'Clear support from catalogue discovery to quotation'); ?></h2>
-      <?php get_template_part('template-parts/client-preview/media-slot', null, ['slot' => 'home-why-01', 'label' => $locale === 'ar' ? 'دعم توريد أدوات روزا' : 'Rosa instrument procurement']); ?>
-    </div>
-    <div class="rosa-live-shop-support__grid">
-      <article><span>01</span><div><h3><?php echo esc_html($locale === 'ar' ? 'مراجع واضحة' : 'Clear references'); ?></h3><p><?php echo esc_html($locale === 'ar' ? 'استخدم أسماء الفئات وأكواد الكتالوج عند تحديد احتياجك.' : 'Use family names and catalogue codes when identifying your requirement.'); ?></p></div></article>
-      <article><span>02</span><div><h3><?php echo esc_html($locale === 'ar' ? 'تكوينات دقيقة' : 'Exact configurations'); ?></h3><p><?php echo esc_html($locale === 'ar' ? 'راجع الخيارات المتاحة للأداة قبل إرسال الطلب.' : 'Review the available instrument options before sending your request.'); ?></p></div></article>
-      <article><span>03</span><div><h3><?php echo esc_html($locale === 'ar' ? 'تواصل مباشر' : 'Direct support'); ?></h3><p><?php echo esc_html($locale === 'ar' ? 'شارك متطلباتك مع فريق روزا للحصول على دعم عرض السعر.' : 'Share your requirements with the Rosa team for quotation support.'); ?></p></article>
-    </div>
-  </div>
-</section>
