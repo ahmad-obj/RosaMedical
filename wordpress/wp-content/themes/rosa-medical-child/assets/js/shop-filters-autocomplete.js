@@ -76,8 +76,26 @@
     let debounceTimer = null;
     let activeIndex = -1;
     let currentResults = [];
+    let requestSequence = 0;
+
+    const escapeHtml = (value) => String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+
+    const safeProductUrl = (value) => {
+      try {
+        const url = new URL(String(value || ''), window.location.origin);
+        return url.origin === window.location.origin ? url.href : '#';
+      } catch (_) {
+        return '#';
+      }
+    };
 
     const closeDropdown = () => {
+      requestSequence += 1;
       if (dropdown) dropdown.hidden = true;
       activeIndex = -1;
       currentResults = [];
@@ -98,15 +116,15 @@
       }
 
       const itemsHtml = items.map((item, idx) => `
-        <a href="${item.url}" class="rosa-search-autocomplete__item" role="option" data-index="${idx}">
+        <a href="${escapeHtml(safeProductUrl(item.url))}" class="rosa-search-autocomplete__item" role="option" data-index="${idx}">
           <div class="rosa-search-autocomplete__thumb">
-            ${item.thumbnail ? `<img src="${item.thumbnail}" alt="" loading="lazy">` : `<span class="rosa-search-autocomplete__no-thumb">🩺</span>`}
+            ${item.thumbnail ? `<img src="${escapeHtml(item.thumbnail)}" alt="" loading="lazy">` : `<span class="rosa-search-autocomplete__no-thumb" aria-hidden="true">ROSA</span>`}
           </div>
           <div class="rosa-search-autocomplete__info">
-            <span class="rosa-search-autocomplete__title">${item.name}</span>
+            <span class="rosa-search-autocomplete__title">${escapeHtml(item.name)}</span>
             <div class="rosa-search-autocomplete__meta">
-              ${item.family ? `<span class="rosa-search-autocomplete__family">${item.family}</span>` : ''}
-              ${item.sku ? `<span class="rosa-search-autocomplete__sku">REF: ${item.sku}</span>` : ''}
+              ${item.family ? `<span class="rosa-search-autocomplete__family">${escapeHtml(item.family)}</span>` : ''}
+              ${item.sku ? `<span class="rosa-search-autocomplete__sku">REF: ${escapeHtml(item.sku)}</span>` : ''}
             </div>
           </div>
           <span class="rosa-search-autocomplete__arrow" aria-hidden="true">${isArabic ? '←' : '→'}</span>
@@ -148,12 +166,14 @@
         return;
       }
 
+      const requestId = ++requestSequence;
       debounceTimer = setTimeout(async () => {
         try {
           const langParam = isArabic ? '&lang=ar' : '&lang=en';
           const res = await fetch(`/wp-json/rosa/v1/search?q=${encodeURIComponent(query)}${langParam}`);
           if (!res.ok) throw new Error('Search failed');
           const data = await res.json();
+          if (requestId !== requestSequence || searchInput.value.trim() !== query) return;
           renderResults(data, query);
         } catch (err) {
           console.warn('Search autocomplete error:', err);
@@ -425,7 +445,8 @@
       sorted.forEach(item => grid.appendChild(item.el));
     };
 
-    const updateUrlParams = (filters) => {
+    const updateUrlParams = (filters, historyMode = 'push') => {
+      if (historyMode === 'none') return;
       const url = new URL(window.location.href);
       if (filters.family !== 'all') {
         url.searchParams.set('family', filters.family);
@@ -451,10 +472,11 @@
         url.searchParams.delete('length');
       }
 
-      window.history.replaceState({}, '', url.toString());
+      if (url.toString() === window.location.href) return;
+      window.history[historyMode === 'replace' ? 'replaceState' : 'pushState']({}, '', url.toString());
     };
 
-    const filterProducts = () => {
+    const filterProducts = (historyMode = 'push') => {
       const filters = getActiveFilters();
       let visibleCount = 0;
 
@@ -488,7 +510,7 @@
 
       updateFilterCounts(filters);
       renderActiveChips(filters);
-      updateUrlParams(filters);
+      updateUrlParams(filters, historyMode);
     };
 
     // Event listeners for filter changes
@@ -517,31 +539,41 @@
       sortGrid();
     });
 
-    // Read initial filters from URL params
-    const initialParams = new URLSearchParams(window.location.search);
-    const initFamily = initialParams.get('family');
-    const initProfile = initialParams.get('profile')?.split(',') || [];
-    const initGrade = initialParams.get('grade')?.split(',') || [];
-    const initLength = initialParams.get('length')?.split(',') || [];
+    const restoreFiltersFromUrl = (historyMode) => {
+      const params = new URLSearchParams(window.location.search);
+      const requested = {
+        family: params.get('family') || 'all',
+        profile: params.get('profile')?.split(',').filter(Boolean) || [],
+        grade: params.get('grade')?.split(',').filter(Boolean) || [],
+        length: params.get('length')?.split(',').filter(Boolean) || [],
+      };
 
-    if (initFamily) {
-      const famInput = filterInputs.find(i => i.getAttribute('data-filter') === 'family' && i.value === initFamily);
-      if (famInput) famInput.checked = true;
-    }
-    initProfile.forEach((val) => {
-      const inp = filterInputs.find(i => i.getAttribute('data-filter') === 'profile' && i.value === val);
-      if (inp) inp.checked = true;
-    });
-    initGrade.forEach((val) => {
-      const inp = filterInputs.find(i => i.getAttribute('data-filter') === 'grade' && i.value === val);
-      if (inp) inp.checked = true;
-    });
-    initLength.forEach((val) => {
-      const inp = filterInputs.find(i => i.getAttribute('data-filter') === 'length' && i.value === val);
-      if (inp) inp.checked = true;
-    });
+      // Reset first, then apply only known controls. Invalid query values fail
+      // safely to the neutral catalogue state rather than leaving a stale UI.
+      filterInputs.forEach((input) => {
+        if (input.getAttribute('data-filter') === 'family') {
+          input.checked = input.value === 'all';
+        } else {
+          input.checked = false;
+        }
+      });
 
-    // Initial run
-    filterProducts();
+      const family = filterInputs.find((input) => input.getAttribute('data-filter') === 'family' && input.value === requested.family);
+      if (family) family.checked = true;
+
+      [['profile', requested.profile], ['grade', requested.grade], ['length', requested.length]].forEach(([type, values]) => {
+        values.forEach((value) => {
+          const input = filterInputs.find((candidate) => candidate.getAttribute('data-filter') === type && candidate.value === value);
+          if (input) input.checked = true;
+        });
+      });
+
+      filterProducts(historyMode);
+    };
+
+    // Normalise a direct/shared URL once at load. Back/Forward restores state
+    // without writing a competing history entry.
+    restoreFiltersFromUrl('replace');
+    window.addEventListener('popstate', () => restoreFiltersFromUrl('none'));
   }
 })();

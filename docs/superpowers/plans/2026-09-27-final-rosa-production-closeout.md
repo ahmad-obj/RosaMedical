@@ -47,6 +47,8 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 - [x] Shop nested a second `<main>` inside the shared document landmark. The browser health flow reproduced this at 1440px; replaced the inner Shop landmark with a labelled results section.
 - [x] Hello Elementor's late button reset made the Product Detail primary quote action transparent while retaining white text. Added a component-owned accent declaration and verified its computed red/white state at 390px.
 - [x] The fixed quote-review trigger overlapped fields on the dedicated mobile Quote Request page, where the in-flow review already exists. It is now intentionally hidden only on that route; Shop and Product Detail retain the accessible drawer trigger.
+- [x] Shop filters overwrote browser history with `replaceState`, so Back/Forward could not restore a procurement search. Filter changes now create meaningful history entries; direct invalid URLs safely normalize to an unfiltered catalogue.
+- [x] Autocomplete rendered REST result fields directly into `innerHTML` and allowed a late response to overwrite a newer query. API-derived text/attributes are escaped, off-origin destinations are rejected, and a request sequence prevents stale results.
 
 ### P1
 
@@ -96,6 +98,8 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 | Mobile quotation UI | Playwright computed Product Detail quote button as `rgb(224, 8, 21)` with white text and `disabled=false`. On `/quote-request/`, the redundant fixed trigger has `hidden=true`, `display=none`, and a zero rect. EN/AR quote confirmation, direct add, and drawer regressions pass. | Verified 2026-09-27 |
 | Final image/browser evidence | Eight complete temporary manifests contain 80 captures (60 original matrix cells plus 20 changed Quote/Product recaptures): no visible broken images, horizontal overflow, console errors, page errors, or failed requests. Representative desktop/mobile EN/AR full-page captures were manually reviewed. | Verified 2026-09-27 |
 | Family admin runtime | A marked self-cleaning WP-CLI fixture created a family/product pair for each mode. Leave mode deleted the family while leaving its product uncategorized; reassign mode moved its product to the selected target and removed the deleted term. The test passed and cleaned its fixtures. | Verified 2026-09-27 |
+| Shop URL/history | `shop-filter-history.test.mjs` verifies a shared family/profile URL, family change, Back, Forward, and malformed parameters at live browser runtime. | Verified 2026-09-27 |
+| Autocomplete resilience | `search-autocomplete-safety.test.mjs` intercepts delayed and malicious REST results: the latest result wins, no injected HTML executes, and an off-origin result URL becomes inert. | Verified 2026-09-27 |
 
 ## External Blockers
 
