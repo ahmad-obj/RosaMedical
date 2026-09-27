@@ -19,6 +19,15 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+/* Quote-selection styling sets generic cards to `align-self: start`. The
+ * catalogue grid must retain its track width, especially in RTL two-column
+ * mobile layouts. */
+.rosa-shop-products-grid .rosa-preview-product {
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
 .rosa-preview-product:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgb(17 24 39 / 0.08);
@@ -202,6 +211,12 @@
   cursor: pointer;
   box-shadow: 0 1px 3px rgb(183 25 32 / 0.2);
   transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.rosa-card-quote-btn--configuration {
+  margin-top: auto;
+  min-height: 34px;
+  text-decoration: none;
 }
 
 .rosa-card-quote-btn:hover {
@@ -424,6 +439,10 @@
     gap: 1.5rem;
   }
 
+  [dir="rtl"] .rosa-shop-container {
+    grid-template-columns: 1fr;
+  }
+
   .rosa-shop-filter-toggle {
     display: inline-flex !important;
     align-items: center;
@@ -463,6 +482,7 @@
     box-shadow: 4px 0 24px rgb(0 0 0 / 0.15);
     overflow-y: auto;
     transform: translateX(-100%);
+    display: none;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -474,6 +494,7 @@
   }
 
   .rosa-shop-sidebar.is-open {
+    display: block;
     transform: translateX(0) !important;
   }
 }
@@ -747,6 +768,24 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
   }
+
+  .rosa-preview-product__quote-bar,
+  [dir="rtl"] .rosa-preview-product__quote-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rosa-qty-stepper {
+    width: 100%;
+    flex-basis: 36px;
+    justify-content: space-between;
+  }
+
+  .rosa-card-quote-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+  }
 }
 
 .rosa-shop-grid-item {
@@ -783,4 +822,3 @@
   color: #475569;
   margin: 0 0 1rem 0;
 }
-

@@ -274,7 +274,7 @@
     {
       "id": "product-knives-liston",
       "familySlug": "knives",
-      "slug": "liston",
+      "slug": "liston-knife",
       "name": "Liston Knife",
       "code": "18-0401",
       "description": "Catalogue-listed Liston Knife. Codes remain grouped only where the catalogue presents one unchanged visible configuration with size or listed code variants.",
@@ -779,76 +779,6 @@
       "mediaPath": "/media/catalogue-preview/knives/owner-resection-knife.png",
       "mediaSourceUrl": "https://www.surgical-design.com/products/resection-knife",
       "mediaReviewNote": "strong-match · manufacturer product page · transparent · approved · Background-only extraction from the referenced product photograph."
-    },
-    {
-      "id": "product-scissors-iris-regular-straight",
-      "familySlug": "scissors",
-      "slug": "iris-scissors-regular-straight",
-      "name": "Iris Scissors",
-      "code": "04-0901",
-      "description": "Catalogue-listed Iris Scissors in Regular, straight, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
-      "sizes": [
-        "10.5 cm"
-      ],
-      "variants": [
-        "Regular",
-        "Sharp"
-      ],
-      "directions": [
-        "Straight"
-      ],
-      "primaryOption": "Regular · Straight · Sharp",
-      "catalogueReference": {
-        "family": "Scissors",
-        "page": "1"
-      },
-      "mediaLabel": "Iris Scissors, Regular, Straight, Sharp",
-      "catalogueCodes": [
-        {
-          "code": "04-0901",
-          "size": "10.5 cm"
-        }
-      ],
-      "mediaAssetId": "scissors-iris-regular-straight",
-      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-regular-straight.avif",
-      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-regular-straight.webp",
-      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
-      "mediaReviewNote": "strong-match · preferred-safe · transparent · approved"
-    },
-    {
-      "id": "product-scissors-iris-regular-curved",
-      "familySlug": "scissors",
-      "slug": "iris-scissors-regular-curved",
-      "name": "Iris Scissors",
-      "code": "04-0911",
-      "description": "Catalogue-listed Iris Scissors in Regular, curved, sharp configuration. Sizes are grouped only where the visible instrument configuration remains the same.",
-      "sizes": [
-        "10.5 cm"
-      ],
-      "variants": [
-        "Regular",
-        "Sharp"
-      ],
-      "directions": [
-        "Curved"
-      ],
-      "primaryOption": "Regular · Curved · Sharp",
-      "catalogueReference": {
-        "family": "Scissors",
-        "page": "1"
-      },
-      "mediaLabel": "Iris Scissors, Regular, Curved, Sharp",
-      "catalogueCodes": [
-        {
-          "code": "04-0911",
-          "size": "10.5 cm"
-        }
-      ],
-      "mediaAssetId": "scissors-iris-regular-curved",
-      "mediaPath": "/media/catalogue-preview/scissors/scissors-iris-regular-curved.avif",
-      "mediaFallbackPath": "/media/catalogue-preview/scissors/scissors-iris-regular-curved.webp",
-      "mediaSourceUrl": "https://github.com/manbtd0-cloud/RosaMedical/blob/preview/scissors-image-batch-01/docs/review/catalogue-media/scissors-batch-01-sources.md#client-catalogue-page-1",
-      "mediaReviewNote": "acceptable-similar · preferred-safe · transparent · approved"
     },
     {
       "id": "product-scissors-iris-super-cut-straight",
@@ -4760,6 +4690,6 @@
       "mediaReviewNote": "exact · owner-supplied catalogue · transparent · approved · First printed cutter configuration corresponds to SC-01T."
     }
   ],
-  "productCount": 113,
+  "productCount": 111,
   "familyCount": 5
 }

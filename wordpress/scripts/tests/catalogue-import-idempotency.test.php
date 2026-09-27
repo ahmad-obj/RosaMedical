@@ -31,7 +31,7 @@ namespace RosaMedical\Tests {
     assert($scissors['name'] === 'Scissors', 'Scissors name must be Scissors');
     assert($scissors['name_ar'] === 'المقصات', 'Scissors Arabic name must be المقصات');
     assert($scissors['order'] === 1, 'Scissors order must be 1');
-    assert(str_contains($scissors['pdf_file'], 'scissors.pdf'), 'Scissors PDF must reference scissors.pdf');
+    assert(str_contains($scissors['pdf_file'], 'rosa-scissors-catalogue.pdf'), 'Scissors PDF must reference the canonical Rosa Scissors PDF');
 
     // Verify Cutters details
     $cutters = $dataset['families']['cutters'];
@@ -53,13 +53,54 @@ namespace RosaMedical\Tests {
 
     // Verify Products
     assert(isset($dataset['products']) && is_array($dataset['products']), 'Products array must exist');
-    assert(count($dataset['products']) >= 100, 'Must contain at least 100 canonical products');
+    assert(count($dataset['products']) === 111, 'Corrected source manifest must contain 111 canonical logical products');
 
+    $slugs = [];
     foreach ($dataset['products'] as $product) {
         assert(! empty($product['name']), 'Product name must not be empty');
         assert(! empty($product['code']), 'Product code must not be empty');
         assert(in_array($product['familySlug'], $expectedSlugs, true), "Product {$product['name']} family must be valid");
         assert(! empty($product['slug']), 'Product slug must not be empty');
+
+        $slug = (string) $product['slug'];
+        if (isset($slugs[$slug])) {
+            fwrite(STDERR, "FAIL: canonical product slugs must be globally unique; duplicate {$slug}\n");
+            exit(1);
+        }
+        $slugs[$slug] = true;
+    }
+
+    // The rendered Scissors catalogue was reviewed after its flattened text
+    // incorrectly associated these two references with Iris Scissors. They are
+    // owned by the separately verified Stevens foundation fixture instead.
+    $misassociatedIrisCodes = ['04-0901', '04-0911'];
+    foreach ($dataset['products'] as $product) {
+        if (($product['name'] ?? '') !== 'Iris Scissors') {
+            continue;
+        }
+
+        $productCodes = array_filter([
+            (string) ($product['code'] ?? ''),
+            ...array_map(
+                static fn (array $entry): string => (string) ($entry['code'] ?? ''),
+                is_array($product['catalogueCodes'] ?? null) ? $product['catalogueCodes'] : []
+            ),
+        ]);
+        foreach ($misassociatedIrisCodes as $code) {
+            if (in_array($code, $productCodes, true)) {
+                fwrite(STDERR, "FAIL: {$code} must not be represented as an Iris Scissors reference\n");
+                exit(1);
+            }
+        }
+    }
+
+    $duplicateReferenceProducts = array_values(array_filter(
+        $dataset['products'],
+        static fn (array $product): bool => (string) ($product['code'] ?? '') === '18-0644'
+    ));
+    if (count($duplicateReferenceProducts) !== 2) {
+        fwrite(STDERR, "FAIL: intentional public reference 18-0644 must remain represented by both source-backed products\n");
+        exit(1);
     }
 
     echo "PASS: CatalogueImporter dataset contract\n";

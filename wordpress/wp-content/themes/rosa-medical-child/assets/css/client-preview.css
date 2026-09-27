@@ -37,10 +37,11 @@ body[data-rosa-preview-shell] h1, body[data-rosa-preview-shell] h2, body[data-ro
 .rosa-preview-media-slot > span { z-index: 1; font-size: clamp(.75rem, 1.4vw, 1rem); font-weight: 700; letter-spacing: .22em; }
 
 /* Header */
-.rosa-preview-announcement { height: 44px; background: var(--preview-accent); color: #fff; font-size: .75rem; }
-.rosa-preview-announcement__inner { height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.rosa-preview-announcement { min-height: 48px; background: var(--preview-accent); color: #fff; font-size: .875rem; line-height: 1.35; }
+.rosa-preview-announcement__inner { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .rosa-preview-announcement__contacts { display: flex; align-items: center; gap: 1.5rem; }
-.rosa-preview-announcement a { color: inherit; text-decoration: none; }
+.rosa-preview-announcement a { display: inline-flex; align-items: center; gap: .45rem; color: inherit; font-weight: 600; text-decoration: none; }
+.rosa-preview-announcement svg { width: 1rem; height: 1rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 .rosa-preview-header { position: relative; z-index: 80; height: 76px; background: #fff; box-shadow: var(--preview-shadow); }
 .rosa-preview-header__inner { height: 76px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 2rem; }
 .rosa-preview-brand { display: inline-flex; align-items: center; text-decoration: none; }
@@ -48,10 +49,11 @@ body[data-rosa-preview-shell] h1, body[data-rosa-preview-shell] h2, body[data-ro
 .rosa-preview-brand__wordmark { display: inline-flex; flex-direction: column; margin-inline-start: .45rem; color: var(--preview-ink); font-size: 1.15rem; font-weight: 800; letter-spacing: .08em; line-height: 1; }
 .rosa-preview-brand__wordmark small { margin-block-start: .18rem; color: var(--preview-muted); font-size: .47rem; font-weight: 700; letter-spacing: .17em; }
 .rosa-preview-nav { display: flex; align-items: center; justify-content: flex-end; gap: clamp(1.2rem, 2vw, 2.35rem); }
-.rosa-preview-nav a, .rosa-preview-language { min-block-size: 44px; display: inline-flex; align-items: center; color: var(--preview-ink); font-size: .875rem; font-weight: 600; text-decoration: none; }
+.rosa-preview-nav a, .rosa-preview-language { min-block-size: 44px; display: inline-flex; align-items: center; color: var(--preview-ink); font-size: .9375rem; font-weight: 500; letter-spacing: .01em; text-decoration: none; }
 .rosa-preview-header__actions { display: flex; align-items: center; gap: .375rem; }
 .rosa-preview-header-action { width: 44px; height: 44px; justify-content: center; border-radius: 50%; background: var(--preview-soft); padding: 0; }
-.rosa-preview-header-action--inquiry { display: inline-flex; width: auto; min-width: 44px; align-items: center; justify-content: center; border-radius: 999px; background: var(--preview-accent); color: #fff; font-weight: 700; padding-inline: .9rem; text-decoration: none; white-space: nowrap; }
+.rosa-preview-header-action--inquiry { display: inline-flex; width: auto; min-width: 44px; align-items: center; justify-content: center; gap: .45rem; border-radius: 999px; background: var(--preview-accent); color: #fff; font-weight: 700; padding-inline: 1rem; text-decoration: none; white-space: nowrap; }
+.rosa-preview-header-action--inquiry svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 body[data-rosa-preview-shell] .rosa-preview-menu-trigger { display: none; width: 44px; height: 44px; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--preview-ink); padding: 0; }
 .rosa-preview-menu-trigger__icon, .rosa-preview-menu-trigger__icon::before, .rosa-preview-menu-trigger__icon::after { width: 20px; height: 2px; display: block; background: currentColor; content: ""; }
 .rosa-preview-menu-trigger__icon { position: relative; }

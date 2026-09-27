@@ -92,8 +92,8 @@ async function openDrawer(page, label) {
 }
 
 async function addFirstShopSelection(page, quantityValue) {
-  const card = page.locator('.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)').first();
-  assert.equal(await card.count(), 1, 'Shop must expose a real Woo product card for review testing');
+  const card = page.locator('.rosa-shop-products-grid .rosa-preview-product[data-product-type="simple"]').first();
+  assert.equal(await card.count(), 1, 'Shop must expose a real simple Woo product card for direct quotation review testing');
   const title = ((await card.locator('h3').textContent()) || '').trim();
   const button = card.locator('[data-rosa-add-to-quote]');
   const quantity = card.locator('input[data-rosa-quote-quantity]');

@@ -196,6 +196,10 @@
   const feedback = ensureFeedback();
   const reviewShell = ensureReviewShell();
   const { trigger: reviewTrigger, drawer, backdrop } = reviewShell;
+  const isDedicatedQuoteRequestPage = document.querySelector('[data-rosa-quote-request-page]') instanceof HTMLElement;
+  // The dedicated Quote Request page already has an in-flow review surface.
+  // Keeping a second fixed trigger there obscures mobile contact fields.
+  if (isDedicatedQuoteRequestPage) reviewTrigger.hidden = true;
   const reviewCount = reviewTrigger.querySelector('[data-rosa-quote-review-count]');
   const drawerItems = drawer.querySelector('[data-rosa-quote-drawer-items]');
   const drawerEmpty = drawer.querySelector('[data-rosa-quote-drawer-empty]');

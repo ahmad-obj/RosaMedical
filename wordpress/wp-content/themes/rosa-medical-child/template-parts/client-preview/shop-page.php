@@ -72,7 +72,7 @@ if ($q->have_posts()) {
         }
 
         $pTitle = strtolower($p->get_name());
-        $pSku = strtolower((string) $p->get_sku());
+        $pSku = strtolower(rosa_preview_product_reference($p));
         $pDesc = strtolower($p->get_short_description() . ' ' . $p->get_description());
 
         // Extract family slug
@@ -260,7 +260,7 @@ if ($q->have_posts()) {
   </aside>
 
   <!-- Right Main Products Area -->
-  <main class="rosa-shop-main">
+  <section class="rosa-shop-main" aria-label="<?php echo esc_attr($locale === 'ar' ? 'نتائج الكتالوج' : 'Catalogue results'); ?>">
     <div class="rosa-shop-toolbar">
       <div class="rosa-shop-results-info">
         <span class="rosa-shop-count-label" data-rosa-results-count>
@@ -293,7 +293,7 @@ if ($q->have_posts()) {
              data-grade="<?php echo esc_attr($item['grade']); ?>"
              data-length="<?php echo esc_attr($item['length']); ?>"
              data-name="<?php echo esc_attr(strtolower($prod->get_name())); ?>"
-             data-sku="<?php echo esc_attr(strtolower((string) $prod->get_sku())); ?>">
+             data-sku="<?php echo esc_attr(strtolower(rosa_preview_product_reference($prod))); ?>">
           <?php get_template_part('template-parts/client-preview/product-card', null, [
             'product' => $prod,
             'locale' => $locale,
@@ -311,5 +311,5 @@ if ($q->have_posts()) {
         </button>
       </div>
     </div>
-  </main>
+  </section>
 </div>

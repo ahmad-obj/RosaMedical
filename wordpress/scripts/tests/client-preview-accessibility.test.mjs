@@ -119,6 +119,12 @@ try {
   const overlay = page.locator('[data-rosa-preview-menu-overlay]');
   const closeButton = page.locator('[data-rosa-preview-menu-close]');
   await drawer.waitFor({ state: 'visible' });
+  await page.waitForFunction(() => {
+    const header = document.querySelector('.rosa-preview-header');
+    const menu = document.querySelector('[data-rosa-preview-menu-drawer]');
+    if (!(header instanceof HTMLElement) || !(menu instanceof HTMLElement)) return false;
+    return Math.abs(header.getBoundingClientRect().bottom - menu.getBoundingClientRect().top) <= 2;
+  });
   const openDrawerBox = await drawer.boundingBox();
   const mobileHeaderBottom = await page.locator('.rosa-preview-header').evaluate((element) => element.getBoundingClientRect().bottom);
   assert.ok(openDrawerBox && openDrawerBox.x <= 1 && openDrawerBox.width >= 389, 'mobile dropdown is not full viewport width');

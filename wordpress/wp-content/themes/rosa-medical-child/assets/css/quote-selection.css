@@ -107,6 +107,10 @@
   cursor: pointer;
 }
 
+.rosa-preview-quote-review-trigger[hidden] {
+  display: none;
+}
+
 .rosa-preview-quote-review-trigger:hover,
 .rosa-preview-quote-review-trigger:active,
 .rosa-preview-quote-review-trigger:focus-visible {

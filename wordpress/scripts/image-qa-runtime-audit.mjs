@@ -39,6 +39,19 @@ function arg(name, fallback) {
 
 const base = new URL(arg('--base', 'http://localhost:8088/'));
 const outDir = path.resolve(arg('--out', 'wordpress/.client-preview-artifacts/image-qa-2026-09-15'));
+const requestedRouteKeys = arg('--routes', '')
+  .split(',')
+  .map((key) => key.trim())
+  .filter(Boolean);
+const selectedRoutes = requestedRouteKeys.length === 0
+  ? ROUTES
+  : ROUTES.filter(([key]) => requestedRouteKeys.includes(key));
+
+if (selectedRoutes.length === 0 || selectedRoutes.length !== requestedRouteKeys.length) {
+  throw new Error(`--routes must name one or more known route keys; received: ${requestedRouteKeys.join(', ') || '(none)'}`);
+}
+
+const captureExpectedCells = selectedRoutes.length * VIEWPORTS.length;
 fs.mkdirSync(outDir, { recursive: true });
 
 async function collectImageEvidence(page) {
@@ -138,7 +151,7 @@ const browser = await chromium.launch({ headless: true });
 const records = [];
 
 try {
-  for (const [key, routePath] of ROUTES) {
+  for (const [key, routePath] of selectedRoutes) {
     for (const viewport of VIEWPORTS) {
       const page = await browser.newPage({ viewport, deviceScaleFactor: 1, reducedMotion: 'reduce' });
       const consoleErrors = [];
@@ -187,15 +200,17 @@ try {
   await browser.close();
 }
 
-if (records.length !== expectedCells) {
-  throw new Error(`expected ${expectedCells} route/viewport cells, received ${records.length}`);
+if (records.length !== captureExpectedCells) {
+  throw new Error(`expected ${captureExpectedCells} route/viewport cells, received ${records.length}`);
 }
 
 fs.writeFileSync(path.join(outDir, 'manifest.json'), JSON.stringify({
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
   base: String(base),
-  expectedCells,
+  expectedCells: captureExpectedCells,
+  completeMatrix: selectedRoutes.length === ROUTES.length,
+  requestedRouteKeys,
   records,
 }, null, 2));
 

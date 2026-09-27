@@ -277,6 +277,24 @@ button.rosa-product-detail__thumbnail[aria-pressed="true"] {
   font-weight: 800;
 }
 
+/* Hello Elementor's late reset gives button[type] a transparent background
+ * with the same specificity as the base accent utility. Keep the primary
+ * procurement action explicitly Rosa-red on the Product Detail surface. */
+.rosa-product-detail__quote-actions button.rosa-preview-button--accent,
+.rosa-product-detail__quote-panel > button.rosa-preview-button--accent,
+.rosa-product-detail__quote-panel > a.rosa-preview-button--accent {
+  background: var(--preview-accent);
+  color: #fff;
+}
+
+.rosa-product-detail__quote-actions button.rosa-preview-button--accent:hover,
+.rosa-product-detail__quote-actions button.rosa-preview-button--accent:focus-visible,
+.rosa-product-detail__quote-panel > .rosa-preview-button--accent:hover,
+.rosa-product-detail__quote-panel > .rosa-preview-button--accent:focus-visible {
+  background: var(--preview-accent-dark);
+  color: #fff;
+}
+
 /* Description/details */
 .rosa-product-detail__details {
   padding-block: 0 clamp(4rem, 7vw, 7rem);

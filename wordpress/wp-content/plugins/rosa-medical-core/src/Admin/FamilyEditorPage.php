@@ -55,7 +55,9 @@ final class FamilyEditorPage
                     $error = __('Security check failed. Please refresh and try again.', 'rosa-medical');
                 } else {
                     $targetTermId = isset($_POST['family_id']) ? (int) $_POST['family_id'] : 0;
-                    $reassignId = isset($_POST['reassign_term_id']) ? (int) $_POST['reassign_term_id'] : 0;
+                    $reassignMode = isset($_POST['reassign_mode']) ? sanitize_key((string) $_POST['reassign_mode']) : 'none';
+                    $requestedReassignId = isset($_POST['reassign_term_id']) ? (int) $_POST['reassign_term_id'] : 0;
+                    $reassignId = self::resolveReassignmentId($reassignMode, $requestedReassignId, $targetTermId);
                     $result = $service->deleteFamily($targetTermId, $reassignId);
                     if (function_exists('is_wp_error') && is_wp_error($result)) {
                         $error = $result->get_error_message();
@@ -314,5 +316,18 @@ final class FamilyEditorPage
             <?php endif; ?>
         </div>
         <?php
+    }
+
+    /**
+     * Hidden form controls cannot override the deletion mode selected by the
+     * administrator. A family is never reassigned to itself.
+     */
+    public static function resolveReassignmentId(string $mode, int $requestedTermId, int $deletedTermId): int
+    {
+        if ($mode !== 'reassign' || $requestedTermId <= 0 || $requestedTermId === $deletedTermId) {
+            return 0;
+        }
+
+        return $requestedTermId;
     }
 }

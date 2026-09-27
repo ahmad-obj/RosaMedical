@@ -12,7 +12,22 @@ final class CatalogueImporter
     public const PRIMARY_CODE_META = '_rosa_primary_code';
 
     /**
-     * Return canonical dataset definition containing the 5 families and 113 products.
+     * Return the supplier's public catalogue reference for a product.
+     *
+     * WooCommerce requires a globally unique SKU, while Rosa's supplied
+     * catalogues deliberately reuse a small number of references across
+     * distinct instruments. The importer stores that source truth separately
+     * and every public surface must prefer it over Woo's storage constraint.
+     */
+    public static function publicReference(\WC_Product $product): string
+    {
+        $reference = trim((string) get_post_meta($product->get_id(), self::PRIMARY_CODE_META, true));
+        return $reference !== '' ? $reference : trim((string) $product->get_sku());
+    }
+
+    /**
+     * Return canonical dataset definition containing the 5 families and their
+     * source-backed logical products.
      *
      * @return array{families: array<string, array<string, mixed>>, products: list<array<string, mixed>>}
      */
@@ -219,7 +234,7 @@ final class CatalogueImporter
      *
      * @return array<string, int> Mapping of familySlug => term_id
      */
-    public static function ensureFamilies(FamilyService $familyService, string $mediaRoot, ?callable $logger = null): array
+    public static function ensureFamilies(FamilyService $familyService, string $mediaRoot, ?callable $logger = null, bool $syncCanonical = false): array
     {
         $dataset = self::getCanonicalDataset();
         $slugToId = [];
@@ -233,6 +248,17 @@ final class CatalogueImporter
 
             // Import PDF
             $pdfId = self::ensureMediaFile($data['pdf_file'], $mediaRoot);
+
+            // Routine imports only establish missing canonical families. Once a
+            // family exists, labels, copy, ordering, visibility and selected
+            // media are client-managed. Explicit migrations may opt into sync.
+            if ($termId > 0 && ! $syncCanonical) {
+                $slugToId[$slug] = $termId;
+                if ($logger) {
+                    $logger("Preserved existing family '{$data['name']}' (term_id: {$termId})");
+                }
+                continue;
+            }
 
             $saveData = [
                 'id' => $termId,
@@ -334,21 +360,15 @@ final class CatalogueImporter
                 $featuredImageId = self::ensureMediaFile($mediaFallback !== '' ? $mediaFallback : $mediaPath, $mediaRoot, $mediaPath);
             }
 
-            // Find existing product by SKU or by post_name
-            $existingId = 0;
-            if ($primaryCode !== '' && function_exists('wc_get_product_id_by_sku')) {
-                $existingId = wc_get_product_id_by_sku($primaryCode);
-            }
-            if ($existingId === 0) {
-                $post = get_page_by_path($productSlug, OBJECT, 'product');
-                if ($post) {
-                    $existingId = (int) $post->ID;
-                }
-            }
+            // The primary reference of a variable product belongs to one of its
+            // variations. A SKU lookup can therefore return a child variation;
+            // stable canonical parent identity is the authoritative lookup.
+            $existingId = self::findExistingParentProductId((string) ($pData['id'] ?? ''), $productSlug);
 
             $isVariable = count($catalogueCodes) > 1;
 
-            if ($existingId > 0 && function_exists('wc_get_product')) {
+            $isExisting = $existingId > 0 && function_exists('wc_get_product');
+            if ($isExisting) {
                 $wcProduct = wc_get_product($existingId);
                 $updatedCount++;
             } else {
@@ -360,20 +380,28 @@ final class CatalogueImporter
                 continue;
             }
 
-            $wcProduct->set_name($productName);
-            $wcProduct->set_slug($productSlug);
-            $wcProduct->set_status('publish');
-            $wcProduct->set_catalog_visibility('visible');
-            $wcProduct->set_category_ids([$catId]);
-            $wcProduct->set_description($productDesc);
-            $wcProduct->set_short_description("Catalogue code: {$primaryCode}");
+            if (! $isExisting) {
+                $wcProduct->set_name($productName);
+                $wcProduct->set_slug($productSlug);
+                $wcProduct->set_status('publish');
+                $wcProduct->set_catalog_visibility('visible');
+                $wcProduct->set_category_ids([$catId]);
+                $wcProduct->set_description($productDesc);
+                $wcProduct->set_short_description("Catalogue code: {$primaryCode}");
 
-            if ($featuredImageId > 0) {
-                $wcProduct->set_image_id($featuredImageId);
-            }
+                if ($featuredImageId > 0) {
+                    $wcProduct->set_image_id($featuredImageId);
+                }
 
-            if (! $isVariable && $primaryCode !== '') {
-                $wcProduct->set_sku($primaryCode);
+                // WooCommerce requires globally unique SKUs. A small number of
+                // supplier catalogue references are intentionally shared by
+                // distinct instruments, so `_rosa_primary_code` is the public
+                // reference authority and `_sku` is used only when unique.
+                if (! $isVariable && $primaryCode !== '' && self::canAssignWooSku($primaryCode)) {
+                    $wcProduct->set_sku($primaryCode);
+                } elseif (! $isVariable && $primaryCode !== '' && $logger) {
+                    $logger("Stored shared public reference {$primaryCode} outside Woo SKU for {$productSlug}");
+                }
             }
 
             $productId = $wcProduct->save();
@@ -386,7 +414,7 @@ final class CatalogueImporter
             if ($isVariable && $wcProduct instanceof \WC_Product_Variable) {
                 // Determine attributes (e.g. Size or Code)
                 $sizes = array_unique(array_filter(array_column($catalogueCodes, 'size')));
-                if (! empty($sizes)) {
+                if (! $isExisting && ! empty($sizes)) {
                     $sizeAttr = new \WC_Product_Attribute();
                     $sizeAttr->set_name('Size');
                     $sizeAttr->set_options($sizes);
@@ -397,7 +425,6 @@ final class CatalogueImporter
                     $wcProduct->save();
                 }
 
-                $childVariationIds = [];
                 foreach ($catalogueCodes as $codeEntry) {
                     $vSku = (string) ($codeEntry['code'] ?? '');
                     $vSize = (string) ($codeEntry['size'] ?? '');
@@ -405,13 +432,19 @@ final class CatalogueImporter
                         continue;
                     }
 
-                    $existingVarId = function_exists('wc_get_product_id_by_sku') ? wc_get_product_id_by_sku($vSku) : 0;
-                    if ($existingVarId > 0) {
-                        $wcVariation = new \WC_Product_Variation($existingVarId);
-                    } else {
-                        $wcVariation = new \WC_Product_Variation();
-                        $wcVariation->set_parent_id($productId);
+                    $existingVarId = function_exists('wc_get_product_id_by_sku') ? (int) wc_get_product_id_by_sku($vSku) : 0;
+                    $existingVariation = $existingVarId > 0 ? wc_get_product($existingVarId) : null;
+                    if ($existingVariation instanceof \WC_Product_Variation) {
+                        if ((int) $existingVariation->get_parent_id() !== $productId && $logger) {
+                            $logger("Skipped variation {$vSku}: already belongs to parent " . $existingVariation->get_parent_id());
+                        }
+                        // Existing variation fields are client-managed. Do not
+                        // overwrite them, and never move a child across parents.
+                        continue;
                     }
+
+                    $wcVariation = new \WC_Product_Variation();
+                    $wcVariation->set_parent_id($productId);
 
                     $wcVariation->set_status('publish');
                     $wcVariation->set_sku($vSku);
@@ -422,8 +455,7 @@ final class CatalogueImporter
                     if ($featuredImageId > 0) {
                         $wcVariation->set_image_id($featuredImageId);
                     }
-                    $varId = $wcVariation->save();
-                    $childVariationIds[] = $varId;
+                    $wcVariation->save();
                 }
 
                 \WC_Product_Variable::sync($productId);
@@ -446,5 +478,126 @@ final class CatalogueImporter
             'updated' => $updatedCount,
             'total' => count($products),
         ];
+    }
+
+    /**
+     * Repair one pre-dynamic-catalogue relationship that was verified against
+     * the supplied source: the Liston Knife references were attached to the
+     * similarly named Liston Cutter parent. This is intentionally opt-in and
+     * only moves variations when both canonical parent identities match.
+     *
+     * @return array{movedVariations: int, skippedVariations: int}
+     */
+    public static function repairKnownLegacyIdentities(?callable $logger = null): array
+    {
+        if (! function_exists('get_posts') || ! function_exists('wc_get_product') || ! function_exists('wc_get_product_id_by_sku')) {
+            return ['movedVariations' => 0, 'skippedVariations' => 4];
+        }
+
+        $targetCanonicalId = 'product-knives-liston';
+        $legacyCanonicalId = 'product-cutters-liston-straight';
+        $skus = ['18-0401', '18-0402', '18-0403', '18-0404'];
+        $targetMatches = get_posts([
+            'post_type' => 'product',
+            'post_status' => 'any',
+            'post_parent' => 0,
+            'posts_per_page' => 2,
+            'fields' => 'ids',
+            'meta_key' => self::PRODUCT_ID_META,
+            'meta_value' => $targetCanonicalId,
+        ]);
+
+        if (count($targetMatches) !== 1) {
+            throw new \RuntimeException('Known legacy repair requires exactly one Liston Knife canonical parent.');
+        }
+
+        $targetId = (int) $targetMatches[0];
+        $target = wc_get_product($targetId);
+        if (! $target instanceof \WC_Product_Variable) {
+            throw new \RuntimeException('Known legacy repair target must be a variable Liston Knife product.');
+        }
+
+        $moved = 0;
+        $skipped = 0;
+        $legacyParents = [];
+        foreach ($skus as $sku) {
+            $variationId = (int) wc_get_product_id_by_sku($sku);
+            $variation = $variationId > 0 ? wc_get_product($variationId) : null;
+            if (! $variation instanceof \WC_Product_Variation) {
+                throw new \RuntimeException("Known legacy repair expected variation {$sku}.");
+            }
+
+            $currentParentId = (int) $variation->get_parent_id();
+            if ($currentParentId === $targetId) {
+                $skipped++;
+                continue;
+            }
+
+            $currentCanonicalId = (string) get_post_meta($currentParentId, self::PRODUCT_ID_META, true);
+            if ($currentCanonicalId !== $legacyCanonicalId) {
+                throw new \RuntimeException("Known legacy repair refused {$sku}: unexpected current parent identity.");
+            }
+
+            $variation->set_parent_id($targetId);
+            $variation->save();
+            $legacyParents[$currentParentId] = true;
+            $moved++;
+            if ($logger) {
+                $logger("Moved verified Liston Knife variation {$sku} to product {$targetId}");
+            }
+        }
+
+        \WC_Product_Variable::sync($targetId);
+        wc_delete_product_transients($targetId);
+        foreach (array_keys($legacyParents) as $legacyParentId) {
+            \WC_Product_Variable::sync((int) $legacyParentId);
+            wc_delete_product_transients((int) $legacyParentId);
+        }
+
+        return ['movedVariations' => $moved, 'skippedVariations' => $skipped];
+    }
+
+    /**
+     * Find only a top-level WooCommerce product. A product variation is never
+     * a valid canonical parent identity.
+     */
+    private static function findExistingParentProductId(string $canonicalId, string $slug): int
+    {
+        if ($canonicalId !== '' && function_exists('get_posts')) {
+            $matches = get_posts([
+                'post_type' => 'product',
+                'post_status' => 'any',
+                'post_parent' => 0,
+                'posts_per_page' => 1,
+                'fields' => 'ids',
+                'meta_key' => self::PRODUCT_ID_META,
+                'meta_value' => $canonicalId,
+            ]);
+            if (is_array($matches) && isset($matches[0])) {
+                return (int) $matches[0];
+            }
+        }
+
+        if ($slug !== '' && function_exists('get_page_by_path')) {
+            $post = get_page_by_path($slug, OBJECT, 'product');
+            if ($post && (int) ($post->post_parent ?? 0) === 0) {
+                return (int) $post->ID;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * WooCommerce enforces global SKU uniqueness, while Rosa's source material
+     * can legitimately reuse a public catalogue reference for distinct products.
+     */
+    private static function canAssignWooSku(string $sku): bool
+    {
+        if ($sku === '' || ! function_exists('wc_get_product_id_by_sku')) {
+            return false;
+        }
+
+        return (int) wc_get_product_id_by_sku($sku) === 0;
     }
 }

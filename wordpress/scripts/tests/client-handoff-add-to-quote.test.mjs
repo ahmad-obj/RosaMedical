@@ -15,7 +15,6 @@ if (process.env.ROSA_PLAYWRIGHT_NO_SANDBOX === '1') {
 
 const forbiddenCommerceRequest = /(?:[?&]wc-ajax=add_to_cart\b|\/wp-json\/wc\/store\/v1\/cart(?:\/|\?|$)|\/wp-json\/wc\/v3\/orders(?:\/|\?|$)|\/cart\/?(?:\?|#|$)|\/checkout\/?(?:\?|#|$))/i;
 const forbiddenCommerceUi = '.single_add_to_cart_button, .add_to_cart_button, [name="add-to-cart"], a[href*="/cart/"], a[href*="/checkout/"]';
-const listingQuoteUi = '[data-rosa-add-to-quote], [data-rosa-quote-quantity], [data-rosa-quote-configuration], [data-rosa-quote-item], .rosa-preview-product__quote';
 
 const positiveInteger = (value, label) => {
   const parsed = Number(value);
@@ -85,29 +84,45 @@ async function assertTouchTarget(locator, label) {
   assert.ok(box.width >= 44 && box.height >= 44, `${label} must keep a 44px minimum touch target; got ${box.width}x${box.height}`);
 }
 
-async function assertCatalogueCardsNavigateOnly(page, selector, label) {
+async function assertCatalogueCardActions(page, selector, label) {
   const cards = page.locator(selector);
   const count = await cards.count();
   assert.ok(count > 0, `${label} must expose at least one real Woo product card`);
 
+  let inspectedVariable = false;
+  let inspectedSimple = false;
   for (let index = 0; index < Math.min(count, 8); index += 1) {
     const card = cards.nth(index);
-    assert.equal(await card.locator(listingQuoteUi).count(), 0, `${label} card ${index + 1} must not expose configuration, quantity or Add to Quote controls`);
-
     const media = card.locator('.rosa-preview-product__media[href]');
     const title = card.locator('h3 a[href]');
-    const action = card.locator('.rosa-preview-product__action[href]');
     assert.equal(await media.count(), 1, `${label} card ${index + 1} media must navigate to Product Detail`);
     assert.equal(await title.count(), 1, `${label} card ${index + 1} title must navigate to Product Detail`);
-    assert.equal(await action.count(), 1, `${label} card ${index + 1} action must navigate to Product Detail`);
-
-    const hrefs = await Promise.all([media.getAttribute('href'), title.getAttribute('href'), action.getAttribute('href')]);
+    const hrefs = await Promise.all([media.getAttribute('href'), title.getAttribute('href')]);
     assert.ok(hrefs.every(Boolean), `${label} card ${index + 1} navigation targets must not be empty`);
     const urls = hrefs.map((href) => new URL(href, page.url()));
     assert.ok(urls.every((url) => /\/product\//.test(url.pathname)), `${label} card ${index + 1} must route to a dedicated /product/ detail URL`);
     assert.equal(urls[0].href, urls[1].href, `${label} card ${index + 1} media and title must target the same Product Detail URL`);
-    assert.equal(urls[1].href, urls[2].href, `${label} card ${index + 1} title and View Details action must target the same Product Detail URL`);
+
+    const type = await card.getAttribute('data-product-type');
+    if (type === 'variable') {
+      inspectedVariable = true;
+      assert.equal(await card.locator('[data-rosa-add-to-quote], [data-rosa-quote-quantity], [data-rosa-quote-item]').count(), 0, `${label} variable card ${index + 1} must not guess a configuration or quantity`);
+      const choose = card.locator('[data-rosa-select-configuration][href]');
+      assert.equal(await choose.count(), 1, `${label} variable card ${index + 1} must require configuration selection on Product Detail`);
+      assert.equal(new URL(await choose.getAttribute('href'), page.url()).href, urls[0].href, `${label} variable card ${index + 1} configuration route must target its Product Detail`);
+      continue;
+    }
+
+    assert.equal(type, 'simple', `${label} card ${index + 1} must expose an explicit product type`);
+    inspectedSimple = true;
+    assert.equal(await card.locator('[data-rosa-quote-item]').count(), 1, `${label} simple card ${index + 1} must expose one quote control group`);
+    assert.equal(await card.locator('[data-rosa-quote-quantity]').count(), 1, `${label} simple card ${index + 1} must expose a quantity input`);
+    const add = card.locator('[data-rosa-add-to-quote]');
+    assert.equal(await add.count(), 1, `${label} simple card ${index + 1} must expose Add to Quote`);
+    assert.equal(await add.getAttribute('data-variation-id'), '0', `${label} simple card ${index + 1} must not invent a variation identity`);
   }
+
+  return { inspectedVariable, inspectedSimple };
 }
 
 async function selectSummaryQuoteIdentity(page, index, label) {
@@ -152,19 +167,21 @@ try {
   await load(page, '/', 'Home EN');
   assert.equal(await page.evaluate(() => typeof window.RosaQuoteBasket?.clear), 'function', 'Home EN must load the shared quote basket shell');
   await page.evaluate(() => window.RosaQuoteBasket.clear());
-  await assertCatalogueCardsNavigateOnly(page, '.rosa-preview-product:not(.rosa-preview-product--family)', 'Home EN');
+  await assertCatalogueCardActions(page, '.rosa-preview-product:not(.rosa-preview-product--family)', 'Home EN');
   assert.equal(await readCount(page, 'Home EN'), 0, 'Home EN catalogue previews must not mutate quote state');
 
   await load(page, '/shop/', 'Shop EN');
-  await assertCatalogueCardsNavigateOnly(page, '.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)', 'Shop EN');
+  const shopActions = await assertCatalogueCardActions(page, '.rosa-shop-products-grid .rosa-preview-product:not(.rosa-preview-product--family)', 'Shop EN');
+  assert.ok(shopActions.inspectedVariable, 'Shop EN must demonstrate a variable-product configuration route');
+  assert.ok(shopActions.inspectedSimple, 'Shop EN must demonstrate a direct simple-product quotation control');
   assert.equal(await readCount(page, 'Shop EN'), 0, 'Shop EN catalogue previews must not mutate quote state');
   assert.equal(await page.locator(forbiddenCommerceUi).count(), 0, 'Shop EN must not expose Woo Add to Cart, Cart or Checkout UI');
 
   await load(page, '/ar/shop/', 'Shop AR');
   assert.equal(await page.locator('html').getAttribute('dir'), 'rtl', 'Shop AR must remain RTL');
-  await assertCatalogueCardsNavigateOnly(page, '.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)', 'Shop AR');
-  const arDetailsText = ((await page.locator('.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family) .rosa-preview-product__action').first().textContent()) || '').trim();
-  assert.match(arDetailsText, /[\u0600-\u06ff]/, 'Shop AR View Details action must expose Arabic copy');
+  await assertCatalogueCardActions(page, '.rosa-shop-products-grid .rosa-preview-product:not(.rosa-preview-product--family)', 'Shop AR');
+  const arConfigurationText = ((await page.locator('.rosa-shop-products-grid [data-rosa-select-configuration]').first().textContent()) || '').trim();
+  assert.match(arConfigurationText, /[\u0600-\u06ff]/, 'Shop AR variable-product action must expose Arabic copy');
   assert.equal(await readCount(page, 'Shop AR'), 0, 'Shop AR catalogue previews must not mutate quote state');
 
   await load(page, `/product/${productSlug}/`, 'Product EN');
@@ -207,9 +224,13 @@ try {
 
   await page.setViewportSize({ width: 390, height: 844 });
   await load(page, '/shop/', 'Shop EN mobile');
-  const mobileCard = page.locator('.rosa-preview-shop-grid .rosa-preview-product:not(.rosa-preview-product--family)').first();
-  assert.equal(await mobileCard.locator(listingQuoteUi).count(), 0, 'Shop EN mobile cards must remain navigation-only');
-  await assertTouchTarget(mobileCard.locator('.rosa-preview-product__action'), 'Shop EN mobile View Details');
+  const mobileCard = page.locator('.rosa-shop-products-grid .rosa-preview-product:not(.rosa-preview-product--family)').first();
+  const mobileType = await mobileCard.getAttribute('data-product-type');
+  if (mobileType === 'variable') {
+    await assertTouchTarget(mobileCard.locator('[data-rosa-select-configuration]'), 'Shop EN mobile Select configuration');
+  } else {
+    await assertTouchTarget(mobileCard.locator('[data-rosa-add-to-quote]'), 'Shop EN mobile Add to Quote');
+  }
 
   await load(page, `/product/${productSlug}/`, 'Product EN mobile');
   const mobileQuoteForm = page.locator('.rosa-product-detail__quote-form[data-rosa-quote-item]').first();
@@ -222,7 +243,7 @@ try {
   assert.deepEqual(forbiddenRequests, [], 'Product Detail Add to Quote interactions must not call Woo Cart, Checkout or Orders endpoints');
   assert.deepEqual(browserErrors, [], 'Catalogue navigation/Product Detail quote contract must not emit browser errors');
 
-  process.stdout.write('PASS: Home/Shop cards navigate to Product Detail only, while Product Detail retains exact Woo-backed configuration, quantity and Add to Quote behavior without Woo Cart/Checkout/Orders\n');
+  process.stdout.write('PASS: Home/Shop cards require Product Detail configuration for variable instruments, support direct simple-item quotation, and retain exact Woo-backed quote behavior without Cart/Checkout/Orders\n');
 } finally {
   await context.close();
   await browser.close();

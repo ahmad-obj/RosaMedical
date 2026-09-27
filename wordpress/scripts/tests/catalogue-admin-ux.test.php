@@ -271,5 +271,20 @@ namespace RosaMedical\Tests {
     assert(str_contains($editorHtml, 'data-rosa-media-picker="image"'), 'Cover image picker trigger must exist');
     assert(str_contains($editorHtml, 'data-rosa-media-picker="pdf"'), 'PDF catalogue picker trigger must exist');
 
+    // The selected destructive-action mode, not a hidden select value, controls
+    // whether products move to another family. A stale select value must never
+    // override the owner choosing “leave unassigned”.
+    $deleteModeCases = [
+        ['none', 77, 12, 0, 'Leave-unassigned mode must ignore a submitted reassign term ID'],
+        ['reassign', 77, 12, 77, 'Reassign mode must retain the selected different target family'],
+        ['reassign', 12, 12, 0, 'A family cannot be reassigned to itself during deletion'],
+    ];
+    foreach ($deleteModeCases as [$mode, $candidate, $target, $expected, $message]) {
+        if (FamilyEditorPage::resolveReassignmentId($mode, $candidate, $target) !== $expected) {
+            fwrite(STDERR, "Assertion failed: {$message}\n");
+            exit(1);
+        }
+    }
+
     echo "PASS: Catalogue Admin UX contract\n";
 }

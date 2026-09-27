@@ -136,18 +136,9 @@ async function assertClearedState(page, surface, confirmation, expectedChannel, 
   assert.equal(await headerCount.count(), 1, `${label} must expose one shared quote badge`);
   assert.equal(((await headerCount.textContent()) || '').trim(), '0', `${label} shared quote badge must reset to 0`);
 
-  const triggerCount = page.locator('[data-rosa-quote-review-count]');
-  assert.equal(await triggerCount.count(), 1, `${label} must expose one floating review count`);
-  assert.equal(((await triggerCount.textContent()) || '').trim(), '0', `${label} floating review count must reset to 0`);
-
   const trigger = page.locator('[data-rosa-quote-review-trigger]');
-  await trigger.click();
-  const drawer = page.locator('[data-rosa-quote-drawer]');
-  await drawer.waitFor({ state: 'visible', timeout: 5_000 });
-  assert.equal(await drawer.locator('[data-rosa-quote-drawer-item]').count(), 0, `${label} drawer must contain no quote lines after clear`);
-  const drawerEmpty = drawer.locator('[data-rosa-quote-drawer-empty]');
-  await drawerEmpty.waitFor({ state: 'visible', timeout: 5_000 });
-  await drawer.locator('[data-rosa-quote-drawer-close]').click();
+  assert.equal(await trigger.count(), 1, `${label} must retain one shared review trigger for state synchronization`);
+  assert.equal(await trigger.getAttribute('hidden'), '', `${label} must hide its redundant floating review trigger because the page already contains the in-flow review surface`);
 }
 
 const browser = await chromium.launch(launchOptions);

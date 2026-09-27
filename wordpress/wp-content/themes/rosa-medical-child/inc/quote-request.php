@@ -87,7 +87,7 @@ function rosa_quote_request_catalog_payload(): array
             continue;
         }
 
-        $sku = trim((string) $product->get_sku());
+        $sku = rosa_preview_product_reference($product);
         if ($sku === '') {
             continue;
         }
@@ -225,7 +225,7 @@ function rosa_quote_submission_canonical_item(array $candidate): ?array
         return null;
     }
 
-    $canonicalSku = trim((string) $product->get_sku());
+    $canonicalSku = rosa_preview_product_reference($product);
     if ($canonicalSku === '' || $canonicalSku !== $sku) {
         return null;
     }

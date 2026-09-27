@@ -56,6 +56,24 @@ function rosa_preview_product_url(int $productId, string $locale = 'en'): string
     }
     return home_url('/ar/product/' . rawurlencode($slug) . '/');
 }
+
+/**
+ * Return the customer-facing catalogue reference. Rosa's source catalogues can
+ * intentionally reuse a reference for distinct instruments, so this must not
+ * rely exclusively on WooCommerce's globally unique SKU field.
+ */
+function rosa_preview_product_reference($product): string {
+    if (! $product instanceof WC_Product) {
+        return '';
+    }
+
+    $reference = trim((string) get_post_meta($product->get_id(), '_rosa_primary_code', true));
+    if ($reference !== '') {
+        return $reference;
+    }
+
+    return trim((string) $product->get_sku());
+}
 function rosa_preview_pair_url(?int $postId = null): string {
     $id = $postId ?? get_the_ID();
     if ($id > 0 && get_post_type($id) === 'product') {

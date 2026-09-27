@@ -55,14 +55,22 @@ class SearchAutocompleteController
             's' => $query,
         ];
 
-        // Also match SKU directly if no full text results or alongside
+        // Search both Woo's unique internal SKU and Rosa's public catalogue
+        // reference. The latter deliberately supports source-backed duplicate
+        // references across distinct instruments.
         $skuQuery = new \WP_Query([
             'post_type' => 'product',
             'post_status' => 'publish',
             'posts_per_page' => 6,
             'meta_query' => [
+                'relation' => 'OR',
                 [
                     'key' => '_sku',
+                    'value' => $query,
+                    'compare' => 'LIKE',
+                ],
+                [
+                    'key' => '_rosa_primary_code',
                     'value' => $query,
                     'compare' => 'LIKE',
                 ],
@@ -96,7 +104,10 @@ class SearchAutocompleteController
                 ? rosa_preview_product_url($product->get_id(), $locale)
                 : get_permalink($product->get_id());
 
-            $sku = (string) $product->get_sku();
+            $sku = trim((string) get_post_meta($product->get_id(), '_rosa_primary_code', true));
+            if ($sku === '') {
+                $sku = (string) $product->get_sku();
+            }
             if ($sku === '') {
                 $sku = 'ROSA-' . $product->get_id();
             }

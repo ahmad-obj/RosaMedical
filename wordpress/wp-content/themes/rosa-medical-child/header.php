@@ -49,8 +49,8 @@ $announcement = rosa_preview_content(
     <div class="rosa-preview-rail rosa-preview-announcement__inner">
         <span><?php echo esc_html($announcement); ?></span>
         <div class="rosa-preview-announcement__contacts">
-            <?php if ($email !== '') : ?><a href="mailto:<?php echo esc_attr($email); ?>"><bdi dir="ltr"><?php echo esc_html($email); ?></bdi></a><?php endif; ?>
-            <?php if ($phone !== '') : ?><a href="tel:<?php echo esc_attr((string) preg_replace('/[^0-9+]/', '', $phone)); ?>"><bdi dir="ltr"><?php echo esc_html($phone); ?></bdi></a><?php endif; ?>
+            <?php if ($email !== '') : ?><a href="mailto:<?php echo esc_attr($email); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M3 6.5 12 13l9-6.5M4.5 5h15A1.5 1.5 0 0 1 21 6.5v11a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5v-11A1.5 1.5 0 0 1 4.5 5Z"/></svg><bdi dir="ltr"><?php echo esc_html($email); ?></bdi></a><?php endif; ?>
+            <?php if ($phone !== '') : ?><a href="tel:<?php echo esc_attr((string) preg_replace('/[^0-9+]/', '', $phone)); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M6.6 3.5 9.2 3a1.6 1.6 0 0 1 1.8 1.1l1.1 3.4a1.6 1.6 0 0 1-.6 1.8l-1.8 1.3a15 15 0 0 0 3.7 3.7l1.3-1.8a1.6 1.6 0 0 1 1.8-.6l3.4 1.1a1.6 1.6 0 0 1 1.1 1.8l-.5 2.6a2.1 2.1 0 0 1-2.1 1.7C10.1 19.1 4.9 13.9 4.9 5.6A2.1 2.1 0 0 1 6.6 3.5Z"/></svg><bdi dir="ltr"><?php echo esc_html($phone); ?></bdi></a><?php endif; ?>
         </div>
     </div>
 </div>
@@ -73,8 +73,8 @@ $announcement = rosa_preview_content(
             <?php endforeach; ?>
         </nav>
         <div class="rosa-preview-header__actions">
-            <a class="rosa-preview-language rosa-preview-header-action" href="<?php echo esc_url($pairUrl); ?>" hreflang="<?php echo esc_attr($previewLocale === 'ar' ? 'en' : 'ar'); ?>" aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'English' : 'العربية'); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'EN' : 'AR'); ?></a>
-            <a class="rosa-preview-button rosa-preview-header-action rosa-preview-header-action--inquiry" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/quote-request/' : '/quote-request/')); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'اطلب عرض سعر' : 'Request a quote'); ?></a>
+            <a class="rosa-preview-language rosa-preview-header-action" href="<?php echo esc_url($pairUrl); ?>" hreflang="<?php echo esc_attr($previewLocale === 'ar' ? 'en' : 'ar'); ?>" aria-label="<?php echo esc_attr($previewLocale === 'ar' ? 'English' : 'العربية'); ?>"><?php echo esc_html($previewLocale === 'ar' ? 'English' : 'العربية'); ?></a>
+            <a class="rosa-preview-button rosa-preview-header-action rosa-preview-header-action--inquiry" href="<?php echo esc_url(home_url($previewLocale === 'ar' ? '/ar/quote-request/' : '/quote-request/')); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M6 3h9l3 3v15H6V3Zm3 5h6m-6 4h6m-6 4h4"/></svg><span><?php echo esc_html($previewLocale === 'ar' ? 'اطلب عرض سعر' : 'Request a quote'); ?></span></a>
         </div>
     </div>
     <div class="rosa-preview-menu-overlay" hidden data-rosa-preview-menu-overlay></div>

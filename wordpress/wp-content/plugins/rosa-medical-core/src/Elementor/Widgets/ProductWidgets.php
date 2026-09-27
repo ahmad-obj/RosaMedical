@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RosaMedical\Core\Elementor\Widgets;
 
 use Elementor\Controls_Manager;
+use RosaMedical\Core\Catalogue\CatalogueImporter;
 use RosaMedical\Core\Elementor\ProductTemplate;
 use WC_Product;
 use WC_Product_Variable;
@@ -90,6 +91,11 @@ abstract class AbstractRosaProductWidget extends AbstractRosaSectionWidget
     {
         $values = array_values($this->variationAttributes($variation, $product));
         return $values !== [] ? implode(' · ', $values) : ($variation->get_sku() !== '' ? $variation->get_sku() : $this->t('Configuration', 'التكوين'));
+    }
+
+    protected function publicReference(WC_Product $product): string
+    {
+        return CatalogueImporter::publicReference($product);
     }
 
     protected function unavailable(): void
@@ -254,6 +260,7 @@ final class ProductSummaryWidget extends AbstractRosaProductWidget
         $settings = is_array($settings) ? $settings : [];
         $family = $this->family($product);
         $variations = $this->variations($product);
+        $reference = $this->publicReference($product);
         $quotable = array_values(array_filter($variations, static fn(WC_Product_Variation $variation): bool => trim($variation->get_sku()) !== ''));
         $description = trim($product->get_short_description());
         if ($description === '') {
@@ -267,8 +274,8 @@ final class ProductSummaryWidget extends AbstractRosaProductWidget
             <?php if ($description !== '') : ?><div class="rosa-product-detail__summary-copy"><?php echo wp_kses_post(wpautop($description)); ?></div><?php endif; ?>
 
             <div class="rosa-product-detail__meta" aria-label="<?php echo esc_attr($this->t('Product reference information', 'معلومات مرجع المنتج')); ?>">
-                <?php if ($product->get_sku() !== '') : ?>
-                    <div><span><?php echo esc_html($this->setting($settings, 'sku', 'Catalogue reference', 'مرجع الكتالوج')); ?></span><strong><?php echo esc_html($product->get_sku()); ?></strong></div>
+                <?php if ($reference !== '') : ?>
+                    <div><span><?php echo esc_html($this->setting($settings, 'sku', 'Catalogue reference', 'مرجع الكتالوج')); ?></span><strong><?php echo esc_html($reference); ?></strong></div>
                 <?php endif; ?>
                 <?php if ($family instanceof WP_Term) : ?>
                     <div><span><?php echo esc_html($this->setting($settings, 'family', 'Instrument family', 'فئة الأداة')); ?></span><strong><?php echo esc_html($family->name); ?></strong></div>
@@ -296,14 +303,14 @@ final class ProductSummaryWidget extends AbstractRosaProductWidget
                             <button type="button" class="rosa-preview-button rosa-preview-button--accent" data-rosa-add-to-quote data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>" data-variation-id="<?php echo esc_attr((string) $quotable[0]->get_id()); ?>" data-sku="<?php echo esc_attr($quotable[0]->get_sku()); ?>"><?php echo esc_html($this->setting($settings, 'add', 'Add to Quote', 'أضف إلى عرض السعر')); ?></button>
                         </div>
                     </div>
-                <?php elseif (! $product instanceof WC_Product_Variable && trim($product->get_sku()) !== '') : ?>
+                <?php elseif (! $product instanceof WC_Product_Variable && $reference !== '') : ?>
                     <div class="rosa-product-detail__quote-form" data-rosa-quote-item>
                         <div class="rosa-product-detail__quote-actions">
                             <div class="rosa-product-detail__quantity">
                                 <label for="rosa-product-quantity"><?php echo esc_html($this->setting($settings, 'quantity', 'Quantity', 'الكمية')); ?></label>
                                 <input id="rosa-product-quantity" type="number" min="1" step="1" value="1" inputmode="numeric" data-rosa-quote-quantity>
                             </div>
-                            <button type="button" class="rosa-preview-button rosa-preview-button--accent" data-rosa-add-to-quote data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>" data-variation-id="0" data-sku="<?php echo esc_attr($product->get_sku()); ?>"><?php echo esc_html($this->setting($settings, 'add', 'Add to Quote', 'أضف إلى عرض السعر')); ?></button>
+                            <button type="button" class="rosa-preview-button rosa-preview-button--accent" data-rosa-add-to-quote data-product-id="<?php echo esc_attr((string) $product->get_id()); ?>" data-variation-id="0" data-sku="<?php echo esc_attr($reference); ?>"><?php echo esc_html($this->setting($settings, 'add', 'Add to Quote', 'أضف إلى عرض السعر')); ?></button>
                         </div>
                     </div>
                 <?php else : ?>
@@ -339,6 +346,7 @@ final class ProductDetailsWidget extends AbstractRosaProductWidget
         $settings = is_array($settings) ? $settings : [];
         $family = $this->family($product);
         $variations = $this->variations($product);
+        $reference = $this->publicReference($product);
         $description = trim($product->get_description());
         if ($description === '') {
             $description = trim($product->get_short_description());
@@ -362,7 +370,7 @@ final class ProductDetailsWidget extends AbstractRosaProductWidget
                 </div>
                 <aside class="rosa-product-detail__spec-card" aria-label="<?php echo esc_attr($this->t('Catalogue summary', 'ملخص الكتالوج')); ?>">
                     <p><?php echo esc_html($this->t('Catalogue summary', 'ملخص الكتالوج')); ?></p>
-                    <?php if ($product->get_sku() !== '') : ?><div><span>SKU</span><strong><?php echo esc_html($product->get_sku()); ?></strong></div><?php endif; ?>
+                    <?php if ($reference !== '') : ?><div><span>SKU</span><strong><?php echo esc_html($reference); ?></strong></div><?php endif; ?>
                     <?php if ($family instanceof WP_Term) : ?><div><span><?php echo esc_html($this->t('Family', 'الفئة')); ?></span><strong><?php echo esc_html($family->name); ?></strong></div><?php endif; ?>
                     <div><span><?php echo esc_html($this->t('Configurations', 'التكوينات')); ?></span><strong><?php echo esc_html((string) ($product instanceof WC_Product_Variable ? count($variations) : 1)); ?></strong></div>
                     <div><span><?php echo esc_html($this->t('Commercial terms', 'الشروط التجارية')); ?></span><strong><?php echo esc_html($this->t('On request', 'عند الطلب')); ?></strong></div>
@@ -393,6 +401,7 @@ final class ProductConfigurationsWidget extends AbstractRosaProductWidget
         $settings = $this->get_settings_for_display();
         $settings = is_array($settings) ? $settings : [];
         $variations = $this->variations($product);
+        $reference = $this->publicReference($product);
         ?>
         <section id="product-configurations" class="rosa-product-detail__configurations rosa-preview-rail" data-preview-product-configurations>
             <div class="rosa-product-detail__section-heading">
@@ -421,7 +430,7 @@ final class ProductConfigurationsWidget extends AbstractRosaProductWidget
             <?php else : ?>
                 <article class="rosa-product-detail__configuration rosa-product-detail__configuration--simple">
                     <div class="rosa-product-detail__configuration-head"><p class="rosa-product-detail__configuration-label"><?php echo esc_html($this->t('Catalogue reference', 'مرجع الكتالوج')); ?></p><h3><?php echo esc_html($product->get_name()); ?></h3></div>
-                    <dl><div><dt>SKU</dt><dd><?php echo esc_html($product->get_sku() !== '' ? $product->get_sku() : '—'); ?></dd></div></dl>
+                    <dl><div><dt>SKU</dt><dd><?php echo esc_html($reference !== '' ? $reference : '—'); ?></dd></div></dl>
                 </article>
             <?php endif; ?>
         </section>
