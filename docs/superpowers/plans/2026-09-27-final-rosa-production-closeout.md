@@ -13,10 +13,10 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 ## Release Gates
 
 - [x] P0 — Establish authoritative branch, clean recovery checkpoint, and local runtime baseline.
-- [ ] P0 — Product, configuration, image, quote, navigation, and locale journeys work in a real browser.
+- [x] P0 — Product, configuration, image, quote, navigation, and locale journeys work in a real browser.
 - [x] P0 — Importer preserves client-owned fields and is runtime-idempotent.
 - [x] P0 — Family deletion honors leave-unassigned versus reassign mode.
-- [ ] P0 — No known broken public assets, routes, quotation submission failures, console exceptions, or mobile overflow.
+- [x] P0 — No known broken public assets, routes, quotation submission failures, console exceptions, or mobile overflow.
 - [ ] P1 — Client-requested header, CTA, cards, product-card alignment, featured panel, spacing, and metrics refinements are verified.
 - [ ] P1 — Amazon-style search/filter/discovery behavior works across desktop, mobile, URL history, EN, and AR.
 - [ ] P1 — Admin workflows for business settings, families, products, media, and PDFs are safe and understandable.
@@ -49,11 +49,13 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 - [x] The fixed quote-review trigger overlapped fields on the dedicated mobile Quote Request page, where the in-flow review already exists. It is now intentionally hidden only on that route; Shop and Product Detail retain the accessible drawer trigger.
 - [x] Shop filters overwrote browser history with `replaceState`, so Back/Forward could not restore a procurement search. Filter changes now create meaningful history entries; direct invalid URLs safely normalize to an unfiltered catalogue.
 - [x] Autocomplete rendered REST result fields directly into `innerHTML` and allowed a late response to overwrite a newer query. API-derived text/attributes are escaped, off-origin destinations are rejected, and a request sequence prevents stale results.
+- [x] Homepage Latest Products used legacy fixed heights, leaving a 227px desktop dead zone before the dynamic family rail. The section is now content-led with deliberate responsive padding; an EN/AR desktop-to-mobile browser regression prevents a return of that gap.
 
 ### P1
 
 - [ ] Verify all client visual annotations against actual render: utility ribbon, navigation type, language label, quote CTA, benefit cards, homepage rhythm, product-card CTA alignment, featured side panel, and metrics.
 - [ ] Verify Amazon catalogue feature behavior rather than static contracts only.
+- [x] The historical Admin workflow test used fixed, client-like `forceps-test` fixture names and could pre-clean them. Reworked it to use unique, marker-scoped, auto-cleaned fixtures; an initial over-escaped WP-CLI namespace and an over-broad term lookup were reproduced and corrected before the final E2E pass.
 
 ### P2
 
@@ -68,8 +70,8 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 - [ ] Catalogue truth: counts by five families, SKU/reference uniqueness, product/variation grouping, PDFs, family visibility, and public mappings.
 - [ ] Importer safety: stable parent identity, non-destructive defaults, explicit force mode if retained, two-run DB verification, and client-edit preservation.
 - [ ] Public catalogue: filters, sorting, URL/history, search/autocomplete, grid/card state, quantity validation, variable-product truth, empty/error states, performance.
-- [ ] Product detail: gallery, exact configurations/SKUs, related items, quote actions, mobile/RTL across all five families.
-- [ ] Quote journey: add/update/remove/persist, tamper resistance, validation, canonical email and WhatsApp content, truthful success/error states.
+- [x] Product detail: gallery/fallback, exact configurations/SKUs, related items, quote actions, mobile/RTL across all five families.
+- [x] Quote journey: add/update/remove/persist, tamper resistance, validation, canonical email and WhatsApp content, truthful success/error states.
 - [ ] Public pages: Home, About, Contact, header/footer/navigation, all links, content truth, business-setting ownership.
 - [ ] Admin: business controls, family CRUD/delete modes, product CRUD/media/configuration/publish state, permissions/nonces/error feedback.
 - [ ] Quality: contrast, keyboard/focus/drawers, touch targets, heading/labels/alt text, reduced motion, responsive/RTL, image loading, runtime/network/404/SEO basics.
@@ -100,6 +102,11 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 | Family admin runtime | A marked self-cleaning WP-CLI fixture created a family/product pair for each mode. Leave mode deleted the family while leaving its product uncategorized; reassign mode moved its product to the selected target and removed the deleted term. The test passed and cleaned its fixtures. | Verified 2026-09-27 |
 | Shop URL/history | `shop-filter-history.test.mjs` verifies a shared family/profile URL, family change, Back, Forward, and malformed parameters at live browser runtime. | Verified 2026-09-27 |
 | Autocomplete resilience | `search-autocomplete-safety.test.mjs` intercepts delayed and malicious REST results: the latest result wins, no injected HTML executes, and an off-origin result URL becomes inert. | Verified 2026-09-27 |
+| Five-family Product Detail | `product-detail-family-journey.test.mjs` selects one real Shop item per source family, verifies EN/AR direct routes, RTL, gallery/fallback, exact simple/variable quote identity and quantity, zero horizontal overflow/broken loaded images/errors, then repeats every family at 390px. | Verified 2026-09-27 |
+| Homepage client rhythm | `home-latest-rhythm.test.mjs` first reproduced 227px of unnecessary desktop space below Latest Products; after removing legacy fixed heights, it passes for EN/AR at 1440, 1024, 768, 431 and 390px. Updated full-page capture was manually reviewed. | Verified 2026-09-27 |
+| Home/header fidelity | The Home layout regressions pass across their desktop/tablet/mobile matrix after their stale text-logo and old media-slot assumptions were correctly replaced with current accessible image-logo and four-slide hero assertions. The 48px desktop utility ribbon is intentional client-requested readability, not a layout regression. | Verified 2026-09-27 |
+| Admin family workflow | `catalogue-admin-workflow-e2e.sh` creates a unique self-marked family/product, verifies EN/AR public discovery, explicitly reassigns during deletion, verifies product survival, and auto-cleans. The rerun reports zero remaining marked QA products. `catalogue-admin-workflow-safety.test.sh` guards the fixture-scoping rules. | Verified 2026-09-27 |
+| Adversarial quote submission | `client-handoff-quote-submission.test.mjs` passes valid EN submission, canonical Woo line/quantity validation, invalid nonce/email/empty basket/tampered SKU/excessive quantity/honeypot rejection, truthful `wp_mail` attempt state, WhatsApp formatting, AR shell, and no Cart/Checkout/Orders/pricing behavior. | Verified application-side 2026-09-27 |
 
 ## External Blockers
 

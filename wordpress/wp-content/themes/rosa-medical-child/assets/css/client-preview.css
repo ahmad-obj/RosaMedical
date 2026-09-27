@@ -405,6 +405,15 @@ body[data-rosa-preview-shell] :focus-visible { outline: 3px solid var(--preview-
   .rosa-preview-footer { height: 613px; }
 }
 
+/* Latest Products is content-led. Fixed legacy heights left a conspicuous empty
+   band before the family discovery rail whenever card content was shorter than
+   the measured mockup; its responsive padding already supplies the intended
+   visual separation. */
+.rosa-preview-latest {
+  height: auto;
+  min-height: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0ms !important; animation-duration: 0ms !important; animation-iteration-count: 1 !important; }
 }

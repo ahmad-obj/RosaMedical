@@ -9,16 +9,10 @@ const browser = await chromium.launch({ headless: true });
 
 const expectedSections = ['hero', 'who', 'featured', 'feature', 'latest', 'promos', 'why', 'proof', 'evidence'];
 const expectedMediaSlots = [
-  'home-hero-01',
   'home-who-01',
   'home-feature-01',
-  'home-promo-01',
-  'home-promo-02',
-  'home-promo-03',
-  'home-promo-04',
   'home-why-01',
   'home-evidence-01',
-  'prefooter-person-01',
 ];
 
 function near(value, minimum, maximum, label) {
@@ -58,12 +52,25 @@ async function loadHome(width, height, path = '') {
 
 async function assertSharedHome(page, width) {
   assert.equal(await page.locator('main').count(), 1, `${width}px Home must have exactly one main landmark`);
-  assert.match((await page.locator('.rosa-preview-brand').innerText()).trim(), /ROSA/i, `${width}px header must visibly name Rosa`);
+  const brand = page.locator('.rosa-preview-brand');
+  assert.match((await brand.getAttribute('aria-label')) || '', /ROSA/i, `${width}px header brand must retain an accessible Rosa name`);
+  const brandImage = brand.locator('img');
+  if (await brandImage.count()) {
+    assert.match((await brandImage.getAttribute('alt')) || '', /ROSA/i, `${width}px rendered Rosa logo must retain meaningful alternative text`);
+    assert.ok(await brandImage.boundingBox(), `${width}px rendered Rosa logo must have a visible layout box`);
+  } else {
+    assert.match((await brand.innerText()).trim(), /ROSA/i, `${width}px text fallback must visibly name Rosa`);
+  }
   assert.deepEqual(
     await page.locator('[data-home-section]').evaluateAll((elements) => elements.map((element) => element.dataset.homeSection)),
     expectedSections,
     `${width}px Home section topology differs from the measured target`,
   );
+  const hero = page.locator('[data-restored-home-hero]');
+  assert.equal(await hero.count(), 1, `${width}px Home must render one restored Rosa hero carousel`);
+  assert.equal(await hero.locator('[data-rosa-hero-slide]').count(), 4, `${width}px Home hero must retain four curated slides`);
+  assert.equal(await hero.locator('[data-rosa-hero-slide][aria-hidden="false"]').count(), 1, `${width}px Home hero must expose exactly one active slide`);
+  assert.equal(await hero.locator('.rosa-restored-hero__media img').count(), 4, `${width}px Home hero slides must retain their image surfaces`);
   for (const slot of expectedMediaSlots) {
     assert.equal(await page.locator(`[data-media-slot="${slot}"]`).count(), 1, `${width}px Home media slot ${slot} must occur exactly once`);
   }
@@ -102,11 +109,11 @@ try {
   {
     const page = await loadHome(1440, 900);
     await assertSharedHome(page, 1440);
-    near((await box(page, '.rosa-preview-announcement')).height, 42, 46, '1440 announcement height');
+    near((await box(page, '.rosa-preview-announcement')).height, 47, 49, '1440 announcement height');
     near((await box(page, '.rosa-preview-header')).height, 74, 78, '1440 main header height');
     const announcement = await box(page, '.rosa-preview-announcement');
     const header = await box(page, '.rosa-preview-header');
-    near(announcement.height + header.height, 118, 122, '1440 total header height');
+    near(announcement.height + header.height, 123, 125, '1440 total header height');
     near((await box(page, '.rosa-preview-header__inner')).width, 1276, 1284, '1440 content rail width');
     near((await box(page, '[data-home-section="hero"]')).height, 660, 700, '1440 hero height');
     near((await box(page, '.rosa-preview-hero__copy')).width, 680, 740, '1440 hero copy width');

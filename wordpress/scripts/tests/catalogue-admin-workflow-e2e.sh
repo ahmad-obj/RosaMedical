@@ -5,6 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 COMPOSE_FILE="$ROOT_DIR/wordpress/dev/compose.yaml"
 ENV_FILE="$ROOT_DIR/wordpress/dev/.env"
+RUN_ID="${ROSA_QA_RUN_ID:-$(date +%s)-$$}"
+QA_TOKEN="rosa-qa-admin-workflow-${RUN_ID}"
+FAMILY_SLUG="rosa-qa-forceps-${RUN_ID}"
+PRODUCT_SLUG="rosa-qa-forceps-instrument-${RUN_ID}"
+FAMILY_NAME="Rosa QA Forceps Family ${RUN_ID}"
+PRODUCT_NAME="Rosa QA Forceps Instrument ${RUN_ID}"
 
 compose=(docker compose -f "$COMPOSE_FILE")
 if [[ -f "$ENV_FILE" ]]; then
@@ -12,109 +18,118 @@ if [[ -f "$ENV_FILE" ]]; then
 fi
 
 wp() {
-  "${compose[@]}" run --rm wpcli "$@"
+  "${compose[@]}" run --rm \
+    -e ROSA_QA_TOKEN="$QA_TOKEN" \
+    -e ROSA_QA_FAMILY_SLUG="$FAMILY_SLUG" \
+    -e ROSA_QA_PRODUCT_SLUG="$PRODUCT_SLUG" \
+    -e ROSA_QA_FAMILY_NAME="$FAMILY_NAME" \
+    -e ROSA_QA_PRODUCT_NAME="$PRODUCT_NAME" \
+    wpcli "$@"
 }
 
-echo "=== Step 1: Pre-clean any existing test family or product ==="
-wp eval '
-  $service = new \RosaMedical\Core\Catalogue\FamilyService();
-  $existing = get_term_by("slug", "forceps-test", "product_cat");
-  if ($existing) {
-    $service->deleteFamily((int) $existing->term_id);
-  }
-  $post = get_page_by_path("test-rosa-forceps-instrument", OBJECT, "product");
-  if ($post) {
-    wp_delete_post((int) $post->ID, true);
-  }
-'
+cleanup() {
+  # Fixtures are self-marked and removed by marker only. A failed/interrupted
+  # test must never target a plausibly client-managed family or product by slug.
+  set +e
+  wp eval '
+    $token = (string) getenv("ROSA_QA_TOKEN");
+    if ($token === "") { exit(0); }
+    $productIds = get_posts([
+      "post_type" => "product", "post_status" => "any", "numberposts" => -1,
+      "fields" => "ids", "meta_key" => "_rosa_qa_fixture", "meta_value" => $token,
+    ]);
+    foreach ($productIds as $productId) { wp_delete_post((int) $productId, true); }
+    $terms = get_terms([
+      "taxonomy" => "product_cat", "hide_empty" => false,
+      "meta_query" => [["key" => "_rosa_qa_fixture", "value" => $token]],
+    ]);
+    if (! is_wp_error($terms)) {
+      $service = new \RosaMedical\Core\Catalogue\FamilyService();
+      foreach ($terms as $term) { $service->deleteFamily((int) $term->term_id, 0); }
+    }
+  ' >/dev/null 2>&1
+}
+trap cleanup EXIT
 
-echo "=== Step 2: Create new test family Forceps via FamilyService ==="
+echo "=== Step 1: Create a self-marked disposable family ==="
 wp eval '
   $service = new \RosaMedical\Core\Catalogue\FamilyService();
-  $saveData = [
-    "name" => "Forceps Test Family",
-    "name_ar" => "الملاقط الجراحية التجريبية",
-    "slug" => "forceps-test",
-    "order" => 99,
+  $token = (string) getenv("ROSA_QA_TOKEN");
+  $slug = (string) getenv("ROSA_QA_FAMILY_SLUG");
+  $name = (string) getenv("ROSA_QA_FAMILY_NAME");
+  if ($token === "" || $slug === "" || $name === "") { WP_CLI::error("QA fixture identity missing"); }
+  $termId = $service->saveFamily([
+    "name" => $name,
+    "name_ar" => "فئة ملاقط روزا للاختبار",
+    "slug" => $slug,
+    "order" => 999999,
     "visible" => 1,
-    "description" => "Surgical forceps test family description.",
-    "description_ar" => "وصف فئة الملاقط الجراحية التجريبية.",
-  ];
-  $termId = $service->saveFamily($saveData);
-  if (! is_int($termId) || $termId <= 0) {
-    WP_CLI::error("Failed to create test family: " . print_r($termId, true));
-  }
-  echo "Created test family term_id: {$termId}\n";
+    "description" => "Disposable QA family; automatically removed after this test.",
+    "description_ar" => "فئة اختبار مؤقتة تُحذف تلقائيًا بعد الاختبار.",
+  ]);
+  if (! is_int($termId) || $termId <= 0) { WP_CLI::error("Failed to create QA family: " . print_r($termId, true)); }
+  update_term_meta($termId, "_rosa_qa_fixture", $token);
+  echo "Created marked QA family term_id: {$termId}\n";
 
   $product = new WC_Product_Simple();
-  $product->set_name("Test Rosa Forceps Instrument");
-  $product->set_slug("test-rosa-forceps-instrument");
+  $product->set_name((string) getenv("ROSA_QA_PRODUCT_NAME"));
+  $product->set_slug((string) getenv("ROSA_QA_PRODUCT_SLUG"));
   $product->set_status("publish");
   $product->set_catalog_visibility("visible");
   $product->set_category_ids([$termId]);
   $productId = $product->save();
-  echo "Created test product ID: {$productId}\n";
-
+  update_post_meta($productId, "_rosa_qa_fixture", $token);
   wc_delete_product_transients($productId);
   clean_post_cache($productId);
+  echo "Created marked QA product ID: {$productId}\n";
 '
 
-echo "=== Step 3: Verify Public Shop dynamically renders Forceps section ==="
-sleep 1
-shop_body="$(curl -s http://localhost:8088/shop/)"
-[[ "$shop_body" == *'id="family-forceps-test"'* ]] || { echo "FAIL: family-forceps-test section missing on /shop/"; exit 1; }
-[[ "$shop_body" == *'Test Rosa Forceps Instrument'* ]] || { echo "FAIL: Test Rosa Forceps Instrument missing on /shop/"; exit 1; }
-echo "PASS: /shop/ rendered new family section and product dynamically."
+echo "=== Step 2: Verify the public catalogue dynamically renders the family ==="
+shop_body="$(curl -fsS http://localhost:8088/shop/)"
+[[ "$shop_body" == *"value=\"${FAMILY_SLUG}\""* ]] || { echo "FAIL: marked QA family filter missing on /shop/"; exit 1; }
+[[ "$shop_body" == *"data-family=\"${FAMILY_SLUG}\""* ]] || { echo "FAIL: marked QA family was not assigned to its public product card on /shop/"; exit 1; }
+[[ "$shop_body" == *"${PRODUCT_NAME}"* ]] || { echo "FAIL: marked QA product missing on /shop/"; exit 1; }
+echo "PASS: /shop/ rendered the marked QA family and product dynamically."
 
-ar_shop_body="$(curl -s http://localhost:8088/ar/shop/)"
-[[ "$ar_shop_body" == *'الملاقط الجراحية التجريبية'* ]] || { echo "FAIL: Arabic name missing on /ar/shop/"; exit 1; }
-echo "PASS: /ar/shop/ rendered Arabic display name dynamically."
+ar_shop_body="$(curl -fsS http://localhost:8088/ar/shop/)"
+[[ "$ar_shop_body" == *'فئة ملاقط روزا للاختبار'* ]] || { echo "FAIL: marked QA Arabic name missing on /ar/shop/"; exit 1; }
+echo "PASS: /ar/shop/ rendered the marked QA Arabic display name dynamically."
 
-echo "=== Step 4: Safely delete test family and reassign products to Scissors ==="
+echo "=== Step 3: Delete the marked family and explicitly reassign its product ==="
 wp eval '
   $service = new \RosaMedical\Core\Catalogue\FamilyService();
-  $term = get_term_by("slug", "forceps-test", "product_cat");
-  if (! $term) {
-    WP_CLI::error("Test family not found");
-  }
+  $token = (string) getenv("ROSA_QA_TOKEN");
+  $terms = get_terms([
+    "taxonomy" => "product_cat", "hide_empty" => false,
+    "meta_query" => [["key" => "_rosa_qa_fixture", "value" => $token]],
+  ]);
+  if (is_wp_error($terms) || count($terms) !== 1) { WP_CLI::error("Expected exactly one marked QA family"); }
   $scissorsTerm = get_term_by("slug", "scissors", "product_cat");
-  $scissorsId = (int) $scissorsTerm->term_id;
-
-  $res = $service->deleteFamily((int) $term->term_id, $scissorsId);
-  if ($res !== true) {
-    WP_CLI::error("Failed to delete family safely: " . print_r($res, true));
+  if (! $scissorsTerm) { WP_CLI::error("Canonical Scissors family missing"); }
+  if ($service->deleteFamily((int) $terms[0]->term_id, (int) $scissorsTerm->term_id) !== true) {
+    WP_CLI::error("Failed to delete marked QA family with explicit reassignment");
   }
-  echo "Deleted family safely.\n";
+  echo "Deleted marked QA family safely.\n";
 '
 
-echo "=== Step 5: Verify Public Shop no longer has Forceps section ==="
-sleep 1
-shop_body_after="$(curl -s http://localhost:8088/shop/)"
-if [[ "$shop_body_after" == *'id="family-forceps-test"'* ]]; then
-  echo "FAIL: family-forceps-test should no longer exist on /shop/"
-  exit 1
-fi
-echo "PASS: Deleted family section cleanly vanished from public catalogue."
+shop_body_after="$(curl -fsS http://localhost:8088/shop/)"
+[[ "$shop_body_after" != *"value=\"${FAMILY_SLUG}\""* ]] || { echo "FAIL: deleted marked QA family remained in /shop/ filters"; exit 1; }
+echo "PASS: deleted marked QA family vanished from the public catalogue."
 
-echo "=== Step 6: Verify product survived and is now under Scissors, then cleanup ==="
+echo "=== Step 4: Verify the marked product survived and was reassigned ==="
 wp eval '
-  $post = get_page_by_path("test-rosa-forceps-instrument", OBJECT, "product");
-  if (! $post) {
-    WP_CLI::error("Product was deleted! Deleting family must never delete products!");
-  }
-  $product = wc_get_product((int) $post->ID);
+  $token = (string) getenv("ROSA_QA_TOKEN");
+  $productIds = get_posts([
+    "post_type" => "product", "post_status" => "any", "numberposts" => -1,
+    "fields" => "ids", "meta_key" => "_rosa_qa_fixture", "meta_value" => $token,
+  ]);
+  if (count($productIds) !== 1) { WP_CLI::error("Expected exactly one marked QA product after family deletion"); }
+  $product = wc_get_product((int) $productIds[0]);
   $scissorsTerm = get_term_by("slug", "scissors", "product_cat");
-  $scissorsId = (int) $scissorsTerm->term_id;
-  if (! in_array($scissorsId, $product->get_category_ids(), true)) {
-    WP_CLI::error("Product was not reassigned to Scissors");
+  if (! $product || ! $scissorsTerm || ! in_array((int) $scissorsTerm->term_id, $product->get_category_ids(), true)) {
+    WP_CLI::error("Marked QA product was not safely reassigned to Scissors");
   }
-  echo "Product verified safely preserved and reassigned.\n";
-
-  // Cleanup test product
-  wp_delete_post((int) $post->ID, true);
-  echo "Test product cleaned up.\n";
+  echo "Marked QA product safely preserved and reassigned.\n";
 '
 
-echo "=========================================================="
-echo "PASS: Catalogue Admin Workflow E2E Verified Successfully!"
-echo "=========================================================="
+echo "PASS: Catalogue Admin workflow verified with self-marked, automatically cleaned fixtures."
