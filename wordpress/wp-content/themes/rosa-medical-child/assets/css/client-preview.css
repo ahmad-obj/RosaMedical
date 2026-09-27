@@ -53,6 +53,7 @@ body[data-rosa-preview-shell] h1, body[data-rosa-preview-shell] h2, body[data-ro
 .rosa-preview-header__actions { display: flex; align-items: center; gap: .375rem; }
 .rosa-preview-header-action { width: 44px; height: 44px; justify-content: center; border-radius: 50%; background: var(--preview-soft); padding: 0; }
 .rosa-preview-header-action--inquiry { display: inline-flex; width: auto; min-width: 44px; align-items: center; justify-content: center; gap: .45rem; border-radius: 999px; background: var(--preview-accent); color: #fff; font-weight: 700; padding-inline: 1rem; text-decoration: none; white-space: nowrap; }
+.rosa-preview-header-action--inquiry:hover, .rosa-preview-header-action--inquiry:active, .rosa-preview-header-action--inquiry:focus-visible { background: var(--preview-accent-dark); color: #fff; }
 .rosa-preview-header-action--inquiry svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 body[data-rosa-preview-shell] .rosa-preview-menu-trigger { display: none; width: 44px; height: 44px; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--preview-ink); padding: 0; }
 .rosa-preview-menu-trigger__icon, .rosa-preview-menu-trigger__icon::before, .rosa-preview-menu-trigger__icon::after { width: 20px; height: 2px; display: block; background: currentColor; content: ""; }
