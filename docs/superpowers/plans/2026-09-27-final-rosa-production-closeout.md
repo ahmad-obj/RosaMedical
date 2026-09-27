@@ -15,7 +15,7 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 - [x] P0 — Establish authoritative branch, clean recovery checkpoint, and local runtime baseline.
 - [ ] P0 — Product, configuration, image, quote, navigation, and locale journeys work in a real browser.
 - [x] P0 — Importer preserves client-owned fields and is runtime-idempotent.
-- [ ] P0 — Family deletion honors leave-unassigned versus reassign mode.
+- [x] P0 — Family deletion honors leave-unassigned versus reassign mode.
 - [ ] P0 — No known broken public assets, routes, quotation submission failures, console exceptions, or mobile overflow.
 - [ ] P1 — Client-requested header, CTA, cards, product-card alignment, featured panel, spacing, and metrics refinements are verified.
 - [ ] P1 — Amazon-style search/filter/discovery behavior works across desktop, mobile, URL history, EN, and AR.
@@ -95,6 +95,7 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 | Health-flow landmark | Browser health-flow RED reproduced two Shop main landmarks. After changing the nested Shop main to a labelled section, the rerun completed without an assertion. | Verified 2026-09-27 |
 | Mobile quotation UI | Playwright computed Product Detail quote button as `rgb(224, 8, 21)` with white text and `disabled=false`. On `/quote-request/`, the redundant fixed trigger has `hidden=true`, `display=none`, and a zero rect. EN/AR quote confirmation, direct add, and drawer regressions pass. | Verified 2026-09-27 |
 | Final image/browser evidence | Eight complete temporary manifests contain 80 captures (60 original matrix cells plus 20 changed Quote/Product recaptures): no visible broken images, horizontal overflow, console errors, page errors, or failed requests. Representative desktop/mobile EN/AR full-page captures were manually reviewed. | Verified 2026-09-27 |
+| Family admin runtime | A marked self-cleaning WP-CLI fixture created a family/product pair for each mode. Leave mode deleted the family while leaving its product uncategorized; reassign mode moved its product to the selected target and removed the deleted term. The test passed and cleaned its fixtures. | Verified 2026-09-27 |
 
 ## External Blockers
 
