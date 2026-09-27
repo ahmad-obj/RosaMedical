@@ -239,6 +239,8 @@
     const toggleBtn = shopContainer.querySelector('[data-rosa-filter-toggle]');
     const closeBtn = shopContainer.querySelector('[data-rosa-filter-close]');
     const activeCountBadge = shopContainer.querySelector('[data-rosa-active-count]');
+    let previouslyFocused = null;
+    let lockedBodyOverflow = null;
 
     // Mobile drawer backdrop
     let backdrop = document.querySelector('.rosa-shop-sidebar-backdrop');
@@ -248,27 +250,76 @@
       document.body.appendChild(backdrop);
     }
 
-    const openDrawer = () => {
-      sidebar?.classList.add('is-open');
-      backdrop?.classList.add('is-active');
-      toggleBtn?.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
+    const drawerFocusables = () => {
+      if (!sidebar) return [];
+      return Array.from(sidebar.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+        .filter((element) => element instanceof HTMLElement && element.checkVisibility());
     };
 
-    const closeDrawer = () => {
+    const drawerIsOpen = () => Boolean(sidebar?.classList.contains('is-open'));
+
+    const openDrawer = () => {
+      previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : toggleBtn;
+      sidebar?.classList.add('is-open');
+      sidebar?.setAttribute('role', 'dialog');
+      sidebar?.setAttribute('aria-modal', 'true');
+      backdrop?.classList.add('is-active');
+      backdrop?.setAttribute('aria-hidden', 'true');
+      toggleBtn?.setAttribute('aria-expanded', 'true');
+      lockedBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        const focusTarget = closeBtn instanceof HTMLElement ? closeBtn : drawerFocusables()[0];
+        focusTarget?.focus();
+      });
+    };
+
+    const closeDrawer = ({ restoreFocus = true } = {}) => {
       sidebar?.classList.remove('is-open');
+      sidebar?.removeAttribute('role');
+      sidebar?.removeAttribute('aria-modal');
       backdrop?.classList.remove('is-active');
       toggleBtn?.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
+      document.body.style.overflow = lockedBodyOverflow ?? '';
+      lockedBodyOverflow = null;
+      if (restoreFocus) {
+        const target = previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected ? previouslyFocused : toggleBtn;
+        requestAnimationFrame(() => target?.focus());
+      }
     };
 
     toggleBtn?.addEventListener('click', openDrawer);
     closeBtn?.addEventListener('click', closeDrawer);
     backdrop.addEventListener('click', closeDrawer);
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && sidebar?.classList.contains('is-open')) {
+      if (!drawerIsOpen()) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
         closeDrawer();
+        return;
       }
+      if (e.key !== 'Tab') return;
+      const focusables = drawerFocusables();
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+    document.addEventListener('focusin', (event) => {
+      if (!drawerIsOpen() || sidebar?.contains(event.target)) return;
+      drawerFocusables()[0]?.focus();
+    });
+    window.addEventListener('resize', () => {
+      if (drawerIsOpen() && window.matchMedia('(min-width: 1025px)').matches) closeDrawer();
     });
 
     const getActiveFilters = () => {
@@ -409,7 +460,7 @@
         chipEl.className = 'rosa-filter-chip';
         chipEl.innerHTML = `
           <span>${chip.label}</span>
-          <button type="button" class="rosa-filter-chip__remove" aria-label="Remove filter">×</button>
+          <button type="button" class="rosa-filter-chip__remove" aria-label="${isArabic ? 'إزالة الفلتر' : 'Remove filter'}">×</button>
         `;
         const removeBtn = chipEl.querySelector('.rosa-filter-chip__remove');
         removeBtn?.addEventListener('click', () => {

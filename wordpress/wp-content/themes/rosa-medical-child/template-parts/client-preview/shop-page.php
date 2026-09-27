@@ -143,16 +143,16 @@ if ($q->have_posts()) {
 <div class="rosa-shop-container rosa-preview-rail">
 
   <!-- Mobile Filter Toggle Button -->
-  <button type="button" class="rosa-shop-filter-toggle" data-rosa-filter-toggle aria-expanded="false">
-    <span class="rosa-shop-filter-toggle__icon" aria-hidden="true">⚙️</span>
+  <button type="button" class="rosa-shop-filter-toggle" data-rosa-filter-toggle aria-expanded="false" aria-controls="rosa-shop-filters">
+    <svg class="rosa-shop-filter-toggle__icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M4 7h10m4 0h2M4 17h3m4 0h9M14 5a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM9 15a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"/></svg>
     <span><?php echo esc_html($locale === 'ar' ? 'تصفية وترتيب الأدوات' : 'Filter & Sort'); ?></span>
     <span class="rosa-filter-count-badge" data-rosa-active-count hidden>0</span>
   </button>
 
   <!-- Left Sidebar Filters -->
-  <aside class="rosa-shop-sidebar" data-rosa-shop-sidebar>
+  <aside id="rosa-shop-filters" class="rosa-shop-sidebar" data-rosa-shop-sidebar aria-labelledby="rosa-shop-filters-title">
     <div class="rosa-shop-sidebar__header">
-      <h3><?php echo esc_html($locale === 'ar' ? 'تصفية الكتالوج' : 'Filter Catalogue'); ?></h3>
+      <h3 id="rosa-shop-filters-title"><?php echo esc_html($locale === 'ar' ? 'تصفية الكتالوج' : 'Filter Catalogue'); ?></h3>
       <button type="button" class="rosa-shop-sidebar__close" data-rosa-filter-close aria-label="<?php echo esc_attr($locale === 'ar' ? 'إغلاق الفلاتر' : 'Close filters'); ?>">×</button>
     </div>
 

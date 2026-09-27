@@ -56,6 +56,9 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 - [ ] Verify all client visual annotations against actual render: utility ribbon, navigation type, language label, quote CTA, benefit cards, homepage rhythm, product-card CTA alignment, featured side panel, and metrics.
 - [ ] Verify Amazon catalogue feature behavior rather than static contracts only.
 - [x] The historical Admin workflow test used fixed, client-like `forceps-test` fixture names and could pre-clean them. Reworked it to use unique, marker-scoped, auto-cleaned fixtures; an initial over-escaped WP-CLI namespace and an over-broad term lookup were reproduced and corrected before the final E2E pass.
+- [x] Mobile Shop filters opened as a visual panel only: no dialog semantics, focus containment/restoration, or controlled-panel relationship, and the trigger used an emoji. The drawer is now a focus-contained EN/AR modal with a coherent SVG filter icon.
+- [x] The shared pre-footer was an unconfigured newsletter (`provider="pending"`, empty action) and had severed the client-editable Site & CTA fields from public rendering. Replaced it with a truthful quote/contact CTA backed by the existing central settings.
+- [x] The fixed quote-review control visibly overlaid the Contact form on Arabic mobile. It now remains on catalogue selection routes but is intentionally hidden on Contact and dedicated Quote Request form routes.
 
 ### P2
 
@@ -107,6 +110,10 @@ commit `d38335c`, closeout checkpoint `140361e`, recovery tag
 | Home/header fidelity | The Home layout regressions pass across their desktop/tablet/mobile matrix after their stale text-logo and old media-slot assumptions were correctly replaced with current accessible image-logo and four-slide hero assertions. The 48px desktop utility ribbon is intentional client-requested readability, not a layout regression. | Verified 2026-09-27 |
 | Admin family workflow | `catalogue-admin-workflow-e2e.sh` creates a unique self-marked family/product, verifies EN/AR public discovery, explicitly reassigns during deletion, verifies product survival, and auto-cleans. The rerun reports zero remaining marked QA products. `catalogue-admin-workflow-safety.test.sh` guards the fixture-scoping rules. | Verified 2026-09-27 |
 | Adversarial quote submission | `client-handoff-quote-submission.test.mjs` passes valid EN submission, canonical Woo line/quantity validation, invalid nonce/email/empty basket/tampered SKU/excessive quantity/honeypot rejection, truthful `wp_mail` attempt state, WhatsApp formatting, AR shell, and no Cart/Checkout/Orders/pricing behavior. | Verified application-side 2026-09-27 |
+| Mobile Shop filters | `shop-mobile-filter-accessibility.test.mjs` exercises EN/AR at 390px: `aria-controls`, modal dialog semantics, initial focus, Tab/Shift+Tab containment, Escape/backdrop closure, focus restoration, RTL placement, and overflow. History/autocomplete browser regressions also completed after the change. | Verified 2026-09-27 |
+| Shared CTA ownership | `client-preview-content-mutation.test.sh` initially reproduced a missing Site & CTA render path, then passed its snapshot/mutate/public-render/reseed/exact-restore cycle after the repair. `shared-cta-journey.test.mjs` verifies Home/About/Contact EN/AR use settings-ready quote/contact actions, have no pending newsletter form, preserve 44px targets, and do not overflow at 390px. | Verified 2026-09-27 |
+| Quote trigger placement | `quote-review-route-placement.test.mjs` and `client-handoff-quote-drawer.test.mjs` verify the review control is hidden on Contact/Quote form routes and still works on Shop/Product, including EN/AR quote lines, quantity mutation and removal. | Verified 2026-09-27 |
+| Benefit icon system | `home-benefit-panel.test.mjs` verifies EN/AR featured support cards retain editable text while using one coherent inline SVG icon each; PHP lint and Home fidelity pass. | Verified 2026-09-27 |
 
 ## External Blockers
 

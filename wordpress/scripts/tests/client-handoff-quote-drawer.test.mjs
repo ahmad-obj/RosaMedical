@@ -18,11 +18,11 @@ const forbiddenCommerceUi = '.single_add_to_cart_button, .add_to_cart_button, [n
 const shellRoutes = [
   { label: 'Home EN', path: '/', locale: 'en' },
   { label: 'About EN', path: '/about/', locale: 'en' },
-  { label: 'Contact EN', path: '/contact/', locale: 'en' },
+  { label: 'Contact EN', path: '/contact/', locale: 'en', fixedReview: false },
   { label: 'Shop EN', path: '/shop/', locale: 'en' },
   { label: 'Home AR', path: '/ar/', locale: 'ar' },
   { label: 'About AR', path: '/ar/about/', locale: 'ar' },
-  { label: 'Contact AR', path: '/ar/contact/', locale: 'ar' },
+  { label: 'Contact AR', path: '/ar/contact/', locale: 'ar', fixedReview: false },
   { label: 'Shop AR', path: '/ar/shop/', locale: 'ar' },
 ];
 
@@ -62,8 +62,14 @@ async function assertSharedShell(page, route) {
   assert.equal(await trigger.count(), 1, `${route.label} must expose exactly one persistent quotation review trigger`);
   assert.equal(await trigger.evaluate((node) => node.tagName), 'BUTTON', `${route.label} review trigger must be a button`);
   assert.equal(await trigger.getAttribute('type'), 'button', `${route.label} review trigger must use type=button`);
-  await assertTouchTarget(trigger, `${route.label} review trigger`);
   await assertLocalized(trigger, route.locale, `${route.label} review trigger`);
+
+  if (route.fixedReview === false) {
+    assert.equal(await trigger.getAttribute('hidden'), '', `${route.label} form route must suppress the fixed review trigger`);
+    assert.equal(await trigger.isVisible(), false, `${route.label} fixed review trigger must not obscure the contact form`);
+  } else {
+    await assertTouchTarget(trigger, `${route.label} review trigger`);
+  }
 
   const controlsId = (await trigger.getAttribute('aria-controls')) || '';
   assert.ok(controlsId.length > 0, `${route.label} review trigger must expose aria-controls`);
